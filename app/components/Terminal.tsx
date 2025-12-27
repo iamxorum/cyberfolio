@@ -1,0 +1,614 @@
+'use client';
+
+import { useState, useRef, useEffect, KeyboardEvent } from 'react';
+import { siteConfig, projects, certifications, contentConfig, education, languages, hobbies } from '@/config';
+
+
+const sanitizeInput = (input: string): string => {
+  
+  return input
+    .replace(/[<>]/g, '') 
+    .replace(/javascript:/gi, '') 
+    .replace(/on\w+=/gi, '') 
+    .replace(/script/gi, '') 
+    .replace(/eval\(/gi, '') 
+    .replace(/expression\(/gi, '') 
+    .trim()
+    .slice(0, 200); 
+};
+
+
+const isValidCommand = (cmd: string): boolean => {
+  
+  const safePattern = /^[a-zA-Z0-9_\s\/\-]+$/;
+  return safePattern.test(cmd) && cmd.length <= 200;
+};
+
+
+const escapeHtml = (str: string): string => {
+  const map: Record<string, string> = {
+    '&': '&amp;',
+    '<': '&lt;',
+    '>': '&gt;',
+    '"': '&quot;',
+    "'": '&#039;',
+  };
+  return str.replace(/[&<>"']/g, (m) => map[m]);
+};
+
+interface Command {
+  command: string;
+  output: string | React.ReactNode;
+  description?: string;
+}
+
+
+const calculateAge = () => {
+  const birthDate = new Date(
+    siteConfig.birthDate.year,
+    siteConfig.birthDate.month - 1, 
+    siteConfig.birthDate.day
+  );
+  const today = new Date();
+  
+  let years = today.getFullYear() - birthDate.getFullYear();
+  const monthDiff = today.getMonth() - birthDate.getMonth();
+  const dayDiff = today.getDate() - birthDate.getDate();
+  
+  
+  if (monthDiff < 0 || (monthDiff === 0 && dayDiff < 0)) {
+    years--;
+  }
+  
+  
+  const thisYearBirthday = new Date(today.getFullYear(), siteConfig.birthDate.month - 1, siteConfig.birthDate.day);
+  if (today < thisYearBirthday) {
+    thisYearBirthday.setFullYear(today.getFullYear() - 1);
+  }
+  const daysSinceBirthday = Math.floor((today.getTime() - thisYearBirthday.getTime()) / (1000 * 60 * 60 * 24));
+  
+  return `${years} yrs ${daysSinceBirthday} days`;
+};
+
+const getStatusColor = (statusColor: string): string => {
+  const colorMap: Record<string, string> = {
+    green: 'text-green-400',
+    yellow: 'text-yellow-400',
+    blue: 'text-blue-400',
+    orange: 'text-orange-400',
+    red: 'text-red-400',
+  };
+  return colorMap[statusColor] || 'text-white';
+};
+
+const getProjectIdForCommand = (projectName: string): string | null => {
+  const normalized = projectName.toLowerCase().replace(/[^a-z0-9]/g, '');
+  return projects.find(p => 
+    p.id.toLowerCase().replace(/[^a-z0-9]/g, '') === normalized ||
+    p.name.toLowerCase().replace(/[^a-z0-9]/g, '') === normalized
+  )?.id || null;
+};
+
+const commands: Record<string, { output: string | React.ReactNode; description: string }> = {
+  help: {
+    output: (
+      <div className="space-y-1">
+        <div className="text-primary font-bold mb-2">Available commands:</div>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-1 text-sm">
+          <div><span className="text-primary">help</span>          <span className="text-[#565692] ml-4">- Show this help message</span></div>
+          <div><span className="text-primary">info</span>          <span className="text-[#565692] ml-4">- Display personal information</span></div>
+          <div><span className="text-primary">ls</span>            <span className="text-[#565692] ml-4">- List all projects</span></div>
+          <div><span className="text-primary">cat [project]</span>    <span className="text-[#565692] ml-4">- Display project details</span></div>
+          <div><span className="text-primary">certs</span>         <span className="text-[#565692] ml-4">- List certifications</span></div>
+          <div><span className="text-primary">contact</span>      <span className="text-[#565692] ml-4">- Display contact information</span></div>
+          <div><span className="text-primary">clear</span>          <span className="text-[#565692] ml-4">- Clear terminal</span></div>
+          <div><span className="text-primary">whoami</span>        <span className="text-[#565692] ml-4">- Display user information</span></div>
+          <div><span className="text-primary">pwd</span>           <span className="text-[#565692] ml-4">- Show current directory</span></div>
+          <div><span className="text-primary">version</span>        <span className="text-[#565692] ml-4">- Display system version</span></div>
+        </div>
+        <div className="text-[#565692] text-xs mt-3">
+          Examples: <span className="text-primary">cat cyberfolio</span>, <span className="text-primary">cat pitchpulse</span>
+        </div>
+      </div>
+    ),
+    description: 'Show available commands'
+  },
+  info: {
+    output: (
+      <div className="space-y-2 text-sm">
+        <div className="text-primary font-bold mb-2">Personal Information:</div>
+        <div className="grid grid-cols-2 gap-x-4 gap-y-2">
+          <div><span className="text-[#9090cb]">Bio:</span></div>
+          <div className="text-white break-words col-span-2">
+            {contentConfig.about.bio.paragraphs.join(' ')}
+          </div>
+          {education.length > 0 && (
+            <>
+              <div><span className="text-[#9090cb]">Education:</span></div>
+              <div className="text-white break-words">
+                {education.map(edu => edu.degree).join(', ')}
+              </div>
+            </>
+          )}
+          {languages.length > 0 && (
+            <>
+              <div><span className="text-[#9090cb]">Languages:</span></div>
+              <div className="text-white break-words">
+                {languages.map(lang => lang.name).join(', ')}
+              </div>
+            </>
+          )}
+          {hobbies.length > 0 && (
+            <>
+              <div><span className="text-[#9090cb]">Interests:</span></div>
+              <div className="text-white break-words">
+                {hobbies.map(hobby => hobby.name).join(', ')}
+              </div>
+            </>
+          )}
+          <div><span className="text-[#9090cb]">Location:</span></div>
+          <div className="text-white">{siteConfig.location}</div>
+          <div><span className="text-[#9090cb]">Status:</span></div>
+          <div className="text-green-400">{siteConfig.status}</div>
+        </div>
+      </div>
+    ),
+    description: 'Display personal information'
+  },
+  ls: {
+    output: (
+      <div className="space-y-2 text-sm">
+        <div className="text-primary font-bold mb-2">Projects Directory:</div>
+        <div className="space-y-1">
+          {projects.map((project) => {
+            const statusColorClass = getStatusColor(project.statusColor);
+            const projectId = project.id.toLowerCase().replace(/[^a-z0-9]/g, '_');
+            return (
+              <div key={project.id} className="flex items-center gap-3 flex-wrap">
+                <span className="text-primary">{projectId}/</span>
+                <span className="text-[#565692]">[{project.type}]</span>
+                <span className={statusColorClass}>{project.status}</span>
+                {project.visibility === 'private' && (
+                  <span className="text-red-400 text-xs">[PRIVATE]</span>
+                )}
+              </div>
+            );
+          })}
+        </div>
+        <div className="text-[#565692] text-xs mt-3">
+          Use <span className="text-primary">cat [project_id]</span> to view details
+        </div>
+      </div>
+    ),
+    description: 'List all projects'
+  },
+  cat: {
+    output: (
+      <div className="space-y-2 text-sm">
+        <div className="text-red-400">Usage: cat [project_id]</div>
+        <div className="text-[#9090cb]">Available projects:</div>
+        <div className="space-y-1 ml-4">
+          {projects.map((project) => {
+            const projectId = project.id.toLowerCase().replace(/[^a-z0-9]/g, '_');
+            return (
+              <div key={project.id}>
+                <span className="text-primary">cat {projectId}</span>
+                <span className="text-[#565692] ml-2">- View {project.name} details</span>
+              </div>
+            );
+          })}
+        </div>
+      </div>
+    ),
+    description: 'Display project details'
+  },
+  whoami: {
+    output: (
+      <div className="space-y-2 text-sm">
+        <div className="grid grid-cols-2 gap-x-4 gap-y-2">
+            <div><span className="text-[#9090cb]">User:</span></div>
+            <div className="text-white font-bold">{siteConfig.username}</div>
+            <div><span className="text-[#9090cb]">Role:</span></div>
+            <div className="text-white">{siteConfig.role}</div>
+            <div><span className="text-[#9090cb]">Age:</span></div>
+            <div className="text-primary">{calculateAge()}</div>
+            <div><span className="text-[#9090cb]">Location:</span></div>
+            <div className="text-white">{siteConfig.location}</div>
+            <div><span className="text-[#9090cb]">Status:</span></div>
+            <div className="text-green-400">{siteConfig.status}</div>
+          <div><span className="text-[#9090cb]">Contact:</span></div>
+          <div className="text-primary">Use <span className="text-white">contact</span> command</div>
+        </div>
+      </div>
+    ),
+    description: 'Display user information'
+  },
+  contact: {
+    output: (
+      <div className="space-y-2 text-sm">
+        <div className="text-primary font-bold mb-2">Contact Information:</div>
+        <div className="grid grid-cols-2 gap-x-4 gap-y-2">
+          {siteConfig.social.professional && siteConfig.social.professional.map((link, index) => (
+            <>
+              <div key={`${index}-label`}><span className="text-[#9090cb]">{link.name}:</span></div>
+              <div key={`${index}-value`} className="text-primary break-all">{link.url}</div>
+            </>
+          ))}
+          {siteConfig.social.gaming && siteConfig.social.gaming.map((link, index) => (
+            <>
+              <div key={`gaming-${index}-label`}><span className="text-[#9090cb]">{link.name}:</span></div>
+              <div key={`gaming-${index}-value`} className="text-primary break-all">{link.url}</div>
+            </>
+          ))}
+          {siteConfig.social.other && siteConfig.social.other.map((link, index) => (
+            <>
+              <div key={`other-${index}-label`}><span className="text-[#9090cb]">{link.name}:</span></div>
+              <div key={`other-${index}-value`} className="text-primary break-all">{link.url}</div>
+            </>
+          ))}
+        </div>
+      </div>
+    ),
+    description: 'Display contact information'
+  },
+  certs: {
+    output: (
+      <div className="space-y-2 text-sm">
+        <div className="text-primary font-bold mb-2">Certifications:</div>
+        {certifications.length === 0 ? (
+          <div className="text-[#565692]">No certifications available.</div>
+        ) : (
+          <div className="space-y-3">
+            {certifications.map((cert) => (
+              <div key={cert.id} className="border-l-2 border-primary pl-3 space-y-1">
+                <div className="text-white font-bold">{cert.name}</div>
+                <div className="text-[#9090cb] text-xs">Issuer: {cert.issuer}</div>
+                <div className="text-[#9090cb] text-xs">
+                  Issued: {cert.issueDate}
+                  {cert.expiryDate && ` | Expires: ${cert.expiryDate}`}
+                </div>
+                {cert.credentialId && (
+                  <div className="text-[#565692] text-xs">ID: {cert.credentialId}</div>
+                )}
+                {cert.description && (
+                  <div className="text-[#9090cb] text-xs mt-1">{cert.description}</div>
+                )}
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+    ),
+    description: 'List certifications'
+  },
+  pwd: {
+    output: <div className="text-sm text-white">/home/iamxorum/projects</div>,
+    description: 'Show current directory'
+  },
+  version: {
+    output: (
+      <div className="space-y-2 text-sm">
+        <div className="text-primary font-bold mb-2">{siteConfig.domain} {siteConfig.systemVersion}</div>
+        <div className="grid grid-cols-2 gap-x-4 gap-y-1">
+          <div><span className="text-[#9090cb]">Domain:</span></div>
+          <div className="text-white">{siteConfig.domain}</div>
+          <div><span className="text-[#9090cb]">Version:</span></div>
+          <div className="text-white">{siteConfig.systemVersion}</div>
+          <div><span className="text-[#9090cb]">Framework:</span></div>
+          <div className="text-white">Next.js</div>
+          <div><span className="text-[#9090cb]">Status:</span></div>
+          <div className="text-green-400">ONLINE</div>
+        </div>
+      </div>
+    ),
+    description: 'Display system version'
+  },
+  clear: {
+    output: '',
+    description: 'Clear terminal'
+  }
+};
+
+export default function Terminal() {
+  const [history, setHistory] = useState<Command[]>([]);
+  const [input, setInput] = useState('');
+  const [commandHistory, setCommandHistory] = useState<string[]>([]);
+  const [historyIndex, setHistoryIndex] = useState(-1);
+  const inputRef = useRef<HTMLInputElement>(null);
+  const terminalRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    
+    setHistory([{
+      command: '',
+      output: ''
+    }]);
+  }, []);
+
+  useEffect(() => {
+    
+    if (terminalRef.current) {
+      terminalRef.current.scrollTop = terminalRef.current.scrollHeight;
+    }
+  }, [history]);
+
+  const executeCommand = (cmd: string) => {
+    
+    const sanitizedCmd = sanitizeInput(cmd);
+    
+    if (!sanitizedCmd) {
+      return;
+    }
+
+    
+    if (!isValidCommand(sanitizedCmd)) {
+      setHistory(prev => [...prev, {
+        command: sanitizedCmd,
+        output: (
+          <div className="text-red-400 text-sm">
+            Invalid command format. Only alphanumeric characters, spaces, underscores, hyphens, and forward slashes are allowed.
+          </div>
+        )
+      }]);
+      return;
+    }
+
+    const trimmedCmd = sanitizedCmd.trim().toLowerCase();
+    
+    if (!trimmedCmd) {
+      return;
+    }
+
+    
+    if (trimmedCmd === 'clear') {
+      setHistory([]);
+      return;
+    }
+
+    
+    let commandOutput = commands[trimmedCmd];
+    
+    
+    if (trimmedCmd.startsWith('cat ')) {
+      const projectName = trimmedCmd.substring(4).trim();
+      
+      if (isValidCommand(projectName)) {
+        const projectId = getProjectIdForCommand(projectName);
+        
+        if (projectId) {
+          const project = projects.find(p => p.id === projectId);
+          if (project) {
+            const statusColorClass = getStatusColor(project.statusColor);
+            commandOutput = {
+              output: (
+                <div className="space-y-2 text-sm">
+                  <div className="text-primary font-bold text-lg mb-3">{project.name.toUpperCase()}</div>
+                  <div className="grid grid-cols-2 gap-x-4 gap-y-2">
+                    <div><span className="text-[#9090cb]">Type:</span></div>
+                    <div className="text-white">{project.type}</div>
+                    <div><span className="text-[#9090cb]">Status:</span></div>
+                    <div className={statusColorClass}>{project.status}</div>
+                    <div><span className="text-[#9090cb]">Category:</span></div>
+                    <div className="text-white">{project.category.toUpperCase()}</div>
+                    <div><span className="text-[#9090cb]">Visibility:</span></div>
+                    <div className={project.visibility === 'public' ? 'text-green-400' : 'text-red-400'}>
+                      {project.visibility.toUpperCase()}
+                    </div>
+                    <div><span className="text-[#9090cb]">Description:</span></div>
+                    <div className="text-white col-span-2">{project.description}</div>
+                    {project.tags.length > 0 && (
+                      <>
+                        <div><span className="text-[#9090cb]">Tags:</span></div>
+                        <div className="flex flex-wrap gap-1 col-span-2">
+                          {project.tags.map((tag, idx) => (
+                            <span key={idx} className="px-1.5 py-0.5 rounded bg-[#101022] border border-[#313168] text-[10px] text-[#9090cb]">
+                              {tag}
+                            </span>
+                          ))}
+                        </div>
+                      </>
+                    )}
+                    {project.repository && (
+                      <>
+                        <div><span className="text-[#9090cb]">Repository:</span></div>
+                        <div className={project.visibility === 'public' ? 'text-primary break-all' : 'text-red-400'}>
+                          {project.visibility === 'public' ? project.repository : 'Private repository'}
+                        </div>
+                      </>
+                    )}
+                  </div>
+                </div>
+              ),
+              description: `Display ${project.name} details`
+            };
+          } else {
+            commandOutput = commands['cat'];
+          }
+        } else {
+          commandOutput = {
+            output: (
+              <div className="text-red-400 text-sm">
+                Project not found. Use <span className="text-white">ls</span> to see available projects.
+              </div>
+            ),
+            description: ''
+          };
+        }
+      } else {
+        commandOutput = {
+          output: (
+            <div className="text-red-400 text-sm">
+              Invalid project name format.
+            </div>
+          ),
+          description: ''
+        };
+      }
+    }
+
+    
+    if (!commandOutput) {
+      
+      const safeCmd = escapeHtml(trimmedCmd);
+      commandOutput = {
+        output: (
+          <div className="text-red-400 text-sm">
+            Command not found: <span className="text-white">{safeCmd}</span>
+          </div>
+        ),
+        description: ''
+      };
+    }
+
+    
+    setHistory(prev => [...prev, {
+      command: sanitizedCmd,
+      output: commandOutput.output
+    }]);
+
+    
+    if (trimmedCmd !== 'clear') {
+      setCommandHistory(prev => [...prev, sanitizedCmd]);
+      setHistoryIndex(-1);
+    }
+  };
+
+  const handleKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Enter') {
+      executeCommand(input);
+      setInput('');
+      setHistoryIndex(-1);
+    } else if (e.key === 'ArrowUp') {
+      e.preventDefault();
+      if (commandHistory.length > 0) {
+        const newIndex = historyIndex === -1 
+          ? commandHistory.length - 1 
+          : Math.max(0, historyIndex - 1);
+        setHistoryIndex(newIndex);
+        
+        setInput(commandHistory[newIndex]);
+      }
+    } else if (e.key === 'ArrowDown') {
+      e.preventDefault();
+      if (historyIndex >= 0) {
+        const newIndex = historyIndex + 1;
+        if (newIndex >= commandHistory.length) {
+          setHistoryIndex(-1);
+          setInput('');
+        } else {
+          setHistoryIndex(newIndex);
+          
+          setInput(commandHistory[newIndex]);
+        }
+      }
+    } else if (e.key === 'Tab') {
+      e.preventDefault();
+      
+      
+      const sanitizedInput = sanitizeInput(input).toLowerCase();
+      const matches = Object.keys(commands).filter(cmd => 
+        cmd.startsWith(sanitizedInput) && isValidCommand(cmd)
+      );
+      if (matches.length === 1) {
+        setInput(matches[0] + ' ');
+      } else if (matches.length > 1) {
+        
+        setHistory(prev => [...prev, {
+          command: sanitizedInput,
+          output: (
+            <div className="text-[#9090cb] text-sm">
+              Suggestions: <span className="text-primary">{matches.map(m => escapeHtml(m)).join(', ')}</span>
+            </div>
+          )
+        }]);
+      }
+    }
+  };
+
+  const getSuggestions = () => {
+    if (!input) return [];
+    
+    const sanitizedInput = sanitizeInput(input).toLowerCase();
+    if (!isValidCommand(sanitizedInput)) return [];
+    
+    return Object.keys(commands)
+      .filter(cmd => {
+        
+        return cmd.startsWith(sanitizedInput) && 
+               cmd !== sanitizedInput && 
+               isValidCommand(cmd);
+      })
+      .slice(0, 5);
+  };
+
+  const suggestions = getSuggestions();
+
+  return (
+    <div className="p-4 rounded border border-dashed border-[#313168] bg-[#0d0d1a] font-mono text-sm text-[#9090cb]">
+      <div 
+        ref={terminalRef}
+        className="max-h-64 overflow-y-auto mb-2 space-y-2"
+        style={{ scrollbarWidth: 'thin' }}
+      >
+        {history.map((item, index) => (
+          <div key={index} className="space-y-1">
+            {item.command && (
+              <div className="flex items-center gap-2">
+                <span className="text-primary">user@system:~/projects$</span>
+                <span className="text-white">{item.command}</span>
+              </div>
+            )}
+            {item.output && (
+              <div className="text-[#9090cb] pl-4">
+                {item.output}
+              </div>
+            )}
+          </div>
+        ))}
+      </div>
+      <div className="flex items-center gap-2">
+        <span className="text-primary">user@system:~/projects$</span>
+        <div className="flex-1 relative">
+          <input
+            ref={inputRef}
+            type="text"
+            value={input}
+            onChange={(e) => {
+              setInput(e.target.value);
+            }}
+            onKeyDown={handleKeyDown}
+            className="bg-transparent border-none outline-none text-white flex-1 w-full"
+            autoFocus
+            spellCheck={false}
+          />
+          {suggestions.length > 0 && (
+            <div className="absolute bottom-full left-0 mb-1 bg-[#15152a] border border-[#313168] rounded p-2 text-xs space-y-1 max-w-md z-10">
+              <div className="text-[#565692] text-[10px] uppercase">Suggestions:</div>
+              {suggestions.map((suggestion, idx) => (
+                <div 
+                  key={idx}
+                  className="text-[#9090cb] hover:text-primary cursor-pointer"
+                  onClick={() => {
+                    
+                    if (isValidCommand(suggestion)) {
+                      setInput(suggestion);
+                      inputRef.current?.focus();
+                    }
+                  }}
+                >
+                  {suggestion}
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+        <span className="text-white animate-pulse">_</span>
+      </div>
+      {!input && (
+        <div className="text-[10px] text-[#565692] mt-2 opacity-50">
+          {contentConfig.projects.terminalHint}
+        </div>
+      )}
+    </div>
+  );
+}

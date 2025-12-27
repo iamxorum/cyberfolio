@@ -1,0 +1,119 @@
+@import "tailwindcss";
+@import "./colors.css";
+
+body {
+  background: #101022;
+  color: #ffffff;
+  font-family: 'JetBrains Mono', 'Fira Code', 'Consolas', 'Monaco', 'Courier New', monospace;
+}
+
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #101022;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #313168;
+  border-radius: 2px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #0d0df2;
+}
+
+.blinking-cursor::after {
+  content: '|';
+  animation: blink 1s step-end infinite;
+}
+
+@keyframes blink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0; }
+}
+
+.glow-text {
+  text-shadow: 0 0 10px rgba(13, 13, 242, 0.5);
+}
+
+.matrix-bg {
+  background-image: linear-gradient(0deg, transparent 24%, rgba(49, 49, 104, .3) 25%, rgba(49, 49, 104, .3) 26%, transparent 27%, transparent 74%, rgba(49, 49, 104, .3) 75%, rgba(49, 49, 104, .3) 76%, transparent 77%, transparent), linear-gradient(90deg, transparent 24%, rgba(49, 49, 104, .3) 25%, rgba(49, 49, 104, .3) 26%, transparent 27%, transparent 74%, rgba(49, 49, 104, .3) 75%, rgba(49, 49, 104, .3) 76%, transparent 77%, transparent);
+  background-size: 30px 30px;
+}
+
+@keyframes scan {
+  0% { transform: translateY(-100%); }
+  100% { transform: translateY(100vh); }
+}
+
+.animate-scan {
+  animation: scan 3s linear infinite;
+}
+
+@keyframes fade-in {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fade-in {
+  animation: fade-in 0.5s ease-out;
+}
+
+@keyframes loading-bar {
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(100%);
+  }
+}
+
+.animate-loading-bar {
+  animation: loading-bar 1.5s ease-in-out infinite;
+}
+
+@keyframes glitch {
+  0%, 100% { 
+    transform: translate(0); 
+    filter: hue-rotate(0deg) brightness(1);
+    text-shadow: 0 0 0 rgba(13, 13, 242, 0);
+  }
+  20% { 
+    transform: translate(-3px, 3px); 
+    filter: hue-rotate(90deg) brightness(1.2);
+    text-shadow: -3px 3px 10px rgba(13, 13, 242, 0.8);
+  }
+  40% { 
+    transform: translate(3px, -3px); 
+    filter: hue-rotate(180deg) brightness(0.8);
+    text-shadow: 3px -3px 10px rgba(13, 13, 242, 0.8);
+  }
+  60% { 
+    transform: translate(-2px, -2px); 
+    filter: hue-rotate(270deg) brightness(1.1);
+    text-shadow: -2px -2px 10px rgba(13, 13, 242, 0.6);
+  }
+  80% { 
+    transform: translate(2px, 2px); 
+    filter: hue-rotate(360deg) brightness(1);
+    text-shadow: 2px 2px 10px rgba(13, 13, 242, 0.6);
+  }
+}
+
+@keyframes terminal-flicker {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.8; }
+}
+
+@keyframes data-stream {
+  0% { opacity: 0; transform: translateY(-10px); }
+  100% { opacity: 1; transform: translateY(0); }
+}
