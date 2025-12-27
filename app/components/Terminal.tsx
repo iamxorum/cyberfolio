@@ -70,7 +70,7 @@ const calculateAge = () => {
   return `${years} yrs ${daysSinceBirthday} days`;
 };
 
-const getStatusColor = (statusColor: string): string => {
+const getStatusColor = (statusColor: string | string[]): string => {
   const colorMap: Record<string, string> = {
     green: 'text-green-400',
     yellow: 'text-yellow-400',
@@ -78,7 +78,8 @@ const getStatusColor = (statusColor: string): string => {
     orange: 'text-orange-400',
     red: 'text-red-400',
   };
-  return colorMap[statusColor] || 'text-white';
+  const color = Array.isArray(statusColor) ? statusColor[0] : statusColor;
+  return colorMap[color] || 'text-white';
 };
 
 const getProjectIdForCommand = (projectName: string): string | null => {
