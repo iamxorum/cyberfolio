@@ -139,9 +139,9 @@ export default function Home() {
   }
 
   return (
-    <div className="relative flex h-auto min-h-screen w-full flex-col bg-[#101022] text-white group/design-root overflow-x-hidden font-display">
+    <div className="relative flex h-auto min-h-screen w-full flex-col bg-[var(--terminal-bg)] text-white group/design-root overflow-x-hidden font-display">
       {/* Background Grid Pattern Effect */}
-      <div className="fixed inset-0 z-0 opacity-[0.03] pointer-events-none" style={{ backgroundImage: 'linear-gradient(#4f4fdb 1px, transparent 1px), linear-gradient(90deg, #4f4fdb 1px, transparent 1px)', backgroundSize: '40px 40px' }}></div>
+      <div className="fixed inset-0 z-0 opacity-[0.03] pointer-events-none" style={{ backgroundImage: `linear-gradient(var(--terminal-accent-alt) 1px, transparent 1px), linear-gradient(90deg, var(--terminal-accent-alt) 1px, transparent 1px)`, backgroundSize: '40px 40px' }}></div>
       <div className="layout-container flex h-full grow flex-col">
         <Header />
         <div className="px-4 sm:px-6 md:px-10 lg:px-20 xl:px-40 flex flex-1 justify-center py-5">
@@ -149,7 +149,7 @@ export default function Home() {
             {/* Hero Section */}
             <div className="@container mb-8" ref={heroRef}>
               <div className="@[480px]:p-4">
-                <div className="flex min-h-[480px] flex-col gap-6 bg-cover bg-center bg-no-repeat @[480px]:gap-8 @[480px]:rounded items-start justify-end px-4 pb-10 @[480px]:px-10 border border-[#313168] relative overflow-hidden group" style={{ backgroundImage: 'linear-gradient(rgba(16, 16, 34, 0.8) 0%, rgba(16, 16, 34, 0.95) 100%), url("https://lh3.googleusercontent.com/aida-public/AB6AXuDcIIzAbjAh9ugqFgD5dgaid1_VeyWEV0J3ieyQWk7EmspGGZpYf3Zq8qDAzlgezd6RGSO5PHjJm9sHXWn00c-vlj_oO4oA9-GurXdCJHtC1wRqrSmcxDjiVeXt0xj5sWaDshsYchj1dMT1QSrBJXnkmV3d5yCom2nAVSy-JopqlToKC-C9Kg5gENCR_X-n3OmlWsWTuG9u2kLBD0lj9QY4m5xulE8FtbYzwQX4ZGazyP0ELOoSWS0Ict6UbZuCySlvOgwYQrxZXzM")' }}>
+                <div className="flex min-h-[480px] flex-col gap-6 bg-cover bg-center bg-no-repeat @[480px]:gap-8 @[480px]:rounded items-start justify-end px-4 pb-10 @[480px]:px-10 border border-[var(--terminal-border)] relative overflow-hidden group" style={{ backgroundImage: `linear-gradient(rgba(var(--terminal-bg-rgb), 0.8) 0%, rgba(var(--terminal-bg-rgb), 0.95) 100%), url("https://lh3.googleusercontent.com/aida-public/AB6AXuDcIIzAbjAh9ugqFgD5dgaid1_VeyWEV0J3ieyQWk7EmspGGZpYf3Zq8qDAzlgezd6RGSO5PHjJm9sHXWn00c-vlj_oO4oA9-GurXdCJHtC1wRqrSmcxDjiVeXt0xj5sWaDshsYchj1dMT1QSrBJXnkmV3d5yCom2nAVSy-JopqlToKC-C9Kg5gENCR_X-n3OmlWsWTuG9u2kLBD0lj9QY4m5xulE8FtbYzwQX4ZGazyP0ELOoSWS0Ict6UbZuCySlvOgwYQrxZXzM")` }}>
                   <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-10 pointer-events-none"></div>
                   <div className="absolute top-4 right-4 flex gap-2">
                     <div className="w-3 h-3 rounded-full bg-red-500/50 border border-red-500"></div>
@@ -157,22 +157,22 @@ export default function Home() {
                     <div className="w-3 h-3 rounded-full bg-green-500/50 border border-green-500"></div>
                   </div>
                   <div className="flex flex-col gap-2 text-left z-10">
-                    <div className="inline-flex items-center gap-2 px-2 py-1 bg-blue-900/30 border border-blue-500/30 rounded w-fit mb-2">
-                      <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
-                      <span className="text-blue-300 text-xs font-mono tracking-widest">SYSTEM_READY</span>
+                    <div className="inline-flex items-center gap-2 px-2 py-1 bg-primary/30 border border-primary/30 rounded w-fit mb-2">
+                      <div className="w-2 h-2 bg-[var(--terminal-success)] rounded-full animate-pulse"></div>
+                      <span className="text-primary text-xs font-mono tracking-widest">SYSTEM_READY</span>
                     </div>
                       <h1 className="text-white text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-black leading-tight tracking-[-0.033em] font-mono">
                         {contentConfig.home.hero.title}<span className="blinking-cursor text-primary">_</span>
                       </h1>
-                      <h2 className="text-gray-400 text-xs sm:text-sm md:text-base lg:text-lg font-mono leading-normal max-w-full md:max-w-[600px] mt-2 whitespace-pre-line">
+                      <h2 className="text-[var(--terminal-text-dim)] text-xs sm:text-sm md:text-base lg:text-lg font-mono leading-normal max-w-full md:max-w-[600px] mt-2 whitespace-pre-line">
                         <span className="text-primary font-bold">{siteConfig.domain}</span> {contentConfig.home.hero.subtitle}
                       </h2>
                   </div>
                   <div className="flex flex-wrap gap-3 sm:gap-4 z-10">
-                    <Link href={contentConfig.home.hero.ctaPrimary.link} className="flex min-w-[120px] sm:min-w-[140px] cursor-pointer items-center justify-center overflow-hidden rounded h-10 sm:h-12 px-4 sm:px-6 bg-primary text-white text-sm sm:text-base font-bold leading-normal tracking-[0.015em] hover:bg-blue-700 transition-all shadow-[0_0_20px_rgba(13,13,242,0.3)] border border-transparent hover:border-white/20">
+                    <Link href={contentConfig.home.hero.ctaPrimary.link} className="flex min-w-[120px] sm:min-w-[140px] cursor-pointer items-center justify-center overflow-hidden rounded h-10 sm:h-12 px-4 sm:px-6 bg-primary text-white text-sm sm:text-base font-bold leading-normal tracking-[0.015em] hover:bg-primary/80 transition-all shadow-[0_0_20px_rgba(var(--terminal-accent-rgb),0.3)] border border-transparent hover:border-[var(--terminal-hover-border)]">
                       <span className="truncate font-mono text-xs sm:text-sm md:text-base">{contentConfig.home.hero.ctaPrimary.text}</span>
                     </Link>
-                    <Link href={contentConfig.home.hero.ctaSecondary.link || '#'} className="flex min-w-[100px] sm:min-w-[120px] cursor-pointer items-center justify-center overflow-hidden rounded h-10 sm:h-12 px-4 sm:px-6 bg-[#181834] border-2 border-[#4f4fdb] text-[#9090cb] text-sm sm:text-base font-bold leading-normal tracking-[0.015em] hover:border-primary hover:text-primary hover:bg-[#1f1f42] hover:shadow-[0_0_15px_rgba(79,79,219,0.3)] transition-all group/cta">
+                    <Link href={contentConfig.home.hero.ctaSecondary.link || '#'} className="flex min-w-[100px] sm:min-w-[120px] cursor-pointer items-center justify-center overflow-hidden rounded h-10 sm:h-12 px-4 sm:px-6 bg-[var(--terminal-surface-alt)] border-2 border-[var(--terminal-accent-alt)] text-[var(--terminal-text-muted)] text-sm sm:text-base font-bold leading-normal tracking-[0.015em] hover:border-primary hover:text-primary hover:bg-[var(--terminal-surface-hover)] hover:shadow-[0_0_15px_rgba(var(--terminal-accent-alt-rgb),0.3)] transition-all group/cta">
                       <span className="truncate font-mono text-xs sm:text-sm md:text-base group-hover/cta:translate-x-0.5 transition-transform">{contentConfig.home.hero.ctaSecondary.text}</span>
                     </Link>
                   </div>
@@ -181,49 +181,49 @@ export default function Home() {
             </div>
             {/* Stats / System Status */}
             <div className="flex flex-wrap gap-3 sm:gap-4 p-2 sm:p-4 mb-6 sm:mb-8" ref={statsRef}>
-              <div className="flex min-w-[140px] sm:min-w-[158px] flex-1 flex-col gap-2 rounded p-4 sm:p-6 border border-[#313168] bg-[#15152a] relative overflow-hidden group hover:border-primary/50 transition-colors">
+              <div className="flex min-w-[140px] sm:min-w-[158px] flex-1 flex-col gap-2 rounded p-4 sm:p-6 border border-[var(--terminal-border)] bg-[var(--terminal-surface)] relative overflow-hidden group hover:border-primary/50 transition-colors">
                 <div className="absolute top-0 left-0 w-1 h-full bg-primary opacity-0 group-hover:opacity-100 transition-opacity"></div>
                 <div className="flex justify-between items-start">
-                  <p className="text-gray-400 text-xs font-mono font-medium leading-normal tracking-widest">{contentConfig.home.stats.uptime.label}</p>
+                  <p className="text-[var(--terminal-text-dim)] text-xs font-mono font-medium leading-normal tracking-widest">{contentConfig.home.stats.uptime.label}</p>
                   <span className="material-symbols-outlined text-primary text-[20px]">{contentConfig.home.stats.uptime.icon}</span>
                 </div>
                 <p className="text-white tracking-light text-2xl font-bold leading-tight font-mono">{uptime}</p>
-                <p className="text-[#0bda68] text-xs font-medium leading-normal font-mono flex items-center gap-1">
+                <p className="text-[var(--terminal-success)] text-xs font-medium leading-normal font-mono flex items-center gap-1">
                 </p>
               </div>
-              <div className="flex min-w-[158px] flex-1 flex-col gap-2 rounded p-6 border border-[#313168] bg-[#15152a] hover:border-primary/50 transition-colors">
+              <div className="flex min-w-[158px] flex-1 flex-col gap-2 rounded p-6 border border-[var(--terminal-border)] bg-[var(--terminal-surface)] hover:border-primary/50 transition-colors">
                 <div className="flex justify-between items-start">
-                  <p className="text-gray-400 text-xs font-mono font-medium leading-normal tracking-widest">{contentConfig.home.stats.sessionId.label}</p>
+                  <p className="text-[var(--terminal-text-dim)] text-xs font-mono font-medium leading-normal tracking-widest">{contentConfig.home.stats.sessionId.label}</p>
                   <span className="material-symbols-outlined text-primary text-[20px]">{contentConfig.home.stats.sessionId.icon}</span>
                 </div>
                 <p className="text-white tracking-light text-2xl font-bold leading-tight font-mono">{userId ? `XRM-${userId}` : 'XRM--------'}</p>
-                <p className="text-blue-400 text-xs font-medium leading-normal font-mono">USER: {userId || 'GUEST'}</p>
+                <p className="text-primary text-xs font-medium leading-normal font-mono">USER: {userId || 'GUEST'}</p>
               </div>
-              <div className="flex min-w-[158px] flex-1 flex-col gap-2 rounded p-6 border border-[#313168] bg-[#15152a] hover:border-primary/50 transition-colors">
+              <div className="flex min-w-[158px] flex-1 flex-col gap-2 rounded p-6 border border-[var(--terminal-border)] bg-[var(--terminal-surface)] hover:border-primary/50 transition-colors">
                 <div className="flex justify-between items-start">
-                  <p className="text-gray-400 text-xs font-mono font-medium leading-normal tracking-widest">{contentConfig.home.stats.viewport.label}</p>
+                  <p className="text-[var(--terminal-text-dim)] text-xs font-mono font-medium leading-normal tracking-widest">{contentConfig.home.stats.viewport.label}</p>
                   <span className="material-symbols-outlined text-primary text-[20px]">{contentConfig.home.stats.viewport.icon}</span>
                 </div>
                 <p className="text-white tracking-light text-2xl font-bold leading-tight font-mono">{viewport}</p>
-                <p className="text-green-400 text-xs font-medium leading-normal font-mono">LIVE</p>
+                <p className="text-[var(--terminal-success)] text-xs font-medium leading-normal font-mono">LIVE</p>
               </div>
-              <div className="flex min-w-[158px] flex-1 flex-col gap-2 rounded p-6 border border-[#313168] bg-[#15152a] hover:border-primary/50 transition-colors">
+              <div className="flex min-w-[158px] flex-1 flex-col gap-2 rounded p-6 border border-[var(--terminal-border)] bg-[var(--terminal-surface)] hover:border-primary/50 transition-colors">
                 <div className="flex justify-between items-start">
-                  <p className="text-gray-400 text-xs font-mono font-medium leading-normal tracking-widest">{contentConfig.home.stats.responseTime.label}</p>
+                  <p className="text-[var(--terminal-text-dim)] text-xs font-mono font-medium leading-normal tracking-widest">{contentConfig.home.stats.responseTime.label}</p>
                   <span className="material-symbols-outlined text-primary text-[20px]">{contentConfig.home.stats.responseTime.icon}</span>
                 </div>
                 <p className="text-white tracking-light text-2xl font-bold leading-tight font-mono">{responseTime}</p>
-                <p className="text-green-400 text-xs font-medium leading-normal font-mono">LIVE</p>
+                <p className="text-[var(--terminal-success)] text-xs font-medium leading-normal font-mono">LIVE</p>
               </div>
             </div>
             {/* Projects Header */}
             <div className="px-2 sm:px-4 pt-4 sm:pt-5 pb-2">
-              <div className="flex items-center gap-2 text-[#9090cb] font-mono text-xs sm:text-sm mb-2">
+              <div className="flex items-center gap-2 text-[var(--terminal-text-muted)] font-mono text-xs sm:text-sm mb-2">
                 <span>~/workspace</span>
                 <span>/</span>
                 <span className="text-white">active-projects</span>
               </div>
-              <h2 className="text-white text-xl sm:text-2xl md:text-[28px] font-bold leading-tight tracking-[-0.015em] border-b border-[#313168] pb-3 sm:pb-4 flex items-center gap-2 sm:gap-3">
+              <h2 className="text-white text-xl sm:text-2xl md:text-[28px] font-bold leading-tight tracking-[-0.015em] border-b border-[var(--terminal-border)] pb-3 sm:pb-4 flex items-center gap-2 sm:gap-3">
                 <span className="text-primary">&gt;</span> ./run_projects.sh
               </h2>
             </div>
@@ -246,9 +246,9 @@ export default function Home() {
                   return (
                     <div
                       key={project.id}
-                      className={`flex flex-1 gap-3 sm:gap-4 rounded border border-[#313168] bg-[#181834] p-4 sm:p-5 flex-col transition-all group relative ${
+                      className={`flex flex-1 gap-3 sm:gap-4 rounded border border-[var(--terminal-border)] bg-[var(--terminal-surface-alt)] p-4 sm:p-5 flex-col transition-all group relative ${
                         project.visibility === 'public' && project.link
-                          ? 'hover:bg-[#1f1f42] hover:border-primary cursor-pointer'
+                          ? 'hover:bg-[var(--terminal-surface-hover)] hover:border-primary cursor-pointer'
                           : 'opacity-75 cursor-not-allowed'
                       }`}
                       onClick={() => project.visibility === 'public' && project.link && window.open(project.link, '_blank')}
@@ -264,7 +264,7 @@ export default function Home() {
                         </div>
                       )}
                       <div className="flex items-center gap-3">
-                        <div className="p-2 rounded bg-blue-900/20 text-primary border border-primary/20">
+                        <div className="p-2 rounded bg-primary/20 text-primary border border-primary/20">
                           <span className="material-symbols-outlined text-[28px]">{project.icon}</span>
                         </div>
                         <div className="flex-1 min-w-0">
@@ -275,19 +275,19 @@ export default function Home() {
                               return (
                                 <span key={idx} className={`text-xs ${statusColorMap[color]} font-mono`}>
                                   {status}
-                                  {idx < statuses.length - 1 && <span className="text-[#565692] mx-1">•</span>}
+                                  {idx < statuses.length - 1 && <span className="text-[var(--terminal-text-dim)] mx-1">•</span>}
                                 </span>
                               );
                             })}
                           </div>
                         </div>
                       </div>
-                      <p className="text-[#9090cb] text-sm font-mono leading-relaxed">
+                      <p className="text-[var(--terminal-text-muted)] text-sm font-mono leading-relaxed">
                         {project.description}
                       </p>
                       <div className="flex flex-wrap gap-2 mt-2">
                         {project.tags.map((tag, index) => (
-                          <span key={index} className="px-2 py-1 rounded bg-[#101022] border border-[#313168] text-[10px] text-gray-400 font-mono whitespace-nowrap">
+                          <span key={index} className="px-2 py-1 rounded bg-[var(--terminal-bg)] border border-[var(--terminal-border)] text-[10px] text-[var(--terminal-text-dim)] font-mono whitespace-nowrap">
                             {tag}
                           </span>
                         ))}

@@ -1,12 +1,60 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff; /* change color if needed */
-  --foreground: #171717; /* change color if needed */
-  --primary: #5714b5; /* change color if needed */
-  --background-light: #f5f5f8; /* change color if needed */
-  --background-dark: #191022; /* change color if needed */
-  --surface-dark: #231830; /* change color if needed */
+  --color-primary: #b0a61a;
+  --color-bg: #141022;
+  --color-surface: #15162a;
+  --color-border: #337b73;
+  --color-text: #ffffff;
+  --color-text-muted: #c7cb90;
+  --color-text-dim: #919256;
+  --color-accent: #f2df0d;
+  --color-accent-alt: #dbcb4f;
+  --color-success: #0bda68;
+
+  --color-primary-rgb: 26, 151, 176;
+  --color-bg-rgb: 16, 31, 34;
+  --color-surface-rgb: 40, 42, 21;
+  --color-border-rgb: 49, 104, 103;
+  --color-text-rgb: 255, 255, 255;
+  --color-text-muted-rgb: 199, 203, 144;
+  --color-text-dim-rgb: 86, 146, 140;
+  --color-accent-rgb: 13, 242, 211;
+  --color-accent-alt-rgb: 79, 219, 219;
+  --color-success-rgb: 11, 218, 104;
+
+  --background: #ffffff;
+  --foreground: #171717;
+  --primary: var(--color-primary);
+  --background-light: #f5f5f8;
+  --background-dark: var(--color-bg);
+  --surface-dark: var(--color-surface);
+
+  --terminal-bg: var(--color-bg);
+  --terminal-bg-rgb: var(--color-bg-rgb);
+  --terminal-bg-dark: color-mix(in srgb, var(--color-bg) 80%, black);
+  --terminal-text: var(--color-text);
+  --terminal-border: var(--color-border);
+  --terminal-border-alt: color-mix(in srgb, var(--color-accent-alt) 40%, var(--color-bg));
+  --terminal-accent: var(--color-accent);
+  --terminal-accent-rgb: var(--color-accent-rgb);
+  --terminal-accent-alt: var(--color-accent-alt);
+  --terminal-accent-alt-rgb: var(--color-accent-alt-rgb);
+  --terminal-grid: var(--color-border);
+  --terminal-grid-rgb: var(--color-border-rgb);
+  --terminal-surface: var(--color-surface);
+  --terminal-surface-alt: color-mix(in srgb, var(--color-surface) 90%, var(--color-accent-alt) 10%);
+  --terminal-surface-dark: color-mix(in srgb, var(--color-surface) 70%, black);
+  --terminal-surface-hover: color-mix(in srgb, var(--color-accent-alt) 30%, var(--color-bg));
+  --terminal-surface-table: color-mix(in srgb, var(--color-bg) 85%, var(--color-accent-alt) 15%);
+  --terminal-surface-table-header: color-mix(in srgb, var(--color-bg) 75%, var(--color-accent-alt) 25%);
+  --terminal-text-muted: var(--color-text-muted);
+  --terminal-text-dim: var(--color-text-dim);
+  --terminal-text-light: color-mix(in srgb, var(--color-text-muted) 70%, var(--color-text-dim) 30%);
+  --terminal-success: var(--color-success);
+  --terminal-success-rgb: var(--color-success-rgb);
+  --terminal-hover-overlay: rgba(var(--color-text-rgb), 0.02);
+  --terminal-hover-border: rgba(var(--color-text-rgb), 0.2);
 }
 
 @theme inline {
@@ -16,6 +64,16 @@
   --color-background-light: var(--background-light);
   --color-background-dark: var(--background-dark);
   --color-surface-dark: var(--surface-dark);
+  --color-terminal-bg: var(--terminal-bg);
+  --color-terminal-text: var(--terminal-text);
+  --color-terminal-border: var(--terminal-border);
+  --color-terminal-accent: var(--terminal-accent);
+  --color-terminal-grid: var(--terminal-grid);
+  --color-terminal-surface: var(--terminal-surface);
+  --color-terminal-surface-alt: var(--terminal-surface-alt);
+  --color-terminal-text-muted: var(--terminal-text-muted);
+  --color-terminal-text-dim: var(--terminal-text-dim);
+  --color-terminal-surface-dark: var(--terminal-surface-dark);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
   --font-display: var(--font-display);

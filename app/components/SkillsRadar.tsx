@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useRef } from 'react';
-import { Skill } from '@/config/skills.config';
+import { Skill, getScoreFromLevel } from '@/config';
 
 interface SkillsRadarProps {
   skills: Skill[];
@@ -17,6 +17,15 @@ export default function SkillsRadar({ skills }: SkillsRadarProps) {
     const ctx = canvas.getContext('2d');
     if (!ctx) return;
 
+    const root = getComputedStyle(document.documentElement);
+    const terminalBorder = root.getPropertyValue('--terminal-border').trim();
+    const terminalAccent = root.getPropertyValue('--terminal-accent').trim();
+    const terminalText = root.getPropertyValue('--terminal-text').trim();
+    const terminalTextMuted = root.getPropertyValue('--terminal-text-muted').trim();
+    const terminalBg = root.getPropertyValue('--terminal-bg').trim();
+    const terminalAccentRgb = root.getPropertyValue('--terminal-accent-rgb').trim();
+    
+    const [r, g, b] = terminalAccentRgb.split(',').map(v => parseInt(v.trim()));
     
     const dpr = window.devicePixelRatio || 1;
     const size = 280;
@@ -36,7 +45,7 @@ export default function SkillsRadar({ skills }: SkillsRadarProps) {
     ctx.clearRect(0, 0, size, size);
 
     
-    ctx.strokeStyle = '#313168';
+    ctx.strokeStyle = terminalBorder;
     ctx.lineWidth = 0.5;
     for (let i = 1; i <= 5; i++) {
       ctx.beginPath();
@@ -45,7 +54,7 @@ export default function SkillsRadar({ skills }: SkillsRadarProps) {
     }
 
     
-    ctx.strokeStyle = '#313168';
+    ctx.strokeStyle = terminalBorder;
     ctx.lineWidth = 0.5;
     for (let i = 0; i < numSkills; i++) {
       const angle = i * angleStep - Math.PI / 2;
@@ -58,14 +67,15 @@ export default function SkillsRadar({ skills }: SkillsRadarProps) {
     }
 
     
-    ctx.fillStyle = 'rgba(13, 13, 242, 0.2)';
-    ctx.strokeStyle = '#0d0df2';
+    ctx.fillStyle = `rgba(${r}, ${g}, ${b}, 0.2)`;
+    ctx.strokeStyle = terminalAccent;
     ctx.lineWidth = 2;
     ctx.beginPath();
 
     skills.forEach((skill, i) => {
       const angle = i * angleStep - Math.PI / 2;
-      const skillRadius = (radius * skill.score) / 100;
+      const score = getScoreFromLevel(skill.level);
+      const skillRadius = (radius * score) / 100;
       const x = centerX + skillRadius * Math.cos(angle);
       const y = centerY + skillRadius * Math.sin(angle);
 
@@ -81,12 +91,13 @@ export default function SkillsRadar({ skills }: SkillsRadarProps) {
     ctx.stroke();
 
     
-    ctx.fillStyle = '#0d0df2';
-    ctx.strokeStyle = '#ffffff';
+    ctx.fillStyle = terminalAccent;
+    ctx.strokeStyle = terminalText;
     ctx.lineWidth = 1.5;
     skills.forEach((skill, i) => {
       const angle = i * angleStep - Math.PI / 2;
-      const skillRadius = (radius * skill.score) / 100;
+      const score = getScoreFromLevel(skill.level);
+      const skillRadius = (radius * score) / 100;
       const x = centerX + skillRadius * Math.cos(angle);
       const y = centerY + skillRadius * Math.sin(angle);
       ctx.beginPath();
@@ -96,10 +107,15 @@ export default function SkillsRadar({ skills }: SkillsRadarProps) {
     });
 
     
-    ctx.fillStyle = '#9090cb';
+    ctx.fillStyle = terminalTextMuted;
     ctx.font = 'bold 11px monospace';
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
+    
+    const bgHex = terminalBg.replace('#', '');
+    const bgR = parseInt(bgHex.substring(0, 2), 16);
+    const bgG = parseInt(bgHex.substring(2, 4), 16);
+    const bgB = parseInt(bgHex.substring(4, 6), 16);
     
     skills.forEach((skill, i) => {
       const angle = i * angleStep - Math.PI / 2;
@@ -108,36 +124,37 @@ export default function SkillsRadar({ skills }: SkillsRadarProps) {
       const y = centerY + labelRadius * Math.sin(angle);
       
       
-      ctx.fillStyle = 'rgba(16, 16, 34, 0.9)';
+      ctx.fillStyle = `rgba(${bgR}, ${bgG}, ${bgB}, 0.9)`;
       const textWidth = ctx.measureText(skill.name).width;
       ctx.fillRect(x - textWidth / 2 - 4, y - 8, textWidth + 8, 16);
       
       
-      ctx.fillStyle = '#9090cb';
+      ctx.fillStyle = terminalTextMuted;
       ctx.fillText(skill.name, x, y);
     });
 
     
-    ctx.fillStyle = '#0d0df2';
+    ctx.fillStyle = terminalAccent;
     ctx.font = 'bold 10px monospace';
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
     
     skills.forEach((skill, i) => {
       const angle = i * angleStep - Math.PI / 2;
-      const skillRadius = (radius * skill.score) / 100;
+      const score = getScoreFromLevel(skill.level);
+      const skillRadius = (radius * score) / 100;
       const labelOffset = 18;
       const x = centerX + (skillRadius + labelOffset) * Math.cos(angle);
       const y = centerY + (skillRadius + labelOffset) * Math.sin(angle);
       
       
-      ctx.fillStyle = 'rgba(16, 16, 34, 0.9)';
-      const scoreText = `${skill.score}%`;
+      ctx.fillStyle = `rgba(${bgR}, ${bgG}, ${bgB}, 0.9)`;
+      const scoreText = `${score}%`;
       const textWidth = ctx.measureText(scoreText).width;
       ctx.fillRect(x - textWidth / 2 - 3, y - 7, textWidth + 6, 14);
       
       
-      ctx.fillStyle = '#0d0df2';
+      ctx.fillStyle = terminalAccent;
       ctx.fillText(scoreText, x, y);
     });
   }, [skills]);

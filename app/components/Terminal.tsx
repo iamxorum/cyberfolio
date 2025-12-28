@@ -96,18 +96,18 @@ const commands: Record<string, { output: string | React.ReactNode; description: 
       <div className="space-y-1">
         <div className="text-primary font-bold mb-2">Available commands:</div>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-1 text-sm">
-          <div><span className="text-primary">help</span>          <span className="text-[#565692] ml-4">- Show this help message</span></div>
-          <div><span className="text-primary">info</span>          <span className="text-[#565692] ml-4">- Display personal information</span></div>
-          <div><span className="text-primary">ls</span>            <span className="text-[#565692] ml-4">- List all projects</span></div>
-          <div><span className="text-primary">cat [project]</span>    <span className="text-[#565692] ml-4">- Display project details</span></div>
-          <div><span className="text-primary">certs</span>         <span className="text-[#565692] ml-4">- List certifications</span></div>
-          <div><span className="text-primary">contact</span>      <span className="text-[#565692] ml-4">- Display contact information</span></div>
-          <div><span className="text-primary">clear</span>          <span className="text-[#565692] ml-4">- Clear terminal</span></div>
-          <div><span className="text-primary">whoami</span>        <span className="text-[#565692] ml-4">- Display user information</span></div>
-          <div><span className="text-primary">pwd</span>           <span className="text-[#565692] ml-4">- Show current directory</span></div>
-          <div><span className="text-primary">version</span>        <span className="text-[#565692] ml-4">- Display system version</span></div>
+          <div><span className="text-primary">help</span>          <span className="text-[var(--terminal-text-dim)] ml-4">- Show this help message</span></div>
+          <div><span className="text-primary">info</span>          <span className="text-[var(--terminal-text-dim)] ml-4">- Display personal information</span></div>
+          <div><span className="text-primary">ls</span>            <span className="text-[var(--terminal-text-dim)] ml-4">- List all projects</span></div>
+          <div><span className="text-primary">cat [project]</span>    <span className="text-[var(--terminal-text-dim)] ml-4">- Display project details</span></div>
+          <div><span className="text-primary">certs</span>         <span className="text-[var(--terminal-text-dim)] ml-4">- List certifications</span></div>
+          <div><span className="text-primary">contact</span>      <span className="text-[var(--terminal-text-dim)] ml-4">- Display contact information</span></div>
+          <div><span className="text-primary">clear</span>          <span className="text-[var(--terminal-text-dim)] ml-4">- Clear terminal</span></div>
+          <div><span className="text-primary">whoami</span>        <span className="text-[var(--terminal-text-dim)] ml-4">- Display user information</span></div>
+          <div><span className="text-primary">pwd</span>           <span className="text-[var(--terminal-text-dim)] ml-4">- Show current directory</span></div>
+          <div><span className="text-primary">version</span>        <span className="text-[var(--terminal-text-dim)] ml-4">- Display system version</span></div>
         </div>
-        <div className="text-[#565692] text-xs mt-3">
+        <div className="text-[var(--terminal-text-dim)] text-xs mt-3">
           Examples: <span className="text-primary">cat cyberfolio</span>, <span className="text-primary">cat pitchpulse</span>
         </div>
       </div>
@@ -119,13 +119,13 @@ const commands: Record<string, { output: string | React.ReactNode; description: 
       <div className="space-y-2 text-sm">
         <div className="text-primary font-bold mb-2">Personal Information:</div>
         <div className="grid grid-cols-2 gap-x-4 gap-y-2">
-          <div><span className="text-[#9090cb]">Bio:</span></div>
+          <div><span className="text-[var(--terminal-text-muted)]">Bio:</span></div>
           <div className="text-white break-words col-span-2">
             {contentConfig.about.bio.paragraphs.join(' ')}
           </div>
           {education.length > 0 && (
             <>
-              <div><span className="text-[#9090cb]">Education:</span></div>
+              <div><span className="text-[var(--terminal-text-muted)]">Education:</span></div>
               <div className="text-white break-words">
                 {education.map(edu => edu.degree).join(', ')}
               </div>
@@ -133,7 +133,7 @@ const commands: Record<string, { output: string | React.ReactNode; description: 
           )}
           {languages.length > 0 && (
             <>
-              <div><span className="text-[#9090cb]">Languages:</span></div>
+              <div><span className="text-[var(--terminal-text-muted)]">Languages:</span></div>
               <div className="text-white break-words">
                 {languages.map(lang => lang.name).join(', ')}
               </div>
@@ -141,15 +141,15 @@ const commands: Record<string, { output: string | React.ReactNode; description: 
           )}
           {hobbies.length > 0 && (
             <>
-              <div><span className="text-[#9090cb]">Interests:</span></div>
+              <div><span className="text-[var(--terminal-text-muted)]">Interests:</span></div>
               <div className="text-white break-words">
                 {hobbies.map(hobby => hobby.name).join(', ')}
               </div>
             </>
           )}
-          <div><span className="text-[#9090cb]">Location:</span></div>
+          <div><span className="text-[var(--terminal-text-muted)]">Location:</span></div>
           <div className="text-white">{siteConfig.location}</div>
-          <div><span className="text-[#9090cb]">Status:</span></div>
+          <div><span className="text-[var(--terminal-text-muted)]">Status:</span></div>
           <div className="text-green-400">{siteConfig.status}</div>
         </div>
       </div>
@@ -167,7 +167,7 @@ const commands: Record<string, { output: string | React.ReactNode; description: 
             return (
               <div key={project.id} className="flex items-center gap-3 flex-wrap">
                 <span className="text-primary">{projectId}/</span>
-                <span className="text-[#565692]">[{project.type}]</span>
+                <span className="text-[var(--terminal-text-dim)]">[{project.type}]</span>
                 <span className={statusColorClass}>{project.status}</span>
                 {project.visibility === 'private' && (
                   <span className="text-red-400 text-xs">[PRIVATE]</span>
@@ -176,7 +176,7 @@ const commands: Record<string, { output: string | React.ReactNode; description: 
             );
           })}
         </div>
-        <div className="text-[#565692] text-xs mt-3">
+        <div className="text-[var(--terminal-text-dim)] text-xs mt-3">
           Use <span className="text-primary">cat [project_id]</span> to view details
         </div>
       </div>
@@ -187,14 +187,14 @@ const commands: Record<string, { output: string | React.ReactNode; description: 
     output: (
       <div className="space-y-2 text-sm">
         <div className="text-red-400">Usage: cat [project_id]</div>
-        <div className="text-[#9090cb]">Available projects:</div>
+        <div className="text-[var(--terminal-text-muted)]">Available projects:</div>
         <div className="space-y-1 ml-4">
           {projects.map((project) => {
             const projectId = project.id.toLowerCase().replace(/[^a-z0-9]/g, '_');
             return (
               <div key={project.id}>
                 <span className="text-primary">cat {projectId}</span>
-                <span className="text-[#565692] ml-2">- View {project.name} details</span>
+                <span className="text-[var(--terminal-text-dim)] ml-2">- View {project.name} details</span>
               </div>
             );
           })}
@@ -207,17 +207,17 @@ const commands: Record<string, { output: string | React.ReactNode; description: 
     output: (
       <div className="space-y-2 text-sm">
         <div className="grid grid-cols-2 gap-x-4 gap-y-2">
-            <div><span className="text-[#9090cb]">User:</span></div>
+            <div><span className="text-[var(--terminal-text-muted)]">User:</span></div>
             <div className="text-white font-bold">{siteConfig.username}</div>
-            <div><span className="text-[#9090cb]">Role:</span></div>
+            <div><span className="text-[var(--terminal-text-muted)]">Role:</span></div>
             <div className="text-white">{siteConfig.role}</div>
-            <div><span className="text-[#9090cb]">Age:</span></div>
+            <div><span className="text-[var(--terminal-text-muted)]">Age:</span></div>
             <div className="text-primary">{calculateAge()}</div>
-            <div><span className="text-[#9090cb]">Location:</span></div>
+            <div><span className="text-[var(--terminal-text-muted)]">Location:</span></div>
             <div className="text-white">{siteConfig.location}</div>
-            <div><span className="text-[#9090cb]">Status:</span></div>
+            <div><span className="text-[var(--terminal-text-muted)]">Status:</span></div>
             <div className="text-green-400">{siteConfig.status}</div>
-          <div><span className="text-[#9090cb]">Contact:</span></div>
+          <div><span className="text-[var(--terminal-text-muted)]">Contact:</span></div>
           <div className="text-primary">Use <span className="text-white">contact</span> command</div>
         </div>
       </div>
@@ -231,19 +231,19 @@ const commands: Record<string, { output: string | React.ReactNode; description: 
         <div className="grid grid-cols-2 gap-x-4 gap-y-2">
           {siteConfig.social.professional && siteConfig.social.professional.map((link, index) => (
             <>
-              <div key={`${index}-label`}><span className="text-[#9090cb]">{link.name}:</span></div>
+              <div key={`${index}-label`}><span className="text-[var(--terminal-text-muted)]">{link.name}:</span></div>
               <div key={`${index}-value`} className="text-primary break-all">{link.url}</div>
             </>
           ))}
           {siteConfig.social.gaming && siteConfig.social.gaming.map((link, index) => (
             <>
-              <div key={`gaming-${index}-label`}><span className="text-[#9090cb]">{link.name}:</span></div>
+              <div key={`gaming-${index}-label`}><span className="text-[var(--terminal-text-muted)]">{link.name}:</span></div>
               <div key={`gaming-${index}-value`} className="text-primary break-all">{link.url}</div>
             </>
           ))}
           {siteConfig.social.other && siteConfig.social.other.map((link, index) => (
             <>
-              <div key={`other-${index}-label`}><span className="text-[#9090cb]">{link.name}:</span></div>
+              <div key={`other-${index}-label`}><span className="text-[var(--terminal-text-muted)]">{link.name}:</span></div>
               <div key={`other-${index}-value`} className="text-primary break-all">{link.url}</div>
             </>
           ))}
@@ -257,22 +257,22 @@ const commands: Record<string, { output: string | React.ReactNode; description: 
       <div className="space-y-2 text-sm">
         <div className="text-primary font-bold mb-2">Certifications:</div>
         {certifications.length === 0 ? (
-          <div className="text-[#565692]">No certifications available.</div>
+          <div className="text-[var(--terminal-text-dim)]">No certifications available.</div>
         ) : (
           <div className="space-y-3">
             {certifications.map((cert) => (
               <div key={cert.id} className="border-l-2 border-primary pl-3 space-y-1">
                 <div className="text-white font-bold">{cert.name}</div>
-                <div className="text-[#9090cb] text-xs">Issuer: {cert.issuer}</div>
-                <div className="text-[#9090cb] text-xs">
+                <div className="text-[var(--terminal-text-muted)] text-xs">Issuer: {cert.issuer}</div>
+                <div className="text-[var(--terminal-text-muted)] text-xs">
                   Issued: {cert.issueDate}
                   {cert.expiryDate && ` | Expires: ${cert.expiryDate}`}
                 </div>
                 {cert.credentialId && (
-                  <div className="text-[#565692] text-xs">ID: {cert.credentialId}</div>
+                  <div className="text-[var(--terminal-text-dim)] text-xs">ID: {cert.credentialId}</div>
                 )}
                 {cert.description && (
-                  <div className="text-[#9090cb] text-xs mt-1">{cert.description}</div>
+                  <div className="text-[var(--terminal-text-muted)] text-xs mt-1">{cert.description}</div>
                 )}
               </div>
             ))}
@@ -291,13 +291,13 @@ const commands: Record<string, { output: string | React.ReactNode; description: 
       <div className="space-y-2 text-sm">
         <div className="text-primary font-bold mb-2">{siteConfig.domain} {siteConfig.systemVersion}</div>
         <div className="grid grid-cols-2 gap-x-4 gap-y-1">
-          <div><span className="text-[#9090cb]">Domain:</span></div>
+          <div><span className="text-[var(--terminal-text-muted)]">Domain:</span></div>
           <div className="text-white">{siteConfig.domain}</div>
-          <div><span className="text-[#9090cb]">Version:</span></div>
+          <div><span className="text-[var(--terminal-text-muted)]">Version:</span></div>
           <div className="text-white">{siteConfig.systemVersion}</div>
-          <div><span className="text-[#9090cb]">Framework:</span></div>
+          <div><span className="text-[var(--terminal-text-muted)]">Framework:</span></div>
           <div className="text-white">Next.js</div>
-          <div><span className="text-[#9090cb]">Status:</span></div>
+          <div><span className="text-[var(--terminal-text-muted)]">Status:</span></div>
           <div className="text-green-400">ONLINE</div>
         </div>
       </div>
@@ -385,24 +385,24 @@ export default function Terminal() {
                 <div className="space-y-2 text-sm">
                   <div className="text-primary font-bold text-lg mb-3">{project.name.toUpperCase()}</div>
                   <div className="grid grid-cols-2 gap-x-4 gap-y-2">
-                    <div><span className="text-[#9090cb]">Type:</span></div>
+                    <div><span className="text-[var(--terminal-text-muted)]">Type:</span></div>
                     <div className="text-white">{project.type}</div>
-                    <div><span className="text-[#9090cb]">Status:</span></div>
+                    <div><span className="text-[var(--terminal-text-muted)]">Status:</span></div>
                     <div className={statusColorClass}>{project.status}</div>
-                    <div><span className="text-[#9090cb]">Category:</span></div>
+                    <div><span className="text-[var(--terminal-text-muted)]">Category:</span></div>
                     <div className="text-white">{project.category.toUpperCase()}</div>
-                    <div><span className="text-[#9090cb]">Visibility:</span></div>
+                    <div><span className="text-[var(--terminal-text-muted)]">Visibility:</span></div>
                     <div className={project.visibility === 'public' ? 'text-green-400' : 'text-red-400'}>
                       {project.visibility.toUpperCase()}
                     </div>
-                    <div><span className="text-[#9090cb]">Description:</span></div>
+                    <div><span className="text-[var(--terminal-text-muted)]">Description:</span></div>
                     <div className="text-white col-span-2">{project.description}</div>
                     {project.tags.length > 0 && (
                       <>
-                        <div><span className="text-[#9090cb]">Tags:</span></div>
+                        <div><span className="text-[var(--terminal-text-muted)]">Tags:</span></div>
                         <div className="flex flex-wrap gap-1 col-span-2">
                           {project.tags.map((tag, idx) => (
-                            <span key={idx} className="px-1.5 py-0.5 rounded bg-[#101022] border border-[#313168] text-[10px] text-[#9090cb]">
+                            <span key={idx} className="px-1.5 py-0.5 rounded bg-[var(--terminal-bg)] border border-[var(--terminal-border)] text-[10px] text-[var(--terminal-text-muted)]">
                               {tag}
                             </span>
                           ))}
@@ -411,7 +411,7 @@ export default function Terminal() {
                     )}
                     {project.repository && (
                       <>
-                        <div><span className="text-[#9090cb]">Repository:</span></div>
+                        <div><span className="text-[var(--terminal-text-muted)]">Repository:</span></div>
                         <div className={project.visibility === 'public' ? 'text-primary break-all' : 'text-red-400'}>
                           {project.visibility === 'public' ? project.repository : 'Private repository'}
                         </div>
@@ -517,7 +517,7 @@ export default function Terminal() {
         setHistory(prev => [...prev, {
           command: sanitizedInput,
           output: (
-            <div className="text-[#9090cb] text-sm">
+            <div className="text-[var(--terminal-text-muted)] text-sm">
               Suggestions: <span className="text-primary">{matches.map(m => escapeHtml(m)).join(', ')}</span>
             </div>
           )
@@ -545,7 +545,7 @@ export default function Terminal() {
   const suggestions = getSuggestions();
 
   return (
-    <div className="p-4 rounded border border-dashed border-[#313168] bg-[#0d0d1a] font-mono text-sm text-[#9090cb]">
+    <div className="p-4 rounded border border-dashed border-[var(--terminal-border)] bg-[var(--terminal-bg-dark)] font-mono text-sm text-[var(--terminal-text-muted)]">
       <div 
         ref={terminalRef}
         className="max-h-64 overflow-y-auto mb-2 space-y-2"
@@ -560,7 +560,7 @@ export default function Terminal() {
               </div>
             )}
             {item.output && (
-              <div className="text-[#9090cb] pl-4">
+              <div className="text-[var(--terminal-text-muted)] pl-4">
                 {item.output}
               </div>
             )}
@@ -583,12 +583,12 @@ export default function Terminal() {
             spellCheck={false}
           />
           {suggestions.length > 0 && (
-            <div className="absolute bottom-full left-0 mb-1 bg-[#15152a] border border-[#313168] rounded p-2 text-xs space-y-1 max-w-md z-10">
-              <div className="text-[#565692] text-[10px] uppercase">Suggestions:</div>
+            <div className="absolute bottom-full left-0 mb-1 bg-[var(--terminal-surface)] border border-[var(--terminal-border)] rounded p-2 text-xs space-y-1 max-w-md z-10">
+              <div className="text-[var(--terminal-text-dim)] text-[10px] uppercase">Suggestions:</div>
               {suggestions.map((suggestion, idx) => (
                 <div 
                   key={idx}
-                  className="text-[#9090cb] hover:text-primary cursor-pointer"
+                  className="text-[var(--terminal-text-muted)] hover:text-primary cursor-pointer"
                   onClick={() => {
                     
                     if (isValidCommand(suggestion)) {
@@ -606,7 +606,7 @@ export default function Terminal() {
         <span className="text-white animate-pulse">_</span>
       </div>
       {!input && (
-        <div className="text-[10px] text-[#565692] mt-2 opacity-50">
+        <div className="text-[10px] text-[var(--terminal-text-dim)] mt-2 opacity-50">
           {contentConfig.projects.terminalHint}
         </div>
       )}

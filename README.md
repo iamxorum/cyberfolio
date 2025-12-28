@@ -4,17 +4,16 @@ A modern, terminal-inspired portfolio website built with Next.js, TypeScript, an
 
 ## Features
 
-- Terminal-style UI with hacker/cyberpunk aesthetic
+- Terminal-style UI aesthetic
 - Interactive terminal component with command system
 - Dynamic project showcase
 - Skills visualization with radar charts
 - Responsive design for all devices
 - Configurable content through config files
-- Smooth animations and transitions
 
 ## Tech Stack
 
-- **Framework**: Next.js 15
+- **Framework**: Next.js 16
 - **Language**: TypeScript
 - **Styling**: Tailwind CSS
 - **Animations**: Anime.js
@@ -61,6 +60,6 @@ Start production server:
 npm start
 ```
 
-## License
+## License - MIT
 
-Open source - feel free to use and modify as needed.
+Open source - feel free to use and modify as needed (Please, if used, mention the GitHub repository)

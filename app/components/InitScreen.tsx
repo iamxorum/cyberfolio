@@ -207,7 +207,7 @@ export default function InitScreen({ onInit }: InitScreenProps) {
   };
 
   return (
-    <div className="fixed inset-0 z-[9999] bg-[#0a0a16] flex items-center justify-center font-mono">
+    <div className="fixed inset-0 z-[9999] bg-[var(--terminal-bg-dark)] flex items-center justify-center font-mono">
       {/* Matrix background effect */}
       <div className="absolute inset-0 opacity-10">
         <div className="matrix-bg w-full h-full"></div>
@@ -218,19 +218,19 @@ export default function InitScreen({ onInit }: InitScreenProps) {
 
       {/* Loading overlay when initializing */}
       {isLoading && (
-        <div className="absolute inset-0 bg-[#0a0a16] flex items-center justify-center z-20">
+        <div className="absolute inset-0 bg-[var(--terminal-bg-dark)] flex items-center justify-center z-20">
           <div className="text-center w-full max-w-2xl px-4">
             {/* Terminal-style loading */}
-            <div className="border border-[#313168] bg-[#0d0d1a] p-6 rounded font-mono">
+            <div className="border border-[var(--terminal-border)] bg-[var(--terminal-bg-dark)] p-6 rounded font-mono">
               <div className="text-left space-y-3">
                 <div className="text-green-400 text-sm">
                   <span className="text-primary">root@system:~$</span> initializing...
                 </div>
-                <div className="text-[#9090cb] text-xs space-y-3">
+                <div className="text-[var(--terminal-text-muted)] text-xs space-y-3">
                   {/* Step 1: Loading modules */}
                   <div className="flex items-center gap-3">
                     <span className="text-primary w-2">{loadingProgress.currentStep >= 0 ? '[' : ' '}</span>
-                    <div className="w-48 bg-[#15152a] border border-[#313168] h-2 overflow-hidden relative">
+                    <div className="w-48 bg-[var(--terminal-surface)] border border-[var(--terminal-border)] h-2 overflow-hidden relative">
                       <div 
                         className="h-full bg-gradient-to-r from-primary to-blue-500 transition-all duration-300 ease-out"
                         style={{ width: `${loadingProgress.modules}%` }}
@@ -245,7 +245,7 @@ export default function InitScreen({ onInit }: InitScreenProps) {
                   {/* Step 2: Establishing connection */}
                   <div className="flex items-center gap-3">
                     <span className="text-primary w-2">{loadingProgress.currentStep >= 1 ? '[' : ' '}</span>
-                    <div className="w-48 bg-[#15152a] border border-[#313168] h-2 overflow-hidden relative">
+                    <div className="w-48 bg-[var(--terminal-surface)] border border-[var(--terminal-border)] h-2 overflow-hidden relative">
                       <div 
                         className="h-full bg-gradient-to-r from-primary to-blue-500 transition-all duration-300 ease-out"
                         style={{ width: `${loadingProgress.connection}%` }}
@@ -260,7 +260,7 @@ export default function InitScreen({ onInit }: InitScreenProps) {
                   {/* Step 3: Booting system */}
                   <div className="flex items-center gap-3">
                     <span className="text-primary w-2">{loadingProgress.currentStep >= 2 ? '[' : ' '}</span>
-                    <div className="w-48 bg-[#15152a] border border-[#313168] h-2 overflow-hidden relative">
+                    <div className="w-48 bg-[var(--terminal-surface)] border border-[var(--terminal-border)] h-2 overflow-hidden relative">
                       <div 
                         className="h-full bg-gradient-to-r from-primary to-blue-500 transition-all duration-300 ease-out"
                         style={{ width: `${loadingProgress.booting}%` }}
@@ -290,17 +290,17 @@ export default function InitScreen({ onInit }: InitScreenProps) {
           
           {showPrompt && !isLoading && (
             <div className="mt-8 space-y-4 animate-fade-in">
-              <div className="text-[#9090cb] text-sm md:text-base">
+              <div className="text-[var(--terminal-text-muted)] text-sm md:text-base">
                 <div className="mb-4">
                   <span className="text-green-400">[SYSTEM]</span> Ready to initialize...
                 </div>
-                <div className="text-xs md:text-sm text-[#565692]">
-                  Press <kbd className="px-2 py-1 bg-[#15152a] border border-[#313168] rounded text-primary">ENTER</kbd> or <kbd className="px-2 py-1 bg-[#15152a] border border-[#313168] rounded text-primary">SPACE</kbd> to continue
+                <div className="text-xs md:text-sm text-[var(--terminal-text-dim)]">
+                  Press <kbd className="px-2 py-1 bg-[var(--terminal-surface)] border border-[var(--terminal-border)] rounded text-primary">ENTER</kbd> or <kbd className="px-2 py-1 bg-[var(--terminal-surface)] border border-[var(--terminal-border)] rounded text-primary">SPACE</kbd> to continue
                 </div>
                 <div className="mt-6">
                   <button
                     onClick={handleInit}
-                    className="px-6 py-3 bg-primary hover:bg-blue-700 text-white font-bold tracking-wider rounded border border-blue-500/30 shadow-[0_0_15px_rgba(13,13,242,0.4)] transition-all hover:scale-105"
+                    className="px-6 py-3 bg-primary hover:bg-primary/80 text-white font-bold tracking-wider rounded border border-primary/30 shadow-[0_0_15px_rgba(var(--terminal-accent-rgb),0.4)] transition-all hover:scale-105"
                   >
                     &gt; INITIALIZE
                   </button>

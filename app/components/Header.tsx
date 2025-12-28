@@ -14,7 +14,7 @@ export default function Header() {
   ];
 
   return (
-    <div className="w-full flex justify-center sticky top-0 z-50 bg-[#101022]/95 border-b border-[#313168] backdrop-blur-sm">
+    <div className="w-full flex justify-center sticky top-0 z-50 bg-[var(--terminal-bg)]/95 border-b border-[var(--terminal-border)] backdrop-blur-sm">
       <div className="layout-content-container flex flex-col max-w-[1200px] w-full flex-1">
         <header className="flex items-center justify-between whitespace-nowrap px-3 sm:px-4 md:px-6 lg:px-10 py-2 sm:py-3">
           <Link href="/" className="flex items-center gap-2 sm:gap-4 text-white min-w-0 hover:opacity-80 transition-opacity">
@@ -30,7 +30,7 @@ export default function Header() {
                   className={`transition-colors text-[10px] sm:text-xs md:text-sm font-medium leading-normal font-mono whitespace-nowrap ${
                     pathname === item.href
                       ? 'text-primary glow-text'
-                      : 'text-gray-400 hover:text-primary'
+                      : 'text-[var(--terminal-text-dim)] hover:text-primary'
                   }`}
                 >
                   {item.label}
@@ -42,7 +42,7 @@ export default function Header() {
                 href={siteConfig.cvUrl}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="flex min-w-[50px] sm:min-w-[60px] md:min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded bg-primary hover:bg-blue-700 transition-colors h-8 sm:h-9 px-2 sm:px-4 text-white text-[10px] sm:text-xs md:text-sm font-bold leading-normal tracking-[0.015em] shadow-[0_0_15px_rgba(13,13,242,0.4)] border border-blue-500/30"
+                className="flex min-w-[50px] sm:min-w-[60px] md:min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded bg-primary hover:bg-primary/80 transition-colors h-8 sm:h-9 px-2 sm:px-4 text-white text-[10px] sm:text-xs md:text-sm font-bold leading-normal tracking-[0.015em] shadow-[0_0_15px_rgba(var(--terminal-accent-rgb),0.4)] border border-primary/30"
               >
                 <span className="material-symbols-outlined text-sm sm:text-base md:text-[18px] sm:mr-1 md:mr-2">download</span>
                 <span className="hidden sm:inline truncate font-mono">GET_CV.sh</span>
