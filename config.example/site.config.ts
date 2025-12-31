@@ -27,7 +27,6 @@ export interface SiteConfig {
   
   systemVersion: string;
   
-  cvUrl?: string;
 }
 
 export interface SocialLink {
@@ -81,8 +80,7 @@ export const siteConfig: SiteConfig = {
     ],
   },
   
-  systemVersion: 'v1.1.0',
+  systemVersion: 'v1.2.0',
   
-  cvUrl: 'https://cv.example.com',
   favicon: 'path/to/favicon.ico',
 };

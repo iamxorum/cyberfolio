@@ -117,3 +117,171 @@ body {
   0% { opacity: 0; transform: translateY(-10px); }
   100% { opacity: 1; transform: translateY(0); }
 }
+
+.ats-friendly {
+  font-family: 'Times New Roman', 'Times', serif !important;
+  font-size: 11pt !important;
+  line-height: 1.55 !important;
+  color: #000 !important;
+  background: white !important;
+  max-width: 8.5in !important;
+  margin: 0 auto !important;
+  padding: 0.6in !important;
+  box-shadow: 0 3px 12px rgba(0, 0, 0, 0.1);
+}
+
+.ats-friendly h1 {
+  font-size: 18pt !important;
+  font-weight: bold !important;
+  letter-spacing: 0.3pt !important;
+  margin-bottom: 2pt !important;
+}
+
+.ats-friendly h2 {
+  font-size: 13pt !important;
+  font-weight: bold !important;
+  text-transform: uppercase !important;
+  letter-spacing: 0.3pt !important;
+  margin-top: 8pt !important;
+  margin-bottom: 4pt !important;
+  padding-bottom: 2pt !important;
+  border-bottom: 1pt solid black !important;
+}
+
+.ats-friendly h3 {
+  font-size: 11pt !important;
+  font-weight: bold !important;
+  margin-bottom: 1pt !important;
+}
+
+.ats-friendly p,
+.ats-friendly div,
+.ats-friendly span {
+  font-size: 11pt !important;
+  line-height: 1.4 !important;
+}
+
+.ats-friendly .material-symbols-outlined {
+  display: none !important;
+}
+
+.cv-profile-picture {
+  display: none !important;
+  visibility: hidden !important;
+  opacity: 0 !important;
+}
+
+.ats-friendly section {
+  margin-bottom: 8pt !important;
+}
+
+.ats-friendly [style*="margin-left: 12pt"] {
+  text-align: justify !important;
+}
+
+.ats-friendly [style*="display: flex"] {
+  display: flex !important;
+}
+
+@media print {
+  .ats-friendly [style*="display: flex"] {
+    display: flex !important;
+  }
+}
+
+@media print {
+  header,
+  footer:not(.cv-template footer),
+  .no-print,
+  nav,
+  button:not(.print-keep) {
+    display: none !important;
+  }
+
+  body {
+    background: white !important;
+    color: black !important;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+    font-family: 'Times New Roman', serif !important;
+  }
+
+  .cv-template.ats-friendly {
+    box-shadow: none !important;
+    border: none !important;
+    border-radius: 0 !important;
+    margin: 0 !important;
+    padding: 0.5in !important;
+    max-width: 100% !important;
+    width: 100% !important;
+    font-family: 'Times New Roman', serif !important;
+    font-size: 11pt !important;
+    line-height: 1.4 !important;
+    color: black !important;
+    background: white !important;
+  }
+
+  .ats-friendly * {
+    font-family: 'Times New Roman', serif !important;
+    color: black !important;
+  }
+
+  .ats-friendly h1,
+  .ats-friendly h2,
+  .ats-friendly h3 {
+    font-family: 'Times New Roman', serif !important;
+    color: black !important;
+    font-weight: bold !important;
+  }
+
+  .ats-friendly a {
+    color: black !important;
+    text-decoration: none !important;
+  }
+
+  .ats-friendly .material-symbols-outlined,
+  .ats-friendly [class*="icon"],
+  .ats-friendly svg {
+    display: none !important;
+  }
+
+  .cv-profile-picture {
+    display: block !important;
+  }
+  
+  .cv-profile-picture img {
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+
+  .print-break-inside-avoid {
+    break-inside: avoid;
+    page-break-inside: avoid;
+  }
+
+  .cv-template section {
+    break-inside: avoid;
+    page-break-inside: avoid;
+  }
+
+  .ats-friendly [style*="background"],
+  .ats-friendly [class*="bg-"] {
+    background: white !important;
+    background-color: white !important;
+    background-image: none !important;
+  }
+
+  .ats-friendly [class*="border"]:not([class*="border-b"]):not([class*="border-black"]) {
+    border: none !important;
+  }
+
+  @page {
+    size: A4;
+    margin: 0.5in;
+  }
+
+  .ats-friendly {
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+}

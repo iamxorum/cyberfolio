@@ -19,4 +19,5 @@ export { education, type Education } from './education.config';
 export { certifications, type Certification } from './certifications.config';
 export { languages, type Language } from './languages.config';
 export { experience, type Experience } from './experience.config';
+export { cvConfig, getCVStyleById, getCVStylesByDomain, type CVConfig, type CVStyle } from './cv.config';
 
