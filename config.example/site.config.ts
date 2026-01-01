@@ -80,7 +80,7 @@ export const siteConfig: SiteConfig = {
     ],
   },
   
-  systemVersion: 'v1.2.2',
+  systemVersion: 'v1.2.4',
   
   favicon: 'path/to/favicon.ico',
 };
