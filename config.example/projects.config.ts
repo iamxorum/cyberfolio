@@ -9,6 +9,7 @@ export interface Project {
   icon: string; 
   visibility: 'public' | 'private'; 
   category: 'production' | 'thesis' | 'personal' | 'open-source' | 'commercial' | 'academic'; 
+  projectType: 'personal' | 'contribution';
   link?: string;
   repository?: string;
 }
@@ -25,6 +26,7 @@ export const projects: Project[] = [
     icon: 'terminal',
     visibility: 'public',
     category: 'open-source',
+    projectType: 'personal', 
     link: 'https://github.com/yourusername/example-project',
     repository: 'https://github.com/yourusername/example-project',
   },
