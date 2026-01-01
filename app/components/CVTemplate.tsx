@@ -163,33 +163,6 @@ export default function CVTemplate({
           </div>
         )}
       </div>
-      
-      {/* Right side */}
-      {cvConfig.cvProfileImage && (
-        <div 
-          className="cv-profile-picture" 
-          data-pdf-only="true"
-          style={{ 
-            width: '85pt', 
-            height: '85pt', 
-            marginLeft: '14pt',
-            flexShrink: 0
-          }}
-        >
-          <img 
-            src={cvConfig.cvProfileImage} 
-            alt={siteConfig.fullName}
-            crossOrigin="anonymous"
-            style={{
-              width: '100%',
-              height: '100%',
-              objectFit: 'cover',
-              border: '2pt solid #000',
-              borderRadius: '3pt'
-            }}
-          />
-        </div>
-      )}
     </div>
 
     {/* Professional Summary */}

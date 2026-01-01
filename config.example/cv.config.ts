@@ -21,7 +21,6 @@ export interface CVConfig {
 
 export const cvConfig: CVConfig = {
   summary: 'Your default professional summary that will be used if no style-specific summary is provided. This should be a general overview of your professional background, skills, and career goals.',
-  cvProfileImage: '/assets/cv-profile.jpeg', 
   styles: [
     {
       id: 'example',

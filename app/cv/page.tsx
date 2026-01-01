@@ -91,40 +91,6 @@ export default function CVPage() {
       };
 
       
-      const profilePic = element.querySelector('[data-pdf-only="true"]') as HTMLElement;
-      const profileImg = profilePic?.querySelector('img') as HTMLImageElement;
-      
-      let originalStyles: { [key: string]: string } = {};
-      
-      if (profilePic && profileImg) {
-        
-        if (!profileImg.complete) {
-          await new Promise((resolve) => {
-            profileImg.onload = () => resolve(true);
-            profileImg.onerror = () => resolve(true);
-            setTimeout(() => resolve(true), 3000);
-          });
-        }
-        
-        
-        originalStyles = {
-          display: profilePic.style.display || '',
-          visibility: profilePic.style.visibility || '',
-          opacity: profilePic.style.opacity || ''
-        };
-        
-        
-        profilePic.style.setProperty('display', 'block', 'important');
-        profilePic.style.setProperty('visibility', 'visible', 'important');
-        profilePic.style.setProperty('opacity', '1', 'important');
-        
-        
-        profileImg.style.setProperty('display', 'block', 'important');
-        profileImg.style.setProperty('visibility', 'visible', 'important');
-        profileImg.style.setProperty('opacity', '1', 'important');
-      }
-
-      
       await convertImagesToBase64(element);
       
       
@@ -146,13 +112,6 @@ export default function CVPage() {
       };
 
       await (window as any).html2pdf().set(opt).from(element).save();
-      
-      
-      if (profilePic) {
-        profilePic.style.setProperty('display', 'none', 'important');
-        profilePic.style.setProperty('visibility', 'hidden', 'important');
-        profilePic.style.setProperty('opacity', '0', 'important');
-      }
     } catch (error) {
       console.error('Error generating PDF:', error);
       
