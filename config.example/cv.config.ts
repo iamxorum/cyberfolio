@@ -6,6 +6,7 @@ export interface CVStyle {
   icon: string;
   summary?: string; 
   skillCategories?: string[]; 
+  showProjects?: boolean; 
   colorScheme?: {
     primary: string;
     secondary?: string;

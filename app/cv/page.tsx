@@ -4,7 +4,7 @@ import { useState, useEffect, useRef } from 'react';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
 import CVTemplate from '../components/CVTemplate';
-import { cvConfig, siteConfig, experience, education, skills, languages, certifications, hobbies } from '@/config';
+import { cvConfig, siteConfig, experience, education, skills, languages, certifications, hobbies, projects } from '@/config';
 import Link from 'next/link';
 
 export default function CVPage() {
@@ -289,6 +289,7 @@ export default function CVPage() {
                 languages={languages}
                 certifications={certifications}
                 hobbies={hobbies}
+                projects={projects}
                 summary={cvConfig.summary}
                 useColumnLayout={useColumnLayout}
               />

@@ -42,10 +42,10 @@ export default function Header() {
               className={`flex min-w-[50px] sm:min-w-[60px] md:min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded bg-primary hover:bg-primary/80 transition-colors h-8 sm:h-9 px-2 sm:px-4 text-white text-[10px] sm:text-xs md:text-sm font-bold leading-normal tracking-[0.015em] shadow-[0_0_15px_rgba(var(--terminal-accent-rgb),0.4)] border border-primary/30 ${
                 pathname === '/cv' ? 'ring-2 ring-primary/50' : ''
               }`}
-            >
-              <span className="material-symbols-outlined text-sm sm:text-base md:text-[18px] sm:mr-1 md:mr-2">download</span>
-              <span className="hidden sm:inline truncate font-mono">GET_CV.sh</span>
-              <span className="sm:hidden font-mono">CV</span>
+              >
+                <span className="material-symbols-outlined text-sm sm:text-base md:text-[18px] sm:mr-1 md:mr-2">download</span>
+                <span className="hidden sm:inline truncate font-mono">GET_CV.sh</span>
+                <span className="sm:hidden font-mono">CV</span>
             </Link>
           </div>
         </header>

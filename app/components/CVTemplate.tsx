@@ -1,6 +1,6 @@
 'use client';
 
-import { CVStyle, SiteConfig, Experience, Education, Skill, Language, Certification, Hobby, cvConfig } from '@/config';
+import { CVStyle, SiteConfig, Experience, Education, Skill, Language, Certification, Hobby, Project, cvConfig } from '@/config';
 import { getSkillsGroupedByCategory } from '@/config';
 
 interface CVTemplateProps {
@@ -12,6 +12,7 @@ interface CVTemplateProps {
   languages: Language[];
   certifications: Certification[];
   hobbies: Hobby[];
+  projects?: Project[];
   summary?: string;
   useColumnLayout?: boolean;
 }
@@ -25,6 +26,7 @@ export default function CVTemplate({
   languages,
   certifications,
   hobbies,
+  projects = [],
   summary,
   useColumnLayout = true,
 }: CVTemplateProps) {
@@ -46,6 +48,12 @@ export default function CVTemplate({
   };
 
   const relevantSkills = getRelevantSkills();
+
+  
+  const showProjects = style.showProjects !== false; 
+  const publicProjects = showProjects && projects 
+    ? projects.filter(p => p.visibility === 'public')
+    : [];
 
   const formatDate = (date: string) => {
     return date;
@@ -130,9 +138,6 @@ export default function CVTemplate({
           <h1 className="mb-1" style={{ fontSize: '22pt', fontWeight: 'bold', marginBottom: '4pt', letterSpacing: '0.8pt', lineHeight: '1.15', color: '#000' }}>
             {siteConfig.fullName}
           </h1>
-          <div className="mb-2" style={{ fontSize: '12.5pt', fontWeight: '600', marginBottom: '4pt', color: '#1a1a1a', letterSpacing: '0.3pt' }}>
-            {siteConfig.role}
-          </div>
           {contactInfo.length > 0 && (
             <div style={{ fontSize: '10.5pt', lineHeight: '1.7', color: '#4a4a4a', letterSpacing: '0.1pt' }}>
               {contactInfo.map((info, idx) => (
@@ -374,6 +379,51 @@ export default function CVTemplate({
               </section>
             )}
 
+            {/* Projects */}
+            {publicProjects.length > 0 && (
+              <section className="mb-4" style={{ marginBottom: '10pt' }}>
+                <h2 className="mb-4" style={{ 
+                  fontSize: '14pt', 
+                  fontWeight: 'bold', 
+                  textTransform: 'uppercase',
+                  marginBottom: '6pt',
+                  paddingBottom: '4pt',
+                  borderBottom: '2pt solid black',
+                  letterSpacing: '0.8pt',
+                  color: '#000'
+                }}>
+                  PROJECTS
+                </h2>
+                {publicProjects.map((project) => (
+                  <div key={project.id} className="mb-4" style={{ marginBottom: '6pt', pageBreakInside: 'avoid' }}>
+                    <div style={{ marginBottom: '2pt' }}>
+                      <h3 style={{ fontSize: '12pt', fontWeight: 'bold', marginBottom: '2pt', color: '#000', letterSpacing: '0.1pt' }}>
+                        {project.name}
+                        {project.repository && (
+                          <span style={{ fontSize: '10pt', fontWeight: 'normal', color: '#3a3a3a', marginLeft: '6pt' }}>
+                            ({project.projectType === 'contribution' ? 'Contribution' : 'Personal'})
+                          </span>
+                        )}
+                      </h3>
+                      <div style={{ fontSize: '10.5pt', lineHeight: '1.5', marginBottom: '2pt', color: '#1a1a1a', textAlign: 'justify' }}>
+                        {project.description}
+                      </div>
+                      {project.tags && project.tags.length > 0 && (
+                        <div style={{ fontSize: '10pt', fontStyle: 'italic', color: '#3a3a3a', marginTop: '2pt' }}>
+                          <strong style={{ fontStyle: 'normal', color: '#000' }}>Technologies:</strong> {project.tags.join(', ')}
+                        </div>
+                      )}
+                      {project.repository && (
+                        <div style={{ fontSize: '10pt', color: '#3a3a3a', marginTop: '2pt' }}>
+                          <strong style={{ color: '#000' }}>Repository:</strong> {project.repository}
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                ))}
+              </section>
+            )}
+
             {/* Additional Information / Interests */}
             {hobbies.length > 0 && (
               <section className="mb-4" style={{ marginBottom: '10pt' }}>
@@ -520,6 +570,51 @@ export default function CVTemplate({
                   </div>
                 ))}
               </div>
+            </section>
+          )}
+
+          {/* Projects */}
+          {publicProjects.length > 0 && (
+            <section className="mb-5" style={{ marginBottom: '12pt' }}>
+              <h2 className="mb-4" style={{ 
+                fontSize: '14pt', 
+                fontWeight: 'bold', 
+                textTransform: 'uppercase',
+                marginBottom: '6pt',
+                paddingBottom: '4pt',
+                borderBottom: '2pt solid black',
+                letterSpacing: '0.8pt',
+                color: '#000'
+              }}>
+                PROJECTS
+              </h2>
+              {publicProjects.map((project) => (
+                <div key={project.id} className="mb-4" style={{ marginBottom: '6pt', pageBreakInside: 'avoid' }}>
+                  <div style={{ marginBottom: '2pt' }}>
+                    <h3 style={{ fontSize: '12pt', fontWeight: 'bold', marginBottom: '2pt', color: '#000', letterSpacing: '0.1pt' }}>
+                      {project.name}
+                      {project.repository && (
+                        <span style={{ fontSize: '10pt', fontWeight: 'normal', color: '#3a3a3a', marginLeft: '6pt' }}>
+                          ({project.projectType === 'contribution' ? 'Contribution' : 'Personal'})
+                        </span>
+                      )}
+                    </h3>
+                    <div style={{ fontSize: '10.5pt', lineHeight: '1.5', marginBottom: '2pt', color: '#1a1a1a', textAlign: 'justify' }}>
+                      {project.description}
+                    </div>
+                    {project.tags && project.tags.length > 0 && (
+                      <div style={{ fontSize: '10pt', fontStyle: 'italic', color: '#3a3a3a', marginTop: '2pt' }}>
+                        <strong style={{ fontStyle: 'normal', color: '#000' }}>Technologies:</strong> {project.tags.join(', ')}
+                      </div>
+                    )}
+                    {project.repository && (
+                      <div style={{ fontSize: '10pt', color: '#3a3a3a', marginTop: '2pt' }}>
+                        <strong style={{ color: '#000' }}>Repository:</strong> {project.repository}
+                      </div>
+                    )}
+                  </div>
+                </div>
+              ))}
             </section>
           )}
 
