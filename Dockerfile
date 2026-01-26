@@ -12,6 +12,10 @@ COPY --from=deps /app/node_modules ./node_modules
 
 COPY . .
 
+RUN mkdir -p /app/config
+
+RUN echo "dummy file" > /app/config/README.md
+
 RUN npm run build
 
 FROM node:20-alpine AS runner
