@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { JetBrains_Mono } from "next/font/google";
-import { siteConfig, scripts } from "@/config";
+import { siteConfig, scripts } from "../config";
 import "./globals.css";
 import Script from "next/script";
 
@@ -44,13 +44,13 @@ export default function RootLayout({
       >
         {children}
         {scripts.map((script, index) => {
-          const dataProps = script.dataAttributes 
+          const dataProps = script.dataAttributes
             ? Object.entries(script.dataAttributes).reduce((acc, [key, value]) => {
-                acc[`data-${key}`] = value;
-                return acc;
-              }, {} as Record<string, string>)
+              acc[`data-${key}`] = value;
+              return acc;
+            }, {} as Record<string, string>)
             : {};
-            
+
           return (
             <Script
               key={script.id || `script-${index}`}

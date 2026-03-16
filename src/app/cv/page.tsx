@@ -4,7 +4,7 @@ import { useState, useEffect, useRef } from 'react';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import CVTemplate from '@/components/CVTemplate';
-import { cvConfig, siteConfig, experience, education, skills, languages, certifications, hobbies, projects } from '@/config';
+import { cvConfig, siteConfig, experience, education, skills, languages, certifications, hobbies, projects } from '../../config';
 
 export default function CVPage() {
   const [selectedStyle, setSelectedStyle] = useState<string>(cvConfig.styles[0].id);
@@ -14,14 +14,14 @@ export default function CVPage() {
   const cvContainerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    
+
     const script = document.createElement('script');
     script.src = 'https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js';
     script.async = true;
     document.head.appendChild(script);
 
     return () => {
-      
+
       if (document.head.contains(script)) {
         document.head.removeChild(script);
       }
@@ -32,15 +32,15 @@ export default function CVPage() {
     if (!cvContainerRef.current) return;
 
     setIsDownloading(true);
-    
+
     const wasHidden = !showCV;
     if (wasHidden) {
       setShowCV(true);
       await new Promise(resolve => setTimeout(resolve, 300));
     }
-    
+
     try {
-      
+
       await new Promise((resolve) => {
         const checkLibrary = () => {
           // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -54,22 +54,22 @@ export default function CVPage() {
       });
 
       const element = cvContainerRef.current;
-      
-      
+
+
       const images = element.querySelectorAll('img');
       await Promise.all(
         Array.from(images).map((img: HTMLImageElement) => {
           if (img.complete) return Promise.resolve();
           return new Promise((resolve) => {
             img.onload = () => resolve(true);
-            img.onerror = () => resolve(true); 
-            
+            img.onerror = () => resolve(true);
+
             setTimeout(() => resolve(true), 5000);
           });
         })
       );
 
-      
+
       const convertImagesToBase64 = async (container: HTMLElement) => {
         const imgs = container.querySelectorAll('img');
         for (const img of Array.from(imgs)) {
@@ -77,11 +77,11 @@ export default function CVPage() {
             const canvas = document.createElement('canvas');
             const ctx = canvas.getContext('2d');
             if (!ctx) continue;
-            
+
             canvas.width = img.naturalWidth || img.width;
             canvas.height = img.naturalHeight || img.height;
             ctx.drawImage(img, 0, 0);
-            
+
             const dataURL = canvas.toDataURL('image/jpeg', 0.95);
             (img as HTMLImageElement).src = dataURL;
           } catch (e) {
@@ -90,18 +90,18 @@ export default function CVPage() {
         }
       };
 
-      
+
       await convertImagesToBase64(element);
-      
-      
+
+
       await new Promise(resolve => setTimeout(resolve, 500));
 
       const opt = {
         margin: 0.5,
         filename: `CV_${selectedStyle}_${siteConfig.fullName.replace(/\s+/g, '_')}.pdf`,
         image: { type: 'jpeg', quality: 0.98 },
-        html2canvas: { 
-          scale: 2, 
+        html2canvas: {
+          scale: 2,
           useCORS: true,
           allowTaint: true,
           logging: false,
@@ -114,7 +114,7 @@ export default function CVPage() {
       await (window as any).html2pdf().set(opt).from(element).save();
     } catch (error) {
       console.error('Error generating PDF:', error);
-      
+
       window.print();
     } finally {
       setIsDownloading(false);
@@ -130,12 +130,12 @@ export default function CVPage() {
     <div className="relative flex h-auto min-h-screen w-full flex-col bg-[var(--terminal-bg)] text-white group/design-root overflow-x-hidden font-display">
       {/* Background Grid Pattern Effect */}
       <div className="fixed inset-0 z-0 opacity-[0.03] pointer-events-none print:hidden" style={{ backgroundImage: `linear-gradient(var(--terminal-accent-alt) 1px, transparent 1px), linear-gradient(90deg, var(--terminal-accent-alt) 1px, transparent 1px)`, backgroundSize: '40px 40px' }}></div>
-      
+
       <div className="layout-container flex h-full grow flex-col">
         <div className="no-print">
           <Header />
         </div>
-        
+
         <div className="px-4 sm:px-6 md:px-10 lg:px-20 xl:px-40 flex flex-1 justify-center py-5 print:px-0 print:py-0">
           <div className="layout-content-container flex flex-col max-w-[1200px] w-full flex-1 print:max-w-full">
             {/* CV Style Selector */}
@@ -153,11 +153,10 @@ export default function CVPage() {
                   {/* Column Layout Toggle */}
                   <button
                     onClick={() => setUseColumnLayout(!useColumnLayout)}
-                    className={`flex min-w-[120px] cursor-pointer items-center justify-center overflow-hidden rounded h-10 sm:h-12 px-4 sm:px-6 border-2 transition-all ${
-                      useColumnLayout
-                        ? 'bg-[var(--terminal-surface-alt)] border-primary text-primary hover:bg-[var(--terminal-surface-hover)]'
-                        : 'bg-[var(--terminal-surface-alt)] border-[var(--terminal-border)] text-[var(--terminal-text-muted)] hover:border-primary hover:text-primary'
-                    }`}
+                    className={`flex min-w-[120px] cursor-pointer items-center justify-center overflow-hidden rounded h-10 sm:h-12 px-4 sm:px-6 border-2 transition-all ${useColumnLayout
+                      ? 'bg-[var(--terminal-surface-alt)] border-primary text-primary hover:bg-[var(--terminal-surface-hover)]'
+                      : 'bg-[var(--terminal-surface-alt)] border-[var(--terminal-border)] text-[var(--terminal-text-muted)] hover:border-primary hover:text-primary'
+                      }`}
                   >
                     <span className="material-symbols-outlined text-base sm:text-lg mr-2">
                       {useColumnLayout ? 'view_column' : 'view_list'}
@@ -181,28 +180,25 @@ export default function CVPage() {
                   </button>
                 </div>
               </div>
-              
+
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
                 {cvConfig.styles.map((style) => (
                   <button
                     key={style.id}
                     onClick={() => setSelectedStyle(style.id)}
-                    className={`flex flex-col gap-2 p-4 rounded border transition-all cursor-pointer text-left ${
-                      selectedStyle === style.id
-                        ? 'border-primary bg-primary/10 shadow-[0_0_15px_rgba(var(--terminal-accent-rgb),0.3)]'
-                        : 'border-[var(--terminal-border)] bg-[var(--terminal-surface-alt)] hover:border-primary/50 hover:bg-[var(--terminal-surface-hover)]'
-                    }`}
+                    className={`flex flex-col gap-2 p-4 rounded border transition-all cursor-pointer text-left ${selectedStyle === style.id
+                      ? 'border-primary bg-primary/10 shadow-[0_0_15px_rgba(var(--terminal-accent-rgb),0.3)]'
+                      : 'border-[var(--terminal-border)] bg-[var(--terminal-surface-alt)] hover:border-primary/50 hover:bg-[var(--terminal-surface-hover)]'
+                      }`}
                   >
                     <div className="flex items-center gap-3">
-                      <div className={`p-2 rounded ${
-                        selectedStyle === style.id ? 'bg-primary/20 text-primary' : 'bg-[var(--terminal-bg)] text-[var(--terminal-text-dim)]'
-                      }`}>
+                      <div className={`p-2 rounded ${selectedStyle === style.id ? 'bg-primary/20 text-primary' : 'bg-[var(--terminal-bg)] text-[var(--terminal-text-dim)]'
+                        }`}>
                         <span className="material-symbols-outlined text-[24px]">{style.icon}</span>
                       </div>
                       <div className="flex-1 min-w-0">
-                        <h3 className={`text-sm sm:text-base font-bold font-mono ${
-                          selectedStyle === style.id ? 'text-primary' : 'text-white'
-                        }`}>
+                        <h3 className={`text-sm sm:text-base font-bold font-mono ${selectedStyle === style.id ? 'text-primary' : 'text-white'
+                          }`}>
                           {style.name}
                         </h3>
                         <p className="text-[var(--terminal-text-dim)] text-xs font-mono mt-1">
@@ -216,7 +212,7 @@ export default function CVPage() {
                   </button>
                 ))}
               </div>
-              
+
               {/* View CV Button */}
               <div className="mt-6 pt-4 border-t border-[var(--terminal-border)]">
                 <button
@@ -234,8 +230,8 @@ export default function CVPage() {
             </div>
 
             {/* CV Template */}
-            <div 
-              ref={cvContainerRef} 
+            <div
+              ref={cvContainerRef}
               className="cv-container print:p-0"
               style={{ display: showCV ? 'block' : 'none' }}
             >
@@ -244,7 +240,6 @@ export default function CVPage() {
                 siteConfig={siteConfig}
                 experience={experience}
                 education={education}
-                skills={skills}
                 languages={languages}
                 certifications={certifications}
                 hobbies={hobbies}

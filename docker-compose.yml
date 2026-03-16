@@ -11,5 +11,5 @@ services:
     restart: unless-stopped
     volumes:
       - /opt/portfolio/config:/app/config:ro
-      - ./app/public:/app/public:ro
+      - ./public:/app/public:ro
 
