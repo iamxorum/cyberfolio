@@ -1,6 +1,7 @@
 'use client';
 import { useEffect, useRef, useState, useMemo } from 'react';
 import dynamic from 'next/dynamic';
+import { dcConfig } from '../config';
 
 const Globe = dynamic(() => import('react-globe.gl'), { ssr: false });
 
@@ -10,7 +11,6 @@ interface BannedIP {
   city?: string;
   lat: number;
   lng: number;
-  reason: string;
   weight?: number;
 }
 
@@ -20,31 +20,45 @@ interface ThreatData {
   recent_bans: BannedIP[];
 }
 
+const useCountUp = (end: number, duration: number = 1500) => {
+  const [count, setCount] = useState(0);
+  useEffect(() => {
+    if (end === 0) return;
+    let startTimestamp: number | null = null;
+    const step = (timestamp: number) => {
+      if (!startTimestamp) startTimestamp = timestamp;
+      const progress = Math.min((timestamp - startTimestamp) / duration, 1);
+      const ease = 1 - Math.pow(1 - progress, 4);
+      setCount(Math.floor(ease * end));
+      if (progress < 1) window.requestAnimationFrame(step);
+    };
+    window.requestAnimationFrame(step);
+  }, [end, duration]);
+  return count;
+};
+
 export default function ThreatGlobe() {
   const [threatData, setThreatData] = useState<ThreatData | null>(null);
   const [hasError, setHasError] = useState(false);
   const [windowWidth, setWindowWidth] = useState(0);
+
   const [isRendering, setIsRendering] = useState(false);
+  const [isGlobeReady, setIsGlobeReady] = useState(false);
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const globeRef = useRef<any>(null);
+  const animatedTotal = useCountUp(threatData?.total_banned || 0);
 
   useEffect(() => {
     fetch('/data/banned_ips.json')
-      .then((res) => {
-        if (!res.ok) return null;
-        return res.json();
-      })
+      .then((res) => res.ok ? res.json() : null)
       .then((data) => {
         if (data) {
           setThreatData(data);
-          setTimeout(() => setIsRendering(true), 500);
+          setTimeout(() => setIsRendering(true), 400);
         }
       })
-      .catch((err) => {
-        console.error("Error loading threat data:", err);
-        setHasError(true);
-      });
+      .catch(() => setHasError(true));
 
     const handleResize = () => setWindowWidth(window.innerWidth);
     window.addEventListener('resize', handleResize);
@@ -52,172 +66,213 @@ export default function ThreatGlobe() {
     return () => window.removeEventListener('resize', handleResize);
   }, []);
 
-  const aggregatedData = useMemo(() => {
-    if (!threatData) return [];
+  const { aggregatedData, arcsData, countryLeaderboard, ringsData } = useMemo(() => {
+    if (!threatData || !threatData.recent_bans) {
+      return { aggregatedData: [], arcsData: [], countryLeaderboard: [], ringsData: [] };
+    }
+
     const clusters: Record<string, BannedIP> = {};
+    const countryStats: Record<string, { count: number, lat: number, lng: number }> = {};
+    let totalAnalyzed = 0;
 
     threatData.recent_bans.forEach((ban) => {
+      totalAnalyzed++;
+
       const latBucket = Math.round(ban.lat * 2) / 2;
       const lngBucket = Math.round(ban.lng * 2) / 2;
       const key = `${latBucket},${lngBucket}`;
-
       if (clusters[key]) {
         clusters[key].weight = (clusters[key].weight || 1) + 1;
       } else {
         clusters[key] = { ...ban, weight: 1 };
       }
+
+      if (!countryStats[ban.country]) {
+        countryStats[ban.country] = { count: 0, lat: ban.lat, lng: ban.lng };
+      }
+      countryStats[ban.country].count++;
     });
 
-    return Object.values(clusters)
+    const points = Object.values(clusters)
       .sort((a, b) => (b.weight || 1) - (a.weight || 1))
-      .slice(0, 300);
+      .slice(0, 250);
+
+    // ARC DATA: Dynamically assign each attack to a random node from the config
+    const allArcs = points.map(point => {
+      // Pick a random data center node from your config
+      const randomNode = dcConfig.nodes[Math.floor(Math.random() * dcConfig.nodes.length)];
+
+      return {
+        startLat: point.lat,
+        startLng: point.lng,
+        endLat: randomNode.lat,
+        endLng: randomNode.lng,
+        color: ['rgba(133, 47, 209, 0.21)', 'rgba(239, 68, 68, 0.72)'],
+        dashInitialGap: Math.random() * 5,
+        dashAnimateTime: 2000 + Math.random() * 4000
+      };
+    });
+
+    const randomRings = points
+      .filter(() => Math.random() > 0.4)
+      .slice(0, 100)
+      .map(p => ({
+        lat: p.lat,
+        lng: p.lng,
+        isServer: false,
+        maxRadius: Math.random() * 1.5 + 0.5,
+        repeatPeriod: 1000 + Math.random() * 3000
+      }));
+
+    dcConfig.nodes.forEach(node => {
+      randomRings.push({
+        lat: node.lat,
+        lng: node.lng,
+        isServer: true,
+        maxRadius: 4,
+        repeatPeriod: 2000
+      });
+    });
+
+    const leaderboard = Object.entries(countryStats)
+      .map(([country, stats]) => ({
+        country,
+        count: stats.count,
+        percentage: (stats.count / totalAnalyzed) * 100
+      }))
+      .sort((a, b) => b.count - a.count)
+      .slice(0, 15);
+
+    return {
+      aggregatedData: points,
+      arcsData: allArcs,
+      countryLeaderboard: leaderboard,
+      ringsData: randomRings
+    };
   }, [threatData]);
 
   useEffect(() => {
-    if (globeRef.current) {
-      globeRef.current.controls().autoRotate = true;
-      globeRef.current.controls().autoRotateSpeed = 0.5;
-      globeRef.current.controls().minDistance = 150;
-      globeRef.current.controls().maxDistance = 400;
-    }
-  }, [isRendering]);
+    if (globeRef.current && isGlobeReady) {
+      const controls = globeRef.current.controls();
+      controls.autoRotate = true;
+      controls.autoRotateSpeed = 0.5;
+      controls.enableDamping = true;
+      controls.minDistance = 150;
+      controls.maxDistance = 450;
 
-  if (hasError || !threatData) {
-    return null;
-  }
+      globeRef.current.pointOfView(dcConfig.mapCenter, 1500);
+    }
+  }, [isGlobeReady]);
+
+  const getRankColor = (idx: number) => {
+    if (idx < 3) return 'bg-[#ef4444] shadow-[0_0_5px_#ef4444]';
+    if (idx < 7) return 'bg-[#fbbf24]';
+    return 'bg-[#22c55e]';
+  };
+
+  if (hasError || !threatData) return null;
 
   return (
-    <div className="flex flex-col gap-6 px-3 sm:px-4 py-6 sm:py-8 mb-8 border border-[var(--terminal-border)] rounded bg-black/40 relative overflow-hidden group">
+    <div className="flex flex-col gap-6 px-3 sm:px-5 py-6 sm:py-8 mb-8 border border-[var(--terminal-border)] rounded bg-black/60 relative overflow-hidden group">
       <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-10 mix-blend-overlay pointer-events-none"></div>
-      <div className="absolute inset-0 matrix-bg opacity-10 pointer-events-none"></div>
 
-      {/* HEADER - Mobile Optimized */}
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center z-10 border-b border-[var(--terminal-border)] pb-4 gap-3 sm:gap-0">
-        <div className="w-full sm:w-auto">
-          <h2 className="text-lg min-[400px]:text-xl sm:text-2xl font-bold font-mono tracking-widest text-[#ef4444] glow-text drop-shadow-[0_0_8px_rgba(239,68,68,0.5)] flex items-center gap-2">
-            <span className="material-symbols-outlined pointer-events-none text-base sm:text-xl">public</span>
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center z-10 border-b border-[var(--terminal-border)] pb-4 gap-3 relative">
+        <div>
+          <h2 className="text-lg sm:text-2xl font-bold font-mono tracking-widest text-[#ef4444] glow-text flex items-center gap-2">
+            <span className="material-symbols-outlined">radar</span>
             GLOBAL_THREAT_MONITOR
           </h2>
+          <p className="text-xs text-[var(--terminal-text-muted)]">Crowdsec's CAPI & local Fail2Ban</p>
         </div>
-
-        {/* Status indicator flexes row on mobile, column on desktop */}
-        <div className="flex flex-row sm:flex-col items-center sm:items-end justify-between w-full sm:w-auto">
-          <div className="animate-pulse bg-red-500/20 px-2 sm:px-3 py-1 rounded inline-flex items-center border border-red-500/50 cursor-help" title="Active Firewall Root Monitoring">
-            <div className="w-2 h-2 bg-red-500 rounded-full mr-1.5 sm:mr-2"></div>
-            <span className="text-red-400 font-mono text-[10px] sm:text-xs font-bold tracking-widest hidden min-[400px]:inline">FW_ACTIVE</span>
-            <span className="text-red-400 font-mono text-[10px] font-bold tracking-widest min-[400px]:hidden">ACT</span>
-          </div>
-          <p className="font-mono text-[9px] sm:text-[10px] text-[var(--terminal-text-muted)] mt-0 sm:mt-2">
-            UPDATED: {threatData ? new Date(threatData.last_updated).toLocaleTimeString() : '...'}
-          </p>
+        <div className="bg-green-500/10 px-3 py-1 rounded border border-green-500/30 flex items-center gap-2">
+          <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
+          <span className="text-green-400 font-mono text-xs font-bold tracking-widest">FIREWALL_ACTIVE</span>
         </div>
       </div>
 
-      <div className="flex flex-col lg:flex-row gap-6 items-center">
-        {/* GLOBE ENGINE - Mobile Optimized */}
-        <div className="w-full lg:w-1/2 flex items-center justify-center relative min-h-[300px] sm:min-h-[450px]">
-          <div className="absolute inset-0 bg-green-900/10 blur-[50px] rounded-full mix-blend-screen pointer-events-none"></div>
+      <div className="flex flex-col lg:flex-row gap-6 items-center relative z-10">
+        <div className="w-full lg:w-1/2 flex items-center justify-center relative min-h-[300px] sm:min-h-[450px] border border-[var(--terminal-border)]/20 rounded bg-black/20">
+
+          <div className="absolute inset-0 flex items-center justify-center pointer-events-none opacity-10">
+            <div className="w-64 h-64 border border-[var(--terminal-border)] rounded-full animate-[spin_20s_linear_infinite] border-dashed"></div>
+          </div>
 
           <div className="w-full aspect-square relative max-w-[450px] flex items-center justify-center">
-            {!isRendering && (
-              <div className="absolute animate-pulse text-[var(--terminal-text-dim)] font-mono text-xs sm:text-sm flex flex-col items-center text-center">
-                <span className="material-symbols-outlined animate-spin mb-2">radar</span>
-                MAPPING_THREAT_VECTORS...
+
+            {!isGlobeReady && (
+              <div className="absolute inset-0 z-20 flex flex-col items-center justify-center bg-black/40 backdrop-blur-sm rounded-full animate-pulse text-[#ef4444] font-mono text-xs">
+                <span className="material-symbols-outlined animate-spin mb-2">satellite_alt</span>
+                COMPILING_MULTI_NODE_MAP...
               </div>
             )}
 
             {isRendering && typeof window !== 'undefined' && aggregatedData.length > 0 && (
               <Globe
                 ref={globeRef}
-                width={windowWidth < 640 ? windowWidth - 32 : (windowWidth < 1024 ? 400 : 450)}
-                height={windowWidth < 640 ? windowWidth - 32 : (windowWidth < 1024 ? 400 : 450)}
+                onGlobeReady={() => setIsGlobeReady(true)}
+                width={windowWidth < 640 ? windowWidth - 64 : (windowWidth < 1024 ? 380 : 450)}
+                height={windowWidth < 640 ? windowWidth - 64 : (windowWidth < 1024 ? 380 : 450)}
                 globeImageUrl="//unpkg.com/three-globe/example/img/earth-dark.jpg"
-                bumpImageUrl="//unpkg.com/three-globe/example/img/earth-topology.png"
                 backgroundColor="rgba(0,0,0,0)"
-                pointsData={aggregatedData}
-                pointLat="lat"
-                pointLng="lng"
-                pointAltitude={(d: object) => Math.min(0.1, (((d as BannedIP).weight || 1) * 0.01))}
-                pointRadius={(d: object) => Math.max(0.08, Math.min(0.6, ((d as BannedIP).weight || 1) * 0.04))}
-                pointColor={() => '#ef4444'}
-                pointLabel={(d: object) => {
-                  const ban = d as BannedIP;
-                  const weight = ban.weight || 1;
-                  return `
-                    <div style="background: rgba(16,31,34,0.9); border: 1px solid #ef4444; padding: 10px; border-radius: 4px; font-family: monospace; font-size: 12px; pointer-events: none; min-width: 150px;">
-                      <strong style="color: #ef4444; display: block; margin-bottom: 4px; border-bottom: 1px solid rgba(239,68,68,0.3); padding-bottom: 2px;">THREAT_ORIGIN</strong>
-                      <div><span style="color: #c7cb90;">IP:</span> ${weight > 1 ? 'Multiple Host Cluster' : ban.ip}</div>
-                      <div><span style="color: #c7cb90;">LOC:</span> ${ban.city ? ban.city + ', ' : ''}${ban.country} [${ban.lat.toFixed(2)}, ${ban.lng.toFixed(2)}]</div>
-                      <div style="margin-top: 4px; color: #4ade80;">> ${ban.reason}</div>
-                      ${weight > 1 ? `<div style="margin-top: 4px; font-size: 10px; color: #9ca3af;">[CLUSTER_SIZE: ${weight}]</div>` : ''}
-                    </div>
-                  `}}
-                ringsData={aggregatedData}
-                ringColor={() => '#ef4444'}
-                ringMaxRadius={(d: object) => Math.max(2, Math.min(8, Math.log10(((d as BannedIP).weight || 1) * 10)))}
+
+                pointsData={[
+                  ...aggregatedData,
+                  ...dcConfig.nodes.map(node => ({ lat: node.lat, lng: node.lng, isServer: true }))
+                ]}
+                pointAltitude={(d: any) => d.isServer ? 0.02 : 0.01}
+                pointRadius={(d: any) => d.isServer ? 0.8 : 0.15}
+                pointColor={(d: any) => d.isServer ? '#3b82f6' : '#5244efff'}
+
+                ringsData={ringsData}
+                ringColor={(d: any) => d.isServer ? '#3b82f6' : 'rgba(239, 68, 68, 0.4)'}
+                ringMaxRadius={(d: any) => d.maxRadius}
+                ringRepeatPeriod={(d: any) => d.repeatPeriod}
                 ringPropagationSpeed={0.8}
-                ringRepeatPeriod={1000}
-                atmosphereColor="#0d614b"
-                atmosphereAltitude={0.15}
+
+                arcsData={arcsData}
+                arcColor={(d: any) => d.color}
+                arcDashLength={0.4}
+                arcDashGap={0.5}
+                arcDashInitialGap={(d: any) => d.dashInitialGap}
+                arcDashAnimateTime={(d: any) => d.dashAnimateTime}
+                arcAltitudeAutoScale={0.5}
+
+                atmosphereColor="#2650d7ff"
+                atmosphereAltitude={0.1}
               />
             )}
           </div>
-
-          {/* ZOOM CONTROLS - Larger touch targets for mobile */}
-          <div className="absolute bottom-2 right-2 sm:bottom-4 sm:right-4 flex flex-col gap-2 z-10">
-            <button
-              onClick={() => {
-                if (globeRef.current) {
-                  const r = globeRef.current.pointOfView().altitude;
-                  globeRef.current.pointOfView({ altitude: Math.max(r - 0.5, 0.5) }, 400);
-                }
-              }}
-              className="bg-black/50 hover:bg-white/10 border border-[var(--terminal-border)] rounded w-10 h-10 sm:w-8 sm:h-8 flex items-center justify-center text-white transition-colors backdrop-blur-sm"
-              title="Zoom In"
-            >
-              <span className="material-symbols-outlined text-[20px] sm:text-[18px]">add</span>
-            </button>
-            <button
-              onClick={() => {
-                if (globeRef.current) {
-                  const r = globeRef.current.pointOfView().altitude;
-                  globeRef.current.pointOfView({ altitude: Math.min(r + 0.5, 3) }, 400);
-                }
-              }}
-              className="bg-black/50 hover:bg-white/10 border border-[var(--terminal-border)] rounded w-10 h-10 sm:w-8 sm:h-8 flex items-center justify-center text-white transition-colors backdrop-blur-sm"
-              title="Zoom Out"
-            >
-              <span className="material-symbols-outlined text-[20px] sm:text-[18px]">remove</span>
-            </button>
-          </div>
         </div>
 
-        {/* DATA PANEL - Mobile Optimized */}
-        <div className="w-full lg:w-1/2 font-mono flex flex-col gap-4 z-10 h-full justify-center">
-          <div className="bg-[var(--terminal-bg)] border border-[var(--terminal-border)] rounded p-3 sm:p-4 shadow-[inset_0_0_10px_rgba(var(--terminal-accent-rgb),0.1)]">
-            <p className="text-[10px] sm:text-xs text-[var(--terminal-text-dim)] mb-1">TOTAL_ATTACKS_MITIGATED</p>
-            <p className="text-2xl sm:text-3xl font-bold text-white drop-shadow-[0_0_8px_rgba(255,255,255,0.3)]">
-              {threatData ? threatData.total_banned.toLocaleString() : '-----'}
+        <div className="w-full lg:w-1/2 font-mono flex flex-col gap-4">
+          <div className="bg-[var(--terminal-surface-alt)] border border-[var(--terminal-border)] rounded p-4 relative overflow-hidden">
+            <p className="text-[10px] text-[var(--terminal-text-muted)] mb-1">TOTAL_MITIGATED_IPS</p>
+            <p className="text-4xl font-bold text-white tracking-tighter">
+              {animatedTotal > 0 ? animatedTotal.toLocaleString() : '-----'}
             </p>
           </div>
 
-          <div className="text-sm border border-[var(--terminal-border)] rounded overflow-hidden">
-            <div className="bg-[var(--terminal-surface-alt)] border-b border-[var(--terminal-border)] p-2 grid grid-cols-12 gap-1 sm:gap-2 text-[9px] min-[400px]:text-[10px] sm:text-xs font-bold text-[var(--terminal-text-muted)]">
-              <div className="col-span-5">SOURCE_IP</div>
-              <div className="col-span-2 text-center">LOC</div>
-              <div className="col-span-5">VECTOR</div>
+          <div className="text-sm border border-[var(--terminal-border)] rounded overflow-hidden bg-black/40">
+            <div className="bg-[var(--terminal-surface-alt)] border-b border-[var(--terminal-border)] p-2 grid grid-cols-12 text-[10px] font-bold text-[var(--terminal-text-muted)] tracking-widest">
+              <div className="col-span-2 text-center">RANK</div>
+              <div className="col-span-3">ORIGIN</div>
+              <div className="col-span-3 text-right">COUNT</div>
+              <div className="col-span-4 pl-4">THREAT_LVL</div>
             </div>
-            <div className="p-1 sm:p-2 flex flex-col gap-1 sm:gap-2 max-h-[160px] sm:max-h-[200px] overflow-y-auto custom-scrollbar">
-              {threatData?.recent_bans.slice(0, 50).map((ban, idx) => (
-                <div key={idx} className="grid grid-cols-12 gap-1 sm:gap-2 text-[9px] min-[400px]:text-[10px] sm:text-xs items-center hover:bg-[var(--terminal-surface-hover)] p-1 rounded transition-colors group/row">
-                  <div className="col-span-5 text-[#ef4444] group-hover/row:text-white transition-colors truncate">
-                    {ban.ip}
+
+            <div className="p-1 flex flex-col gap-1 max-h-[220px] overflow-y-auto custom-scrollbar">
+              {countryLeaderboard.map((item, idx) => (
+                <div key={item.country} className="grid grid-cols-12 text-[10px] items-center hover:bg-white/5 p-1.5 rounded transition-all group/row">
+                  <div className="col-span-2 text-center text-[var(--terminal-text-dim)]">[{String(idx + 1).padStart(2, '0')}]</div>
+                  <div className="col-span-3 font-bold text-white truncate">{item.country}</div>
+                  <div className="col-span-3 text-right text-[var(--terminal-text-dim)] group-hover/row:text-[#ef4444] transition-colors">
+                    {item.count.toLocaleString()}
                   </div>
-                  <div className="col-span-2 text-center text-white font-bold opacity-80 truncate" title={`${ban.country}`}>
-                    {ban.country}
-                  </div>
-                  <div className="col-span-5 text-[var(--terminal-text-dim)] group-hover/row:text-[var(--terminal-accent-alt)] transition-colors truncate" title={ban.reason}>
-                    {ban.reason}
+                  <div className="col-span-4 pl-3 flex items-center gap-2">
+                    <div className="h-1 w-full bg-[#111] rounded-full overflow-hidden border border-[#222]">
+                      <div className={`h-full transition-all duration-1000 ${getRankColor(idx)}`} style={{ width: `${item.percentage}%` }}></div>
+                    </div>
+                    <span className="text-[8px] text-[var(--terminal-text-muted)] w-6 text-right">{Math.ceil(item.percentage)}%</span>
                   </div>
                 </div>
               ))}
