@@ -1,12 +1,16 @@
 'use client';
 
 import { useState, useEffect, useRef } from 'react';
+import { Turnstile } from '@marsidev/react-turnstile';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import CVTemplate from '@/components/CVTemplate';
 import { cvConfig, siteConfig, experience, education, skills, languages, certifications, hobbies, projects } from '../../config';
+import { securityConfig } from '@/config';
 
 export default function CVPage() {
+  const [isVerified, setIsVerified] = useState(false);
+  const [isDecrypting, setIsDecrypting] = useState(false);
   const [selectedStyle, setSelectedStyle] = useState<string>(cvConfig.styles[0].id);
   const [isDownloading, setIsDownloading] = useState(false);
   const [useColumnLayout, setUseColumnLayout] = useState<boolean>(true);
@@ -125,6 +129,53 @@ export default function CVPage() {
   };
 
   const selectedCVStyle = cvConfig.styles.find(s => s.id === selectedStyle) || cvConfig.styles[0];
+
+  if (!isVerified) {
+    return (
+      <div className="flex min-h-screen items-center justify-center bg-[var(--terminal-bg)] font-mono p-4">
+        <div className="max-w-md w-full border border-[var(--terminal-border)] bg-[var(--terminal-surface)] p-8 rounded shadow-[0_0_20px_rgba(var(--terminal-accent-rgb),0.2)] text-center relative overflow-hidden">
+          {/* Decorative Scanline */}
+          <div className="absolute inset-0 bg-gradient-to-b from-transparent via-primary/5 to-transparent h-[10%] w-full animate-scan pointer-events-none"></div>
+
+          <span className="material-symbols-outlined text-primary text-5xl mb-4 animate-pulse">
+            security
+          </span>
+
+          <h2 className="text-white text-xl font-bold mb-2 tracking-widest uppercase">
+            {isDecrypting ? 'DECRYPTING_CV...' : 'Access_Restriction'}
+          </h2>
+
+          <p className="text-[var(--terminal-text-dim)] text-xs mb-6 leading-relaxed">
+            {isDecrypting
+              ? 'Handshake successful.'
+              : 'This profile is protected by CAPTCHA.'}
+          </p>
+
+          {!isDecrypting && (
+            <div className="flex justify-center mb-6">
+              <Turnstile
+                siteKey={securityConfig.turnstile.siteKey}
+                onSuccess={() => {
+                  setIsDecrypting(true);
+                  setTimeout(() => {
+                    setIsVerified(true);
+                    setIsDecrypting(false);
+                  }, 1500);
+                }}
+                options={{
+                  theme: securityConfig.turnstile.theme,
+                }}
+              />
+            </div>
+          )}
+
+          <div className="text-[10px] text-[var(--terminal-text-muted)] animate-pulse font-mono uppercase tracking-tighter">
+            {isDecrypting ? '>> SEC_LEVEL_CLEARED' : 'Awaiting_Challenge_Response...'}
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="relative flex h-auto min-h-screen w-full flex-col bg-[var(--terminal-bg)] text-white group/design-root overflow-x-hidden font-display">
