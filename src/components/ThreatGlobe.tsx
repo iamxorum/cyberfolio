@@ -212,7 +212,7 @@ export default function ThreatGlobe() {
                 onGlobeReady={() => setIsGlobeReady(true)}
                 width={windowWidth < 640 ? windowWidth - 64 : (windowWidth < 1024 ? 380 : 450)}
                 height={windowWidth < 640 ? windowWidth - 64 : (windowWidth < 1024 ? 380 : 450)}
-                globeImageUrl="//unpkg.com/three-globe/example/img/earth-dark.jpg"
+                globeImageUrl="https://unpkg.com/three-globe/example/img/earth-dark.jpg"
                 backgroundColor="rgba(0,0,0,0)"
 
                 pointsData={[
@@ -221,7 +221,7 @@ export default function ThreatGlobe() {
                 ]}
                 pointAltitude={(d: any) => d.isServer ? 0.02 : 0.01}
                 pointRadius={(d: any) => d.isServer ? 0.8 : 0.15}
-                pointColor={(d: any) => d.isServer ? '#3b82f6' : '#5244efff'}
+                pointColor={(d: any) => d.isServer ? '#3b82f6' : '#5244ef'}
 
                 ringsData={ringsData}
                 ringColor={(d: any) => d.isServer ? '#3b82f6' : 'rgba(239, 68, 68, 0.4)'}
@@ -237,7 +237,7 @@ export default function ThreatGlobe() {
                 arcDashAnimateTime={(d: any) => d.dashAnimateTime}
                 arcAltitudeAutoScale={0.5}
 
-                atmosphereColor="#2650d7ff"
+                atmosphereColor="#2650d7"
                 atmosphereAltitude={0.1}
               />
             )}

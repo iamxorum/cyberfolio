@@ -27,6 +27,15 @@ export interface SiteConfig {
 
   systemVersion: string;
 
+  security: {
+    scripts: string[];
+    styles: string[];
+    images: string[];
+    fonts: string[];
+    frames: string[];
+    connects: string[];
+  };
+
 }
 
 export interface SocialLink {
@@ -80,7 +89,38 @@ export const siteConfig: SiteConfig = {
     ],
   },
 
-  systemVersion: 'v1.4.0',
+  systemVersion: 'v1.4.1',
 
   favicon: 'path/to/favicon.ico',
+
+  security: {
+    scripts: [
+      'https://challenges.cloudflare.com',
+      'https://cdnjs.cloudflare.com',
+    ],
+    styles: [
+      'https://fonts.googleapis.com',
+    ],
+    images: [
+      'https://flagcdn.com',
+      'https://unpkg.com',
+      'https://grainy-gradients.vercel.app',
+      'https://*.googleusercontent.com',
+      'http://*.googleusercontent.com',
+    ],
+    fonts: [
+      'https://fonts.gstatic.com',
+    ],
+    frames: [
+      'https://challenges.cloudflare.com',
+      'https://www.youtube.com',
+      'https://youtube.com',
+    ],
+    connects: [
+      'https://challenges.cloudflare.com',
+      'https://www.youtube.com',
+      'https://youtube.com',
+      'https://cdnjs.cloudflare.com',
+    ]
+  }
 };
