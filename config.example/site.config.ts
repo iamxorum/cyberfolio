@@ -1,32 +1,32 @@
 export interface SiteConfig {
-  
+
   domain: string;
   username: string;
   fullName: string;
   title: string;
   description: string;
   favicon: string;
-  
-  
+
+
   birthDate: {
     day: number;
-    month: number; 
+    month: number;
     year: number;
   };
   location: string;
   role: string;
   status: string;
-  profileImage: string; 
-  
-  
+  profileImage: string;
+
+
   social: {
     professional?: SocialLink[];
     gaming?: SocialLink[];
     other?: SocialLink[];
   };
-  
+
   systemVersion: string;
-  
+
 }
 
 export interface SocialLink {
@@ -42,17 +42,17 @@ export const siteConfig: SiteConfig = {
   fullName: 'Your Full Name',
   title: 'This is Your Portfolio',
   description: 'Welcome to my portfolio',
-  
+
   birthDate: {
     day: 1,
-    month: 1, 
+    month: 1,
     year: 2000,
   },
   location: 'Your Location',
   role: 'Your Role',
   status: 'Available for opportunities',
   profileImage: '/assets/profile.jpg',
-  
+
   social: {
     professional: [
       {
@@ -79,8 +79,8 @@ export const siteConfig: SiteConfig = {
     other: [
     ],
   },
-  
-  systemVersion: 'v1.2.4',
-  
+
+  systemVersion: 'v1.3.1',
+
   favicon: 'path/to/favicon.ico',
 };

@@ -5,6 +5,7 @@ import Footer from '@/components/Footer';
 import InitScreen from '@/components/InitScreen';
 import HeroSection from '@/components/HeroSection';
 import SystemStats from '@/components/SystemStats';
+import ThreatGlobe from '@/components/ThreatGlobe';
 import ProjectsGrid from '@/components/ProjectsGrid';
 import { useAppInitialization } from '@/hooks/useAppInitialization';
 import { useSystemStats } from '@/hooks/useSystemStats';
@@ -34,6 +35,7 @@ export default function Home() {
               viewport={viewport}
               responseTime={responseTime}
             />
+            <ThreatGlobe />
             <ProjectsGrid />
             <Footer />
           </div>
