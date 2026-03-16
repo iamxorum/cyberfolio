@@ -4,10 +4,10 @@ import { useEffect, useRef, useState } from 'react';
 import { animate, stagger } from 'animejs';
 import Image from 'next/image';
 import Link from 'next/link';
-import Header from '../components/Header';
-import Footer from '../components/Footer';
-import InitScreen from '../components/InitScreen';
-import SkillsRadar from '../components/SkillsRadar';
+import Header from '@/components/Header';
+import Footer from '@/components/Footer';
+import InitScreen from '@/components/InitScreen';
+import SkillsRadar from '@/components/SkillsRadar';
 import { siteConfig, contentConfig, getTopSkills, getCategories, getSkillsByCategory, getSkillsGroupedByCategory, getScoreFromLevel, hobbies, education, certifications, languages, experience } from '@/config';
 
 export default function About() {
@@ -43,7 +43,7 @@ export default function About() {
       const isInitialized = initTimestamp && (Date.now() - parseInt(initTimestamp)) < 24 * 60 * 60 * 1000;
       
       if (isInitialized && storedUserId) {
-        
+        // eslint-disable-next-line react-hooks/set-state-in-effect
         setUserId(storedUserId);
         setInitialized(true);
       } else {
@@ -376,11 +376,13 @@ export default function About() {
                         <div key={lang.id} className="space-y-1.5">
                           <div className="flex items-center justify-between">
                             <div className="flex items-center gap-2">
-                              <img
+                              <Image
                                 src={`https://flagcdn.com/w20/${lang.countryCode}.png`}
-                                srcSet={`https://flagcdn.com/w40/${lang.countryCode}.png 2x`}
-                                width="20"
+                                alt={`${lang.name} flag`}
+                                width={20}
+                                height={15}
                                 className="rounded-sm"
+                                unoptimized
                               />
                               <span className="text-[var(--terminal-text-muted)] text-[10px] sm:text-xs">{lang.name}</span>
                             </div>

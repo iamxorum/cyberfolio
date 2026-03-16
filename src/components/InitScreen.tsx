@@ -136,9 +136,10 @@ export default function InitScreen({ onInit }: InitScreenProps) {
     window.addEventListener('keydown', handleKeyPress);
     return () => window.removeEventListener('keydown', handleKeyPress);
     
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [showPrompt]);
 
-  const handleInit = () => {
+  function handleInit() {
     setIsLoading(true);
     
     
@@ -160,7 +161,6 @@ export default function InitScreen({ onInit }: InitScreenProps) {
     
     let progress = 0;
     const totalDuration = 3000; 
-    const stepDuration = 1000; 
     const updateInterval = 30; 
 
     const loadingInterval = setInterval(() => {

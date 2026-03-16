@@ -24,7 +24,7 @@ export async function GET() {
       minutes,
       totalHours: Math.floor(processUptime / 3600)
     });
-  } catch (error) {
+  } catch {
     
     return NextResponse.json({
       uptime: '0h 0m',

@@ -1,6 +1,6 @@
 'use client';
 
-import { CVStyle, SiteConfig, Experience, Education, Skill, Language, Certification, Hobby, Project, cvConfig } from '@/config';
+import { CVStyle, SiteConfig, Experience, Education, Skill, Language, Certification, Hobby, Project } from '@/config';
 import { getSkillsGroupedByCategory } from '@/config';
 
 interface CVTemplateProps {
@@ -8,7 +8,6 @@ interface CVTemplateProps {
   siteConfig: SiteConfig;
   experience: Experience[];
   education: Education[];
-  skills: Skill[];
   languages: Language[];
   certifications: Certification[];
   hobbies: Hobby[];
@@ -22,7 +21,6 @@ export default function CVTemplate({
   siteConfig,
   experience,
   education,
-  skills,
   languages,
   certifications,
   hobbies,
@@ -200,7 +198,7 @@ export default function CVTemplate({
       }}>
         PROFESSIONAL EXPERIENCE
       </h2>
-      {sortedExperience.map((exp, idx) => {
+      {sortedExperience.map((exp) => {
         const descriptionPoints = parseDescription(exp.description);
         return (
           <div key={exp.id} className="mb-5" style={{ marginBottom: '10pt', pageBreakInside: 'avoid' }}>

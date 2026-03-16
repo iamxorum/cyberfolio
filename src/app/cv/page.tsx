@@ -1,11 +1,10 @@
 'use client';
 
 import { useState, useEffect, useRef } from 'react';
-import Header from '../components/Header';
-import Footer from '../components/Footer';
-import CVTemplate from '../components/CVTemplate';
+import Header from '@/components/Header';
+import Footer from '@/components/Footer';
+import CVTemplate from '@/components/CVTemplate';
 import { cvConfig, siteConfig, experience, education, skills, languages, certifications, hobbies, projects } from '@/config';
-import Link from 'next/link';
 
 export default function CVPage() {
   const [selectedStyle, setSelectedStyle] = useState<string>(cvConfig.styles[0].id);
@@ -44,6 +43,7 @@ export default function CVPage() {
       
       await new Promise((resolve) => {
         const checkLibrary = () => {
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
           if ((window as any).html2pdf) {
             resolve(true);
           } else {
@@ -60,7 +60,7 @@ export default function CVPage() {
       await Promise.all(
         Array.from(images).map((img: HTMLImageElement) => {
           if (img.complete) return Promise.resolve();
-          return new Promise((resolve, reject) => {
+          return new Promise((resolve) => {
             img.onload = () => resolve(true);
             img.onerror = () => resolve(true); 
             
@@ -110,7 +110,7 @@ export default function CVPage() {
         jsPDF: { unit: 'in', format: 'a4', orientation: 'portrait' },
         pagebreak: { mode: ['avoid-all', 'css', 'legacy'] }
       };
-
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       await (window as any).html2pdf().set(opt).from(element).save();
     } catch (error) {
       console.error('Error generating PDF:', error);

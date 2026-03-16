@@ -1,4 +1,3 @@
-import { SiteConfig } from './site.config';
 
 export interface ContentConfig {
   

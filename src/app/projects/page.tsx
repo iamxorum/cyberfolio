@@ -2,10 +2,10 @@
 
 import { useEffect, useRef, useState } from 'react';
 import { animate, stagger } from 'animejs';
-import Header from '../components/Header';
-import Footer from '../components/Footer';
-import Terminal from '../components/Terminal';
-import InitScreen from '../components/InitScreen';
+import Header from '@/components/Header';
+import Footer from '@/components/Footer';
+import Terminal from '@/components/Terminal';
+import InitScreen from '@/components/InitScreen';
 import Link from 'next/link';
 import { projects, contentConfig } from '@/config';
 
@@ -20,6 +20,7 @@ export default function Projects() {
       const initTimestamp = localStorage.getItem('iamxorum_initialized');
       const isInitialized = initTimestamp && (Date.now() - parseInt(initTimestamp)) < 24 * 60 * 60 * 1000;
       if (isInitialized) {
+        // eslint-disable-next-line react-hooks/set-state-in-effect
         setInitialized(true);
       }
     }
@@ -113,7 +114,7 @@ export default function Projects() {
                       <div className="col-span-2 text-right">ACTION</div>
                     </div>
                     {/* Personal Project Rows */}
-                    {projects.filter(p => p.projectType === 'personal').map((project, index) => {
+                    {projects.filter(p => p.projectType === 'personal').map((project) => {
                   
                   const hashId = `0x${project.id.slice(0, 6).toUpperCase().padEnd(6, '0')}`;
                   
@@ -249,7 +250,7 @@ export default function Projects() {
                         <div className="col-span-2 text-right">ACTION</div>
                       </div>
                       {/* Contribution Project Rows */}
-                      {projects.filter(p => p.projectType === 'contribution').map((project, index) => {
+                      {projects.filter(p => p.projectType === 'contribution').map((project) => {
                         const hashId = `0x${project.id.slice(0, 6).toUpperCase().padEnd(6, '0')}`;
                         
                         const statusColorMap = {
