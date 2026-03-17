@@ -165,19 +165,39 @@ export default function About() {
           <p className="text-[var(--terminal-text-dim)] text-xs mb-6 leading-relaxed">
             {isDecrypting
               ? 'Handshake successful.'
-              : 'This profile is protected by CAPTCHA.'}
+              : 'This section is protected by Turnstile.'}
           </p>
 
           {!isDecrypting && (
             <div className="flex justify-center mb-6">
               <Turnstile
                 siteKey={securityConfig.turnstile.siteKey}
-                onSuccess={() => {
+                onSuccess={async (token) => {
                   setIsDecrypting(true);
-                  setTimeout(() => {
-                    setIsVerified(true);
+
+                  try {
+                    const res = await fetch('/api/verify', {
+                      method: 'POST',
+                      headers: { 'Content-Type': 'application/json' },
+                      body: JSON.stringify({ token })
+                    });
+
+                    const data = await res.json();
+
+                    if (data.success) {
+                      setTimeout(() => {
+                        setIsVerified(true);
+                        setIsDecrypting(false);
+                      }, 1000);
+                    } else {
+                      console.error("Access Denied:", data.error);
+                      setIsDecrypting(false);
+                      alert("SECURITY BREACH DETECTED: Invalid handshake.");
+                    }
+                  } catch (err) {
+                    console.error("Network error during verification", err);
                     setIsDecrypting(false);
-                  }, 1500);
+                  }
                 }}
                 options={{
                   theme: securityConfig.turnstile.theme,
