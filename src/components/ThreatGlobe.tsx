@@ -193,16 +193,12 @@ export default function ThreatGlobe() {
       <div className="flex flex-col lg:flex-row gap-6 items-center relative z-10">
         <div className="w-full lg:w-1/2 flex items-center justify-center relative min-h-[300px] sm:min-h-[450px] border border-[var(--terminal-border)]/20 rounded bg-black/20">
 
-          <div className="absolute inset-0 flex items-center justify-center pointer-events-none opacity-10">
-            <div className="w-64 h-64 border border-[var(--terminal-border)] rounded-full animate-[spin_20s_linear_infinite] border-dashed"></div>
-          </div>
-
           <div className="w-full aspect-square relative max-w-[450px] flex items-center justify-center">
 
             {!isGlobeReady && (
               <div className="absolute inset-0 z-20 flex flex-col items-center justify-center bg-black/40 backdrop-blur-sm rounded-full animate-pulse text-[#ef4444] font-mono text-xs">
                 <span className="material-symbols-outlined animate-spin mb-2">satellite_alt</span>
-                COMPILING_MULTI_NODE_MAP...
+                COMPILING_GLOBE...
               </div>
             )}
 
