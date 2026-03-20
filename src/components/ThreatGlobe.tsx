@@ -12,6 +12,7 @@ interface BannedIP {
   lat: number;
   lng: number;
   weight?: number;
+  source: 'local' | 'public';
 }
 
 interface ThreatData {
@@ -77,10 +78,10 @@ export default function ThreatGlobe() {
 
     threatData.recent_bans.forEach((ban) => {
       totalAnalyzed++;
-
       const latBucket = Math.round(ban.lat * 2) / 2;
       const lngBucket = Math.round(ban.lng * 2) / 2;
-      const key = `${latBucket},${lngBucket}`;
+      const key = `${latBucket},${lngBucket},${ban.source}`;
+
       if (clusters[key]) {
         clusters[key].weight = (clusters[key].weight || 1) + 1;
       } else {
@@ -95,44 +96,36 @@ export default function ThreatGlobe() {
 
     const points = Object.values(clusters)
       .sort((a, b) => (b.weight || 1) - (a.weight || 1))
-      .slice(0, 250);
+      .slice(0, 400);
 
-    // ARC DATA: Dynamically assign each attack to a random node from the config
-    const allArcs = points.map(point => {
-      // Pick a random data center node from your config
-      const randomNode = dcConfig.nodes[Math.floor(Math.random() * dcConfig.nodes.length)];
+    const allArcs = points
+      .filter(point => point.source === 'local')
+      .map(point => {
+        const randomNode = dcConfig.nodes[Math.floor(Math.random() * dcConfig.nodes.length)];
 
-      return {
-        startLat: point.lat,
-        startLng: point.lng,
-        endLat: randomNode.lat,
-        endLng: randomNode.lng,
-        color: ['rgba(133, 47, 209, 0.21)', 'rgba(239, 68, 68, 0.72)'],
-        dashInitialGap: Math.random() * 5,
-        dashAnimateTime: 2000 + Math.random() * 4000
-      };
-    });
+        const arcColors = ['rgba(239, 68, 68, 0.2)', 'rgba(239, 68, 68, 0.8)'];
+
+        return {
+          startLat: point.lat,
+          startLng: point.lng,
+          endLat: randomNode.lat,
+          endLng: randomNode.lng,
+          color: arcColors,
+          dashInitialGap: Math.random() * 5,
+          dashAnimateTime: 1500 + Math.random() * 2000,
+          source: point.source
+        };
+      });
 
     const randomRings = points
-      .filter(() => Math.random() > 0.4)
-      .slice(0, 100)
+      .filter(() => Math.random() > 0.5)
       .map(p => ({
         lat: p.lat,
         lng: p.lng,
-        isServer: false,
-        maxRadius: Math.random() * 1.5 + 0.5,
-        repeatPeriod: 1000 + Math.random() * 3000
+        source: p.source,
+        maxRadius: p.source === 'local' ? 2.5 : 1.2,
+        repeatPeriod: p.source === 'local' ? 1500 : 3000
       }));
-
-    dcConfig.nodes.forEach(node => {
-      randomRings.push({
-        lat: node.lat,
-        lng: node.lng,
-        isServer: true,
-        maxRadius: 4,
-        repeatPeriod: 2000
-      });
-    });
 
     const leaderboard = Object.entries(countryStats)
       .map(([country, stats]) => ({
@@ -176,13 +169,16 @@ export default function ThreatGlobe() {
     <div className="flex flex-col gap-6 px-3 sm:px-5 py-6 sm:py-8 mb-8 border border-[var(--terminal-border)] rounded bg-black/60 relative overflow-hidden group">
       <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-10 mix-blend-overlay pointer-events-none"></div>
 
+      {/* --- HEADER --- */}
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center z-10 border-b border-[var(--terminal-border)] pb-4 gap-3 relative">
         <div>
           <h2 className="text-lg sm:text-2xl font-bold font-mono tracking-widest text-[#ef4444] glow-text flex items-center gap-2">
             <span className="material-symbols-outlined">radar</span>
             GLOBAL_THREAT_MONITOR
           </h2>
-          <p className="text-xs text-[var(--terminal-text-muted)]">Crowdsec's CAPI & local Fail2Ban</p>
+          <p className="text-xs text-[var(--terminal-text-muted)] mt-1">
+            <span className="text-[#ef4444] font-bold">Local</span> Fail2Ban & <span className="text-[#3b82f6] font-bold">Public</span> CrowdSec CAPI
+          </p>
         </div>
         <div className="bg-green-500/10 px-3 py-1 rounded border border-green-500/30 flex items-center gap-2">
           <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
@@ -190,9 +186,11 @@ export default function ThreatGlobe() {
         </div>
       </div>
 
+      {/* --- CONTENT (2 COLUMNS) --- */}
       <div className="flex flex-col lg:flex-row gap-6 items-center relative z-10">
-        <div className="w-full lg:w-1/2 flex items-center justify-center relative min-h-[300px] sm:min-h-[450px] border border-[var(--terminal-border)]/20 rounded bg-black/20">
 
+        {/* LEFT COLUMN: GLOBE */}
+        <div className="w-full lg:w-1/2 flex items-center justify-center relative min-h-[300px] sm:min-h-[450px] border border-[var(--terminal-border)]/20 rounded bg-black/20 overflow-hidden">
           <div className="w-full aspect-square relative max-w-[450px] flex items-center justify-center">
 
             {!isGlobeReady && (
@@ -203,44 +201,63 @@ export default function ThreatGlobe() {
             )}
 
             {isRendering && typeof window !== 'undefined' && aggregatedData.length > 0 && (
-              <Globe
-                ref={globeRef}
-                onGlobeReady={() => setIsGlobeReady(true)}
-                width={windowWidth < 640 ? windowWidth - 64 : (windowWidth < 1024 ? 380 : 450)}
-                height={windowWidth < 640 ? windowWidth - 64 : (windowWidth < 1024 ? 380 : 450)}
-                globeImageUrl="https://unpkg.com/three-globe/example/img/earth-dark.jpg"
-                backgroundColor="rgba(0,0,0,0)"
+              <>
+                <Globe
+                  ref={globeRef}
+                  onGlobeReady={() => setIsGlobeReady(true)}
+                  // Am redus putin latimea (400) ca sa previn împingerea tabelului
+                  width={windowWidth < 640 ? windowWidth - 80 : (windowWidth < 1024 ? 350 : 400)}
+                  height={windowWidth < 640 ? windowWidth - 80 : (windowWidth < 1024 ? 350 : 400)}
+                  globeImageUrl="https://unpkg.com/three-globe/example/img/earth-dark.jpg"
+                  backgroundColor="rgba(0,0,0,0)"
 
-                pointsData={[
-                  ...aggregatedData,
-                  ...dcConfig.nodes.map(node => ({ lat: node.lat, lng: node.lng, isServer: true }))
-                ]}
-                pointAltitude={(d: any) => d.isServer ? 0.02 : 0.01}
-                pointRadius={(d: any) => d.isServer ? 0.8 : 0.15}
-                pointColor={(d: any) => d.isServer ? '#3b82f6' : '#5244ef'}
+                  pointsData={[
+                    ...aggregatedData,
+                    ...dcConfig.nodes.map(node => ({ lat: node.lat, lng: node.lng, isServer: true }))
+                  ]}
+                  pointAltitude={(d: any) => d.isServer ? 0.02 : 0.01}
+                  pointRadius={(d: any) => d.isServer ? 0.8 : (d.source === 'local' ? 0.3 : 0.15)}
+                  pointColor={(d: any) => {
+                    if (d.isServer) return '#ffffff';
+                    return d.source === 'local' ? '#ef4444' : '#3b82f6';
+                  }}
 
-                ringsData={ringsData}
-                ringColor={(d: any) => d.isServer ? '#3b82f6' : 'rgba(239, 68, 68, 0.4)'}
-                ringMaxRadius={(d: any) => d.maxRadius}
-                ringRepeatPeriod={(d: any) => d.repeatPeriod}
-                ringPropagationSpeed={0.8}
+                  ringsData={ringsData}
+                  ringColor={(d: any) => d.source === 'local' ? 'rgba(239, 68, 68, 0.6)' : 'rgba(59, 130, 246, 0.3)'}
+                  ringMaxRadius={(d: any) => d.maxRadius}
+                  ringRepeatPeriod={(d: any) => d.repeatPeriod}
+                  ringPropagationSpeed={0.8}
 
-                arcsData={arcsData}
-                arcColor={(d: any) => d.color}
-                arcDashLength={0.4}
-                arcDashGap={0.5}
-                arcDashInitialGap={(d: any) => d.dashInitialGap}
-                arcDashAnimateTime={(d: any) => d.dashAnimateTime}
-                arcAltitudeAutoScale={0.5}
+                  arcsData={arcsData}
+                  arcColor={(d: any) => d.color}
+                  arcStroke={(d: any) => d.source === 'local' ? 0.5 : 0.3}
+                  arcDashLength={0.4}
+                  arcDashGap={0.5}
+                  arcDashInitialGap={(d: any) => d.dashInitialGap}
+                  arcDashAnimateTime={(d: any) => d.dashAnimateTime}
+                  arcAltitudeAutoScale={0.5}
 
-                atmosphereColor="#2650d7"
-                atmosphereAltitude={0.1}
-              />
+                  atmosphereColor="#2650d7"
+                  atmosphereAltitude={0.1}
+                />
+
+                <div className="absolute bottom-2 left-2 z-20 flex flex-col gap-1.5 font-mono text-[9px] bg-black/40 p-2 rounded border border-white/5 backdrop-blur-sm">
+                  <div className="flex items-center gap-2">
+                    <div className="w-2 h-2 rounded-full bg-[#ef4444] animate-pulse shadow-[0_0_5px_#ef4444]"></div>
+                    <span className="text-white/70 uppercase">Local_Attack (Fail2Ban)</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <div className="w-2 h-2 rounded-full bg-[#3b82f6] shadow-[0_0_5px_#3b82f6]"></div>
+                    <span className="text-white/70 uppercase">Community_Blacklist (CAPI)</span>
+                  </div>
+                </div>
+              </>
             )}
           </div>
         </div>
 
-        <div className="w-full lg:w-1/2 font-mono flex flex-col gap-4">
+        {/* RIGHT COLUMN: STATS */}
+        <div className="w-full lg:w-1/2 font-mono flex flex-col gap-4 flex-1">
           <div className="bg-[var(--terminal-surface-alt)] border border-[var(--terminal-border)] rounded p-4 relative overflow-hidden">
             <p className="text-[10px] text-[var(--terminal-text-muted)] mb-1">TOTAL_MITIGATED_IPS</p>
             <p className="text-4xl font-bold text-white tracking-tighter">
@@ -248,12 +265,12 @@ export default function ThreatGlobe() {
             </p>
           </div>
 
-          <div className="text-sm border border-[var(--terminal-border)] rounded overflow-hidden bg-black/40">
+          <div className="text-sm border border-[var(--terminal-border)] rounded overflow-hidden bg-black/40 w-full">
             <div className="bg-[var(--terminal-surface-alt)] border-b border-[var(--terminal-border)] p-2 grid grid-cols-12 text-[10px] font-bold text-[var(--terminal-text-muted)] tracking-widest">
-              <div className="col-span-2 text-center">RANK</div>
+              <div className="col-span-2 text-center">RK</div>
               <div className="col-span-3">ORIGIN</div>
               <div className="col-span-3 text-right">COUNT</div>
-              <div className="col-span-4 pl-4">THREAT_LVL</div>
+              <div className="col-span-4 pl-4 text-center">THREAT</div>
             </div>
 
             <div className="p-1 flex flex-col gap-1 max-h-[220px] overflow-y-auto custom-scrollbar">
@@ -275,6 +292,7 @@ export default function ThreatGlobe() {
             </div>
           </div>
         </div>
+
       </div>
     </div>
   );
