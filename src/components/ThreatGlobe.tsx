@@ -38,6 +38,19 @@ const useCountUp = (end: number, duration: number = 1500) => {
   return count;
 };
 
+const AnimatedCounter = ({ value }: { value: number }) => {
+  const animatedValue = useCountUp(value);
+  return <span>{animatedValue > 0 ? animatedValue.toLocaleString() : '-----'}</span>;
+};
+
+const getPointRadius = (d: any) => d.isServer ? 0.8 : (d.source === 'local' ? 0.3 : 0.15);
+const getPointColor = (d: any) => {
+  if (d.isServer) return '#ffffff';
+  return d.source === 'local' ? '#ef4444' : '#3b82f6';
+};
+const getRingColor = (d: any) => d.source === 'local' ? 'rgba(239, 68, 68, 0.6)' : 'rgba(59, 130, 246, 0.3)';
+const getArcStroke = (d: any) => d.source === 'local' ? 0.5 : 0.3;
+
 export default function ThreatGlobe() {
   const [threatData, setThreatData] = useState<ThreatData | null>(null);
   const [hasError, setHasError] = useState(false);
@@ -48,7 +61,6 @@ export default function ThreatGlobe() {
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const globeRef = useRef<any>(null);
-  const animatedTotal = useCountUp(threatData?.total_banned || 0);
 
   useEffect(() => {
     fetch('/data/banned_ips.json')
@@ -67,9 +79,9 @@ export default function ThreatGlobe() {
     return () => window.removeEventListener('resize', handleResize);
   }, []);
 
-  const { aggregatedData, arcsData, countryLeaderboard, ringsData } = useMemo(() => {
+  const { pointsData, arcsData, countryLeaderboard, ringsData } = useMemo(() => {
     if (!threatData || !threatData.recent_bans) {
-      return { aggregatedData: [], arcsData: [], countryLeaderboard: [], ringsData: [] };
+      return {  pointsData: [], arcsData: [], countryLeaderboard: [], ringsData: [] };
     }
 
     const clusters: Record<string, BannedIP> = {};
@@ -97,6 +109,11 @@ export default function ThreatGlobe() {
     const points = Object.values(clusters)
       .sort((a, b) => (b.weight || 1) - (a.weight || 1))
       .slice(0, 400);
+
+    const pointsCombined = [
+      ...points,
+      ...dcConfig.nodes.map(node => ({ lat: node.lat, lng: node.lng, isServer: true }))
+    ];
 
     const allArcs = points
       .filter(point => point.source === 'local')
@@ -137,7 +154,7 @@ export default function ThreatGlobe() {
       .slice(0, 15);
 
     return {
-      aggregatedData: points,
+      pointsData: pointsCombined,
       arcsData: allArcs,
       countryLeaderboard: leaderboard,
       ringsData: randomRings
@@ -200,37 +217,30 @@ export default function ThreatGlobe() {
               </div>
             )}
 
-            {isRendering && typeof window !== 'undefined' && aggregatedData.length > 0 && (
+            {isRendering && typeof window !== 'undefined' && pointsData.length > 0 && (
               <>
                 <Globe
                   ref={globeRef}
                   onGlobeReady={() => setIsGlobeReady(true)}
-                  // Am redus putin latimea (400) ca sa previn împingerea tabelului
                   width={windowWidth < 640 ? windowWidth - 80 : (windowWidth < 1024 ? 350 : 400)}
                   height={windowWidth < 640 ? windowWidth - 80 : (windowWidth < 1024 ? 350 : 400)}
                   globeImageUrl="https://unpkg.com/three-globe/example/img/earth-dark.jpg"
                   backgroundColor="rgba(0,0,0,0)"
 
-                  pointsData={[
-                    ...aggregatedData,
-                    ...dcConfig.nodes.map(node => ({ lat: node.lat, lng: node.lng, isServer: true }))
-                  ]}
-                  pointAltitude={(d: any) => d.isServer ? 0.02 : 0.01}
-                  pointRadius={(d: any) => d.isServer ? 0.8 : (d.source === 'local' ? 0.3 : 0.15)}
-                  pointColor={(d: any) => {
-                    if (d.isServer) return '#ffffff';
-                    return d.source === 'local' ? '#ef4444' : '#3b82f6';
-                  }}
+                  pointsData={pointsData}
+                  pointAltitude={0.01}
+                  pointRadius={getPointRadius}
+                  pointColor={getPointColor}
 
                   ringsData={ringsData}
-                  ringColor={(d: any) => d.source === 'local' ? 'rgba(239, 68, 68, 0.6)' : 'rgba(59, 130, 246, 0.3)'}
+                  ringColor={getRingColor}
                   ringMaxRadius={(d: any) => d.maxRadius}
                   ringRepeatPeriod={(d: any) => d.repeatPeriod}
                   ringPropagationSpeed={0.8}
 
                   arcsData={arcsData}
                   arcColor={(d: any) => d.color}
-                  arcStroke={(d: any) => d.source === 'local' ? 0.5 : 0.3}
+                  arcStroke={getArcStroke}
                   arcDashLength={0.4}
                   arcDashGap={0.5}
                   arcDashInitialGap={(d: any) => d.dashInitialGap}
@@ -261,7 +271,7 @@ export default function ThreatGlobe() {
           <div className="bg-[var(--terminal-surface-alt)] border border-[var(--terminal-border)] rounded p-4 relative overflow-hidden">
             <p className="text-[10px] text-[var(--terminal-text-muted)] mb-1">TOTAL_MITIGATED_IPS</p>
             <p className="text-4xl font-bold text-white tracking-tighter">
-              {animatedTotal > 0 ? animatedTotal.toLocaleString() : '-----'}
+              <AnimatedCounter value={threatData?.total_banned || 0} />
             </p>
           </div>
 

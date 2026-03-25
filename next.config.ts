@@ -3,6 +3,8 @@ import { siteConfig } from "./src/config";
 
 const { security } = siteConfig;
 
+const isDev = process.env.NODE_ENV === 'development';
+
 const cspHeader = `
   default-src 'self';
   script-src 'self' 'unsafe-eval' 'unsafe-inline' ${security.scripts.join(' ')};
@@ -13,10 +15,10 @@ const cspHeader = `
   base-uri 'self';
   form-action 'self';
   frame-src 'self' ${security.frames.join(' ')};
-  connect-src 'self' ${security.connects.join(' ')};
+  connect-src 'self' ws: wss: ${security.connects.join(' ')};
   worker-src 'self' blob:;
   child-src 'self' https://challenges.cloudflare.com;
-  upgrade-insecure-requests;
+  ${isDev ? '' : 'upgrade-insecure-requests;'}
 `.replace(/\n/g, '').replace(/\s{2,}/g, ' ').trim();
 
 const dynamicRemotePatterns = security.images.map((domain) => {
@@ -30,9 +32,12 @@ const dynamicRemotePatterns = security.images.map((domain) => {
 });
 
 const nextConfig: NextConfig = {
+  allowedDevOrigins: ['10.8.0.108'],
   output: 'standalone',
 
   async headers() {
+    if (isDev) return [];
+    
     return [
       {
         source: '/(.*)',
