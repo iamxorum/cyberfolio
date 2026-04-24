@@ -31,17 +31,6 @@ export default function Footer() {
             ))}
           </div>
         </div>
-        <div className="text-center sm:text-left text-[var(--terminal-text-muted)]/70">
-          Portfolio source code available on{' '}
-          <a
-            href="https://github.com/iamxorum/cyberfolio"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="hover:text-white transition-colors underline"
-          >
-            GitHub
-          </a>
-        </div>
       </div>
     </div>
   );

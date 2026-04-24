@@ -7,6 +7,7 @@ import InitScreen from '@/components/InitScreen';
 import HeroSection from '@/components/HeroSection';
 import SystemStats from '@/components/SystemStats';
 import ProjectsGrid from '@/components/ProjectsGrid';
+import Discography from "@/components/Discography";
 import { useAppInitialization } from '@/hooks/useAppInitialization';
 import { useSystemStats } from '@/hooks/useSystemStats';
 
@@ -56,8 +57,10 @@ export default function Home() {
               viewport={viewport}
               responseTime={responseTime}
             />
-            <ThreatGlobe />
             <ProjectsGrid />
+            <ThreatGlobe />
+            <br/>
+            <Discography />
             <Footer />
           </div>
         </div>
