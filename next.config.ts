@@ -14,8 +14,8 @@ const cspHeader = `
   object-src 'none';
   base-uri 'self';
   form-action 'self';
-  frame-src 'self' ${security.frames.join(' ')};
-  connect-src 'self' ws: wss: ${security.connects.join(' ')};
+  frame-src 'self' https://open.spotify.com https://www.youtube.com https://w.soundcloud.com ${security.frames.join(' ')};
+  connect-src 'self' ws: wss: iamxorum.ro *.iamxorum.ro ${security.connects.join(' ')};
   worker-src 'self' blob:;
   child-src 'self' https://challenges.cloudflare.com;
   ${isDev ? '' : 'upgrade-insecure-requests;'}
