@@ -623,6 +623,23 @@ export default function About() {
                                   {edu.description}
                                 </p>
                               )}
+                              
+                              {edu.thesisUrl && (
+                                <div className="mt-3">
+                                  <a
+                                    href={edu.thesisUrl}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded border border-[var(--terminal-border)] hover:border-primary hover:bg-primary/10 text-white text-[10px] sm:text-xs font-bold font-mono tracking-wider transition-all group/btn w-fit"
+                                  >
+                                    <span className="material-symbols-outlined text-sm sm:text-base group-hover/btn:text-primary">
+                                      description
+                                    </span>
+                                    <span>{edu.thesisLabel || 'VIEW_DOC'}</span>
+                                  </a>
+                                </div>
+                              )}
+
                             </div>
                           </div>
                         ))}

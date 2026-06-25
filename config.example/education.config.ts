@@ -9,6 +9,9 @@ export interface Education {
   grade?: string;
   location?: string;
   icon?: string; 
+  thesisUrl?: string; 
+  thesisLabel?: string;
+  thesisFileName?: string;
 }
 
 export const education: Education[] = [
@@ -23,5 +26,8 @@ export const education: Education[] = [
     location: 'City, Country',
     grade: '3.8/4.0',
     icon: 'school',
+    thesisUrl: '/api/docs/edu_2',
+    thesisLabel: 'VIEW_THESIS',
+    thesisFileName: 'edu_2_thesis.pdf',
   },
 ];
