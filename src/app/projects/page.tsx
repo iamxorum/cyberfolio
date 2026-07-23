@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef } from 'react';
 import { animate, stagger } from 'animejs';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
@@ -8,23 +8,12 @@ import Terminal from '@/components/Terminal';
 import InitScreen from '@/components/InitScreen';
 import Link from 'next/link';
 import { projects, contentConfig } from '@/config';
+import { useAppInitialization } from '@/hooks/useAppInitialization';
 
 export default function Projects() {
-  const [initialized, setInitialized] = useState(false);
+  const { initialized, checked, setInitialized } = useAppInitialization();
   const headerRef = useRef<HTMLDivElement>(null);
   const tableRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    
-    if (typeof window !== 'undefined') {
-      const initTimestamp = localStorage.getItem('iamxorum_initialized');
-      const isInitialized = initTimestamp && (Date.now() - parseInt(initTimestamp)) < 24 * 60 * 60 * 1000;
-      if (isInitialized) {
-        // eslint-disable-next-line react-hooks/set-state-in-effect
-        setInitialized(true);
-      }
-    }
-  }, []);
 
   useEffect(() => {
     
@@ -52,12 +41,9 @@ export default function Projects() {
     }
   }, []);
 
-  if (!initialized) {
-    return <InitScreen onInit={() => setInitialized(true)} />;
-  }
-
   return (
     <div className="relative flex h-auto min-h-screen w-full flex-col bg-[var(--terminal-bg)] text-[var(--terminal-text)] group/design-root overflow-x-hidden font-display">
+      {checked && !initialized && <InitScreen onInit={() => setInitialized(true)} />}
       {/* Background Grid Pattern Effect */}
       <div className="fixed inset-0 z-0 opacity-[0.03] pointer-events-none" style={{ backgroundImage: `linear-gradient(var(--terminal-accent-alt) 1px, transparent 1px), linear-gradient(90deg, var(--terminal-accent-alt) 1px, transparent 1px)`, backgroundSize: '40px 40px' }}></div>
       <div className="layout-container flex h-full grow flex-col">
@@ -70,9 +56,7 @@ export default function Projects() {
                 <span className="material-symbols-outlined text-[var(--terminal-text-dim)] text-lg">folder_open</span>
                 <Link href="/" className="text-[var(--terminal-text-muted)] hover:text-[var(--terminal-text)] transition-colors">~/root</Link>
                 <span className="text-[var(--terminal-text-dim)]">/</span>
-                <Link href="/projects" className="text-[var(--terminal-text-muted)] hover:text-[var(--terminal-text)] transition-colors">projects</Link>
-                <span className="text-[var(--terminal-text-dim)]">/</span>
-                <span className="text-primary font-bold">data_log</span>
+                <Link href="/projects" className="text-[var(--terminal-text-muted)] hover:text-[var(--terminal-text)] transition-colors">projects.yaml</Link>
                 <span className="inline-block w-2 h-4 bg-primary ml-1 animate-pulse"></span>
               </div>
               {/* Page Heading & Controls */}

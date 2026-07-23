@@ -1,133 +1,64 @@
 'use client';
 
-import { useState, useEffect, useRef } from 'react';
+import { useState } from 'react';
 import { Turnstile } from '@marsidev/react-turnstile';
+import { pdf } from '@react-pdf/renderer';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import CVTemplate from '@/components/CVTemplate';
+import CVDocument from '@/components/CVDocument';
+import ScaleToFit from '@/components/ScaleToFit';
 import { cvConfig, siteConfig, experience, education, skills, languages, certifications, hobbies, projects } from '../../config';
 import { securityConfig } from '@/config';
 import { getTurnstileSiteKey } from '@/lib/turnstile';
+import { useTurnstileVerification } from '@/hooks/useTurnstileVerification';
 
 export default function CVPage() {
-  const [isVerified, setIsVerified] = useState(false);
+  const { isVerified, checked, markVerified } = useTurnstileVerification();
   const [isDecrypting, setIsDecrypting] = useState(false);
   const [selectedStyle, setSelectedStyle] = useState<string>(cvConfig.styles[0].id);
   const [isDownloading, setIsDownloading] = useState(false);
-  const [useColumnLayout, setUseColumnLayout] = useState<boolean>(true);
+  const [useColumnLayout, setUseColumnLayout] = useState<boolean>(false);
   const [showCV, setShowCV] = useState<boolean>(false);
-  const cvContainerRef = useRef<HTMLDivElement>(null);
 
-  useEffect(() => {
-
-    const script = document.createElement('script');
-    script.src = 'https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js';
-    script.async = true;
-    document.head.appendChild(script);
-
-    return () => {
-
-      if (document.head.contains(script)) {
-        document.head.removeChild(script);
-      }
-    };
-  }, []);
+  const selectedCVStyle = cvConfig.styles.find(s => s.id === selectedStyle) || cvConfig.styles[0];
 
   const handleDownloadPDF = async () => {
-    if (!cvContainerRef.current) return;
-
     setIsDownloading(true);
 
-    const wasHidden = !showCV;
-    if (wasHidden) {
-      setShowCV(true);
-      await new Promise(resolve => setTimeout(resolve, 300));
-    }
-
     try {
+      const blob = await pdf(
+        <CVDocument
+          style={selectedCVStyle}
+          siteConfig={siteConfig}
+          experience={experience}
+          education={education}
+          languages={languages}
+          certifications={certifications}
+          hobbies={hobbies}
+          projects={projects}
+          summary={cvConfig.summary}
+          email={cvConfig.email}
+          useColumnLayout={useColumnLayout}
+        />
+      ).toBlob();
 
-      await new Promise((resolve) => {
-        const checkLibrary = () => {
-          if (window.html2pdf) {
-            resolve(true);
-          } else {
-            setTimeout(checkLibrary, 100);
-          }
-        };
-        checkLibrary();
-      });
-
-      const element = cvContainerRef.current;
-
-
-      const images = element.querySelectorAll('img');
-      await Promise.all(
-        Array.from(images).map((img: HTMLImageElement) => {
-          if (img.complete) return Promise.resolve();
-          return new Promise((resolve) => {
-            img.onload = () => resolve(true);
-            img.onerror = () => resolve(true);
-
-            setTimeout(() => resolve(true), 5000);
-          });
-        })
-      );
-
-
-      const convertImagesToBase64 = async (container: HTMLElement) => {
-        const imgs = container.querySelectorAll('img');
-        for (const img of Array.from(imgs)) {
-          try {
-            const canvas = document.createElement('canvas');
-            const ctx = canvas.getContext('2d');
-            if (!ctx) continue;
-
-            canvas.width = img.naturalWidth || img.width;
-            canvas.height = img.naturalHeight || img.height;
-            ctx.drawImage(img, 0, 0);
-
-            const dataURL = canvas.toDataURL('image/jpeg', 0.95);
-            (img as HTMLImageElement).src = dataURL;
-          } catch (e) {
-            console.warn('Could not convert image to base64:', e);
-          }
-        }
-      };
-
-
-      await convertImagesToBase64(element);
-
-
-      await new Promise(resolve => setTimeout(resolve, 500));
-
-      const opt = {
-        margin: 0.5,
-        filename: `CV_${selectedStyle}_${siteConfig.fullName.replace(/\s+/g, '_')}.pdf`,
-        image: { type: 'jpeg', quality: 0.98 },
-        html2canvas: {
-          scale: 2,
-          useCORS: true,
-          allowTaint: true,
-          logging: false,
-          letterRendering: true
-        },
-        jsPDF: { unit: 'in', format: 'a4', orientation: 'portrait' },
-        pagebreak: { mode: ['avoid-all', 'css', 'legacy'] }
-      };
-      await window.html2pdf?.().set(opt).from(element).save();
-    } catch (error) {
-      console.error('Error generating PDF:', error);
-
-      window.print();
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = `CV_${selectedStyle}_${siteConfig.fullName.replace(/\s+/g, '_')}.pdf`;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      URL.revokeObjectURL(url);
     } finally {
       setIsDownloading(false);
-      if (wasHidden) {
-        setShowCV(false);
-      }
     }
   };
 
-  const selectedCVStyle = cvConfig.styles.find(s => s.id === selectedStyle) || cvConfig.styles[0];
+  if (!checked) {
+    return null;
+  }
 
   if (!isVerified) {
     return (
@@ -168,7 +99,7 @@ export default function CVPage() {
 
                     if (data.success) {
                       setTimeout(() => {
-                        setIsVerified(true);
+                        markVerified();
                         setIsDecrypting(false);
                       }, 1000);
                     } else {
@@ -197,7 +128,7 @@ export default function CVPage() {
   }
 
   return (
-    <div className="relative flex h-auto min-h-screen w-full flex-col bg-[var(--terminal-bg)] text-[var(--terminal-text)] group/design-root overflow-x-hidden font-display">
+    <div className="relative flex h-auto min-h-screen w-full flex-col bg-[var(--terminal-bg)] text-[var(--terminal-text)] group/design-root overflow-x-hidden font-display print:bg-white print:min-h-0">
       {/* Background Grid Pattern Effect */}
       <div className="fixed inset-0 z-0 opacity-[0.03] pointer-events-none print:hidden" style={{ backgroundImage: `linear-gradient(var(--terminal-accent-alt) 1px, transparent 1px), linear-gradient(90deg, var(--terminal-accent-alt) 1px, transparent 1px)`, backgroundSize: '40px 40px' }}></div>
 
@@ -301,22 +232,24 @@ export default function CVPage() {
 
             {/* CV Template */}
             <div
-              ref={cvContainerRef}
               className="cv-container print:p-0"
               style={{ display: showCV ? 'block' : 'none' }}
             >
-              <CVTemplate
-                style={selectedCVStyle}
-                siteConfig={siteConfig}
-                experience={experience}
-                education={education}
-                languages={languages}
-                certifications={certifications}
-                hobbies={hobbies}
-                projects={projects}
-                summary={cvConfig.summary}
-                useColumnLayout={useColumnLayout}
-              />
+              <ScaleToFit>
+                <CVTemplate
+                  style={selectedCVStyle}
+                  siteConfig={siteConfig}
+                  experience={experience}
+                  education={education}
+                  languages={languages}
+                  certifications={certifications}
+                  hobbies={hobbies}
+                  projects={projects}
+                  summary={cvConfig.summary}
+                  email={cvConfig.email}
+                  useColumnLayout={useColumnLayout}
+                />
+              </ScaleToFit>
             </div>
 
             <div className="no-print">

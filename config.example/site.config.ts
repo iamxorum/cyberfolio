@@ -89,14 +89,13 @@ export const siteConfig: SiteConfig = {
     ],
   },
 
-  systemVersion: 'v1.4.5',
+  systemVersion: 'v1.4.6.1',
 
   favicon: 'path/to/favicon.ico',
 
   security: {
     scripts: [
       'https://challenges.cloudflare.com',
-      'https://cdnjs.cloudflare.com',
     ],
     styles: [
       'https://fonts.googleapis.com',
@@ -120,7 +119,6 @@ export const siteConfig: SiteConfig = {
       'https://challenges.cloudflare.com',
       'https://www.youtube.com',
       'https://youtube.com',
-      'https://cdnjs.cloudflare.com',
     ]
   }
 };

@@ -156,7 +156,8 @@ body {
 
 .ats-friendly p,
 .ats-friendly div,
-.ats-friendly span {
+.ats-friendly span,
+.ats-friendly li {
   font-size: 11pt !important;
   line-height: 1.4 !important;
 }
@@ -219,6 +220,15 @@ body {
     line-height: 1.4 !important;
     color: black !important;
     background: white !important;
+  }
+
+  /* ScaleToFit shrinks the on-screen preview to fit narrow viewports; print must always capture the CV at true size. */
+  .scale-to-fit,
+  .scale-to-fit > div {
+    transform: none !important;
+    height: auto !important;
+    overflow: visible !important;
+    width: auto !important;
   }
 
   .ats-friendly * {

@@ -9,9 +9,11 @@ export interface Education {
   grade?: string;
   location?: string;
   icon?: string; 
-  thesisUrl?: string; 
+  thesisUrl?: string;
   thesisLabel?: string;
   thesisFileName?: string;
+  /** Set to false to keep an entry off the CV/resume export while still showing it elsewhere (e.g. the About page). Defaults to true. */
+  includeInCV?: boolean;
 }
 
 export const education: Education[] = [

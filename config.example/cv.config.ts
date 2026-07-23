@@ -4,9 +4,10 @@ export interface CVStyle {
   description: string;
   domain: string; 
   icon: string;
-  summary?: string; 
-  skillCategories?: string[]; 
-  showProjects?: boolean; 
+  summary?: string;
+  skillCategories?: string[];
+  excludeSkills?: string[];
+  showProjects?: boolean;
   colorScheme?: {
     primary: string;
     secondary?: string;
@@ -15,12 +16,14 @@ export interface CVStyle {
 
 export interface CVConfig {
   summary?: string;
+  email?: string;
   styles: CVStyle[];
-  cvProfileImage?: string; 
+  cvProfileImage?: string;
 }
 
 export const cvConfig: CVConfig = {
   summary: 'Your default professional summary that will be used if no style-specific summary is provided. This should be a general overview of your professional background, skills, and career goals.',
+  email: 'your.email@example.com',
   styles: [
     {
       id: 'example',

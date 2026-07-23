@@ -12,11 +12,12 @@ import SkillsRadar from '@/components/SkillsRadar';
 import { siteConfig, contentConfig, getTopSkills, getCategories, getSkillsByCategory, getSkillsGroupedByCategory, getScoreFromLevel, hobbies, education, certifications, languages, experience } from '@/config';
 import { securityConfig } from '@/config';
 import { useAppInitialization } from '@/hooks/useAppInitialization';
+import { useTurnstileVerification } from '@/hooks/useTurnstileVerification';
 import { getTurnstileSiteKey } from '@/lib/turnstile';
 
 export default function About() {
   const { initialized, checked, setInitialized, userId } = useAppInitialization();
-  const [isVerified, setIsVerified] = useState(false);
+  const { isVerified, checked: turnstileChecked, markVerified } = useTurnstileVerification();
   const [isDecrypting, setIsDecrypting] = useState(false);
   const [age, setAge] = useState<string>('');
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
@@ -128,6 +129,10 @@ export default function About() {
 
   const bootOverlay = checked && !initialized && <InitScreen onInit={() => setInitialized(true)} />;
 
+  if (!turnstileChecked) {
+    return null;
+  }
+
   if (!isVerified) {
     return (
       <>
@@ -169,7 +174,7 @@ export default function About() {
 
                     if (data.success) {
                       setTimeout(() => {
-                        setIsVerified(true);
+                        markVerified();
                         setIsDecrypting(false);
                       }, 1000);
                     } else {
@@ -214,9 +219,7 @@ export default function About() {
                 <span className="material-symbols-outlined text-[var(--terminal-text-dim)] text-lg">folder_open</span>
                 <Link href="/" className="text-[var(--terminal-text-muted)] hover:text-[var(--terminal-text)] transition-colors">~/root</Link>
                 <span className="text-[var(--terminal-text-dim)]">/</span>
-                <Link href="/about" className="text-[var(--terminal-text-muted)] hover:text-[var(--terminal-text)] transition-colors">profile</Link>
-                <span className="text-[var(--terminal-text-dim)]">/</span>
-                <span className="text-primary font-bold">config</span>
+                <Link href="/about" className="text-[var(--terminal-text-muted)] hover:text-[var(--terminal-text)] transition-colors">profile.conf</Link>
                 <span className="inline-block w-2 h-4 bg-primary ml-1 animate-pulse"></span>
               </div>
               <div className="flex flex-col md:flex-row gap-4 sm:gap-6">
@@ -230,6 +233,7 @@ export default function About() {
                         src={siteConfig.profileImage}
                         alt="Profile"
                         fill
+                        sizes="(max-width: 768px) 100vw, 33vw"
                         className="object-cover"
                         priority
                       />
@@ -437,6 +441,7 @@ export default function About() {
                                   alt={`${lang.name} flag`}
                                   width={20}
                                   height={15}
+                                  style={{ width: '20px', height: '15px' }}
                                   className="rounded-sm"
                                   unoptimized
                                 />

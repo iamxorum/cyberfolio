@@ -14,7 +14,7 @@ const PlatformIcon = ({ platform, className, style }: { platform: Platform; clas
 };
 
 export default function Discography() {
-    const [activeTrack, setActiveTrack] = useState<Track>(discography[0]);
+    const [activeTrack, setActiveTrack] = useState<Track | undefined>(discography[0]);
     const [copied, setCopied] = useState(false);
 
     const platformColors: Record<Platform, string> = {
@@ -23,9 +23,10 @@ export default function Discography() {
         YouTube: '#FF0000'
     };
 
-    const activeColor = platformColors[activeTrack.platform];
+    const activeColor = activeTrack ? platformColors[activeTrack.platform] : '#666';
 
     const handleCopy = async () => {
+        if (!activeTrack) return;
         try {
             await navigator.clipboard.writeText(activeTrack.url);
             setCopied(true);
@@ -36,6 +37,7 @@ export default function Discography() {
     };
 
     const embedUrl = useMemo(() => {
+        if (!activeTrack) return '';
         const url = activeTrack.url;
         if (activeTrack.platform === 'Spotify') {
             return url.includes('/embed') ? url : url.replace('open.spotify.com/', 'open.spotify.com/embed/');
@@ -51,6 +53,8 @@ export default function Discography() {
         }
         return url;
     }, [activeTrack]);
+
+    if (!activeTrack) return null;
 
     return (
         <div className="flex flex-col gap-6 px-4 py-6 border border-[var(--terminal-border)] rounded bg-[rgba(var(--terminal-bg-rgb),0.80)] font-mono relative overflow-hidden">

@@ -10,6 +10,7 @@
   },
   "dependencies": {
     "@marsidev/react-turnstile": "^1.4.2",
+    "@react-pdf/renderer": "^4.5.1",
     "@types/animejs": "^3.1.13",
     "@types/three": "^0.183.1",
     "animejs": "^4.2.2",

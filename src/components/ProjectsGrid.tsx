@@ -19,6 +19,8 @@ export default function ProjectsGrid() {
     }
   }, []);
 
+  if (projects.length === 0) return null;
+
   return (
     <>
       <div className="px-2 sm:px-4 pt-4 sm:pt-5 pb-2">

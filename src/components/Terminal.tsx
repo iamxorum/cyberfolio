@@ -632,7 +632,6 @@ export default function Terminal() {
             }}
             onKeyDown={handleKeyDown}
             className="bg-transparent border-none outline-none text-[var(--terminal-text)] flex-1 w-full"
-            autoFocus
             spellCheck={false}
           />
           {suggestions.length > 0 && (
