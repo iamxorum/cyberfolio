@@ -57,7 +57,7 @@ export default function Projects() {
   }
 
   return (
-    <div className="relative flex h-auto min-h-screen w-full flex-col bg-[var(--terminal-bg)] text-white group/design-root overflow-x-hidden font-display">
+    <div className="relative flex h-auto min-h-screen w-full flex-col bg-[var(--terminal-bg)] text-[var(--terminal-text)] group/design-root overflow-x-hidden font-display">
       {/* Background Grid Pattern Effect */}
       <div className="fixed inset-0 z-0 opacity-[0.03] pointer-events-none" style={{ backgroundImage: `linear-gradient(var(--terminal-accent-alt) 1px, transparent 1px), linear-gradient(90deg, var(--terminal-accent-alt) 1px, transparent 1px)`, backgroundSize: '40px 40px' }}></div>
       <div className="layout-container flex h-full grow flex-col">
@@ -68,9 +68,9 @@ export default function Projects() {
               {/* Breadcrumbs */}
               <div className="flex items-center gap-2 text-sm font-mono tracking-wide">
                 <span className="material-symbols-outlined text-[var(--terminal-text-dim)] text-lg">folder_open</span>
-                <Link href="/" className="text-[var(--terminal-text-muted)] hover:text-white transition-colors">~/root</Link>
+                <Link href="/" className="text-[var(--terminal-text-muted)] hover:text-[var(--terminal-text)] transition-colors">~/root</Link>
                 <span className="text-[var(--terminal-text-dim)]">/</span>
-                <Link href="/projects" className="text-[var(--terminal-text-muted)] hover:text-white transition-colors">projects</Link>
+                <Link href="/projects" className="text-[var(--terminal-text-muted)] hover:text-[var(--terminal-text)] transition-colors">projects</Link>
                 <span className="text-[var(--terminal-text-dim)]">/</span>
                 <span className="text-primary font-bold">data_log</span>
                 <span className="inline-block w-2 h-4 bg-primary ml-1 animate-pulse"></span>
@@ -78,14 +78,14 @@ export default function Projects() {
               {/* Page Heading & Controls */}
               <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-4 sm:gap-6 border-b border-[var(--terminal-border-alt)] pb-4 sm:pb-6" ref={headerRef}>
                 <div className="flex flex-col gap-1 sm:gap-2">
-                  <h1 className="text-white text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-black leading-tight tracking-tight uppercase">
+                  <h1 className="text-[var(--terminal-text)] text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-black leading-tight tracking-tight uppercase">
                     {contentConfig.projects.title}
                   </h1>
                   <p className="text-[var(--terminal-text-muted)] text-sm sm:text-base md:text-lg font-mono">
                     {contentConfig.projects.subtitle}
                   </p>
                 </div>
-                <Link href="/" className="group flex items-center justify-center gap-2 rounded h-9 sm:h-10 px-3 sm:px-5 bg-[var(--terminal-border-alt)] hover:bg-[var(--terminal-border)] transition-all text-white text-xs sm:text-sm font-bold tracking-wide border border-transparent hover:border-[var(--terminal-text-dim)]">
+                <Link href="/" className="group flex items-center justify-center gap-2 rounded h-9 sm:h-10 px-3 sm:px-5 bg-[var(--terminal-border-alt)] hover:bg-[var(--terminal-border)] transition-all text-[var(--terminal-text)] text-xs sm:text-sm font-bold tracking-wide border border-transparent hover:border-[var(--terminal-text-dim)]">
                   <span className="material-symbols-outlined text-sm group-hover:-translate-x-1 transition-transform">arrow_back</span>
                   <span className="hidden sm:inline">CD .. [ RETURN_HOME ]</span>
                   <span className="sm:hidden">HOME</span>
@@ -97,7 +97,7 @@ export default function Projects() {
                 <div className="flex flex-col gap-4">
                   <div className="flex items-center gap-3 border-b border-[var(--terminal-border-alt)] pb-3">
                     <span className="material-symbols-outlined text-primary text-2xl sm:text-3xl">folder</span>
-                    <h2 className="text-white text-xl sm:text-2xl md:text-3xl font-bold tracking-tight uppercase">
+                    <h2 className="text-[var(--terminal-text)] text-xl sm:text-2xl md:text-3xl font-bold tracking-tight uppercase">
                       Projects
                     </h2>
                     <span className="text-[var(--terminal-text-dim)] text-xs sm:text-sm font-mono">
@@ -177,7 +177,7 @@ export default function Projects() {
                       </div>
                       <div className="col-span-4 flex items-center gap-2 sm:gap-3">
                         <span className="material-symbols-outlined text-[var(--terminal-text-muted)] text-base sm:text-lg md:text-xl">{project.icon}</span>
-                        <span className="text-white font-bold text-base sm:text-lg tracking-tight group-hover:text-primary transition-colors break-words">{project.name}</span>
+                        <span className="text-[var(--terminal-text)] font-bold text-base sm:text-lg tracking-tight group-hover:text-primary transition-colors break-words">{project.name}</span>
                       </div>
                       <div className="col-span-2 flex flex-wrap gap-1.5">
                         {statuses.map((status, idx) => {
@@ -193,7 +193,7 @@ export default function Projects() {
                         })}
                       </div>
                       <div className="col-span-2">
-                        <span className="text-white text-xs sm:text-sm font-mono uppercase">
+                        <span className="text-[var(--terminal-text)] text-xs sm:text-sm font-mono uppercase">
                           {project.category}
                         </span>
                       </div>
@@ -203,7 +203,7 @@ export default function Projects() {
                             href={project.repository}
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="h-7 sm:h-8 px-2 sm:px-3 rounded border border-[var(--terminal-border)] hover:border-primary hover:bg-primary/20 text-white text-[10px] sm:text-xs font-bold font-mono tracking-wider transition-all flex items-center gap-1 sm:gap-2"
+                            className="h-7 sm:h-8 px-2 sm:px-3 rounded border border-[var(--terminal-border)] hover:border-primary hover:bg-primary/20 text-[var(--terminal-text)] text-[10px] sm:text-xs font-bold font-mono tracking-wider transition-all flex items-center gap-1 sm:gap-2"
                           >
                             <span className="hidden sm:inline">VIEW_SOURCE</span>
                             <span className="sm:hidden">SOURCE</span>
@@ -233,7 +233,7 @@ export default function Projects() {
                   <div className="flex flex-col gap-4">
                     <div className="flex items-center gap-3 border-b border-[var(--terminal-border-alt)] pb-3">
                       <span className="material-symbols-outlined text-primary text-2xl sm:text-3xl">group</span>
-                      <h2 className="text-white text-xl sm:text-2xl md:text-3xl font-bold tracking-tight uppercase">
+                      <h2 className="text-[var(--terminal-text)] text-xl sm:text-2xl md:text-3xl font-bold tracking-tight uppercase">
                         Contributions
                       </h2>
                       <span className="text-[var(--terminal-text-dim)] text-xs sm:text-sm font-mono">
@@ -310,7 +310,7 @@ export default function Projects() {
                             </div>
                             <div className="col-span-4 flex items-center gap-2 sm:gap-3">
                               <span className="material-symbols-outlined text-[var(--terminal-text-muted)] text-base sm:text-lg md:text-xl">{project.icon}</span>
-                              <span className="text-white font-bold text-base sm:text-lg tracking-tight group-hover:text-primary transition-colors break-words">{project.name}</span>
+                              <span className="text-[var(--terminal-text)] font-bold text-base sm:text-lg tracking-tight group-hover:text-primary transition-colors break-words">{project.name}</span>
                             </div>
                             <div className="col-span-2 flex flex-wrap gap-1.5">
                               {statuses.map((status, idx) => {
@@ -326,7 +326,7 @@ export default function Projects() {
                               })}
                             </div>
                             <div className="col-span-2">
-                              <span className="text-white text-xs sm:text-sm font-mono uppercase">
+                              <span className="text-[var(--terminal-text)] text-xs sm:text-sm font-mono uppercase">
                                 {project.category}
                               </span>
                             </div>
@@ -336,7 +336,7 @@ export default function Projects() {
                                   href={project.repository}
                                   target="_blank"
                                   rel="noopener noreferrer"
-                                  className="h-7 sm:h-8 px-2 sm:px-3 rounded border border-[var(--terminal-border)] hover:border-primary hover:bg-primary/20 text-white text-[10px] sm:text-xs font-bold font-mono tracking-wider transition-all flex items-center gap-1 sm:gap-2"
+                                  className="h-7 sm:h-8 px-2 sm:px-3 rounded border border-[var(--terminal-border)] hover:border-primary hover:bg-primary/20 text-[var(--terminal-text)] text-[10px] sm:text-xs font-bold font-mono tracking-wider transition-all flex items-center gap-1 sm:gap-2"
                                 >
                                   <span className="hidden sm:inline">VIEW_SOURCE</span>
                                   <span className="sm:hidden">SOURCE</span>

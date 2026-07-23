@@ -1,10 +1,14 @@
 import { NextResponse } from 'next/server';
 import { siteConfig } from '@/config';
+import { isRateLimited, getClientKey } from '@/lib/rate-limit';
+import { getTurnstileSecretKey } from '@/lib/turnstile';
+
+const isDevelopment = process.env.NODE_ENV === 'development';
 
 const ALLOWED_ORIGINS = [
     `https://${siteConfig.domain}`,
     `https://www.${siteConfig.domain}`,
-    'http://localhost:3000',
+    ...(isDevelopment ? ['http://localhost:3000'] : []),
 ];
 
 export async function POST(request: Request) {
@@ -15,8 +19,12 @@ export async function POST(request: Request) {
         ALLOWED_ORIGINS.some(allowed => referer.startsWith(allowed));
 
     if (!isAllowed) {
-        console.warn(`[SECURITY] Blocat request de la origin: ${origin} / referer: ${referer}`);
+        console.warn(`[SECURITY] Blocked request from origin: ${origin} / referer: ${referer}`);
         return NextResponse.json({ success: false, error: 'Access Denied: Invalid Origin' }, { status: 403 });
+    }
+
+    if (isRateLimited(getClientKey(request), 10, 60_000)) {
+        return NextResponse.json({ success: false, error: 'Too many requests' }, { status: 429 });
     }
 
     try {
@@ -27,7 +35,7 @@ export async function POST(request: Request) {
             return NextResponse.json({ success: false, error: 'Token missing' }, { status: 400 });
         }
 
-        const secretKey = process.env.TURNSTILE_SECRET_KEY;
+        const secretKey = getTurnstileSecretKey();
 
         if (!secretKey) {
             console.error("TURNSTILE_SECRET_KEY is not defined in .env");
@@ -50,11 +58,11 @@ export async function POST(request: Request) {
         if (data.success) {
             return NextResponse.json({ success: true });
         } else {
-            console.warn("[TURNSTILE] Token invalid sau bot detectat:", data['error-codes']);
+            console.warn("[TURNSTILE] Invalid token or bot detected:", data['error-codes']);
             return NextResponse.json({ success: false, error: data['error-codes'] }, { status: 403 });
         }
     } catch (error) {
-        console.error('[API VERIFY] Eroare interna:', error);
+        console.error('[API VERIFY] Internal error:', error);
         return NextResponse.json({ success: false, error: 'Internal server error' }, { status: 500 });
     }
 }

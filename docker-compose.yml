@@ -12,6 +12,6 @@ services:
       - NODE_ENV=production
     restart: unless-stopped
     volumes:
-      - ./src/config:/app/config:ro
       - ./public:/app/public:ro
+      - ./private:/app/private:ro
 

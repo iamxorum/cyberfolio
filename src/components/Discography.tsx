@@ -53,7 +53,7 @@ export default function Discography() {
     }, [activeTrack]);
 
     return (
-        <div className="flex flex-col gap-6 px-4 py-6 border border-[var(--terminal-border)] rounded bg-black/80 font-mono relative overflow-hidden">
+        <div className="flex flex-col gap-6 px-4 py-6 border border-[var(--terminal-border)] rounded bg-[rgba(var(--terminal-bg-rgb),0.80)] font-mono relative overflow-hidden">
             {/* Ambient Glow */}
             <div
                 className="absolute top-0 right-0 w-[400px] h-[400px] opacity-10 blur-[120px] pointer-events-none transition-colors duration-1000"
@@ -62,7 +62,7 @@ export default function Discography() {
 
             {/* HEADER */}
             <div className="flex justify-between items-center border-b border-[var(--terminal-border)] pb-4 mb-2 relative z-10">
-                <h2 className="text-xl font-bold tracking-tighter text-white flex items-center gap-2">
+                <h2 className="text-xl font-bold tracking-tighter text-[var(--terminal-text)] flex items-center gap-2">
                     <div className="w-2 h-2 rounded-full animate-pulse" style={{ backgroundColor: activeColor }} />
                     DISCOGRAPHY
                 </h2>
@@ -76,8 +76,8 @@ export default function Discography() {
                 {/* LEFT: LIST */}
                 <div className="lg:col-span-5 flex flex-col gap-2">
                     <div className="flex justify-between px-1">
-                        <p className="text-[10px] font-bold text-white/40 uppercase tracking-widest">Index</p>
-                        <p className="text-[10px] font-bold text-white/40 uppercase tracking-widest">Entry_Point</p>
+                        <p className="text-[10px] font-bold text-[var(--terminal-text)]/40 uppercase tracking-widest">Index</p>
+                        <p className="text-[10px] font-bold text-[var(--terminal-text)]/40 uppercase tracking-widest">Entry_Point</p>
                     </div>
 
                     <div className="flex flex-col gap-1 max-h-[360px] overflow-y-auto pr-2 custom-scrollbar overflow-x-hidden">
@@ -89,8 +89,8 @@ export default function Discography() {
                                     onClick={() => { setActiveTrack(track); setCopied(false); }}
                                     className={`flex items-center justify-between p-3 border transition-all text-left group rounded w-full
                                         ${isSelected
-                                        ? 'bg-white/10 border-white/20'
-                                        : 'bg-transparent border-white/5 hover:border-white/10'}`}
+                                        ? 'bg-[rgba(var(--terminal-text-rgb),0.10)] border-[rgba(var(--terminal-text-rgb),0.20)]'
+                                        : 'bg-transparent border-[rgba(var(--terminal-text-rgb),0.5)] hover:border-[rgba(var(--terminal-text-rgb),0.10)]'}`}
                                 >
                                     <div className="flex items-center gap-3 overflow-hidden">
                                         <PlatformIcon
@@ -99,7 +99,7 @@ export default function Discography() {
                                             style={{ color: isSelected ? platformColors[track.platform] : '#333' }}
                                         />
                                         <div className="truncate">
-                                            <div className={`text-xs font-bold uppercase truncate ${isSelected ? 'text-white' : 'text-white/40'}`}>
+                                            <div className={`text-xs font-bold uppercase truncate ${isSelected ? 'text-[var(--terminal-text)]' : 'text-[var(--terminal-text)]/40'}`}>
                                                 {track.title}
                                             </div>
                                             <div className="text-[9px] text-[var(--terminal-text-muted)] italic truncate">{track.category}</div>
@@ -118,7 +118,7 @@ export default function Discography() {
 
                 {/* RIGHT: PLAYER */}
                 <div className="lg:col-span-7 flex flex-col gap-4">
-                    <div className="relative group rounded-xl overflow-hidden border border-white/10 shadow-2xl bg-[#111]">
+                    <div className="relative group rounded-xl overflow-hidden border border-[rgba(var(--terminal-text-rgb),0.10)] shadow-2xl bg-[#111]">
                         <iframe
                             key={activeTrack.id}
                             src={embedUrl}
@@ -135,7 +135,7 @@ export default function Discography() {
                         {/* THE NEW COPY LINK COMPONENT */}
                         <button
                             onClick={handleCopy}
-                            className="p-3 border border-white/5 bg-white/5 rounded flex flex-col justify-center text-left hover:bg-white/10 hover:border-white/20 transition-all group"
+                            className="p-3 border border-[rgba(var(--terminal-text-rgb),0.5)] bg-[rgba(var(--terminal-text-rgb),0.5)] rounded flex flex-col justify-center text-left hover:bg-[rgba(var(--terminal-text-rgb),0.10)] hover:border-[rgba(var(--terminal-text-rgb),0.20)] transition-all group"
                         >
                             <span className="text-[8px] text-[var(--terminal-text-muted)] block uppercase mb-1">
                                 {copied ? 'Success' : 'Share_Stream'}
@@ -145,18 +145,18 @@ export default function Discography() {
                                     {copied ? (
                                         <MdCheck className="text-xs" style={{ color: activeColor }} />
                                     ) : (
-                                        <MdContentCopy className="text-xs group-hover:text-white transition-colors" style={{ color: activeColor }} />
+                                        <MdContentCopy className="text-xs group-hover:text-[var(--terminal-text)] transition-colors" style={{ color: activeColor }} />
                                     )}
-                                    <span className={`text-[10px] font-bold uppercase transition-colors ${copied ? 'text-white' : 'text-white/80 group-hover:text-white'}`}>
+                                    <span className={`text-[10px] font-bold uppercase transition-colors ${copied ? 'text-[var(--terminal-text)]' : 'text-[var(--terminal-text)]/80 group-hover:text-[var(--terminal-text)]'}`}>
                                         {copied ? 'Link_Copied' : 'Copy_Link'}
                                     </span>
                                 </div>
                             </div>
                         </button>
 
-                        <div className="p-3 border border-white/5 bg-white/5 rounded flex flex-col justify-center">
+                        <div className="p-3 border border-[rgba(var(--terminal-text-rgb),0.5)] bg-[rgba(var(--terminal-text-rgb),0.5)] rounded flex flex-col justify-center">
                             <span className="text-[8px] text-[var(--terminal-text-muted)] block uppercase mb-1">Object_ID</span>
-                            <span className="text-[10px] text-white font-bold tracking-widest uppercase">
+                            <span className="text-[10px] text-[var(--terminal-text)] font-bold tracking-widest uppercase">
                                 TRK_{activeTrack.id.padStart(3, '0')}
                             </span>
                         </div>

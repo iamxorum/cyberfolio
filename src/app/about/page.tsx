@@ -11,12 +11,13 @@ import InitScreen from '@/components/InitScreen';
 import SkillsRadar from '@/components/SkillsRadar';
 import { siteConfig, contentConfig, getTopSkills, getCategories, getSkillsByCategory, getSkillsGroupedByCategory, getScoreFromLevel, hobbies, education, certifications, languages, experience } from '@/config';
 import { securityConfig } from '@/config';
+import { useAppInitialization } from '@/hooks/useAppInitialization';
+import { getTurnstileSiteKey } from '@/lib/turnstile';
 
 export default function About() {
+  const { initialized, checked, setInitialized, userId } = useAppInitialization();
   const [isVerified, setIsVerified] = useState(false);
-  const [initialized, setInitialized] = useState(false);
   const [isDecrypting, setIsDecrypting] = useState(false);
-  const [userId, setUserId] = useState<string>('');
   const [age, setAge] = useState<string>('');
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   const profileRef = useRef<HTMLDivElement>(null);
@@ -41,24 +42,6 @@ export default function About() {
 
   useEffect(() => {
     if (typeof window !== 'undefined') {
-      const initTimestamp = localStorage.getItem('iamxorum_initialized');
-      const storedUserId = localStorage.getItem('iamxorum_user_id');
-
-      const isInitialized = initTimestamp && (Date.now() - parseInt(initTimestamp)) < 24 * 60 * 60 * 1000;
-
-      if (isInitialized && storedUserId) {
-        // eslint-disable-next-line react-hooks/set-state-in-effect
-        setUserId(storedUserId);
-        setInitialized(true);
-      } else {
-
-        const newUserId = Math.floor(Math.random() * 1000000).toString().padStart(6, '0');
-        setUserId(newUserId);
-
-        localStorage.setItem('iamxorum_user_id', newUserId);
-      }
-
-
       const calculateAge = () => {
         const birthDate = new Date(
           siteConfig.birthDate.year,
@@ -143,13 +126,13 @@ export default function About() {
     }
   }, []);
 
-  if (!initialized) {
-    return <InitScreen onInit={() => setInitialized(true)} />;
-  }
+  const bootOverlay = checked && !initialized && <InitScreen onInit={() => setInitialized(true)} />;
 
   if (!isVerified) {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-[var(--terminal-bg)] font-mono p-4">
+      <>
+        {bootOverlay}
+        <div className="flex min-h-screen items-center justify-center bg-[var(--terminal-bg)] font-mono p-4">
         <div className="max-w-md w-full border border-[var(--terminal-border)] bg-[var(--terminal-surface)] p-8 rounded shadow-[0_0_20px_rgba(var(--terminal-accent-rgb),0.2)] text-center relative overflow-hidden">
           {/* Decorative Scanline */}
           <div className="absolute inset-0 bg-gradient-to-b from-transparent via-primary/5 to-transparent h-[10%] w-full animate-scan pointer-events-none"></div>
@@ -158,7 +141,7 @@ export default function About() {
             security
           </span>
 
-          <h2 className="text-white text-xl font-bold mb-2 tracking-widest uppercase">
+          <h2 className="text-[var(--terminal-text)] text-xl font-bold mb-2 tracking-widest uppercase">
             {isDecrypting ? 'DECRYPTING_BIO...' : 'Access_Restriction'}
           </h2>
 
@@ -171,7 +154,7 @@ export default function About() {
           {!isDecrypting && (
             <div className="flex justify-center mb-6">
               <Turnstile
-                siteKey={securityConfig.turnstile.siteKey}
+                siteKey={getTurnstileSiteKey()}
                 onSuccess={async (token) => {
                   setIsDecrypting(true);
 
@@ -211,11 +194,14 @@ export default function About() {
           </div>
         </div>
       </div>
+      </>
     );
   }
 
   return (
-    <div className="relative flex h-auto min-h-screen w-full flex-col bg-[var(--terminal-bg)] text-white group/design-root overflow-x-hidden font-display">
+    <>
+      {bootOverlay}
+    <div className="relative flex h-auto min-h-screen w-full flex-col bg-[var(--terminal-bg)] text-[var(--terminal-text)] group/design-root overflow-x-hidden font-display">
       {/* Background Grid Pattern Effect */}
       <div className="fixed inset-0 z-0 opacity-[0.03] pointer-events-none" style={{ backgroundImage: `linear-gradient(var(--terminal-accent-alt) 1px, transparent 1px), linear-gradient(90deg, var(--terminal-accent-alt) 1px, transparent 1px)`, backgroundSize: '40px 40px' }}></div>
       <div className="layout-container flex h-full grow flex-col">
@@ -226,9 +212,9 @@ export default function About() {
               {/* Breadcrumbs */}
               <div className="flex items-center gap-2 text-sm font-mono tracking-wide">
                 <span className="material-symbols-outlined text-[var(--terminal-text-dim)] text-lg">folder_open</span>
-                <Link href="/" className="text-[var(--terminal-text-muted)] hover:text-white transition-colors">~/root</Link>
+                <Link href="/" className="text-[var(--terminal-text-muted)] hover:text-[var(--terminal-text)] transition-colors">~/root</Link>
                 <span className="text-[var(--terminal-text-dim)]">/</span>
-                <Link href="/about" className="text-[var(--terminal-text-muted)] hover:text-white transition-colors">profile</Link>
+                <Link href="/about" className="text-[var(--terminal-text-muted)] hover:text-[var(--terminal-text)] transition-colors">profile</Link>
                 <span className="text-[var(--terminal-text-dim)]">/</span>
                 <span className="text-primary font-bold">config</span>
                 <span className="inline-block w-2 h-4 bg-primary ml-1 animate-pulse"></span>
@@ -248,22 +234,22 @@ export default function About() {
                         priority
                       />
                       <div className="absolute bottom-4 left-4 right-4 flex justify-between items-end z-10">
-                        <div className="text-[10px] font-mono text-white">ID: {userId || '------'}</div>
+                        <div className="text-[10px] font-mono text-[var(--terminal-text)]">ID: {userId || '------'}</div>
                         <div className="w-2 h-2 rounded-full bg-[var(--terminal-success)] animate-pulse shadow-[0_0_8px_rgba(var(--terminal-success-rgb),0.8)]"></div>
                       </div>
                     </div>
                     <div className="p-4 border-t border-[var(--terminal-border)] space-y-2 sm:space-y-2.5">
                       <div className="text-center">
-                        <h3 className="text-white font-mono text-lg sm:text-xl font-bold tracking-widest glow-text">{siteConfig.username.toUpperCase()}</h3>
+                        <h3 className="text-[var(--terminal-text)] font-mono text-lg sm:text-xl font-bold tracking-widest glow-text">{siteConfig.username.toUpperCase()}</h3>
                       </div>
                       <div className="space-y-1.5 sm:space-y-2 text-xs sm:text-sm font-mono">
                         <div className="flex items-center justify-between border-b border-[var(--terminal-border)] pb-1.5">
                           <span className="text-[var(--terminal-text-dim)]">AGE_DAYS:</span>
-                          <span className="text-white">{age || '--'}</span>
+                          <span className="text-[var(--terminal-text)]">{age || '--'}</span>
                         </div>
                         <div className="flex items-center justify-between border-b border-[var(--terminal-border)] pb-1.5">
                           <span className="text-[var(--terminal-text-dim)]">LOCATION:</span>
-                          <span className="text-white">{siteConfig.location}</span>
+                          <span className="text-[var(--terminal-text)]">{siteConfig.location}</span>
                         </div>
                         <div className="flex items-center justify-between border-b border-[var(--terminal-border)] pb-1.5">
                           <span className="text-[var(--terminal-text-dim)]">ROLE:</span>
@@ -464,17 +450,17 @@ export default function About() {
                               <div className="flex flex-wrap items-center gap-2 text-[9px] sm:text-[10px] ml-7">
                                 {lang.spoken && (
                                   <span className="text-[var(--terminal-text-dim)]">
-                                    <span className="text-[var(--terminal-text-muted)]">Spoken:</span> <span className="text-white">{lang.spoken}</span>
+                                    <span className="text-[var(--terminal-text-muted)]">Spoken:</span> <span className="text-[var(--terminal-text)]">{lang.spoken}</span>
                                   </span>
                                 )}
                                 {lang.written && (
                                   <span className="text-[var(--terminal-text-dim)]">
-                                    <span className="text-[var(--terminal-text-muted)]">Written:</span> <span className="text-white">{lang.written}</span>
+                                    <span className="text-[var(--terminal-text-muted)]">Written:</span> <span className="text-[var(--terminal-text)]">{lang.written}</span>
                                   </span>
                                 )}
                                 {lang.listening && (
                                   <span className="text-[var(--terminal-text-dim)]">
-                                    <span className="text-[var(--terminal-text-muted)]">Listening:</span> <span className="text-white">{lang.listening}</span>
+                                    <span className="text-[var(--terminal-text-muted)]">Listening:</span> <span className="text-[var(--terminal-text)]">{lang.listening}</span>
                                   </span>
                                 )}
                               </div>
@@ -531,7 +517,7 @@ export default function About() {
                   </div>
                   {/* Hobbies */}
                   <div className="bg-[var(--terminal-surface)] border border-[var(--terminal-border)] rounded p-4 sm:p-6 matrix-bg" ref={skillsRef}>
-                    <h3 className="text-white font-mono text-base sm:text-lg font-bold mb-4 sm:mb-6 flex items-center gap-2">
+                    <h3 className="text-[var(--terminal-text)] font-mono text-base sm:text-lg font-bold mb-4 sm:mb-6 flex items-center gap-2">
                       <span className="material-symbols-outlined text-primary text-lg sm:text-xl">favorite</span>
                       <span className="text-sm sm:text-base">INTERESTS & HOBBIES</span>
                     </h3>
@@ -544,7 +530,7 @@ export default function About() {
                             </span>
                           )}
                           <div className="flex-1 min-w-0">
-                            <h4 className="text-xs sm:text-sm font-mono text-white font-bold mb-1 group-hover:text-primary transition-colors">
+                            <h4 className="text-xs sm:text-sm font-mono text-[var(--terminal-text)] font-bold mb-1 group-hover:text-primary transition-colors">
                               {hobby.name}
                             </h4>
                             {hobby.description && (
@@ -560,7 +546,7 @@ export default function About() {
                   {/* Education */}
                   {education.length > 0 && (
                     <div className="bg-[var(--terminal-surface)] border border-[var(--terminal-border)] rounded p-4 sm:p-6">
-                      <h3 className="text-white font-mono text-base sm:text-lg font-bold mb-4 sm:mb-6 flex items-center gap-2">
+                      <h3 className="text-[var(--terminal-text)] font-mono text-base sm:text-lg font-bold mb-4 sm:mb-6 flex items-center gap-2">
                         <span className="material-symbols-outlined text-primary text-lg sm:text-xl">school</span>
                         <span className="text-sm sm:text-base">EDUCATION</span>
                       </h3>
@@ -573,7 +559,7 @@ export default function About() {
                               </span>
                             )}
                             <div className="flex-1 min-w-0">
-                              <h4 className="text-sm sm:text-base font-mono text-white font-bold mb-1 group-hover:text-primary transition-colors">
+                              <h4 className="text-sm sm:text-base font-mono text-[var(--terminal-text)] font-bold mb-1 group-hover:text-primary transition-colors">
                                 {edu.degree}
                                 {edu.field && <span className="text-[var(--terminal-text-muted)]"> - {edu.field}</span>}
                               </h4>
@@ -630,7 +616,7 @@ export default function About() {
                                     href={edu.thesisUrl}
                                     target="_blank"
                                     rel="noopener noreferrer"
-                                    className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded border border-[var(--terminal-border)] hover:border-primary hover:bg-primary/10 text-white text-[10px] sm:text-xs font-bold font-mono tracking-wider transition-all group/btn w-fit"
+                                    className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded border border-[var(--terminal-border)] hover:border-primary hover:bg-primary/10 text-[var(--terminal-text)] text-[10px] sm:text-xs font-bold font-mono tracking-wider transition-all group/btn w-fit"
                                   >
                                     <span className="material-symbols-outlined text-sm sm:text-base group-hover/btn:text-primary">
                                       description
@@ -650,7 +636,7 @@ export default function About() {
                   {/* Certifications */}
                   {certifications.length > 0 && (
                     <div className="bg-[var(--terminal-surface)] border border-[var(--terminal-border)] rounded p-4 sm:p-6">
-                      <h3 className="text-white font-mono text-base sm:text-lg font-bold mb-4 sm:mb-6 flex items-center gap-2">
+                      <h3 className="text-[var(--terminal-text)] font-mono text-base sm:text-lg font-bold mb-4 sm:mb-6 flex items-center gap-2">
                         <span className="material-symbols-outlined text-primary text-lg sm:text-xl">verified</span>
                         <span className="text-sm sm:text-base">CERTIFICATIONS</span>
                       </h3>
@@ -663,7 +649,7 @@ export default function About() {
                               </span>
                             )}
                             <div className="flex-1 min-w-0">
-                              <h4 className="text-xs sm:text-sm font-mono text-white font-bold mb-1 group-hover:text-primary transition-colors">
+                              <h4 className="text-xs sm:text-sm font-mono text-[var(--terminal-text)] font-bold mb-1 group-hover:text-primary transition-colors">
                                 {cert.name}
                               </h4>
                               <p className="text-[10px] sm:text-xs font-mono text-primary mb-1">{cert.issuer}</p>
@@ -739,7 +725,7 @@ export default function About() {
                               </div>
                               <div className="flex-1 pb-2 min-w-0">
                                 <div className="flex items-start justify-between gap-2 mb-1">
-                                  <div className="text-white font-bold group-hover:text-primary transition-colors flex-1 min-w-0">
+                                  <div className="text-[var(--terminal-text)] font-bold group-hover:text-primary transition-colors flex-1 min-w-0">
                                     {exp.role} @ {exp.company}
                                   </div>
                                 </div>
@@ -776,6 +762,7 @@ export default function About() {
         </div>
       </div>
     </div>
+    </>
   );
 }
 

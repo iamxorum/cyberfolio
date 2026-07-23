@@ -2,6 +2,10 @@ import { useState, useEffect, useRef } from 'react';
 
 export function useAppInitialization() {
   const [initialized, setInitialized] = useState(false);
+  // Whether we've finished checking localStorage yet. Kept separate from
+  // `initialized` so the caller can avoid rendering the boot screen at all
+  // during this brief check, instead of flashing it for returning visitors.
+  const [checked, setChecked] = useState(false);
   const [userId, setUserId] = useState<string>('');
   const initializedRef = useRef(false);
 
@@ -23,12 +27,13 @@ export function useAppInitialization() {
         setUserId(newUserId);
         localStorage.setItem('iamxorum_user_id', newUserId);
       }
+      setChecked(true);
     }
-    
+
     return () => {
       initializedRef.current = false;
     };
   }, []);
 
-  return { initialized, setInitialized, userId };
+  return { initialized, checked, setInitialized, userId };
 }

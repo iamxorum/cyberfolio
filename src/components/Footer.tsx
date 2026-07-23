@@ -21,7 +21,7 @@ export default function Footer() {
             {footerLinks.map((link, index) => (
               <a
                 key={index}
-                className="hover:text-white transition-colors whitespace-nowrap"
+                className="hover:text-[var(--terminal-text)] transition-colors whitespace-nowrap"
                 href={link.url}
                 target="_blank"
                 rel="noopener noreferrer"

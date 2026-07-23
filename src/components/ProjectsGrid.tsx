@@ -25,9 +25,9 @@ export default function ProjectsGrid() {
         <div className="flex items-center gap-2 text-[var(--terminal-text-muted)] font-mono text-xs sm:text-sm mb-2">
           <span>~/workspace</span>
           <span>/</span>
-          <span className="text-white">active-projects</span>
+          <span className="text-[var(--terminal-text)]">active-projects</span>
         </div>
-        <h2 className="text-white text-xl sm:text-2xl md:text-[28px] font-bold leading-tight tracking-[-0.015em] border-b border-[var(--terminal-border)] pb-3 sm:pb-4 flex items-center gap-2 sm:gap-3">
+        <h2 className="text-[var(--terminal-text)] text-xl sm:text-2xl md:text-[28px] font-bold leading-tight tracking-[-0.015em] border-b border-[var(--terminal-border)] pb-3 sm:pb-4 flex items-center gap-2 sm:gap-3">
           <span className="text-primary">&gt;</span> ./run_projects.sh
         </h2>
       </div>
@@ -72,7 +72,7 @@ export default function ProjectsGrid() {
                     <span className="material-symbols-outlined text-[28px]">{project.icon}</span>
                   </div>
                   <div className="flex-1 min-w-0">
-                    <h2 className="text-white text-lg font-bold leading-tight font-mono">{project.name}</h2>
+                    <h2 className="text-[var(--terminal-text)] text-lg font-bold leading-tight font-mono">{project.name}</h2>
                     <div className="flex flex-wrap gap-1.5 mt-1">
                       {statuses.map((status, idx) => {
                         const color = statusColors[idx] || statusColors[0] || 'green';

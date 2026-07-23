@@ -7,6 +7,7 @@ import Footer from '@/components/Footer';
 import CVTemplate from '@/components/CVTemplate';
 import { cvConfig, siteConfig, experience, education, skills, languages, certifications, hobbies, projects } from '../../config';
 import { securityConfig } from '@/config';
+import { getTurnstileSiteKey } from '@/lib/turnstile';
 
 export default function CVPage() {
   const [isVerified, setIsVerified] = useState(false);
@@ -47,8 +48,7 @@ export default function CVPage() {
 
       await new Promise((resolve) => {
         const checkLibrary = () => {
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          if ((window as any).html2pdf) {
+          if (window.html2pdf) {
             resolve(true);
           } else {
             setTimeout(checkLibrary, 100);
@@ -114,8 +114,7 @@ export default function CVPage() {
         jsPDF: { unit: 'in', format: 'a4', orientation: 'portrait' },
         pagebreak: { mode: ['avoid-all', 'css', 'legacy'] }
       };
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      await (window as any).html2pdf().set(opt).from(element).save();
+      await window.html2pdf?.().set(opt).from(element).save();
     } catch (error) {
       console.error('Error generating PDF:', error);
 
@@ -141,7 +140,7 @@ export default function CVPage() {
             security
           </span>
 
-          <h2 className="text-white text-xl font-bold mb-2 tracking-widest uppercase">
+          <h2 className="text-[var(--terminal-text)] text-xl font-bold mb-2 tracking-widest uppercase">
             {isDecrypting ? 'DECRYPTING_CV...' : 'Access_Restriction'}
           </h2>
 
@@ -154,7 +153,7 @@ export default function CVPage() {
           {!isDecrypting && (
             <div className="flex justify-center mb-6">
               <Turnstile
-                siteKey={securityConfig.turnstile.siteKey}
+                siteKey={getTurnstileSiteKey()}
                 onSuccess={async (token) => {
                   setIsDecrypting(true);
 
@@ -198,7 +197,7 @@ export default function CVPage() {
   }
 
   return (
-    <div className="relative flex h-auto min-h-screen w-full flex-col bg-[var(--terminal-bg)] text-white group/design-root overflow-x-hidden font-display">
+    <div className="relative flex h-auto min-h-screen w-full flex-col bg-[var(--terminal-bg)] text-[var(--terminal-text)] group/design-root overflow-x-hidden font-display">
       {/* Background Grid Pattern Effect */}
       <div className="fixed inset-0 z-0 opacity-[0.03] pointer-events-none print:hidden" style={{ backgroundImage: `linear-gradient(var(--terminal-accent-alt) 1px, transparent 1px), linear-gradient(90deg, var(--terminal-accent-alt) 1px, transparent 1px)`, backgroundSize: '40px 40px' }}></div>
 
@@ -213,7 +212,7 @@ export default function CVPage() {
             <div className="mb-6 p-4 sm:p-6 rounded border border-[var(--terminal-border)] bg-[var(--terminal-surface)] no-print">
               <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-4">
                 <div>
-                  <h1 className="text-white text-2xl sm:text-3xl font-bold leading-tight tracking-[-0.015em] font-mono mb-2">
+                  <h1 className="text-[var(--terminal-text)] text-2xl sm:text-3xl font-bold leading-tight tracking-[-0.015em] font-mono mb-2">
                     <span className="text-primary">&gt;</span> CV_DOWNLOAD.sh
                   </h1>
                   <p className="text-[var(--terminal-text-dim)] text-sm font-mono">
@@ -268,7 +267,7 @@ export default function CVPage() {
                         <span className="material-symbols-outlined text-[24px]">{style.icon}</span>
                       </div>
                       <div className="flex-1 min-w-0">
-                        <h3 className={`text-sm sm:text-base font-bold font-mono ${selectedStyle === style.id ? 'text-primary' : 'text-white'
+                        <h3 className={`text-sm sm:text-base font-bold font-mono ${selectedStyle === style.id ? 'text-primary' : 'text-[var(--terminal-text)]'
                           }`}>
                           {style.name}
                         </h3>

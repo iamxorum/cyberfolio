@@ -1,12 +1,17 @@
 import { NextRequest, NextResponse } from 'next/server';
 import fs from 'fs';
 import path from 'path';
-import { education } from '@/config'; 
+import { education } from '@/config';
+import { isRateLimited, getClientKey } from '@/lib/rate-limit';
 
 export async function GET(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
+  if (isRateLimited(getClientKey(request), 20, 60_000)) {
+    return new NextResponse('Too many requests', { status: 429 });
+  }
+
   const { id } = await params;
 
   const eduItem = education.find((item) => item.id === id);
@@ -28,7 +33,7 @@ export async function GET(
       },
     });
   } catch (error) {
-    console.error(`Eroare la citirea fișierului: ${filePath}`, error);
+    console.error(`Error reading file: ${filePath}`, error);
     return new NextResponse('Error loading file', { status: 500 });
   }
 }

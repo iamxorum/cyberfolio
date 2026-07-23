@@ -39,7 +39,7 @@ export default function HeroSection() {
               <div className="w-2 h-2 bg-[var(--terminal-success)] rounded-full animate-pulse"></div>
               <span className="text-primary text-xs font-mono tracking-widest">SYSTEM_READY</span>
             </div>
-            <h1 className="text-white text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-black leading-tight tracking-[-0.033em] font-mono glow-text">
+            <h1 className="text-[var(--terminal-text)] text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-black leading-tight tracking-[-0.033em] font-mono glow-text">
               {contentConfig.home.hero.title}<span className="blinking-cursor text-primary">_</span>
             </h1>
             <h2 className="text-[var(--terminal-text-dim)] text-xs sm:text-sm md:text-base lg:text-lg font-mono leading-normal max-w-full md:max-w-[600px] mt-2 whitespace-pre-line">

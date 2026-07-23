@@ -28,7 +28,7 @@ export default function SystemStats({ uptime, userId, viewport, responseTime }: 
           <p className="text-[var(--terminal-text-dim)] text-xs font-mono font-medium leading-normal tracking-widest">{contentConfig.home.stats.uptime.label}</p>
           <span className="material-symbols-outlined text-primary text-[20px] drop-shadow-[0_0_5px_rgba(var(--terminal-accent-rgb),0.5)] group-hover:scale-110 transition-transform">{contentConfig.home.stats.uptime.icon}</span>
         </div>
-        <p className="text-white tracking-light text-2xl font-bold leading-tight font-mono z-10">{uptime}</p>
+        <p className="text-[var(--terminal-text)] tracking-light text-2xl font-bold leading-tight font-mono z-10">{uptime}</p>
         <p className="text-[var(--terminal-success)] text-xs font-medium leading-normal font-mono flex items-center gap-1 z-10">
         </p>
       </div>
@@ -40,7 +40,7 @@ export default function SystemStats({ uptime, userId, viewport, responseTime }: 
           <p className="text-[var(--terminal-text-dim)] text-xs font-mono font-medium leading-normal tracking-widest">{contentConfig.home.stats.sessionId.label}</p>
           <span className="material-symbols-outlined text-primary text-[20px] drop-shadow-[0_0_5px_rgba(var(--terminal-accent-rgb),0.5)] group-hover:scale-110 transition-transform">{contentConfig.home.stats.sessionId.icon}</span>
         </div>
-        <p className="text-white tracking-light text-2xl font-bold leading-tight font-mono z-10">{userId ? `XRM-${userId}` : 'XRM--------'}</p>
+        <p className="text-[var(--terminal-text)] tracking-light text-2xl font-bold leading-tight font-mono z-10">{userId ? `XRM-${userId}` : 'XRM--------'}</p>
         <p className="text-primary text-xs font-medium leading-normal font-mono z-10">USER: {userId || 'GUEST'}</p>
       </div>
       
@@ -51,7 +51,7 @@ export default function SystemStats({ uptime, userId, viewport, responseTime }: 
           <p className="text-[var(--terminal-text-dim)] text-xs font-mono font-medium leading-normal tracking-widest">{contentConfig.home.stats.viewport.label}</p>
           <span className="material-symbols-outlined text-primary text-[20px] drop-shadow-[0_0_5px_rgba(var(--terminal-accent-rgb),0.5)] group-hover:scale-110 transition-transform">{contentConfig.home.stats.viewport.icon}</span>
         </div>
-        <p className="text-white tracking-light text-2xl font-bold leading-tight font-mono z-10">{viewport}</p>
+        <p className="text-[var(--terminal-text)] tracking-light text-2xl font-bold leading-tight font-mono z-10">{viewport}</p>
         <p className="text-[var(--terminal-success)] text-xs font-medium leading-normal font-mono drop-shadow-[0_0_3px_rgba(var(--terminal-success-rgb),0.5)] z-10">LIVE</p>
       </div>
       
@@ -62,7 +62,7 @@ export default function SystemStats({ uptime, userId, viewport, responseTime }: 
           <p className="text-[var(--terminal-text-dim)] text-xs font-mono font-medium leading-normal tracking-widest">{contentConfig.home.stats.responseTime.label}</p>
           <span className="material-symbols-outlined text-primary text-[20px] drop-shadow-[0_0_5px_rgba(var(--terminal-accent-rgb),0.5)] group-hover:scale-110 transition-transform">{contentConfig.home.stats.responseTime.icon}</span>
         </div>
-        <p className="text-white tracking-light text-2xl font-bold leading-tight font-mono z-10">{responseTime}</p>
+        <p className="text-[var(--terminal-text)] tracking-light text-2xl font-bold leading-tight font-mono z-10">{responseTime}</p>
         <p className="text-[var(--terminal-success)] text-xs font-medium leading-normal font-mono drop-shadow-[0_0_3px_rgba(var(--terminal-success-rgb),0.5)] z-10">LIVE</p>
       </div>
     </div>

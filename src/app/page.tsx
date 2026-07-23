@@ -8,11 +8,12 @@ import HeroSection from '@/components/HeroSection';
 import SystemStats from '@/components/SystemStats';
 import ProjectsGrid from '@/components/ProjectsGrid';
 import Discography from "@/components/Discography";
+import LazyMount from '@/components/LazyMount';
 import { useAppInitialization } from '@/hooks/useAppInitialization';
 import { useSystemStats } from '@/hooks/useSystemStats';
 
 const ThreatGlobeSkeleton = () => (
-  <div className="flex flex-col gap-6 px-4 py-8 mb-8 border border-[var(--terminal-border)] rounded bg-black/40 min-h-[450px] sm:min-h-[550px] items-center justify-center relative overflow-hidden">
+  <div className="flex flex-col gap-6 px-4 py-8 mb-8 border border-[var(--terminal-border)] rounded bg-[rgba(var(--terminal-bg-rgb),0.40)] min-h-[450px] sm:min-h-[550px] items-center justify-center relative overflow-hidden">
     <div className="absolute inset-0 matrix-bg opacity-5 pointer-events-none"></div>
     <div className="animate-pulse flex flex-col items-center gap-4 z-10">
       <span className="material-symbols-outlined text-4xl text-primary animate-spin">
@@ -34,15 +35,13 @@ const ThreatGlobe = dynamic(() => import('@/components/ThreatGlobe'), {
 });
 
 export default function Home() {
-  const { initialized, setInitialized, userId } = useAppInitialization();
+  const { initialized, checked, setInitialized, userId } = useAppInitialization();
   const { uptime, responseTime, viewport } = useSystemStats();
 
-  if (!initialized) {
-    return <InitScreen onInit={() => setInitialized(true)} />;
-  }
-
   return (
-    <div className="relative flex h-auto min-h-screen w-full flex-col bg-[var(--terminal-bg)] text-white group/design-root overflow-x-hidden font-display">
+    <div className="relative flex h-auto min-h-screen w-full flex-col bg-[var(--terminal-bg)] text-[var(--terminal-text)] group/design-root overflow-x-hidden font-display">
+      {checked && !initialized && <InitScreen onInit={() => setInitialized(true)} />}
+
       <div className="fixed inset-0 z-0 opacity-[0.03] pointer-events-none" style={{ backgroundImage: `linear-gradient(var(--terminal-accent-alt) 1px, transparent 1px), linear-gradient(90deg, var(--terminal-accent-alt) 1px, transparent 1px)`, backgroundSize: '40px 40px' }}></div>
 
       <div className="layout-container flex h-full grow flex-col">
@@ -58,7 +57,9 @@ export default function Home() {
               responseTime={responseTime}
             />
             <ProjectsGrid />
-            <ThreatGlobe />
+            <LazyMount fallback={<ThreatGlobeSkeleton />}>
+              <ThreatGlobe />
+            </LazyMount>
             <br/>
             <Discography />
             <Footer />

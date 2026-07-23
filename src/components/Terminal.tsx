@@ -79,7 +79,7 @@ const getStatusColor = (statusColor: string | string[]): string => {
     red: 'text-red-400',
   };
   const color = Array.isArray(statusColor) ? statusColor[0] : statusColor;
-  return colorMap[color] || 'text-white';
+  return colorMap[color] || 'text-[var(--terminal-text)]';
 };
 
 const getProjectIdForCommand = (projectName: string): string | null => {
@@ -106,6 +106,8 @@ const commands: Record<string, { output: string | React.ReactNode; description: 
           <div><span className="text-primary">whoami</span>        <span className="text-[var(--terminal-text-dim)] ml-4">- Display user information</span></div>
           <div><span className="text-primary">pwd</span>           <span className="text-[var(--terminal-text-dim)] ml-4">- Show current directory</span></div>
           <div><span className="text-primary">version</span>        <span className="text-[var(--terminal-text-dim)] ml-4">- Display system version</span></div>
+          <div><span className="text-primary">neofetch</span>       <span className="text-[var(--terminal-text-dim)] ml-4">- Display system info banner</span></div>
+          <div><span className="text-primary">history</span>        <span className="text-[var(--terminal-text-dim)] ml-4">- Show command history</span></div>
         </div>
         <div className="text-[var(--terminal-text-dim)] text-xs mt-3">
           Examples: <span className="text-primary">cat cyberfolio</span>, <span className="text-primary">cat pitchpulse</span>
@@ -120,13 +122,13 @@ const commands: Record<string, { output: string | React.ReactNode; description: 
         <div className="text-primary font-bold mb-2">Personal Information:</div>
         <div className="grid grid-cols-2 gap-x-4 gap-y-2">
           <div><span className="text-[var(--terminal-text-muted)]">Bio:</span></div>
-          <div className="text-white break-words col-span-2">
+          <div className="text-[var(--terminal-text)] break-words col-span-2">
             {contentConfig.about.bio.paragraphs.join(' ')}
           </div>
           {education.length > 0 && (
             <>
               <div><span className="text-[var(--terminal-text-muted)]">Education:</span></div>
-              <div className="text-white break-words">
+              <div className="text-[var(--terminal-text)] break-words">
                 {education.map(edu => edu.degree).join(', ')}
               </div>
             </>
@@ -134,7 +136,7 @@ const commands: Record<string, { output: string | React.ReactNode; description: 
           {languages.length > 0 && (
             <>
               <div><span className="text-[var(--terminal-text-muted)]">Languages:</span></div>
-              <div className="text-white break-words">
+              <div className="text-[var(--terminal-text)] break-words">
                 {languages.map(lang => lang.name).join(', ')}
               </div>
             </>
@@ -142,13 +144,13 @@ const commands: Record<string, { output: string | React.ReactNode; description: 
           {hobbies.length > 0 && (
             <>
               <div><span className="text-[var(--terminal-text-muted)]">Interests:</span></div>
-              <div className="text-white break-words">
+              <div className="text-[var(--terminal-text)] break-words">
                 {hobbies.map(hobby => hobby.name).join(', ')}
               </div>
             </>
           )}
           <div><span className="text-[var(--terminal-text-muted)]">Location:</span></div>
-          <div className="text-white">{siteConfig.location}</div>
+          <div className="text-[var(--terminal-text)]">{siteConfig.location}</div>
           <div><span className="text-[var(--terminal-text-muted)]">Status:</span></div>
           <div className="text-green-400">{siteConfig.status}</div>
         </div>
@@ -208,17 +210,17 @@ const commands: Record<string, { output: string | React.ReactNode; description: 
       <div className="space-y-2 text-sm">
         <div className="grid grid-cols-2 gap-x-4 gap-y-2">
             <div><span className="text-[var(--terminal-text-muted)]">User:</span></div>
-            <div className="text-white font-bold">{siteConfig.username}</div>
+            <div className="text-[var(--terminal-text)] font-bold">{siteConfig.username}</div>
             <div><span className="text-[var(--terminal-text-muted)]">Role:</span></div>
-            <div className="text-white">{siteConfig.role}</div>
+            <div className="text-[var(--terminal-text)]">{siteConfig.role}</div>
             <div><span className="text-[var(--terminal-text-muted)]">Age:</span></div>
             <div className="text-primary">{calculateAge()}</div>
             <div><span className="text-[var(--terminal-text-muted)]">Location:</span></div>
-            <div className="text-white">{siteConfig.location}</div>
+            <div className="text-[var(--terminal-text)]">{siteConfig.location}</div>
             <div><span className="text-[var(--terminal-text-muted)]">Status:</span></div>
             <div className="text-green-400">{siteConfig.status}</div>
           <div><span className="text-[var(--terminal-text-muted)]">Contact:</span></div>
-          <div className="text-primary">Use <span className="text-white">contact</span> command</div>
+          <div className="text-primary">Use <span className="text-[var(--terminal-text)]">contact</span> command</div>
         </div>
       </div>
     ),
@@ -262,7 +264,7 @@ const commands: Record<string, { output: string | React.ReactNode; description: 
           <div className="space-y-3">
             {certifications.map((cert) => (
               <div key={cert.id} className="border-l-2 border-primary pl-3 space-y-1">
-                <div className="text-white font-bold">{cert.name}</div>
+                <div className="text-[var(--terminal-text)] font-bold">{cert.name}</div>
                 <div className="text-[var(--terminal-text-muted)] text-xs">Issuer: {cert.issuer}</div>
                 <div className="text-[var(--terminal-text-muted)] text-xs">
                   Issued: {cert.issueDate}
@@ -283,7 +285,7 @@ const commands: Record<string, { output: string | React.ReactNode; description: 
     description: 'List certifications'
   },
   pwd: {
-    output: <div className="text-sm text-white">/home/iamxorum/projects</div>,
+    output: <div className="text-sm text-[var(--terminal-text)]">/home/iamxorum/projects</div>,
     description: 'Show current directory'
   },
   version: {
@@ -292,17 +294,50 @@ const commands: Record<string, { output: string | React.ReactNode; description: 
         <div className="text-primary font-bold mb-2">{siteConfig.domain} {siteConfig.systemVersion}</div>
         <div className="grid grid-cols-2 gap-x-4 gap-y-1">
           <div><span className="text-[var(--terminal-text-muted)]">Domain:</span></div>
-          <div className="text-white">{siteConfig.domain}</div>
+          <div className="text-[var(--terminal-text)]">{siteConfig.domain}</div>
           <div><span className="text-[var(--terminal-text-muted)]">Version:</span></div>
-          <div className="text-white">{siteConfig.systemVersion}</div>
+          <div className="text-[var(--terminal-text)]">{siteConfig.systemVersion}</div>
           <div><span className="text-[var(--terminal-text-muted)]">Framework:</span></div>
-          <div className="text-white">Next.js</div>
+          <div className="text-[var(--terminal-text)]">Next.js</div>
           <div><span className="text-[var(--terminal-text-muted)]">Status:</span></div>
           <div className="text-green-400">ONLINE</div>
         </div>
       </div>
     ),
     description: 'Display system version'
+  },
+  neofetch: {
+    output: (
+      <div className="flex gap-6 text-sm flex-wrap">
+        <pre className="text-primary leading-tight text-[10px] sm:text-xs shrink-0">
+{`    .-"-.
+   /|6 6|\\
+  {/(_0_)\\}
+   _/ ^ \\_
+  (_/   \\_)`}
+        </pre>
+        <div className="space-y-0.5">
+          <div><span className="text-primary font-bold">{siteConfig.username}</span>@<span className="text-primary font-bold">{siteConfig.domain}</span></div>
+          <div className="text-[var(--terminal-text-dim)]">-----------------------</div>
+          <div><span className="text-[var(--terminal-text-muted)]">OS:</span> <span className="text-[var(--terminal-text)]">Next.js on Linux</span></div>
+          <div><span className="text-[var(--terminal-text-muted)]">Role:</span> <span className="text-[var(--terminal-text)]">{siteConfig.role}</span></div>
+          <div><span className="text-[var(--terminal-text-muted)]">Location:</span> <span className="text-[var(--terminal-text)]">{siteConfig.location}</span></div>
+          <div><span className="text-[var(--terminal-text-muted)]">Uptime:</span> <span className="text-[var(--terminal-text)]">{calculateAge()}</span></div>
+          <div><span className="text-[var(--terminal-text-muted)]">Shell:</span> <span className="text-[var(--terminal-text)]">iamxorum-term {siteConfig.systemVersion}</span></div>
+          <div><span className="text-[var(--terminal-text-muted)]">Status:</span> <span className="text-green-400">{siteConfig.status}</span></div>
+        </div>
+      </div>
+    ),
+    description: 'Display system info'
+  },
+  sudo: {
+    output: (
+      <div className="text-sm space-y-1">
+        <div className="text-red-400">[sudo] password for {siteConfig.username}:</div>
+        <div className="text-[var(--terminal-text-muted)]">{siteConfig.username} is not in the sudoers file. This incident will be reported.</div>
+      </div>
+    ),
+    description: ''
   },
   clear: {
     output: '',
@@ -366,10 +401,28 @@ export default function Terminal() {
       return;
     }
 
-    
+
     let commandOutput = commands[trimmedCmd];
-    
-    
+
+    if (trimmedCmd === 'history') {
+      commandOutput = {
+        output: commandHistory.length === 0 ? (
+          <div className="text-[var(--terminal-text-dim)] text-sm">No commands in history yet.</div>
+        ) : (
+          <div className="text-sm space-y-0.5">
+            {commandHistory.map((cmd, idx) => (
+              <div key={idx}>
+                <span className="text-[var(--terminal-text-dim)]">{String(idx + 1).padStart(3, ' ')}</span>{'  '}
+                <span className="text-[var(--terminal-text)]">{escapeHtml(cmd)}</span>
+              </div>
+            ))}
+          </div>
+        ),
+        description: ''
+      };
+    }
+
+
     if (trimmedCmd.startsWith('cat ')) {
       const projectName = trimmedCmd.substring(4).trim();
       
@@ -386,17 +439,17 @@ export default function Terminal() {
                   <div className="text-primary font-bold text-lg mb-3">{project.name.toUpperCase()}</div>
                   <div className="grid grid-cols-2 gap-x-4 gap-y-2">
                     <div><span className="text-[var(--terminal-text-muted)]">Type:</span></div>
-                    <div className="text-white">{project.type}</div>
+                    <div className="text-[var(--terminal-text)]">{project.type}</div>
                     <div><span className="text-[var(--terminal-text-muted)]">Status:</span></div>
                     <div className={statusColorClass}>{project.status}</div>
                     <div><span className="text-[var(--terminal-text-muted)]">Category:</span></div>
-                    <div className="text-white">{project.category.toUpperCase()}</div>
+                    <div className="text-[var(--terminal-text)]">{project.category.toUpperCase()}</div>
                     <div><span className="text-[var(--terminal-text-muted)]">Visibility:</span></div>
                     <div className={project.visibility === 'public' ? 'text-green-400' : 'text-red-400'}>
                       {project.visibility.toUpperCase()}
                     </div>
                     <div><span className="text-[var(--terminal-text-muted)]">Description:</span></div>
-                    <div className="text-white col-span-2">{project.description}</div>
+                    <div className="text-[var(--terminal-text)] col-span-2">{project.description}</div>
                     {project.tags.length > 0 && (
                       <>
                         <div><span className="text-[var(--terminal-text-muted)]">Tags:</span></div>
@@ -429,7 +482,7 @@ export default function Terminal() {
           commandOutput = {
             output: (
               <div className="text-red-400 text-sm">
-                Project not found. Use <span className="text-white">ls</span> to see available projects.
+                Project not found. Use <span className="text-[var(--terminal-text)]">ls</span> to see available projects.
               </div>
             ),
             description: ''
@@ -454,7 +507,7 @@ export default function Terminal() {
       commandOutput = {
         output: (
           <div className="text-red-400 text-sm">
-            Command not found: <span className="text-white">{safeCmd}</span>
+            Command not found: <span className="text-[var(--terminal-text)]">{safeCmd}</span>
           </div>
         ),
         description: ''
@@ -556,7 +609,7 @@ export default function Terminal() {
             {item.command && (
               <div className="flex items-center gap-2">
                 <span className="text-primary">user@system:~/projects$</span>
-                <span className="text-white">{item.command}</span>
+                <span className="text-[var(--terminal-text)]">{item.command}</span>
               </div>
             )}
             {item.output && (
@@ -578,7 +631,7 @@ export default function Terminal() {
               setInput(e.target.value);
             }}
             onKeyDown={handleKeyDown}
-            className="bg-transparent border-none outline-none text-white flex-1 w-full"
+            className="bg-transparent border-none outline-none text-[var(--terminal-text)] flex-1 w-full"
             autoFocus
             spellCheck={false}
           />
@@ -603,7 +656,7 @@ export default function Terminal() {
             </div>
           )}
         </div>
-        <span className="text-white animate-pulse">_</span>
+        <span className="text-[var(--terminal-text)] animate-pulse">_</span>
       </div>
       {!input && (
         <div className="text-[10px] text-[var(--terminal-text-dim)] mt-2 opacity-50">

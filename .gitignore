@@ -47,3 +47,12 @@ data
 
 # private
 private
+
+# ops scripts (hardcode internal host/port/paths)
+scripts
+
+# JetBrains
+.idea
+
+# claude (pointer to Obsidian vault, machine-local)
+CLAUDE.md

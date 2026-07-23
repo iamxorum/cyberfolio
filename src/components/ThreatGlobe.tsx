@@ -2,6 +2,7 @@
 import { useEffect, useRef, useState, useMemo } from 'react';
 import dynamic from 'next/dynamic';
 import { dcConfig } from '../config';
+import { formatRelativeTime } from '@/lib/format-time';
 
 const Globe = dynamic(() => import('react-globe.gl'), { ssr: false });
 
@@ -183,7 +184,7 @@ export default function ThreatGlobe() {
   if (hasError || !threatData) return null;
 
   return (
-    <div className="flex flex-col gap-6 px-3 sm:px-5 py-6 sm:py-8 mb-8 border border-[var(--terminal-border)] rounded bg-black/60 relative overflow-hidden group">
+    <div className="flex flex-col gap-6 px-3 sm:px-5 py-6 sm:py-8 mb-8 border border-[var(--terminal-border)] rounded bg-[rgba(var(--terminal-bg-rgb),0.60)] relative overflow-hidden group">
       <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-10 mix-blend-overlay pointer-events-none"></div>
 
       {/* --- HEADER --- */}
@@ -196,6 +197,11 @@ export default function ThreatGlobe() {
           <p className="text-xs text-[var(--terminal-text-muted)] mt-1">
             <span className="text-[#ef4444] font-bold">Local</span> Fail2Ban & <span className="text-[#3b82f6] font-bold">Public</span> CrowdSec CAPI
           </p>
+          {threatData.last_updated && (
+            <p className="text-[10px] text-[var(--terminal-text-dim)] mt-1">
+              Last synced: {formatRelativeTime(threatData.last_updated)}
+            </p>
+          )}
         </div>
         <div className="bg-green-500/10 px-3 py-1 rounded border border-green-500/30 flex items-center gap-2">
           <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
@@ -207,11 +213,11 @@ export default function ThreatGlobe() {
       <div className="flex flex-col lg:flex-row gap-6 items-center relative z-10">
 
         {/* LEFT COLUMN: GLOBE */}
-        <div className="w-full lg:w-1/2 flex items-center justify-center relative min-h-[300px] sm:min-h-[450px] border border-[var(--terminal-border)]/20 rounded bg-black/20 overflow-hidden">
+        <div className="w-full lg:w-1/2 flex items-center justify-center relative min-h-[300px] sm:min-h-[450px] border border-[var(--terminal-border)]/20 rounded bg-[rgba(var(--terminal-bg-rgb),0.20)] overflow-hidden">
           <div className="w-full aspect-square relative max-w-[450px] flex items-center justify-center">
 
             {!isGlobeReady && (
-              <div className="absolute inset-0 z-20 flex flex-col items-center justify-center bg-black/40 backdrop-blur-sm rounded-full animate-pulse text-[#ef4444] font-mono text-xs">
+              <div className="absolute inset-0 z-20 flex flex-col items-center justify-center bg-[rgba(var(--terminal-bg-rgb),0.40)] backdrop-blur-sm rounded-full animate-pulse text-[#ef4444] font-mono text-xs">
                 <span className="material-symbols-outlined animate-spin mb-2">satellite_alt</span>
                 COMPILING_GLOBE...
               </div>
@@ -251,14 +257,14 @@ export default function ThreatGlobe() {
                   atmosphereAltitude={0.1}
                 />
 
-                <div className="absolute bottom-2 left-2 z-20 flex flex-col gap-1.5 font-mono text-[9px] bg-black/40 p-2 rounded border border-white/5 backdrop-blur-sm">
+                <div className="absolute bottom-2 left-2 z-20 flex flex-col gap-1.5 font-mono text-[9px] bg-[rgba(var(--terminal-bg-rgb),0.40)] p-2 rounded border border-[rgba(var(--terminal-text-rgb),0.5)] backdrop-blur-sm">
                   <div className="flex items-center gap-2">
                     <div className="w-2 h-2 rounded-full bg-[#ef4444] animate-pulse shadow-[0_0_5px_#ef4444]"></div>
-                    <span className="text-white/70 uppercase">Local_Attack (Fail2Ban)</span>
+                    <span className="text-[var(--terminal-text)]/70 uppercase">Local_Attack (Fail2Ban)</span>
                   </div>
                   <div className="flex items-center gap-2">
                     <div className="w-2 h-2 rounded-full bg-[#3b82f6] shadow-[0_0_5px_#3b82f6]"></div>
-                    <span className="text-white/70 uppercase">Community_Blacklist (CAPI)</span>
+                    <span className="text-[var(--terminal-text)]/70 uppercase">Community_Blacklist (CAPI)</span>
                   </div>
                 </div>
               </>
@@ -270,12 +276,12 @@ export default function ThreatGlobe() {
         <div className="w-full lg:w-1/2 font-mono flex flex-col gap-4 flex-1">
           <div className="bg-[var(--terminal-surface-alt)] border border-[var(--terminal-border)] rounded p-4 relative overflow-hidden">
             <p className="text-[10px] text-[var(--terminal-text-muted)] mb-1">TOTAL_MITIGATED_IPS</p>
-            <p className="text-4xl font-bold text-white tracking-tighter">
+            <p className="text-4xl font-bold text-[var(--terminal-text)] tracking-tighter">
               <AnimatedCounter value={threatData?.total_banned || 0} />
             </p>
           </div>
 
-          <div className="text-sm border border-[var(--terminal-border)] rounded overflow-hidden bg-black/40 w-full">
+          <div className="text-sm border border-[var(--terminal-border)] rounded overflow-hidden bg-[rgba(var(--terminal-bg-rgb),0.40)] w-full">
             <div className="bg-[var(--terminal-surface-alt)] border-b border-[var(--terminal-border)] p-2 grid grid-cols-12 text-[10px] font-bold text-[var(--terminal-text-muted)] tracking-widest">
               <div className="col-span-2 text-center">RK</div>
               <div className="col-span-3">ORIGIN</div>
@@ -285,9 +291,9 @@ export default function ThreatGlobe() {
 
             <div className="p-1 flex flex-col gap-1 max-h-[220px] overflow-y-auto custom-scrollbar">
               {countryLeaderboard.map((item, idx) => (
-                <div key={item.country} className="grid grid-cols-12 text-[10px] items-center hover:bg-white/5 p-1.5 rounded transition-all group/row">
+                <div key={item.country} className="grid grid-cols-12 text-[10px] items-center hover:bg-[rgba(var(--terminal-text-rgb),0.5)] p-1.5 rounded transition-all group/row">
                   <div className="col-span-2 text-center text-[var(--terminal-text-dim)]">[{String(idx + 1).padStart(2, '0')}]</div>
-                  <div className="col-span-3 font-bold text-white truncate">{item.country}</div>
+                  <div className="col-span-3 font-bold text-[var(--terminal-text)] truncate">{item.country}</div>
                   <div className="col-span-3 text-right text-[var(--terminal-text-dim)] group-hover/row:text-[#ef4444] transition-colors">
                     {item.count.toLocaleString()}
                   </div>
