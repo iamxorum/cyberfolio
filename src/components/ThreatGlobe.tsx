@@ -22,6 +22,32 @@ interface ThreatData {
   recent_bans: BannedIP[];
 }
 
+interface GlobePointDatum {
+  lat: number;
+  lng: number;
+  source?: 'local' | 'public';
+  isServer?: boolean;
+}
+
+interface GlobeRingDatum {
+  lat: number;
+  lng: number;
+  source: 'local' | 'public';
+  maxRadius: number;
+  repeatPeriod: number;
+}
+
+interface GlobeArcDatum {
+  startLat: number;
+  startLng: number;
+  endLat: number;
+  endLng: number;
+  color: string[];
+  dashInitialGap: number;
+  dashAnimateTime: number;
+  source: 'local' | 'public';
+}
+
 const useCountUp = (end: number, duration: number = 1500) => {
   const [count, setCount] = useState(0);
   useEffect(() => {
@@ -44,13 +70,17 @@ const AnimatedCounter = ({ value }: { value: number }) => {
   return <span>{animatedValue > 0 ? animatedValue.toLocaleString() : '-----'}</span>;
 };
 
-const getPointRadius = (d: any) => d.isServer ? 0.8 : (d.source === 'local' ? 0.3 : 0.15);
-const getPointColor = (d: any) => {
+const getPointRadius = (obj: object) => {
+  const d = obj as GlobePointDatum;
+  return d.isServer ? 0.8 : (d.source === 'local' ? 0.3 : 0.15);
+};
+const getPointColor = (obj: object) => {
+  const d = obj as GlobePointDatum;
   if (d.isServer) return '#ffffff';
   return d.source === 'local' ? '#ef4444' : '#3b82f6';
 };
-const getRingColor = (d: any) => d.source === 'local' ? 'rgba(239, 68, 68, 0.6)' : 'rgba(59, 130, 246, 0.3)';
-const getArcStroke = (d: any) => d.source === 'local' ? 0.5 : 0.3;
+const getRingColor = (obj: object) => (obj as GlobeRingDatum).source === 'local' ? 'rgba(239, 68, 68, 0.6)' : 'rgba(59, 130, 246, 0.3)';
+const getArcStroke = (obj: object) => (obj as GlobeArcDatum).source === 'local' ? 0.5 : 0.3;
 
 export default function ThreatGlobe() {
   const [threatData, setThreatData] = useState<ThreatData | null>(null);
@@ -240,17 +270,17 @@ export default function ThreatGlobe() {
 
                   ringsData={ringsData}
                   ringColor={getRingColor}
-                  ringMaxRadius={(d: any) => d.maxRadius}
-                  ringRepeatPeriod={(d: any) => d.repeatPeriod}
+                  ringMaxRadius={(obj: object) => (obj as GlobeRingDatum).maxRadius}
+                  ringRepeatPeriod={(obj: object) => (obj as GlobeRingDatum).repeatPeriod}
                   ringPropagationSpeed={0.8}
 
                   arcsData={arcsData}
-                  arcColor={(d: any) => d.color}
+                  arcColor={(obj: object) => (obj as GlobeArcDatum).color}
                   arcStroke={getArcStroke}
                   arcDashLength={0.4}
                   arcDashGap={0.5}
-                  arcDashInitialGap={(d: any) => d.dashInitialGap}
-                  arcDashAnimateTime={(d: any) => d.dashAnimateTime}
+                  arcDashInitialGap={(obj: object) => (obj as GlobeArcDatum).dashInitialGap}
+                  arcDashAnimateTime={(obj: object) => (obj as GlobeArcDatum).dashAnimateTime}
                   arcAltitudeAutoScale={0.5}
 
                   atmosphereColor="#2650d7"

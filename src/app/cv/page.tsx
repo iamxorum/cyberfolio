@@ -8,7 +8,7 @@ import Footer from '@/components/Footer';
 import CVTemplate from '@/components/CVTemplate';
 import CVDocument from '@/components/CVDocument';
 import ScaleToFit from '@/components/ScaleToFit';
-import { cvConfig, siteConfig, experience, education, skills, languages, certifications, hobbies, projects } from '../../config';
+import { cvConfig, siteConfig, experience, education, languages, certifications, hobbies, projects } from '../../config';
 import { securityConfig } from '@/config';
 import { getTurnstileSiteKey } from '@/lib/turnstile';
 import { useTurnstileVerification } from '@/hooks/useTurnstileVerification';

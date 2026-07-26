@@ -13,6 +13,7 @@ export function useTurnstileVerification() {
   useEffect(() => {
     const timestamp = localStorage.getItem(STORAGE_KEY);
     const stillValid = !!timestamp && (Date.now() - parseInt(timestamp, 10)) < VALID_MS;
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setIsVerified(stillValid);
     setChecked(true);
   }, []);
