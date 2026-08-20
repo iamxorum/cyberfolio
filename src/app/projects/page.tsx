@@ -50,6 +50,7 @@ export default function Projects() {
         <Header />
         <div className="px-4 sm:px-6 md:px-10 lg:px-20 xl:px-40 flex flex-1 justify-center py-5 relative z-10">
           <div className="layout-content-container flex flex-col max-w-[960px] w-full flex-1">
+            <main className="contents">
             <div className="flex flex-col gap-4 sm:gap-6 md:gap-8">
               {/* Breadcrumbs */}
               <div className="flex items-center gap-2 text-sm font-mono tracking-wide">
@@ -163,7 +164,8 @@ export default function Projects() {
                         <span className="material-symbols-outlined text-[var(--terminal-text-muted)] text-base sm:text-lg md:text-xl">{project.icon}</span>
                         <span className="text-[var(--terminal-text)] font-bold text-base sm:text-lg tracking-tight group-hover:text-primary transition-colors break-words">{project.name}</span>
                       </div>
-                      <div className="col-span-2 flex flex-wrap gap-1.5">
+                      <div className="col-span-2 flex flex-wrap items-center gap-1.5">
+                        <span className="md:hidden text-[var(--terminal-text-dim)] text-[10px]">STATUS:</span>
                         {statuses.map((status, idx) => {
                           const color = statusColors[idx] || statusColors[0] || 'green';
                           const statusColorStyles = statusColorMap[color] || statusColorMap.green;
@@ -177,6 +179,7 @@ export default function Projects() {
                         })}
                       </div>
                       <div className="col-span-2">
+                        <span className="md:hidden text-[var(--terminal-text-dim)] text-[10px] mr-2">TYPE:</span>
                         <span className="text-[var(--terminal-text)] text-xs sm:text-sm font-mono uppercase">
                           {project.category}
                         </span>
@@ -296,7 +299,8 @@ export default function Projects() {
                               <span className="material-symbols-outlined text-[var(--terminal-text-muted)] text-base sm:text-lg md:text-xl">{project.icon}</span>
                               <span className="text-[var(--terminal-text)] font-bold text-base sm:text-lg tracking-tight group-hover:text-primary transition-colors break-words">{project.name}</span>
                             </div>
-                            <div className="col-span-2 flex flex-wrap gap-1.5">
+                            <div className="col-span-2 flex flex-wrap items-center gap-1.5">
+                              <span className="md:hidden text-[var(--terminal-text-dim)] text-[10px]">STATUS:</span>
                               {statuses.map((status, idx) => {
                                 const color = statusColors[idx] || statusColors[0] || 'green';
                                 const statusColorStyles = statusColorMap[color] || statusColorMap.green;
@@ -310,6 +314,7 @@ export default function Projects() {
                               })}
                             </div>
                             <div className="col-span-2">
+                              <span className="md:hidden text-[var(--terminal-text-dim)] text-[10px] mr-2">TYPE:</span>
                               <span className="text-[var(--terminal-text)] text-xs sm:text-sm font-mono uppercase">
                                 {project.category}
                               </span>
@@ -349,6 +354,7 @@ export default function Projects() {
               {/* Interactive Terminal */}
               <Terminal />
             </div>
+            </main>
             <Footer />
           </div>
         </div>

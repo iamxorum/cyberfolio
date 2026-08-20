@@ -1,10 +1,102 @@
 @import "tailwindcss";
 @import "./colors.css";
 
+html {
+  scroll-behavior: smooth;
+}
+
 body {
   background: var(--terminal-bg);
   color: var(--terminal-text);
   font-family: 'JetBrains Mono', 'Fira Code', 'Consolas', 'Monaco', 'Courier New', monospace;
+  transition: background-color 200ms ease, color 200ms ease;
+}
+
+/* Consistent keyboard focus ring across every interactive element; mouse/touch focus stays silent. */
+a, button, input, [role="button"], [tabindex] {
+  -webkit-tap-highlight-color: transparent;
+}
+
+a:focus,
+button:focus,
+input:focus,
+[role="button"]:focus,
+[tabindex]:focus {
+  outline: none;
+}
+
+a:focus-visible,
+button:focus-visible,
+input:focus-visible,
+[role="button"]:focus-visible,
+[tabindex]:focus-visible {
+  outline: 2px solid var(--terminal-accent);
+  outline-offset: 2px;
+  border-radius: 2px;
+}
+
+/* Baseline WCAG reduced-motion reset: collapses every CSS animation/transition to
+   near-instant while still letting the end state (opacity/color) land. JS-driven
+   animations (anime.js calls) can't be caught here and check prefersReducedMotion() instead. */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* Directional page transitions between the main nav routes (View Transitions API).
+   The header carries a stable name so it never slides with the content. */
+::view-transition-group(site-header) {
+  animation: none;
+  z-index: 100;
+}
+::view-transition-old(site-header) {
+  display: none;
+}
+::view-transition-new(site-header) {
+  animation: none;
+}
+
+::view-transition-old(.nav-forward) {
+  --slide-offset: -60px;
+  animation: 150ms ease-in both view-transition-fade reverse, 400ms ease-in-out both view-transition-slide reverse;
+}
+::view-transition-new(.nav-forward) {
+  --slide-offset: 60px;
+  animation: 210ms ease-out 150ms both view-transition-fade, 400ms ease-in-out both view-transition-slide;
+}
+::view-transition-old(.nav-back) {
+  --slide-offset: 60px;
+  animation: 150ms ease-in both view-transition-fade reverse, 400ms ease-in-out both view-transition-slide reverse;
+}
+::view-transition-new(.nav-back) {
+  --slide-offset: -60px;
+  animation: 210ms ease-out 150ms both view-transition-fade, 400ms ease-in-out both view-transition-slide;
+}
+
+@keyframes view-transition-fade {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+@keyframes view-transition-slide {
+  from { translate: var(--slide-offset); }
+  to { translate: 0; }
+}
+
+/* The blanket *-reset above can't reach these — view-transition pseudo-elements live
+   in a separate tree the universal selector doesn't match. */
+@media (prefers-reduced-motion: reduce) {
+  ::view-transition-old(*),
+  ::view-transition-new(*),
+  ::view-transition-group(*) {
+    animation-duration: 0s !important;
+    animation-delay: 0s !important;
+  }
 }
 
 ::-webkit-scrollbar {

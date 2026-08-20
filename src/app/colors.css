@@ -88,30 +88,32 @@ html.dark {
   --foreground: #ffffff;
 }
 
-/* First-pass light theme: same hue family (teal border, gold/olive primary),
-   darkened accent/primary tones to keep contrast against a light background. */
+/* Same hue family (teal border, gold/olive primary) as dark mode. Primary/accent,
+   text-dim, and success are darkened from the original first pass — measured against
+   WCAG AA (4.5:1) across every surface tint they actually render on (raw bg, card
+   surface, surface-alt, table header), not just the flat background. */
 html.light {
-  --color-primary: #8a7509;
+  --color-primary: #645407;
   --color-bg: #f2efe4;
   --color-surface: #e8e4d4;
   --color-border: #337b73;
   --color-text: #1a1625;
   --color-text-muted: #4f4a2e;
-  --color-text-dim: #6b6a4a;
-  --color-accent: #8a7509;
+  --color-text-dim: #5a5940;
+  --color-accent: #645407;
   --color-accent-alt: #6b5a12;
-  --color-success: #0a8a4a;
+  --color-success: #086b3a;
 
-  --color-primary-rgb: 138, 117, 9;
+  --color-primary-rgb: 100, 84, 7;
   --color-bg-rgb: 242, 239, 228;
   --color-surface-rgb: 232, 228, 212;
   --color-border-rgb: 51, 123, 115;
   --color-text-rgb: 26, 22, 37;
   --color-text-muted-rgb: 79, 74, 46;
-  --color-text-dim-rgb: 107, 106, 74;
-  --color-accent-rgb: 138, 117, 9;
+  --color-text-dim-rgb: 90, 89, 64;
+  --color-accent-rgb: 100, 84, 7;
   --color-accent-alt-rgb: 107, 90, 18;
-  --color-success-rgb: 10, 138, 74;
+  --color-success-rgb: 8, 107, 58;
 
   --background: var(--color-bg);
   --foreground: var(--color-text);

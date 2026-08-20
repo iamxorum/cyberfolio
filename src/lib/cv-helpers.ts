@@ -64,8 +64,12 @@ export const sortExperienceByDate = (experience: Experience[]): Experience[] => 
 export const parseDescription = (description: string | undefined): string[] => {
   if (!description) return [];
 
-  if (description.includes('•') || description.includes('-')) {
-    return description.split(/[•-]/).filter(item => item.trim().length > 0).map(item => item.trim());
+  if (description.includes('•')) {
+    return description.split('•').filter(item => item.trim().length > 0).map(item => item.trim());
+  }
+  
+  if (description.includes(' - ')) {
+    return description.split(/\s-\s/).filter(item => item.trim().length > 0).map(item => item.trim());
   }
   if (description.includes(';')) {
     return description.split(';').filter(item => item.trim().length > 0).map(item => item.trim());
@@ -89,6 +93,7 @@ export const getContactInfo = (siteConfig: SiteConfig, email?: string): string[]
 
   const contactInfo: string[] = [];
   if (email) contactInfo.push(email);
+  if (siteConfig.location) contactInfo.push(siteConfig.location);
   if (linkedinLink) contactInfo.push(stripUrl(linkedinLink.url));
   if (githubLink) contactInfo.push(stripUrl(githubLink.url));
   if (website) contactInfo.push(stripUrl(website));

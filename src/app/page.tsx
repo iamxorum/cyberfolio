@@ -49,19 +49,21 @@ export default function Home() {
 
         <div className="px-4 sm:px-6 md:px-10 lg:px-20 xl:px-40 flex flex-1 justify-center py-5">
           <div className="layout-content-container flex flex-col max-w-[960px] w-full flex-1">
-            <HeroSection />
-            <SystemStats
-              uptime={uptime}
-              userId={userId}
-              viewport={viewport}
-              responseTime={responseTime}
-            />
-            <ProjectsGrid />
-            <LazyMount fallback={<ThreatGlobeSkeleton />}>
-              <ThreatGlobe />
-            </LazyMount>
-            <br/>
-            <Discography />
+            <main className="contents">
+              <HeroSection />
+              <SystemStats
+                uptime={uptime}
+                userId={userId}
+                viewport={viewport}
+                responseTime={responseTime}
+              />
+              <ProjectsGrid />
+              <LazyMount fallback={<ThreatGlobeSkeleton />}>
+                <ThreatGlobe />
+              </LazyMount>
+              <br/>
+              <Discography />
+            </main>
             <Footer />
           </div>
         </div>

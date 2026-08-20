@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
+import { ViewTransition } from "react";
 import { JetBrains_Mono } from "next/font/google";
-import { siteConfig, scripts } from "../config";
+import { siteConfig, scripts, experience, education, getTopSkills } from "../config";
 import "./globals.css";
 import Script from "next/script";
 
@@ -30,7 +31,6 @@ export const metadata: Metadata = {
     description: siteConfig.description,
     url: siteUrl,
     siteName: siteConfig.title,
-    images: [siteConfig.profileImage],
     locale: "en_US",
     type: "website",
   },
@@ -38,7 +38,6 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: siteConfig.title,
     description: siteConfig.description,
-    images: [siteConfig.profileImage],
   },
   ...(siteConfig.favicon && {
     icons: {
@@ -46,6 +45,10 @@ export const metadata: Metadata = {
     },
   }),
 };
+
+const currentRole = experience.find(
+  (exp) => !exp.endDate || exp.endDate.toLowerCase() === "ongoing"
+);
 
 const personJsonLd = {
   "@context": "https://schema.org",
@@ -58,6 +61,19 @@ const personJsonLd = {
   sameAs: (siteConfig.social.professional || [])
     .filter((link) => link.showInFooter)
     .map((link) => link.url),
+  ...(currentRole && {
+    worksFor: {
+      "@type": "Organization",
+      name: currentRole.company,
+    },
+  }),
+  ...(education.length > 0 && {
+    alumniOf: education.map((edu) => ({
+      "@type": "EducationalOrganization",
+      name: edu.institution,
+    })),
+  }),
+  knowsAbout: getTopSkills(15).map((skill) => skill.name),
 };
 
 export default function RootLayout({
@@ -70,11 +86,19 @@ export default function RootLayout({
       <head>
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
-        {/* eslint-disable-next-line @next/next/no-page-custom-font */}
-        <link
-          href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap"
-          rel="stylesheet"
+        {/* Loaded via preload+swap so the icon font stylesheet doesn't block first paint */}
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `(function(){var h='https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap';var p=document.createElement('link');p.rel='preload';p.as='style';p.href=h;document.head.appendChild(p);var l=document.createElement('link');l.rel='stylesheet';l.href=h;l.media='print';l.onload=function(){this.media='all';};document.head.appendChild(l);})();`,
+          }}
         />
+        <noscript>
+          {/* eslint-disable-next-line @next/next/no-page-custom-font */}
+          <link
+            href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap"
+            rel="stylesheet"
+          />
+        </noscript>
         {/* Applied before hydration to avoid a flash of the wrong theme */}
         <script
           dangerouslySetInnerHTML={{
@@ -89,7 +113,13 @@ export default function RootLayout({
       <body
         className={`${jetBrainsMono.variable} antialiased font-display`}
       >
-        {children}
+        <ViewTransition
+          enter={{ 'nav-forward': 'nav-forward', 'nav-back': 'nav-back', default: 'none' }}
+          exit={{ 'nav-forward': 'nav-forward', 'nav-back': 'nav-back', default: 'none' }}
+          default="none"
+        >
+          {children}
+        </ViewTransition>
         {scripts.map((script, index) => {
           const dataProps = script.dataAttributes
             ? Object.entries(script.dataAttributes).reduce((acc, [key, value]) => {

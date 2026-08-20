@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect, useRef } from 'react';
+import { prefersReducedMotion } from '@/lib/motion';
 
 interface InitScreenProps {
   onInit: () => void;
@@ -38,6 +39,19 @@ export default function InitScreen({ onInit }: InitScreenProps) {
       setIsExiting(true);
       setTimeout(() => onInitRef.current(), 350);
     };
+
+    if (prefersReducedMotion()) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
+      setDisplayText(fullText);
+      const holdTimeout = setTimeout(finish, 300);
+      window.addEventListener('keydown', finish);
+      window.addEventListener('click', finish);
+      return () => {
+        clearTimeout(holdTimeout);
+        window.removeEventListener('keydown', finish);
+        window.removeEventListener('click', finish);
+      };
+    }
 
     const scrambleDuration = 300;
     const revealSpeed = 35;

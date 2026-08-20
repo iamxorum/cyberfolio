@@ -626,12 +626,13 @@ export default function Terminal() {
           <input
             ref={inputRef}
             type="text"
+            aria-label="Terminal command input"
             value={input}
             onChange={(e) => {
               setInput(e.target.value);
             }}
             onKeyDown={handleKeyDown}
-            className="bg-transparent border-none outline-none text-[var(--terminal-text)] flex-1 w-full"
+            className="bg-transparent border-none text-[var(--terminal-text)] flex-1 w-full"
             spellCheck={false}
           />
           {suggestions.length > 0 && (

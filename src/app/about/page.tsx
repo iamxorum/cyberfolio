@@ -14,6 +14,7 @@ import { securityConfig } from '@/config';
 import { useAppInitialization } from '@/hooks/useAppInitialization';
 import { useTurnstileVerification } from '@/hooks/useTurnstileVerification';
 import { getTurnstileSiteKey } from '@/lib/turnstile';
+import { prefersReducedMotion } from '@/lib/motion';
 
 export default function About() {
   const { initialized, checked, setInitialized, userId } = useAppInitialization();
@@ -78,6 +79,7 @@ export default function About() {
   }, []);
 
   useEffect(() => {
+    if (prefersReducedMotion()) return;
 
     if (profileRef.current) {
       const elements = profileRef.current.querySelectorAll('div');
@@ -206,13 +208,14 @@ export default function About() {
   return (
     <>
       {bootOverlay}
-    <div className="relative flex h-auto min-h-screen w-full flex-col bg-[var(--terminal-bg)] text-[var(--terminal-text)] group/design-root overflow-x-hidden font-display">
+    <div className="relative flex h-auto min-h-screen w-full flex-col bg-[var(--terminal-bg)] text-[var(--terminal-text)] group/design-root overflow-x-hidden font-display animate-fade-in">
       {/* Background Grid Pattern Effect */}
       <div className="fixed inset-0 z-0 opacity-[0.03] pointer-events-none" style={{ backgroundImage: `linear-gradient(var(--terminal-accent-alt) 1px, transparent 1px), linear-gradient(90deg, var(--terminal-accent-alt) 1px, transparent 1px)`, backgroundSize: '40px 40px' }}></div>
       <div className="layout-container flex h-full grow flex-col">
         <Header />
         <div className="px-4 sm:px-6 md:px-10 lg:px-20 xl:px-40 flex flex-1 justify-center py-5 relative z-10">
           <div className="layout-content-container flex flex-col max-w-[960px] w-full flex-1">
+            <main className="contents">
             <div className="flex flex-col gap-4 sm:gap-6 md:gap-8">
               {/* Breadcrumbs */}
               <div className="flex items-center gap-2 text-sm font-mono tracking-wide">
@@ -222,13 +225,78 @@ export default function About() {
                 <Link href="/about" className="text-[var(--terminal-text-muted)] hover:text-[var(--terminal-text)] transition-colors">profile.conf</Link>
                 <span className="inline-block w-2 h-4 bg-primary ml-1 animate-pulse"></span>
               </div>
+
+              {/* Quick nav — a long page benefits from a table of contents, on mobile and desktop alike. */}
+              <nav aria-label="Section jump links" className="flex flex-wrap gap-2 text-[10px] sm:text-xs font-mono">
+                {[
+                  { href: '#bio', label: 'BIO' },
+                  { href: '#experience', label: 'EXPERIENCE' },
+                  { href: '#skills', label: 'SKILLS' },
+                  { href: '#education', label: 'EDUCATION' },
+                  { href: '#certifications', label: 'CERTS' },
+                  { href: '#hobbies', label: 'HOBBIES' },
+                ].map((item) => (
+                  <a
+                    key={item.href}
+                    href={item.href}
+                    className="px-2 py-1 rounded border border-[var(--terminal-border)] text-[var(--terminal-text-muted)] hover:border-primary hover:text-primary active:scale-95 transition-all"
+                  >
+                    {item.label}
+                  </a>
+                ))}
+              </nav>
+
+              {/* Bio Section — full-width, ahead of the two-column grid below, so the
+                  human intro reads before the dense skills/education sidebar on mobile too. */}
+              <div id="bio" className="bg-[var(--terminal-bg)] border border-[var(--terminal-border)] rounded relative overflow-hidden scroll-mt-20" ref={bioRef}>
+                <div className="bg-[var(--terminal-surface-alt)] px-3 sm:px-4 py-2 border-b border-[var(--terminal-border)] flex justify-between items-center">
+                  <span className="text-[10px] sm:text-xs font-mono text-[var(--terminal-text-dim)]">
+                    {(() => {
+                      const title = contentConfig.about.bio.title;
+
+                      const match = title.match(/cat\s+(.+)/);
+                      return match ? match[1] : '/var/log/user_bio.txt';
+                    })()}
+                  </span>
+                  <div className="flex gap-1.5">
+                    <div className="w-2.5 h-2.5 rounded-full bg-[var(--terminal-border)]"></div>
+                    <div className="w-2.5 h-2.5 rounded-full bg-[var(--terminal-border)]"></div>
+                  </div>
+                </div>
+                <div className="p-4 sm:p-6 font-mono text-xs sm:text-sm leading-relaxed text-[var(--terminal-text-light)]">
+                  <p className="mb-3 sm:mb-4">
+                    {(() => {
+                      const title = contentConfig.about.bio.title;
+
+                      const promptMatch = title.match(/^(.+?)(\s+)(.+)$/);
+                      if (promptMatch) {
+                        const [, prompt, space, command] = promptMatch;
+                        return (
+                          <>
+                            <span className="text-primary">{prompt}</span>
+                            <span>{space}{command}</span>
+                          </>
+                        );
+                      }
+
+                      return <span className="text-primary">{title}</span>;
+                    })()}
+                  </p>
+                  {contentConfig.about.bio.paragraphs.map((paragraph, index) => (
+                    <p key={index} className="mb-3 sm:mb-4">
+                      {paragraph}
+                    </p>
+                  ))}
+                </div>
+              </div>
+
               <div className="flex flex-col md:flex-row gap-4 sm:gap-6">
                 {/* Left Column - Profile */}
                 <div className="w-full md:w-1/3 flex flex-col gap-3 sm:gap-4" ref={profileRef}>
                   <div className="bg-[var(--terminal-surface)] border border-[var(--terminal-border)] rounded p-1 relative overflow-hidden group">
                     <div className="absolute inset-0 bg-gradient-to-b from-transparent via-primary/10 to-transparent h-[20%] w-full animate-scan pointer-events-none z-10 opacity-30"></div>
                     <div className="relative bg-[var(--terminal-bg-dark)] aspect-square flex items-center justify-center overflow-hidden mb-0">
-                      <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-20"></div>
+                      <div className="absolute inset-0 bg-[url('/noise.svg')] opacity-20"></div>
                       <Image
                         src={siteConfig.profileImage}
                         alt="Profile"
@@ -244,7 +312,7 @@ export default function About() {
                     </div>
                     <div className="p-4 border-t border-[var(--terminal-border)] space-y-2 sm:space-y-2.5">
                       <div className="text-center">
-                        <h3 className="text-[var(--terminal-text)] font-mono text-lg sm:text-xl font-bold tracking-widest glow-text">{siteConfig.username.toUpperCase()}</h3>
+                        <h1 className="text-[var(--terminal-text)] font-mono text-lg sm:text-xl font-bold tracking-widest glow-text">{siteConfig.username.toUpperCase()}</h1>
                       </div>
                       <div className="space-y-1.5 sm:space-y-2 text-xs sm:text-sm font-mono">
                         <div className="flex items-center justify-between border-b border-[var(--terminal-border)] pb-1.5">
@@ -285,7 +353,7 @@ export default function About() {
                       <div className="bg-[var(--terminal-surface)] border border-[var(--terminal-border)] rounded p-3 sm:p-4 font-mono text-xs">
                         <div className="flex items-center gap-2 mb-3 border-b border-[var(--terminal-border)] pb-2">
                           <span className="material-symbols-outlined text-primary text-base">link</span>
-                          <span className="text-gray-400 text-[10px] sm:text-xs">SOCIAL_LINKS</span>
+                          <span className="text-[var(--terminal-text-dim)] text-[10px] sm:text-xs">SOCIAL_LINKS</span>
                         </div>
                         <div className="flex flex-col gap-3">
                           {/* Professional Links */}
@@ -364,9 +432,9 @@ export default function About() {
                         </div>
                       </div>
                     )}
-                  <div className="bg-[var(--terminal-surface)] border border-[var(--terminal-border)] rounded p-3 sm:p-4 font-mono text-xs">
+                  <div id="skills" className="bg-[var(--terminal-surface)] border border-[var(--terminal-border)] rounded p-3 sm:p-4 font-mono text-xs scroll-mt-20">
                     <div className="flex justify-between items-center mb-2 sm:mb-3 border-b border-[var(--terminal-border)] pb-2">
-                      <span className="text-gray-400 text-[10px] sm:text-xs">SKILLS_MATRIX</span>
+                      <span className="text-[var(--terminal-text-dim)] text-[10px] sm:text-xs">SKILLS_MATRIX</span>
                       <span className="text-primary font-bold text-[10px] sm:text-xs">{selectedCategory ? selectedCategory.toUpperCase() : 'ALL'}</span>
                     </div>
 
@@ -374,8 +442,8 @@ export default function About() {
                     <div className="flex flex-wrap gap-1.5 sm:gap-2 mb-2 sm:mb-3">
                       <button
                         onClick={() => setSelectedCategory(null)}
-                        className={`px-1.5 sm:px-2 py-0.5 sm:py-1 rounded text-[9px] sm:text-[10px] font-mono transition-all ${selectedCategory === null
-                          ? 'bg-primary text-white border border-primary'
+                        className={`px-1.5 sm:px-2 py-0.5 sm:py-1 rounded text-[9px] sm:text-[10px] font-mono transition-all active:scale-90 ${selectedCategory === null
+                          ? 'bg-primary text-black border border-primary'
                           : 'bg-[var(--terminal-bg)] text-[var(--terminal-text-muted)] border border-[var(--terminal-border)] hover:border-primary hover:text-primary'
                           }`}
                       >
@@ -385,8 +453,8 @@ export default function About() {
                         <button
                           key={category}
                           onClick={() => setSelectedCategory(category)}
-                          className={`px-1.5 sm:px-2 py-0.5 sm:py-1 rounded text-[9px] sm:text-[10px] font-mono transition-all ${selectedCategory === category
-                            ? 'bg-primary text-white border border-primary'
+                          className={`px-1.5 sm:px-2 py-0.5 sm:py-1 rounded text-[9px] sm:text-[10px] font-mono transition-all active:scale-90 ${selectedCategory === category
+                            ? 'bg-primary text-black border border-primary'
                             : 'bg-[var(--terminal-bg)] text-[var(--terminal-text-muted)] border border-[var(--terminal-border)] hover:border-primary hover:text-primary'
                             }`}
                         >
@@ -399,7 +467,7 @@ export default function About() {
                     <SkillsRadar skills={getRadarSkills()} />
 
                     {/* Skills List */}
-                    <div className="mt-3 sm:mt-4 space-y-1.5 sm:space-y-2 max-h-40 sm:max-h-48 overflow-y-auto pr-2 sm:pr-3">
+                    <div tabIndex={0} role="region" aria-label="Skills list" className="mt-3 sm:mt-4 space-y-1.5 sm:space-y-2 max-h-40 sm:max-h-48 overflow-y-auto pr-2 sm:pr-3">
                       {(selectedCategory ? getSkillsByCategory(selectedCategory) : Object.values(skillsByCategory).flat())
                         .sort((a, b) => getScoreFromLevel(b.level) - getScoreFromLevel(a.level))
                         .map((skill) => {
@@ -429,7 +497,7 @@ export default function About() {
                   {languages.length > 0 && (
                     <div className="bg-[var(--terminal-surface)] border border-[var(--terminal-border)] rounded p-3 sm:p-4 font-mono text-xs">
                       <div className="flex justify-between items-center mb-2 sm:mb-3 border-b border-[var(--terminal-border)] pb-2">
-                        <span className="text-gray-400 text-[10px] sm:text-xs">LANGUAGES</span>
+                        <span className="text-[var(--terminal-text-dim)] text-[10px] sm:text-xs">LANGUAGES</span>
                       </div>
                       <div className="space-y-2">
                         {languages.map((lang) => (
@@ -476,85 +544,83 @@ export default function About() {
                     </div>
                   )}
                 </div>
-                {/* Right Column - Bio, Skills, Timeline */}
+                {/* Right Column - Experience, Education, Certifications, Hobbies (professional signal first) */}
                 <div className="w-full md:w-2/3 flex flex-col gap-4 sm:gap-6">
-                  {/* Bio Section */}
-                  <div className="bg-[var(--terminal-bg)] border border-[var(--terminal-border)] rounded relative overflow-hidden" ref={bioRef}>
-                    <div className="bg-[var(--terminal-surface-alt)] px-3 sm:px-4 py-2 border-b border-[var(--terminal-border)] flex justify-between items-center">
-                      <span className="text-[10px] sm:text-xs font-mono text-gray-400">
-                        {(() => {
-                          const title = contentConfig.about.bio.title;
+                  {/* Experience Timeline */}
+                  {experience.length > 0 && (
+                    <div id="experience" className="border border-[var(--terminal-border)] rounded bg-[var(--terminal-bg)] p-4 scroll-mt-20" ref={timelineRef}>
+                      <h2 className="text-xs font-mono text-[var(--terminal-text-dim)] mb-3">RECENT_ACTIVITY_LOG</h2>
+                      <div className="space-y-3 font-mono text-sm">
+                        {[...experience].reverse().map((exp) => {
+                          const isOngoing = !exp.endDate || exp.endDate.toLowerCase() === 'ongoing';
+                          const dateRange = isOngoing
+                            ? `${exp.startDate} - Present`
+                            : exp.startDate === exp.endDate
+                              ? exp.startDate
+                              : `${exp.startDate} - ${exp.endDate}`;
 
-                          const match = title.match(/cat\s+(.+)/);
-                          return match ? match[1] : '/var/log/user_bio.txt';
-                        })()}
-                      </span>
-                      <div className="flex gap-1.5">
-                        <div className="w-2.5 h-2.5 rounded-full bg-gray-600"></div>
-                        <div className="w-2.5 h-2.5 rounded-full bg-gray-600"></div>
+                          return (
+                            <div key={exp.id} className="flex gap-3 items-start group">
+                              <div className="text-[var(--terminal-text-dim)] text-xs flex-shrink-0 whitespace-nowrap">
+                                <div>
+                                  {isOngoing ? (
+                                    <span>{exp.startDate} - <span className="text-green-400">[ONGOING]</span></span>
+                                  ) : (
+                                    dateRange
+                                  )}
+                                </div>
+                                {exp.type && (
+                                  <div className="mt-1 text-[var(--terminal-text-muted)]">
+                                    {exp.type}
+                                    {exp.type2 && <span className="ml-1.5">• {exp.type2}</span>}
+                                  </div>
+                                )}
+                              </div>
+                              <div className={`w-px self-stretch relative transition-colors ${isOngoing ? 'bg-primary' : 'bg-[var(--terminal-border)] group-hover:bg-primary'}`}>
+                                <div className={`absolute top-1.5 -left-1 w-2 h-2 rounded-full transition-colors ${isOngoing ? 'bg-primary border-primary shadow-[0_0_8px_rgba(var(--terminal-accent-rgb),0.9)]' : 'bg-[var(--terminal-bg)] border border-[var(--terminal-border)] group-hover:border-primary group-hover:bg-primary'}`}></div>
+                              </div>
+                              <div className="flex-1 pb-2 min-w-0">
+                                <div className="flex items-start justify-between gap-2 mb-1">
+                                  <div className="text-[var(--terminal-text)] font-bold group-hover:text-primary transition-colors flex-1 min-w-0 flex items-center gap-2 flex-wrap">
+                                    {exp.role}, {exp.company}
+                                    {isOngoing && (
+                                      <span className="text-[9px] px-1.5 py-0.5 rounded border border-primary text-primary font-mono tracking-wider">CURRENT</span>
+                                    )}
+                                  </div>
+                                </div>
+                                {exp.description && (
+                                  <div className="text-xs text-[var(--terminal-text-muted)] mb-1">{exp.description}</div>
+                                )}
+                                {exp.location && (
+                                  <div className="text-xs text-[var(--terminal-text-dim)] mb-2">{exp.location}</div>
+                                )}
+                                {exp.skills && exp.skills.length > 0 && (
+                                  <div className="flex flex-wrap gap-1.5 mt-2">
+                                    {exp.skills.map((skill, idx) => (
+                                      <span
+                                        key={idx}
+                                        className="px-2 py-0.5 text-xs bg-[var(--terminal-surface-dark)] border border-[var(--terminal-border)] rounded text-[var(--terminal-text-muted)] hover:border-primary hover:text-primary transition-colors"
+                                      >
+                                        {skill}
+                                      </span>
+                                    ))}
+                                  </div>
+                                )}
+                              </div>
+                            </div>
+                          );
+                        })}
                       </div>
                     </div>
-                    <div className="p-4 sm:p-6 font-mono text-xs sm:text-sm leading-relaxed text-[var(--terminal-text-light)]">
-                      <p className="mb-3 sm:mb-4">
-                        {(() => {
-                          const title = contentConfig.about.bio.title;
+                  )}
 
-                          const promptMatch = title.match(/^(.+?)(\s+)(.+)$/);
-                          if (promptMatch) {
-                            const [, prompt, space, command] = promptMatch;
-                            return (
-                              <>
-                                <span className="text-primary">{prompt}</span>
-                                <span>{space}{command}</span>
-                              </>
-                            );
-                          }
-
-                          return <span className="text-primary">{title}</span>;
-                        })()}
-                      </p>
-                      {contentConfig.about.bio.paragraphs.map((paragraph, index) => (
-                        <p key={index} className="mb-3 sm:mb-4">
-                          {paragraph}
-                        </p>
-                      ))}
-                    </div>
-                  </div>
-                  {/* Hobbies */}
-                  <div className="bg-[var(--terminal-surface)] border border-[var(--terminal-border)] rounded p-4 sm:p-6 matrix-bg" ref={skillsRef}>
-                    <h3 className="text-[var(--terminal-text)] font-mono text-base sm:text-lg font-bold mb-4 sm:mb-6 flex items-center gap-2">
-                      <span className="material-symbols-outlined text-primary text-lg sm:text-xl">favorite</span>
-                      <span className="text-sm sm:text-base">INTERESTS & HOBBIES</span>
-                    </h3>
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
-                      {hobbies.map((hobby, index) => (
-                        <div key={index} className="flex items-start gap-2 sm:gap-3 p-2.5 sm:p-3 rounded border border-[var(--terminal-border)] bg-[var(--terminal-bg)] hover:border-primary/50 transition-colors group">
-                          {hobby.icon && (
-                            <span className="material-symbols-outlined text-primary text-lg sm:text-xl group-hover:scale-110 transition-transform flex-shrink-0">
-                              {hobby.icon}
-                            </span>
-                          )}
-                          <div className="flex-1 min-w-0">
-                            <h4 className="text-xs sm:text-sm font-mono text-[var(--terminal-text)] font-bold mb-1 group-hover:text-primary transition-colors">
-                              {hobby.name}
-                            </h4>
-                            {hobby.description && (
-                              <p className="text-[10px] sm:text-xs font-mono text-[var(--terminal-text-muted)] leading-relaxed">
-                                {hobby.description}
-                              </p>
-                            )}
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
                   {/* Education */}
                   {education.length > 0 && (
-                    <div className="bg-[var(--terminal-surface)] border border-[var(--terminal-border)] rounded p-4 sm:p-6">
-                      <h3 className="text-[var(--terminal-text)] font-mono text-base sm:text-lg font-bold mb-4 sm:mb-6 flex items-center gap-2">
+                    <div id="education" className="bg-[var(--terminal-surface)] border border-[var(--terminal-border)] rounded p-4 sm:p-6 scroll-mt-20">
+                      <h2 className="text-[var(--terminal-text)] font-mono text-base sm:text-lg font-bold mb-4 sm:mb-6 flex items-center gap-2">
                         <span className="material-symbols-outlined text-primary text-lg sm:text-xl">school</span>
                         <span className="text-sm sm:text-base">EDUCATION</span>
-                      </h3>
+                      </h2>
                       <div className="space-y-4">
                         {education.map((edu) => (
                           <div key={edu.id} className="flex items-start gap-3 sm:gap-4 p-3 sm:p-4 rounded border border-[var(--terminal-border)] bg-[var(--terminal-bg)] hover:border-primary/50 transition-colors group">
@@ -564,10 +630,10 @@ export default function About() {
                               </span>
                             )}
                             <div className="flex-1 min-w-0">
-                              <h4 className="text-sm sm:text-base font-mono text-[var(--terminal-text)] font-bold mb-1 group-hover:text-primary transition-colors">
+                              <h3 className="text-sm sm:text-base font-mono text-[var(--terminal-text)] font-bold mb-1 group-hover:text-primary transition-colors">
                                 {edu.degree}
                                 {edu.field && <span className="text-[var(--terminal-text-muted)]"> - {edu.field}</span>}
-                              </h4>
+                              </h3>
                               <p className="text-xs sm:text-sm font-mono text-primary mb-1">{edu.institution}</p>
                               <div className="flex flex-wrap items-center gap-2 text-[10px] sm:text-xs font-mono text-[var(--terminal-text-muted)]">
                                 <span>{edu.startDate}</span>
@@ -614,7 +680,7 @@ export default function About() {
                                   {edu.description}
                                 </p>
                               )}
-                              
+
                               {edu.thesisUrl && (
                                 <div className="mt-3">
                                   <a
@@ -640,11 +706,11 @@ export default function About() {
 
                   {/* Certifications */}
                   {certifications.length > 0 && (
-                    <div className="bg-[var(--terminal-surface)] border border-[var(--terminal-border)] rounded p-4 sm:p-6">
-                      <h3 className="text-[var(--terminal-text)] font-mono text-base sm:text-lg font-bold mb-4 sm:mb-6 flex items-center gap-2">
+                    <div id="certifications" className="bg-[var(--terminal-surface)] border border-[var(--terminal-border)] rounded p-4 sm:p-6 scroll-mt-20">
+                      <h2 className="text-[var(--terminal-text)] font-mono text-base sm:text-lg font-bold mb-4 sm:mb-6 flex items-center gap-2">
                         <span className="material-symbols-outlined text-primary text-lg sm:text-xl">verified</span>
                         <span className="text-sm sm:text-base">CERTIFICATIONS</span>
-                      </h3>
+                      </h2>
                       <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
                         {certifications.map((cert) => (
                           <div key={cert.id} className="flex items-start gap-2 sm:gap-3 p-3 rounded border border-[var(--terminal-border)] bg-[var(--terminal-bg)] hover:border-primary/50 transition-colors group">
@@ -654,9 +720,9 @@ export default function About() {
                               </span>
                             )}
                             <div className="flex-1 min-w-0">
-                              <h4 className="text-xs sm:text-sm font-mono text-[var(--terminal-text)] font-bold mb-1 group-hover:text-primary transition-colors">
+                              <h3 className="text-xs sm:text-sm font-mono text-[var(--terminal-text)] font-bold mb-1 group-hover:text-primary transition-colors">
                                 {cert.name}
-                              </h4>
+                              </h3>
                               <p className="text-[10px] sm:text-xs font-mono text-primary mb-1">{cert.issuer}</p>
                               <div className="flex flex-wrap items-center gap-1.5 sm:gap-2 text-[9px] sm:text-[10px] font-mono text-[var(--terminal-text-muted)]">
                                 <span>Issued: {cert.issueDate}</span>
@@ -695,73 +761,38 @@ export default function About() {
                     </div>
                   )}
 
-                  {/* Experience Timeline */}
-                  {experience.length > 0 && (
-                    <div className="border border-[var(--terminal-border)] rounded bg-[var(--terminal-bg)] p-4" ref={timelineRef}>
-                      <h4 className="text-xs font-mono text-gray-500 mb-3">RECENT_ACTIVITY_LOG</h4>
-                      <div className="space-y-3 font-mono text-sm">
-                        {[...experience].reverse().map((exp) => {
-                          const isOngoing = !exp.endDate || exp.endDate.toLowerCase() === 'ongoing';
-                          const dateRange = isOngoing
-                            ? `${exp.startDate} - Present`
-                            : exp.startDate === exp.endDate
-                              ? exp.startDate
-                              : `${exp.startDate} - ${exp.endDate}`;
-
-                          return (
-                            <div key={exp.id} className="flex gap-3 items-start group">
-                              <div className="text-[var(--terminal-text-dim)] text-xs flex-shrink-0 whitespace-nowrap">
-                                <div>
-                                  {isOngoing ? (
-                                    <span>{exp.startDate} - <span className="text-green-400">[ONGOING]</span></span>
-                                  ) : (
-                                    dateRange
-                                  )}
-                                </div>
-                                {exp.type && (
-                                  <div className="mt-1 text-[var(--terminal-text-muted)]">
-                                    {exp.type}
-                                    {exp.type2 && <span className="ml-1.5">• {exp.type2}</span>}
-                                  </div>
-                                )}
-                              </div>
-                              <div className="w-px bg-[var(--terminal-border)] self-stretch relative group-hover:bg-primary transition-colors">
-                                <div className="absolute top-1.5 -left-1 w-2 h-2 rounded-full bg-[var(--terminal-bg)] border border-[var(--terminal-border)] group-hover:border-primary group-hover:bg-primary transition-colors"></div>
-                              </div>
-                              <div className="flex-1 pb-2 min-w-0">
-                                <div className="flex items-start justify-between gap-2 mb-1">
-                                  <div className="text-[var(--terminal-text)] font-bold group-hover:text-primary transition-colors flex-1 min-w-0">
-                                    {exp.role} @ {exp.company}
-                                  </div>
-                                </div>
-                                {exp.description && (
-                                  <div className="text-xs text-[var(--terminal-text-muted)] mb-1">{exp.description}</div>
-                                )}
-                                {exp.location && (
-                                  <div className="text-xs text-[var(--terminal-text-dim)] mb-2">{exp.location}</div>
-                                )}
-                                {exp.skills && exp.skills.length > 0 && (
-                                  <div className="flex flex-wrap gap-1.5 mt-2">
-                                    {exp.skills.map((skill, idx) => (
-                                      <span
-                                        key={idx}
-                                        className="px-2 py-0.5 text-xs bg-[var(--terminal-surface-dark)] border border-[var(--terminal-border)] rounded text-[var(--terminal-text-muted)] hover:border-primary hover:text-primary transition-colors"
-                                      >
-                                        {skill}
-                                      </span>
-                                    ))}
-                                  </div>
-                                )}
-                              </div>
-                            </div>
-                          );
-                        })}
-                      </div>
+                  {/* Hobbies */}
+                  <div id="hobbies" className="bg-[var(--terminal-surface)] border border-[var(--terminal-border)] rounded p-4 sm:p-6 matrix-bg scroll-mt-20" ref={skillsRef}>
+                    <h2 className="text-[var(--terminal-text)] font-mono text-base sm:text-lg font-bold mb-4 sm:mb-6 flex items-center gap-2">
+                      <span className="material-symbols-outlined text-primary text-lg sm:text-xl">favorite</span>
+                      <span className="text-sm sm:text-base">INTERESTS & HOBBIES</span>
+                    </h2>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
+                      {hobbies.map((hobby, index) => (
+                        <div key={index} className="flex items-start gap-2 sm:gap-3 p-2.5 sm:p-3 rounded border border-[var(--terminal-border)] bg-[var(--terminal-bg)] hover:border-primary/50 transition-colors group">
+                          {hobby.icon && (
+                            <span className="material-symbols-outlined text-primary text-lg sm:text-xl group-hover:scale-110 transition-transform flex-shrink-0">
+                              {hobby.icon}
+                            </span>
+                          )}
+                          <div className="flex-1 min-w-0">
+                            <h3 className="text-xs sm:text-sm font-mono text-[var(--terminal-text)] font-bold mb-1 group-hover:text-primary transition-colors">
+                              {hobby.name}
+                            </h3>
+                            {hobby.description && (
+                              <p className="text-[10px] sm:text-xs font-mono text-[var(--terminal-text-muted)] leading-relaxed">
+                                {hobby.description}
+                              </p>
+                            )}
+                          </div>
+                        </div>
+                      ))}
                     </div>
-                  )}
+                  </div>
                 </div>
               </div>
             </div>
+            </main>
             <Footer />
           </div>
         </div>
@@ -770,4 +801,3 @@ export default function About() {
     </>
   );
 }
-

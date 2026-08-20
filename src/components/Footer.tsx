@@ -13,7 +13,7 @@ export default function Footer() {
   ].filter(link => link.showInFooter !== false);
   
   return (
-    <div className="px-0 py-6 sm:py-8 mt-4 border-t border-[var(--terminal-border)]">
+    <footer className="px-0 py-6 sm:py-8 mt-4 border-t border-[var(--terminal-border)]">
       <div className="flex flex-col gap-3 sm:gap-4 text-[10px] sm:text-xs text-[var(--terminal-text-muted)] font-mono">
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 sm:gap-4">
           <div className="break-all sm:break-normal">© {currentYear} {siteConfig.domain} | {siteConfig.systemVersion}</div>
@@ -32,7 +32,7 @@ export default function Footer() {
           </div>
         </div>
       </div>
-    </div>
+    </footer>
   );
 }
 

@@ -46,7 +46,7 @@ export default function CVPage() {
       const url = URL.createObjectURL(blob);
       const link = document.createElement('a');
       link.href = url;
-      link.download = `CV_${selectedStyle}_${siteConfig.fullName.replace(/\s+/g, '_')}.pdf`;
+      link.download = `${siteConfig.fullName.replace(/\s+/g, '_')}_CV_${selectedStyle}.pdf`;
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
@@ -139,6 +139,7 @@ export default function CVPage() {
 
         <div className="px-4 sm:px-6 md:px-10 lg:px-20 xl:px-40 flex flex-1 justify-center py-5 print:px-0 print:py-0">
           <div className="layout-content-container flex flex-col max-w-[1200px] w-full flex-1 print:max-w-full">
+            <main className="contents">
             {/* CV Style Selector */}
             <div className="mb-6 p-4 sm:p-6 rounded border border-[var(--terminal-border)] bg-[var(--terminal-surface)] no-print">
               <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-4">
@@ -170,7 +171,7 @@ export default function CVPage() {
                   <button
                     onClick={handleDownloadPDF}
                     disabled={isDownloading}
-                    className="flex min-w-[140px] cursor-pointer items-center justify-center overflow-hidden rounded h-10 sm:h-12 px-4 sm:px-6 bg-primary text-white text-sm sm:text-base font-bold leading-normal tracking-[0.015em] hover:bg-primary/80 transition-all shadow-[0_0_20px_rgba(var(--terminal-accent-rgb),0.3)] border border-transparent hover:border-[var(--terminal-hover-border)] disabled:opacity-50 disabled:cursor-not-allowed"
+                    className="flex min-w-[140px] cursor-pointer items-center justify-center overflow-hidden rounded h-10 sm:h-12 px-4 sm:px-6 bg-primary text-black text-sm sm:text-base font-bold leading-normal tracking-[0.015em] hover:bg-primary/80 transition-all shadow-[0_0_20px_rgba(var(--terminal-accent-rgb),0.3)] border border-transparent hover:border-[var(--terminal-hover-border)] disabled:opacity-50 disabled:cursor-not-allowed"
                   >
                     <span className="material-symbols-outlined text-base sm:text-lg mr-2">
                       {isDownloading ? 'hourglass_empty' : 'download'}
@@ -181,6 +182,15 @@ export default function CVPage() {
                   </button>
                 </div>
               </div>
+
+              {useColumnLayout && (
+                <div className="flex items-center gap-2 mb-4 px-3 py-2 rounded border border-yellow-500/30 bg-yellow-500/10">
+                  <span className="material-symbols-outlined text-yellow-400 text-base flex-shrink-0">warning</span>
+                  <p className="text-[var(--terminal-text-muted)] text-[10px] sm:text-xs font-mono leading-relaxed">
+                    1 Column style recommended.
+                  </p>
+                </div>
+              )}
 
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
                 {cvConfig.styles.map((style) => (
@@ -198,10 +208,10 @@ export default function CVPage() {
                         <span className="material-symbols-outlined text-[24px]">{style.icon}</span>
                       </div>
                       <div className="flex-1 min-w-0">
-                        <h3 className={`text-sm sm:text-base font-bold font-mono ${selectedStyle === style.id ? 'text-primary' : 'text-[var(--terminal-text)]'
+                        <h2 className={`text-sm sm:text-base font-bold font-mono ${selectedStyle === style.id ? 'text-primary' : 'text-[var(--terminal-text)]'
                           }`}>
                           {style.name}
-                        </h3>
+                        </h2>
                         <p className="text-[var(--terminal-text-dim)] text-xs font-mono mt-1">
                           {style.domain}
                         </p>
@@ -218,7 +228,7 @@ export default function CVPage() {
               <div className="mt-6 pt-4 border-t border-[var(--terminal-border)]">
                 <button
                   onClick={() => setShowCV(!showCV)}
-                  className="w-full flex items-center justify-center gap-3 rounded h-12 px-6 bg-primary text-white text-base font-bold leading-normal tracking-[0.015em] hover:bg-primary/80 transition-all shadow-[0_0_20px_rgba(var(--terminal-accent-rgb),0.3)] border border-transparent hover:border-[var(--terminal-hover-border)]"
+                  className="w-full flex items-center justify-center gap-3 rounded h-12 px-6 bg-primary text-black text-base font-bold leading-normal tracking-[0.015em] hover:bg-primary/80 transition-all shadow-[0_0_20px_rgba(var(--terminal-accent-rgb),0.3)] border border-transparent hover:border-[var(--terminal-hover-border)]"
                 >
                   <span className="material-symbols-outlined text-lg">
                     {showCV ? 'visibility_off' : 'visibility'}
@@ -251,6 +261,7 @@ export default function CVPage() {
                 />
               </ScaleToFit>
             </div>
+            </main>
 
             <div className="no-print">
               <Footer />

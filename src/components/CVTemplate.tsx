@@ -106,7 +106,7 @@ export default function CVTemplate({
             <div className="flex justify-between items-start mb-3" style={{ marginBottom: '4pt' }}>
               <div style={{ flex: '1' }}>
                 <h3 style={{ fontSize: '12pt', fontWeight: 'bold', marginBottom: '2pt', color: '#000', lineHeight: '1.3', letterSpacing: '0.1pt' }}>
-                  {exp.role} @ <span style={{ color: accentColor }}>{exp.company}</span>
+                  {exp.role}, <span style={{ color: accentColor }}>{exp.company}</span>
                   {exp.location && `, ${exp.location}`}
                 </h3>
               </div>
@@ -274,7 +274,7 @@ export default function CVTemplate({
           )}
 
           {/* Additional Information / Interests */}
-          {hobbies.length > 0 && (
+          {style.showHobbies !== false && hobbies.length > 0 && (
             <section className="mb-4" style={{ marginBottom: '10pt' }}>
               <SectionHeader accentColor={accentColor}>ADDITIONAL INFORMATION</SectionHeader>
               <div style={{ fontSize: '11pt', lineHeight: '1.6', color: '#1a1a1a' }}>
@@ -420,7 +420,7 @@ export default function CVTemplate({
         )}
 
         {/* Additional Information / Interests */}
-        {hobbies.length > 0 && (
+        {style.showHobbies !== false && hobbies.length > 0 && (
           <section className="mb-5" style={{ marginBottom: '12pt' }}>
             <SectionHeader accentColor={accentColor}>ADDITIONAL INFORMATION</SectionHeader>
             <div style={{ fontSize: '11pt', lineHeight: '1.6', color: '#1a1a1a' }}>

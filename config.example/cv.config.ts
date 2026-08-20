@@ -8,6 +8,7 @@ export interface CVStyle {
   skillCategories?: string[];
   excludeSkills?: string[];
   showProjects?: boolean;
+  showHobbies?: boolean;
   colorScheme?: {
     primary: string;
     secondary?: string;

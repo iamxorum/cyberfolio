@@ -6,9 +6,9 @@ import { discography, Track, Platform } from '../config/music.config';
 
 const PlatformIcon = ({ platform, className, style }: { platform: Platform; className?: string; style?: React.CSSProperties }) => {
     switch (platform) {
-        case 'Spotify': return <SiSpotify className={className} style={style} />;
-        case 'SoundCloud': return <SiSoundcloud className={className} style={style} />;
-        case 'YouTube': return <SiYoutube className={className} style={style} />;
+        case 'Spotify': return <SiSpotify aria-hidden="true" className={className} style={style} />;
+        case 'SoundCloud': return <SiSoundcloud aria-hidden="true" className={className} style={style} />;
+        case 'YouTube': return <SiYoutube aria-hidden="true" className={className} style={style} />;
         default: return null;
     }
 };
@@ -91,7 +91,7 @@ export default function Discography() {
                                 <button
                                     key={track.id}
                                     onClick={() => { setActiveTrack(track); setCopied(false); }}
-                                    className={`flex items-center justify-between p-3 border transition-all text-left group rounded w-full
+                                    className={`flex items-center justify-between p-3 border transition-all active:scale-[0.98] text-left group rounded w-full
                                         ${isSelected
                                         ? 'bg-[rgba(var(--terminal-text-rgb),0.10)] border-[rgba(var(--terminal-text-rgb),0.20)]'
                                         : 'bg-transparent border-[rgba(var(--terminal-text-rgb),0.5)] hover:border-[rgba(var(--terminal-text-rgb),0.10)]'}`}
@@ -125,6 +125,7 @@ export default function Discography() {
                     <div className="relative group rounded-xl overflow-hidden border border-[rgba(var(--terminal-text-rgb),0.10)] shadow-2xl bg-[#111]">
                         <iframe
                             key={activeTrack.id}
+                            title={`${activeTrack.platform} player — ${activeTrack.title}`}
                             src={embedUrl}
                             width="100%"
                             height="352"
@@ -139,7 +140,7 @@ export default function Discography() {
                         {/* THE NEW COPY LINK COMPONENT */}
                         <button
                             onClick={handleCopy}
-                            className="p-3 border border-[rgba(var(--terminal-text-rgb),0.5)] bg-[rgba(var(--terminal-text-rgb),0.5)] rounded flex flex-col justify-center text-left hover:bg-[rgba(var(--terminal-text-rgb),0.10)] hover:border-[rgba(var(--terminal-text-rgb),0.20)] transition-all group"
+                            className="p-3 border border-[rgba(var(--terminal-text-rgb),0.5)] bg-[rgba(var(--terminal-text-rgb),0.05)] rounded flex flex-col justify-center text-left hover:bg-[rgba(var(--terminal-text-rgb),0.10)] hover:border-[rgba(var(--terminal-text-rgb),0.20)] active:scale-[0.98] transition-all group"
                         >
                             <span className="text-[8px] text-[var(--terminal-text-muted)] block uppercase mb-1">
                                 {copied ? 'Success' : 'Share_Stream'}
@@ -158,7 +159,7 @@ export default function Discography() {
                             </div>
                         </button>
 
-                        <div className="p-3 border border-[rgba(var(--terminal-text-rgb),0.5)] bg-[rgba(var(--terminal-text-rgb),0.5)] rounded flex flex-col justify-center">
+                        <div className="p-3 border border-[rgba(var(--terminal-text-rgb),0.5)] bg-[rgba(var(--terminal-text-rgb),0.05)] rounded flex flex-col justify-center">
                             <span className="text-[8px] text-[var(--terminal-text-muted)] block uppercase mb-1">Object_ID</span>
                             <span className="text-[10px] text-[var(--terminal-text)] font-bold tracking-widest uppercase">
                                 TRK_{activeTrack.id.padStart(3, '0')}

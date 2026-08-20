@@ -256,7 +256,7 @@ const ProjectsBlock = ({ projects, accentColor }: { projects: Project[]; accentC
   </View>
 );
 
-const AdditionalInfoBlock = ({ hobbies, accentColor }: { hobbies: Hobby[]; accentColor: string }) => hobbies.length > 0 && (
+const AdditionalInfoBlock = ({ hobbies, accentColor, showHobbies }: { hobbies: Hobby[]; accentColor: string; showHobbies: boolean }) => showHobbies && hobbies.length > 0 && (
   <View style={styles.section} wrap={false}>
     <SectionHeader accentColor={accentColor}>Additional Information</SectionHeader>
     <Text style={styles.bodyText}>
@@ -328,7 +328,7 @@ export default function CVDocument({
               <View key={exp.id} style={[styles.entry, { marginBottom: 10 }]} wrap={false}>
                 <View style={styles.entryHeaderRow}>
                   <Text style={[styles.entryTitle, { flex: 1 }]}>
-                    {exp.role} @ <Text style={{ color: accentColor }}>{exp.company}</Text>{exp.location && `, ${exp.location}`}
+                    {exp.role}, <Text style={{ color: accentColor }}>{exp.company}</Text>{exp.location && `, ${exp.location}`}
                   </Text>
                   <Text style={styles.entryDate}>
                     {exp.startDate} {exp.endDate ? `- ${exp.endDate}` : '- Present'}
@@ -363,7 +363,7 @@ export default function CVDocument({
               <SkillsBlock technicalSkills={technicalSkills} softSkills={softSkills} hasSoftSkills={hasSoftSkills} accentColor={accentColor} />
               <LanguagesBlock languages={cvLanguages} accentColor={accentColor} />
               <ProjectsBlock projects={publicProjects} accentColor={accentColor} />
-              <AdditionalInfoBlock hobbies={hobbies} accentColor={accentColor} />
+              <AdditionalInfoBlock hobbies={hobbies} accentColor={accentColor} showHobbies={style.showHobbies !== false} />
             </View>
           </View>
         ) : (
@@ -373,7 +373,7 @@ export default function CVDocument({
             <CertificationsBlock certifications={certifications} accentColor={accentColor} />
             <LanguagesBlock languages={cvLanguages} accentColor={accentColor} />
             <ProjectsBlock projects={publicProjects} accentColor={accentColor} />
-            <AdditionalInfoBlock hobbies={hobbies} accentColor={accentColor} />
+            <AdditionalInfoBlock hobbies={hobbies} accentColor={accentColor} showHobbies={style.showHobbies !== false} />
           </>
         )}
       </Page>

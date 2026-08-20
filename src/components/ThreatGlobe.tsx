@@ -89,9 +89,29 @@ export default function ThreatGlobe() {
 
   const [isRendering, setIsRendering] = useState(false);
   const [isGlobeReady, setIsGlobeReady] = useState(false);
+  const [selectedCountry, setSelectedCountry] = useState<string | null>(null);
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const globeRef = useRef<any>(null);
+  const resumeRotateTimeout = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  useEffect(() => () => {
+    if (resumeRotateTimeout.current) clearTimeout(resumeRotateTimeout.current);
+  }, []);
+
+  const flyToCountry = (item: { country: string; lat: number; lng: number }) => {
+    if (!globeRef.current) return;
+    const controls = globeRef.current.controls();
+    controls.autoRotate = false;
+    setSelectedCountry(item.country);
+    globeRef.current.pointOfView({ lat: item.lat, lng: item.lng, altitude: 1.4 }, 1200);
+
+    if (resumeRotateTimeout.current) clearTimeout(resumeRotateTimeout.current);
+    resumeRotateTimeout.current = setTimeout(() => {
+      if (globeRef.current) globeRef.current.controls().autoRotate = true;
+      setSelectedCountry(null);
+    }, 5000);
+  };
 
   useEffect(() => {
     fetch('/data/banned_ips.json')
@@ -179,7 +199,9 @@ export default function ThreatGlobe() {
       .map(([country, stats]) => ({
         country,
         count: stats.count,
-        percentage: (stats.count / totalAnalyzed) * 100
+        percentage: (stats.count / totalAnalyzed) * 100,
+        lat: stats.lat,
+        lng: stats.lng,
       }))
       .sort((a, b) => b.count - a.count)
       .slice(0, 15);
@@ -215,7 +237,7 @@ export default function ThreatGlobe() {
 
   return (
     <div className="flex flex-col gap-6 px-3 sm:px-5 py-6 sm:py-8 mb-8 border border-[var(--terminal-border)] rounded bg-[rgba(var(--terminal-bg-rgb),0.60)] relative overflow-hidden group">
-      <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-10 mix-blend-overlay pointer-events-none"></div>
+      <div className="absolute inset-0 bg-[url('/noise.svg')] opacity-10 mix-blend-overlay pointer-events-none"></div>
 
       {/* --- HEADER --- */}
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center z-10 border-b border-[var(--terminal-border)] pb-4 gap-3 relative">
@@ -321,9 +343,19 @@ export default function ThreatGlobe() {
 
             <div className="p-1 flex flex-col gap-1 max-h-[220px] overflow-y-auto custom-scrollbar">
               {countryLeaderboard.map((item, idx) => (
-                <div key={item.country} className="grid grid-cols-12 text-[10px] items-center hover:bg-[rgba(var(--terminal-text-rgb),0.5)] p-1.5 rounded transition-all group/row">
+                <button
+                  key={item.country}
+                  onClick={() => flyToCountry(item)}
+                  disabled={!isGlobeReady}
+                  title={`Fly the globe to ${item.country}`}
+                  className={`grid grid-cols-12 w-full text-left text-[10px] items-center p-1.5 rounded transition-[background-color,color] active:scale-[0.98] group/row disabled:cursor-default ${
+                    selectedCountry === item.country
+                      ? 'bg-[rgba(var(--terminal-text-rgb),0.10)]'
+                      : 'hover:bg-[rgba(var(--terminal-text-rgb),0.05)]'
+                  }`}
+                >
                   <div className="col-span-2 text-center text-[var(--terminal-text-dim)]">[{String(idx + 1).padStart(2, '0')}]</div>
-                  <div className="col-span-3 font-bold text-[var(--terminal-text)] truncate">{item.country}</div>
+                  <div className={`col-span-3 font-bold truncate ${selectedCountry === item.country ? 'text-[#ef4444]' : 'text-[var(--terminal-text)]'}`}>{item.country}</div>
                   <div className="col-span-3 text-right text-[var(--terminal-text-dim)] group-hover/row:text-[#ef4444] transition-colors">
                     {item.count.toLocaleString()}
                   </div>
@@ -333,7 +365,7 @@ export default function ThreatGlobe() {
                     </div>
                     <span className="text-[8px] text-[var(--terminal-text-muted)] w-6 text-right">{Math.ceil(item.percentage)}%</span>
                   </div>
-                </div>
+                </button>
               ))}
             </div>
           </div>

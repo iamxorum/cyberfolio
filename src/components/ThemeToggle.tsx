@@ -23,7 +23,7 @@ export default function ThemeToggle() {
       onClick={toggleTheme}
       aria-label={isLight ? 'Switch to dark theme' : 'Switch to light theme'}
       title={isLight ? 'Switch to dark theme' : 'Switch to light theme'}
-      className="flex items-center justify-center w-8 h-8 sm:w-9 sm:h-9 rounded border border-[var(--terminal-border)] text-[var(--terminal-text-dim)] hover:text-primary hover:border-primary transition-colors flex-shrink-0"
+      className="flex items-center justify-center w-8 h-8 sm:w-9 sm:h-9 rounded border border-[var(--terminal-border)] text-[var(--terminal-text-dim)] hover:text-primary hover:border-primary active:scale-90 transition-all flex-shrink-0"
     >
       <span className="material-symbols-outlined text-base sm:text-lg">
         {isLight ? 'dark_mode' : 'light_mode'}

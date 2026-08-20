@@ -35,6 +35,10 @@ const nextConfig: NextConfig = {
   allowedDevOrigins: ['10.8.0.108'],
   output: 'standalone',
 
+  experimental: {
+    viewTransition: true,
+  },
+
   async headers() {
     if (isDev) return [];
     
