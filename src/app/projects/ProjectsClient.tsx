@@ -7,8 +7,13 @@ import InitScreen from '@/components/InitScreen';
 import Link from 'next/link';
 import { projects, contentConfig } from '@/config';
 import { useAppInitialization } from '@/hooks/useAppInitialization';
+import type { ContributionStats } from '@/lib/github-contributions';
 
-export default function ProjectsClient() {
+interface ProjectsClientProps {
+  contributionStats?: Record<string, ContributionStats | null>;
+}
+
+export default function ProjectsClient({ contributionStats = {} }: ProjectsClientProps) {
   const { initialized, setInitialized } = useAppInitialization();
 
   return (
@@ -269,7 +274,34 @@ export default function ProjectsClient() {
                             </div>
                             <div className="col-span-4 flex items-center gap-2 sm:gap-3">
                               <span className="material-symbols-outlined text-[var(--terminal-text-muted)] text-base sm:text-lg md:text-xl">{project.icon}</span>
-                              <span className="text-[var(--terminal-text)] font-bold text-base sm:text-lg tracking-tight group-hover:text-primary transition-colors break-words">{project.name}</span>
+                              <div className="flex flex-col min-w-0">
+                                <span className="text-[var(--terminal-text)] font-bold text-base sm:text-lg tracking-tight group-hover:text-primary transition-colors break-words">{project.name}</span>
+                                {contributionStats[project.id] && contributionStats[project.id]!.mergedCount > 0 && (
+                                  <div className="flex items-center gap-2 text-[10px] sm:text-xs font-mono text-[var(--terminal-text-dim)] truncate">
+                                    <a
+                                      href={contributionStats[project.id]!.searchUrl}
+                                      target="_blank"
+                                      rel="noopener noreferrer"
+                                      className="hover:text-primary transition-colors"
+                                    >
+                                      {contributionStats[project.id]!.mergedCount} merged PR{contributionStats[project.id]!.mergedCount !== 1 ? 's' : ''}
+                                    </a>
+                                    {contributionStats[project.id]!.reviewCount > 0 && (
+                                      <>
+                                        <span aria-hidden="true">·</span>
+                                        <a
+                                          href={contributionStats[project.id]!.reviewSearchUrl}
+                                          target="_blank"
+                                          rel="noopener noreferrer"
+                                          className="hover:text-primary transition-colors"
+                                        >
+                                          {contributionStats[project.id]!.reviewCount} review{contributionStats[project.id]!.reviewCount !== 1 ? 's' : ''}
+                                        </a>
+                                      </>
+                                    )}
+                                  </div>
+                                )}
+                              </div>
                             </div>
                             <div className="col-span-2 flex flex-wrap items-center gap-1.5">
                               <span className="md:hidden text-[var(--terminal-text-dim)] text-[10px]">STATUS:</span>

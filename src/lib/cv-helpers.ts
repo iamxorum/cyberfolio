@@ -86,18 +86,32 @@ export const getProficiencyDisplay = (lang: Language): string => {
 export const stripUrl = (url: string): string =>
   url.replace(/^https?:\/\//, '').replace(/^www\./, '').replace(/\/$/, '');
 
-export const getContactInfo = (siteConfig: SiteConfig, email?: string): string[] => {
+export interface ContactItem {
+  text: string;
+  href?: string;
+}
+
+export interface ContactGroups {
+  personal: ContactItem[];
+  links: ContactItem[];
+}
+
+export const getContactInfo = (siteConfig: SiteConfig, email?: string): ContactGroups => {
   const linkedinLink = siteConfig.social.professional?.find(s => s.name.toLowerCase().includes('linkedin'));
   const githubLink = siteConfig.social.professional?.find(s => s.name.toLowerCase().includes('github'));
   const website = siteConfig.domain ? `https://${siteConfig.domain}` : '';
 
-  const contactInfo: string[] = [];
-  if (email) contactInfo.push(email);
-  if (siteConfig.location) contactInfo.push(siteConfig.location);
-  if (linkedinLink) contactInfo.push(stripUrl(linkedinLink.url));
-  if (githubLink) contactInfo.push(stripUrl(githubLink.url));
-  if (website) contactInfo.push(stripUrl(website));
-  return contactInfo;
+  const personal: ContactItem[] = [];
+  if (email) personal.push({ text: email, href: `mailto:${email}` });
+  if (siteConfig.phone) personal.push({ text: siteConfig.phone, href: `tel:${siteConfig.phone.replace(/[^+\d]/g, '')}` });
+  if (siteConfig.location) personal.push({ text: siteConfig.location });
+
+  const links: ContactItem[] = [];
+  if (linkedinLink) links.push({ text: stripUrl(linkedinLink.url), href: linkedinLink.url });
+  if (githubLink) links.push({ text: stripUrl(githubLink.url), href: githubLink.url });
+  if (website) links.push({ text: stripUrl(website), href: website });
+
+  return { personal, links };
 };
 
 export const filterForCV = <T extends { includeInCV?: boolean }>(items: T[]): T[] =>

@@ -1,11 +1,12 @@
 import type { Metadata } from 'next';
-import { siteConfig } from '@/config';
+import { siteConfig, projects } from '@/config';
+import { getContributionStatsForProjects } from '@/lib/github-contributions';
 import ProjectsClient from './ProjectsClient';
 
 const siteUrl = `https://${siteConfig.domain}`;
 const pageUrl = `${siteUrl}/projects`;
 const ogImage = `${siteUrl}/opengraph-image`;
-const title = `Projects — ${siteConfig.fullName}`;
+const title = `Projects | ${siteConfig.fullName}`;
 const description = `Selected projects and work by ${siteConfig.fullName}, ${siteConfig.role}.`;
 
 export const metadata: Metadata = {
@@ -25,14 +26,16 @@ const breadcrumbJsonLd = {
   ],
 };
 
-export default function Projects() {
+export default async function Projects() {
+  const contributionStats = await getContributionStatsForProjects(projects, siteConfig.username);
+
   return (
     <>
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }}
       />
-      <ProjectsClient />
+      <ProjectsClient contributionStats={contributionStats} />
     </>
   );
 }

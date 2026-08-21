@@ -1,6 +1,6 @@
 'use client';
 
-import { Document, Page, View, Text, StyleSheet } from '@react-pdf/renderer';
+import { Document, Page, View, Text, Link, StyleSheet } from '@react-pdf/renderer';
 import { CVStyle, SiteConfig, Experience, Education, Language, Certification, Hobby, Project, Skill } from '@/config';
 import {
   getRelevantSkills,
@@ -11,7 +11,9 @@ import {
   getContactInfo,
   filterForCV,
   getPublicProjects,
+  type ContactItem,
 } from '@/lib/cv-helpers';
+import type { ContributionStats } from '@/lib/github-contributions';
 
 interface CVDocumentProps {
   style: CVStyle;
@@ -25,27 +27,28 @@ interface CVDocumentProps {
   summary?: string;
   email?: string;
   useColumnLayout?: boolean;
+  contributionStats?: Record<string, ContributionStats | null>;
 }
 
 const styles = StyleSheet.create({
   page: {
-    padding: '0.5in',
+    padding: '0.4in',
     fontFamily: 'Times-Roman',
     fontSize: 11,
-    lineHeight: 1.4,
+    lineHeight: 1.3,
     color: '#000000',
   },
   header: {
-    marginBottom: 14,
-    paddingBottom: 10,
+    marginBottom: 10,
+    paddingBottom: 7,
     borderBottomWidth: 2.5,
     borderBottomColor: '#000000',
   },
   name: {
     fontFamily: 'Times-Bold',
-    fontSize: 22,
+    fontSize: 21,
     letterSpacing: 0.8,
-    marginBottom: 10,
+    marginBottom: 7,
   },
   contactLine: {
     fontSize: 10.5,
@@ -54,36 +57,33 @@ const styles = StyleSheet.create({
     lineHeight: 1.3,
   },
   section: {
-    marginBottom: 12,
+    marginBottom: 9,
   },
   sectionHeader: {
     fontFamily: 'Times-Bold',
-    fontSize: 14,
+    fontSize: 13,
     textTransform: 'uppercase',
     letterSpacing: 0.8,
-    marginBottom: 6,
-    paddingBottom: 4,
+    marginBottom: 5,
+    paddingBottom: 3,
     borderBottomWidth: 2,
     borderBottomColor: '#000000',
   },
   entry: {
-    marginBottom: 8,
-  },
-  entryHeaderRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    marginBottom: 3,
+    marginBottom: 6,
   },
   entryTitle: {
     fontFamily: 'Times-Bold',
     fontSize: 12,
     letterSpacing: 0.1,
+    marginBottom: 2,
   },
   entryDate: {
-    fontSize: 11,
+    fontSize: 10.5,
     color: '#2a2a2a',
-    fontFamily: 'Times-Bold',
+    fontFamily: 'Times-Italic',
     letterSpacing: 0.1,
+    marginBottom: 3,
   },
   entrySubtitle: {
     fontSize: 10.5,
@@ -98,16 +98,16 @@ const styles = StyleSheet.create({
   },
   bulletList: {
     marginLeft: 12,
-    marginTop: 4,
+    marginTop: 3,
   },
   bulletItem: {
     fontSize: 11,
-    lineHeight: 1.5,
-    marginBottom: 2.5,
+    lineHeight: 1.32,
+    marginBottom: 1.5,
     color: '#1a1a1a',
   },
   techLine: {
-    marginTop: 5,
+    marginTop: 3,
     fontSize: 10.5,
     fontFamily: 'Times-Italic',
     marginLeft: 12,
@@ -136,7 +136,7 @@ const styles = StyleSheet.create({
   bodyText: {
     fontSize: 11,
     textAlign: 'justify',
-    lineHeight: 1.6,
+    lineHeight: 1.4,
     color: '#1a1a1a',
   },
   inlineLabel: {
@@ -155,6 +155,19 @@ const styles = StyleSheet.create({
 
 const SectionHeader = ({ children, accentColor }: { children: string; accentColor: string }) => (
   <Text style={[styles.sectionHeader, { color: accentColor, borderBottomColor: accentColor }]}>{children}</Text>
+);
+
+const ContactLine = ({ items, marginTop = 0 }: { items: ContactItem[]; marginTop?: number }) => items.length > 0 && (
+  <Text style={[styles.contactLine, { marginTop }]}>
+    {items.map((item, idx) => (
+      <Text key={item.text}>
+        {item.href ? (
+          <Link src={item.href} style={{ color: '#4a4a4a', textDecoration: 'none' }}>{item.text}</Link>
+        ) : item.text}
+        {idx < items.length - 1 ? ' | ' : ''}
+      </Text>
+    ))}
+  </Text>
 );
 
 const SkillsBlock = ({ technicalSkills, softSkills, hasSoftSkills, accentColor }: {
@@ -187,7 +200,7 @@ const SkillsBlock = ({ technicalSkills, softSkills, hasSoftSkills, accentColor }
   </>
 );
 
-const EducationBlock = ({ education, accentColor }: { education: Education[]; accentColor: string }) => (
+const EducationBlock = ({ education, accentColor, siteDomain }: { education: Education[]; accentColor: string; siteDomain: string }) => (
   <View style={styles.section}>
     <SectionHeader accentColor={accentColor}>Education</SectionHeader>
     {education.map((edu) => (
@@ -197,6 +210,12 @@ const EducationBlock = ({ education, accentColor }: { education: Education[]; ac
         <Text style={styles.entryMeta}>
           {edu.startDate} {edu.endDate ? `- ${edu.endDate}` : '- Present'}{edu.grade && ` | ${edu.grade}`}
         </Text>
+        {edu.thesisUrl && (
+          <Text style={styles.entryMeta}>
+            <Text style={styles.inlineLabel}>Thesis: </Text>
+            <Link src={`https://${siteDomain}${edu.thesisUrl}`} style={{ color: '#3a3a3a', textDecoration: 'none' }}>View PDF</Link>
+          </Text>
+        )}
       </View>
     ))}
   </View>
@@ -231,10 +250,12 @@ const LanguagesBlock = ({ languages, accentColor }: { languages: Language[]; acc
   </View>
 );
 
-const ProjectsBlock = ({ projects, accentColor }: { projects: Project[]; accentColor: string }) => projects.length > 0 && (
+const ProjectsBlock = ({ projects, accentColor, contributionStats = {} }: { projects: Project[]; accentColor: string; contributionStats?: Record<string, ContributionStats | null> }) => projects.length > 0 && (
   <View style={styles.section}>
     <SectionHeader accentColor={accentColor}>Projects</SectionHeader>
-    {projects.map((project) => (
+    {projects.map((project) => {
+      const stats = contributionStats[project.id];
+      return (
       <View key={project.id} style={styles.entry} wrap={false}>
         <Text style={styles.entryTitle}>
           {project.name}
@@ -245,14 +266,31 @@ const ProjectsBlock = ({ projects, accentColor }: { projects: Project[]; accentC
           )}
         </Text>
         <Text style={[styles.entrySubtitle, { textAlign: 'justify' }]}>{project.description}</Text>
+        {stats && stats.mergedCount > 0 && (
+          <Text style={styles.entryMeta}>
+            <Text style={styles.inlineLabel}>Contributions: </Text>
+            <Link src={stats.searchUrl} style={{ color: '#3a3a3a', textDecoration: 'none' }}>
+              {stats.mergedCount} merged PR{stats.mergedCount !== 1 ? 's' : ''}
+            </Link>
+            {stats.reviewCount > 0 && (
+              <>
+                {', '}
+                <Link src={stats.reviewSearchUrl} style={{ color: '#3a3a3a', textDecoration: 'none' }}>
+                  {stats.reviewCount} code review{stats.reviewCount !== 1 ? 's' : ''}
+                </Link>
+              </>
+            )}
+          </Text>
+        )}
         {project.repository && (
           <Text style={styles.entryMeta}>
             <Text style={styles.inlineLabel}>Repository: </Text>
-            {stripUrl(project.repository)}
+            <Link src={project.repository} style={{ color: '#3a3a3a', textDecoration: 'none' }}>{stripUrl(project.repository)}</Link>
           </Text>
         )}
       </View>
-    ))}
+      );
+    })}
   </View>
 );
 
@@ -278,6 +316,7 @@ export default function CVDocument({
   summary,
   email,
   useColumnLayout = false,
+  contributionStats = {},
 }: CVDocumentProps) {
   const accentColor = style.colorScheme?.primary || '#000000';
   const { technicalSkills, softSkills, hasSoftSkills } = getRelevantSkills(style);
@@ -306,9 +345,8 @@ export default function CVDocument({
         {/* Header */}
         <View style={[styles.header, { borderBottomColor: accentColor }]}>
           <Text style={[styles.name, { color: accentColor }]}>{siteConfig.fullName}</Text>
-          {contactInfo.length > 0 && (
-            <Text style={styles.contactLine}>{contactInfo.join('  |  ')}</Text>
-          )}
+          <ContactLine items={contactInfo.personal} />
+          <ContactLine items={contactInfo.links} marginTop={2} />
         </View>
 
         {/* Summary */}
@@ -325,15 +363,13 @@ export default function CVDocument({
           {sortedExperience.map((exp) => {
             const descriptionPoints = parseDescription(exp.description);
             return (
-              <View key={exp.id} style={[styles.entry, { marginBottom: 10 }]} wrap={false}>
-                <View style={styles.entryHeaderRow}>
-                  <Text style={[styles.entryTitle, { flex: 1 }]}>
-                    {exp.role}, <Text style={{ color: accentColor }}>{exp.company}</Text>{exp.location && `, ${exp.location}`}
-                  </Text>
-                  <Text style={styles.entryDate}>
-                    {exp.startDate} {exp.endDate ? `- ${exp.endDate}` : '- Present'}
-                  </Text>
-                </View>
+              <View key={exp.id} style={[styles.entry, { marginBottom: 7 }]} wrap={false}>
+                <Text style={styles.entryTitle}>
+                  {exp.role}, <Text style={{ color: accentColor }}>{exp.company}</Text>{exp.location && `, ${exp.location}`}
+                </Text>
+                <Text style={styles.entryDate}>
+                  {exp.startDate} {exp.endDate ? `- ${exp.endDate}` : '- Present'}
+                </Text>
                 {descriptionPoints.length > 0 && (
                   <View style={styles.bulletList}>
                     {descriptionPoints.map((point, idx) => (
@@ -356,23 +392,23 @@ export default function CVDocument({
         {useColumnLayout ? (
           <View style={styles.twoColumnRow}>
             <View style={styles.column}>
-              <EducationBlock education={cvEducation} accentColor={accentColor} />
+              <EducationBlock education={cvEducation} accentColor={accentColor} siteDomain={siteConfig.domain} />
               <CertificationsBlock certifications={certifications} accentColor={accentColor} />
             </View>
             <View style={styles.column}>
               <SkillsBlock technicalSkills={technicalSkills} softSkills={softSkills} hasSoftSkills={hasSoftSkills} accentColor={accentColor} />
               <LanguagesBlock languages={cvLanguages} accentColor={accentColor} />
-              <ProjectsBlock projects={publicProjects} accentColor={accentColor} />
+              <ProjectsBlock projects={publicProjects} accentColor={accentColor} contributionStats={contributionStats} />
               <AdditionalInfoBlock hobbies={hobbies} accentColor={accentColor} showHobbies={style.showHobbies !== false} />
             </View>
           </View>
         ) : (
           <>
             <SkillsBlock technicalSkills={technicalSkills} softSkills={softSkills} hasSoftSkills={hasSoftSkills} accentColor={accentColor} />
-            <EducationBlock education={cvEducation} accentColor={accentColor} />
+            <EducationBlock education={cvEducation} accentColor={accentColor} siteDomain={siteConfig.domain} />
             <CertificationsBlock certifications={certifications} accentColor={accentColor} />
             <LanguagesBlock languages={cvLanguages} accentColor={accentColor} />
-            <ProjectsBlock projects={publicProjects} accentColor={accentColor} />
+            <ProjectsBlock projects={publicProjects} accentColor={accentColor} contributionStats={contributionStats} />
             <AdditionalInfoBlock hobbies={hobbies} accentColor={accentColor} showHobbies={style.showHobbies !== false} />
           </>
         )}

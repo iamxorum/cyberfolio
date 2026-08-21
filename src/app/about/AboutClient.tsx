@@ -308,7 +308,7 @@ export default function AboutClient() {
                       <button
                         onClick={() => setSelectedCategory(null)}
                         className={`px-1.5 sm:px-2 py-0.5 sm:py-1 rounded text-[9px] sm:text-[10px] font-mono transition-all active:scale-90 ${selectedCategory === null
-                          ? 'bg-primary text-black border border-primary'
+                          ? 'bg-primary text-[var(--terminal-on-primary)] border border-primary'
                           : 'bg-[var(--terminal-bg)] text-[var(--terminal-text-muted)] border border-[var(--terminal-border)] hover:border-primary hover:text-primary'
                           }`}
                       >
@@ -319,7 +319,7 @@ export default function AboutClient() {
                           key={category}
                           onClick={() => setSelectedCategory(category)}
                           className={`px-1.5 sm:px-2 py-0.5 sm:py-1 rounded text-[9px] sm:text-[10px] font-mono transition-all active:scale-90 ${selectedCategory === category
-                            ? 'bg-primary text-black border border-primary'
+                            ? 'bg-primary text-[var(--terminal-on-primary)] border border-primary'
                             : 'bg-[var(--terminal-bg)] text-[var(--terminal-text-muted)] border border-[var(--terminal-border)] hover:border-primary hover:text-primary'
                             }`}
                         >

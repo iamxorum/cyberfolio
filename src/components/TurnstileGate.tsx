@@ -13,6 +13,7 @@ interface TurnstileGateProps {
 export default function TurnstileGate({ decryptingLabel }: TurnstileGateProps) {
   const { isVerified, markVerified } = useTurnstileVerification();
   const [isDecrypting, setIsDecrypting] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   if (isVerified) return null;
 
@@ -47,12 +48,19 @@ export default function TurnstileGate({ decryptingLabel }: TurnstileGateProps) {
             : 'This section is protected by Turnstile.'}
         </p>
 
+        {error && (
+          <p className="text-red-400 text-xs mb-4 leading-relaxed" role="alert">
+            {error}
+          </p>
+        )}
+
         {!isDecrypting && (
           <div className="flex justify-center mb-6">
             <Turnstile
               siteKey={getTurnstileSiteKey()}
               onSuccess={async (token) => {
                 setIsDecrypting(true);
+                setError(null);
 
                 try {
                   const res = await fetch('/api/verify', {
@@ -67,15 +75,16 @@ export default function TurnstileGate({ decryptingLabel }: TurnstileGateProps) {
                     setTimeout(() => {
                       markVerified();
                       setIsDecrypting(false);
-                    }, 1000);
+                    }, 500);
                   } else {
                     console.error("Access Denied:", data.error);
                     setIsDecrypting(false);
-                    alert("Verification failed. Please try again.");
+                    setError('Verification failed. Please try again.');
                   }
                 } catch (err) {
                   console.error("Network error during verification", err);
                   setIsDecrypting(false);
+                  setError('Network error. Please try again.');
                 }
               }}
               options={{

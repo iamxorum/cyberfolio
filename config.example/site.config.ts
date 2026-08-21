@@ -14,6 +14,7 @@ export interface SiteConfig {
     year: number;
   };
   location: string;
+  phone?: string;
   role: string;
   status: string;
   profileImage: string;
@@ -58,6 +59,7 @@ export const siteConfig: SiteConfig = {
     year: 2000,
   },
   location: 'Your Location',
+  phone: '+1 234 567 8900',
   role: 'Your Role',
   status: 'Available for opportunities',
   profileImage: '/assets/profile.jpg',
@@ -89,7 +91,7 @@ export const siteConfig: SiteConfig = {
     ],
   },
 
-  systemVersion: 'v1.4.9',
+  systemVersion: 'v1.5.2',
 
   favicon: 'path/to/favicon.ico',
 

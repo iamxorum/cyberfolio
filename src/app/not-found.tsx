@@ -37,7 +37,7 @@ export default function NotFound() {
 
                 <Link
                   href="/"
-                  className="inline-flex items-center justify-center gap-2 rounded h-11 px-6 bg-primary text-black text-sm font-bold leading-normal tracking-[0.015em] hover:bg-primary/80 active:scale-[0.97] transition-all shadow-[0_0_15px_rgba(var(--terminal-accent-rgb),0.4)] border border-primary/30"
+                  className="inline-flex items-center justify-center gap-2 rounded h-11 px-6 bg-primary text-[var(--terminal-on-primary)] text-sm font-bold leading-normal tracking-[0.015em] hover:bg-primary/80 active:scale-[0.97] transition-all shadow-[0_0_15px_rgba(var(--terminal-accent-rgb),0.4)] border border-primary/30"
                 >
                   <span className="material-symbols-outlined text-lg">arrow_back</span>
                   <span className="font-mono">CD ~/</span>

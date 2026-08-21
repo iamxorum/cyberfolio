@@ -11,6 +11,7 @@ import {
   filterForCV,
   getPublicProjects,
 } from '@/lib/cv-helpers';
+import type { ContributionStats } from '@/lib/github-contributions';
 
 interface CVTemplateProps {
   style: CVStyle;
@@ -24,6 +25,7 @@ interface CVTemplateProps {
   summary?: string;
   email?: string;
   useColumnLayout?: boolean;
+  contributionStats?: Record<string, ContributionStats | null>;
 }
 
 const SectionHeader = ({ children, accentColor }: { children: string; accentColor: string }) => (
@@ -53,6 +55,7 @@ export default function CVTemplate({
   summary,
   email,
   useColumnLayout = true,
+  contributionStats = {},
 }: CVTemplateProps) {
   const accentColor = style.colorScheme?.primary || '#000000';
   const { technicalSkills, softSkills, hasSoftSkills } = getRelevantSkills(style);
@@ -77,11 +80,18 @@ export default function CVTemplate({
         <h1 className="mb-1" style={{ fontSize: '22pt', fontWeight: 'bold', marginBottom: '4pt', letterSpacing: '0.8pt', lineHeight: '1.15', color: accentColor }}>
           {siteConfig.fullName}
         </h1>
-        {contactInfo.length > 0 && (
-          <div style={{ fontSize: '10.5pt', lineHeight: '1.5', color: '#4a4a4a', letterSpacing: '0.1pt' }}>
-            {contactInfo.join('  |  ')}
+        {[contactInfo.personal, contactInfo.links].map((group, groupIdx) => group.length > 0 && (
+          <div key={groupIdx} style={{ fontSize: '10.5pt', lineHeight: '1.5', color: '#4a4a4a', letterSpacing: '0.1pt', marginTop: groupIdx > 0 ? '2pt' : 0 }}>
+            {group.map((item, idx) => (
+              <span key={item.text}>
+                {item.href ? (
+                  <a href={item.href} target="_blank" rel="noopener noreferrer" style={{ color: 'inherit' }}>{item.text}</a>
+                ) : item.text}
+                {idx < group.length - 1 ? ' | ' : ''}
+              </span>
+            ))}
           </div>
-        )}
+        ))}
       </div>
     </div>
 
@@ -103,14 +113,12 @@ export default function CVTemplate({
         return (
           <div key={exp.id} className="mb-5" style={{ marginBottom: '10pt', pageBreakInside: 'avoid' }}>
             {/* Job Header */}
-            <div className="flex justify-between items-start mb-3" style={{ marginBottom: '4pt' }}>
-              <div style={{ flex: '1' }}>
-                <h3 style={{ fontSize: '12pt', fontWeight: 'bold', marginBottom: '2pt', color: '#000', lineHeight: '1.3', letterSpacing: '0.1pt' }}>
-                  {exp.role}, <span style={{ color: accentColor }}>{exp.company}</span>
-                  {exp.location && `, ${exp.location}`}
-                </h3>
-              </div>
-              <div style={{ fontSize: '11pt', textAlign: 'right', whiteSpace: 'nowrap', marginLeft: '10pt', color: '#2a2a2a', fontWeight: '600', letterSpacing: '0.1pt' }}>
+            <div className="mb-3" style={{ marginBottom: '4pt' }}>
+              <h3 style={{ fontSize: '12pt', fontWeight: 'bold', marginBottom: '2pt', color: '#000', lineHeight: '1.3', letterSpacing: '0.1pt' }}>
+                {exp.role}, <span style={{ color: accentColor }}>{exp.company}</span>
+                {exp.location && `, ${exp.location}`}
+              </h3>
+              <div style={{ fontSize: '10.5pt', fontStyle: 'italic', color: '#2a2a2a', letterSpacing: '0.1pt' }}>
                 {formatDate(exp.startDate)} {exp.endDate ? `- ${formatDate(exp.endDate)}` : '- Present'}
               </div>
             </div>
@@ -161,6 +169,11 @@ export default function CVTemplate({
                     {formatDate(edu.startDate)} {edu.endDate ? `- ${formatDate(edu.endDate)}` : '- Present'}
                     {edu.grade && ` | ${edu.grade}`}
                   </div>
+                  {edu.thesisUrl && (
+                    <div style={{ fontSize: '10pt', color: '#3a3a3a', marginTop: '2pt' }}>
+                      <strong style={{ color: '#000' }}>Thesis:</strong> <a href={`https://${siteConfig.domain}${edu.thesisUrl}`} target="_blank" rel="noopener noreferrer" style={{ color: 'inherit' }}>View PDF</a>
+                    </div>
+                  )}
                 </div>
               </div>
             ))}
@@ -262,9 +275,25 @@ export default function CVTemplate({
                     <div style={{ fontSize: '10.5pt', lineHeight: '1.5', marginBottom: '2pt', color: '#1a1a1a', textAlign: 'justify' }}>
                       {project.description}
                     </div>
+                    {contributionStats[project.id] && contributionStats[project.id]!.mergedCount > 0 && (
+                      <div style={{ fontSize: '10pt', color: '#3a3a3a', marginTop: '2pt' }}>
+                        <strong style={{ color: '#000' }}>Contributions:</strong>{' '}
+                        <a href={contributionStats[project.id]!.searchUrl} target="_blank" rel="noopener noreferrer" style={{ color: 'inherit' }}>
+                          {contributionStats[project.id]!.mergedCount} merged PR{contributionStats[project.id]!.mergedCount !== 1 ? 's' : ''}
+                        </a>
+                        {contributionStats[project.id]!.reviewCount > 0 && (
+                          <>
+                            {', '}
+                            <a href={contributionStats[project.id]!.reviewSearchUrl} target="_blank" rel="noopener noreferrer" style={{ color: 'inherit' }}>
+                              {contributionStats[project.id]!.reviewCount} code review{contributionStats[project.id]!.reviewCount !== 1 ? 's' : ''}
+                            </a>
+                          </>
+                        )}
+                      </div>
+                    )}
                     {project.repository && (
                       <div style={{ fontSize: '10pt', color: '#3a3a3a', marginTop: '2pt' }}>
-                        <strong style={{ color: '#000' }}>Repository:</strong> {stripUrl(project.repository)}
+                        <strong style={{ color: '#000' }}>Repository:</strong> <a href={project.repository} target="_blank" rel="noopener noreferrer" style={{ color: 'inherit' }}>{stripUrl(project.repository)}</a>
                       </div>
                     )}
                   </div>
@@ -352,6 +381,11 @@ export default function CVTemplate({
                   {formatDate(edu.startDate)} {edu.endDate ? `- ${formatDate(edu.endDate)}` : '- Present'}
                   {edu.grade && ` | ${edu.grade}`}
                 </div>
+                {edu.thesisUrl && (
+                  <div style={{ fontSize: '10pt', color: '#3a3a3a', marginTop: '2pt' }}>
+                    <strong style={{ color: '#000' }}>Thesis:</strong> <a href={`https://${siteConfig.domain}${edu.thesisUrl}`} target="_blank" rel="noopener noreferrer" style={{ color: 'inherit' }}>View PDF</a>
+                  </div>
+                )}
               </div>
             </div>
           ))}
@@ -408,9 +442,25 @@ export default function CVTemplate({
                   <div style={{ fontSize: '10.5pt', lineHeight: '1.5', marginBottom: '2pt', color: '#1a1a1a', textAlign: 'justify' }}>
                     {project.description}
                   </div>
+                  {contributionStats[project.id] && contributionStats[project.id]!.mergedCount > 0 && (
+                    <div style={{ fontSize: '10pt', color: '#3a3a3a', marginTop: '2pt' }}>
+                      <strong style={{ color: '#000' }}>Contributions:</strong>{' '}
+                      <a href={contributionStats[project.id]!.searchUrl} target="_blank" rel="noopener noreferrer" style={{ color: 'inherit' }}>
+                        {contributionStats[project.id]!.mergedCount} merged PR{contributionStats[project.id]!.mergedCount !== 1 ? 's' : ''}
+                      </a>
+                      {contributionStats[project.id]!.reviewCount > 0 && (
+                        <>
+                          {', '}
+                          <a href={contributionStats[project.id]!.reviewSearchUrl} target="_blank" rel="noopener noreferrer" style={{ color: 'inherit' }}>
+                            {contributionStats[project.id]!.reviewCount} code review{contributionStats[project.id]!.reviewCount !== 1 ? 's' : ''}
+                          </a>
+                        </>
+                      )}
+                    </div>
+                  )}
                   {project.repository && (
                     <div style={{ fontSize: '10pt', color: '#3a3a3a', marginTop: '2pt' }}>
-                      <strong style={{ color: '#000' }}>Repository:</strong> {stripUrl(project.repository)}
+                      <strong style={{ color: '#000' }}>Repository:</strong> <a href={project.repository} target="_blank" rel="noopener noreferrer" style={{ color: 'inherit' }}>{stripUrl(project.repository)}</a>
                     </div>
                   )}
                 </div>

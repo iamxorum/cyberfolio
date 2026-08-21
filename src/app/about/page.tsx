@@ -5,7 +5,7 @@ import AboutClient from './AboutClient';
 const siteUrl = `https://${siteConfig.domain}`;
 const pageUrl = `${siteUrl}/about`;
 const ogImage = `${siteUrl}/opengraph-image`;
-const title = `About | ${siteConfig.fullName}, ${siteConfig.role}`;
+const title = `About | ${siteConfig.fullName}`;
 const description = `${siteConfig.role} | background, projects, skills, education, and certifications.`;
 
 export const metadata: Metadata = {

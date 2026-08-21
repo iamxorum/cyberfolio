@@ -101,8 +101,10 @@ export default function ThreatGlobe() {
   const [hasError, setHasError] = useState(false);
   const [windowWidth, setWindowWidth] = useState(() => (typeof window !== 'undefined' ? window.innerWidth : 1024));
   const [atmosphereColor, setAtmosphereColor] = useState('#2650d7');
+  const [isLight, setIsLight] = useState(false);
   const [newIps, setNewIps] = useState<Set<string>>(new Set());
   const [selectedPoint, setSelectedPoint] = useState<GlobePointDatum | null>(null);
+  const [panelPoint, setPanelPoint] = useState<GlobePointDatum | null>(null);
 
   const [isRendering, setIsRendering] = useState(false);
   const [isGlobeReady, setIsGlobeReady] = useState(false);
@@ -111,6 +113,19 @@ export default function ThreatGlobe() {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const globeRef = useRef<any>(null);
   const resumeRotateTimeout = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const panelClearTimeout = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  useEffect(() => {
+    if (selectedPoint) {
+      if (panelClearTimeout.current) clearTimeout(panelClearTimeout.current);
+      setPanelPoint(selectedPoint);
+    } else {
+      panelClearTimeout.current = setTimeout(() => setPanelPoint(null), 200);
+    }
+    return () => {
+      if (panelClearTimeout.current) clearTimeout(panelClearTimeout.current);
+    };
+  }, [selectedPoint]);
 
   useEffect(() => () => {
     if (resumeRotateTimeout.current) clearTimeout(resumeRotateTimeout.current);
@@ -144,7 +159,12 @@ export default function ThreatGlobe() {
             const currentIps = data.recent_bans.map((ban) => ban.ip);
             const fresh = seen.size > 0 ? currentIps.filter((ip) => !seen.has(ip)) : [];
             setNewIps(new Set(fresh));
-            localStorage.setItem('threatglobe_seen_ips', JSON.stringify(currentIps.slice(0, 2000)));
+
+            const updatedSeen = new Set([...seen, ...currentIps]);
+            const trimmedSeen = updatedSeen.size > 5000
+              ? new Set([...updatedSeen].slice(-5000))
+              : updatedSeen;
+            localStorage.setItem('threatglobe_seen_ips', JSON.stringify([...trimmedSeen]));
           } catch {
           }
 
@@ -153,8 +173,15 @@ export default function ThreatGlobe() {
       })
       .catch(() => setHasError(true));
 
-    const accentRgb = getComputedStyle(document.documentElement).getPropertyValue('--terminal-accent-rgb').trim();
-    if (accentRgb) setAtmosphereColor(`rgb(${accentRgb})`);
+    const syncTheme = () => {
+      const accentRgb = getComputedStyle(document.documentElement).getPropertyValue('--terminal-accent-rgb').trim();
+      if (accentRgb) setAtmosphereColor(`rgb(${accentRgb})`);
+      setIsLight(document.documentElement.classList.contains('light'));
+    };
+    syncTheme();
+
+    const themeObserver = new MutationObserver(syncTheme);
+    themeObserver.observe(document.documentElement, { attributes: true, attributeFilter: ['class'] });
 
     let resizeThrottle: ReturnType<typeof setTimeout> | null = null;
     const handleResize = () => {
@@ -168,6 +195,7 @@ export default function ThreatGlobe() {
     return () => {
       window.removeEventListener('resize', handleResize);
       if (resizeThrottle) clearTimeout(resizeThrottle);
+      themeObserver.disconnect();
     };
   }, []);
 
@@ -337,7 +365,7 @@ export default function ThreatGlobe() {
                   onGlobeReady={() => setIsGlobeReady(true)}
                   width={windowWidth < 640 ? windowWidth - 80 : windowWidth < 1024 ? 350 : windowWidth < 1280 ? 400 : 500}
                   height={windowWidth < 640 ? windowWidth - 80 : windowWidth < 1024 ? 350 : windowWidth < 1280 ? 400 : 500}
-                  globeImageUrl="https://unpkg.com/three-globe/example/img/earth-dark.jpg"
+                  globeImageUrl={isLight ? 'https://unpkg.com/three-globe/example/img/earth-blue-marble.jpg' : 'https://unpkg.com/three-globe/example/img/earth-dark.jpg'}
                   backgroundColor="rgba(0,0,0,0)"
 
                   pointsData={pointsData}
@@ -379,13 +407,21 @@ export default function ThreatGlobe() {
                   </div>
                 </div>
 
-                {selectedPoint && (
-                  <div className="absolute top-2 right-2 z-20 flex flex-col gap-1 font-mono text-[10px] bg-[rgba(var(--terminal-bg-rgb),0.85)] p-2.5 rounded border border-[var(--terminal-border)] backdrop-blur-sm max-w-[180px]">
+                {panelPoint && (
+                  <div
+                    className="absolute top-2 right-2 z-20 flex flex-col gap-1 font-mono text-[10px] bg-[rgba(var(--terminal-bg-rgb),0.85)] p-2.5 rounded border border-[var(--terminal-border)] backdrop-blur-sm max-w-[180px]"
+                    style={{
+                      opacity: selectedPoint ? 1 : 0,
+                      transform: selectedPoint ? 'scale(1)' : 'scale(0.95)',
+                      pointerEvents: selectedPoint ? 'auto' : 'none',
+                      transition: 'opacity 200ms ease-out, transform 200ms ease-out',
+                    }}
+                  >
                     <div className="flex items-start justify-between gap-2">
                       <div className="flex items-center gap-1.5">
-                        {selectedPoint.country && (
+                        {panelPoint.country && (
                           <Image
-                            src={`https://flagcdn.com/w20/${selectedPoint.country.toLowerCase()}.png`}
+                            src={`https://flagcdn.com/w20/${panelPoint.country.toLowerCase()}.png`}
                             alt=""
                             width={14}
                             height={10}
@@ -394,25 +430,25 @@ export default function ThreatGlobe() {
                             unoptimized
                           />
                         )}
-                        <span className="text-[var(--terminal-text)] font-bold">{selectedPoint.country}</span>
-                        {selectedPoint.isNew && <span className="text-[#fbbf24] text-[8px]">NEW</span>}
+                        <span className="text-[var(--terminal-text)] font-bold">{panelPoint.country}</span>
+                        {panelPoint.isNew && <span className="text-[#fbbf24] text-[8px]">NEW</span>}
                       </div>
                       <button
                         onClick={() => setSelectedPoint(null)}
                         aria-label="Close"
-                        className="text-[var(--terminal-text-dim)] hover:text-[var(--terminal-text)] leading-none -mt-0.5"
+                        className="text-[var(--terminal-text-dim)] hover:text-[var(--terminal-text)] active:scale-90 transition-transform leading-none -mt-0.5"
                       >
                         ×
                       </button>
                     </div>
-                    {selectedPoint.city && (
-                      <span className="text-[var(--terminal-text-muted)]">{selectedPoint.city}</span>
+                    {panelPoint.city && (
+                      <span className="text-[var(--terminal-text-muted)]">{panelPoint.city}</span>
                     )}
-                    <span className={selectedPoint.source === 'local' ? 'text-[#ef4444]' : 'text-[#3b82f6]'}>
-                      {selectedPoint.source === 'local' ? 'Local (Fail2Ban)' : 'Public (CrowdSec)'}
+                    <span className={panelPoint.source === 'local' ? 'text-[#ef4444]' : 'text-[#3b82f6]'}>
+                      {panelPoint.source === 'local' ? 'Local (Fail2Ban)' : 'Public (CrowdSec)'}
                     </span>
-                    {selectedPoint.ip && (
-                      <span className="text-[var(--terminal-text-dim)] truncate">{selectedPoint.ip}</span>
+                    {panelPoint.ip && (
+                      <span className="text-[var(--terminal-text-dim)] truncate">{panelPoint.ip}</span>
                     )}
                   </div>
                 )}

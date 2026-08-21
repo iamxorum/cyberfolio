@@ -46,7 +46,7 @@ export default function HeroSection() {
             </h2>
           </div>
           <div className="flex flex-wrap gap-3 sm:gap-4 z-10">
-            <Link href={contentConfig.home.hero.ctaPrimary.link} className="flex min-w-[120px] sm:min-w-[140px] cursor-pointer items-center justify-center overflow-hidden rounded h-10 sm:h-12 px-4 sm:px-6 bg-primary text-black sm:text-base font-bold leading-normal tracking-[0.015em] hover:bg-white hover:-translate-y-[2px] hover:shadow-[0_0_20px_rgba(var(--terminal-accent-rgb),0.6)] active:scale-[0.97] active:translate-y-0 transition-all shadow-[0_0_10px_rgba(var(--terminal-accent-rgb),0.3)] border border-transparent">
+            <Link href={contentConfig.home.hero.ctaPrimary.link} className="flex min-w-[120px] sm:min-w-[140px] cursor-pointer items-center justify-center overflow-hidden rounded h-10 sm:h-12 px-4 sm:px-6 bg-primary text-[var(--terminal-on-primary)] sm:text-base font-bold leading-normal tracking-[0.015em] hover:bg-white hover:-translate-y-[2px] hover:shadow-[0_0_20px_rgba(var(--terminal-accent-rgb),0.6)] active:scale-[0.97] active:translate-y-0 transition-all shadow-[0_0_10px_rgba(var(--terminal-accent-rgb),0.3)] border border-transparent">
               <span className="truncate font-mono text-xs sm:text-sm md:text-base drop-shadow-[0_0_2px_rgba(0,0,0,0.5)]">{contentConfig.home.hero.ctaPrimary.text}</span>
             </Link>
             <Link href={contentConfig.home.hero.ctaSecondary.link || '#'} className="flex min-w-[100px] sm:min-w-[120px] cursor-pointer items-center justify-center overflow-hidden rounded h-10 sm:h-12 px-4 sm:px-6 bg-[var(--terminal-surface-alt)] border-2 border-[var(--terminal-accent-alt)] text-[var(--terminal-text-muted)] text-sm sm:text-base font-bold leading-normal tracking-[0.015em] hover:border-primary hover:text-primary hover:bg-[var(--terminal-surface-hover)] hover:shadow-[0_0_20px_rgba(var(--terminal-accent-alt-rgb),0.5)] hover:-translate-y-[2px] active:scale-[0.97] active:translate-y-0 transition-all group/cta">
@@ -70,7 +70,7 @@ export default function HeroSection() {
                         width={220}
                         height={60}
                         className="h-auto w-[180px] sm:w-[220px] rounded-[3px] block"
-                        style={badge.imageStyle}
+                        style={{ height: 'auto', ...badge.imageStyle }}
                         unoptimized
                       />
                     </div>

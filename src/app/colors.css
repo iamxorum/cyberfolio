@@ -55,6 +55,7 @@
   --terminal-success-rgb: var(--color-success-rgb);
   --terminal-hover-overlay: rgba(var(--color-text-rgb), 0.02);
   --terminal-hover-border: rgba(var(--color-text-rgb), 0.2);
+  --terminal-on-primary: #000000;
 }
 
 @theme inline {
@@ -117,6 +118,7 @@ html.light {
 
   --background: var(--color-bg);
   --foreground: var(--color-text);
+  --terminal-on-primary: #ffffff;
 }
 
 @media (prefers-color-scheme: dark) {
