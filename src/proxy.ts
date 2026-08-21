@@ -4,7 +4,7 @@ import { siteConfig } from '@/config';
 
 const wwwHost = `www.${siteConfig.domain}`;
 
-export function middleware(request: NextRequest) {
+export function proxy(request: NextRequest) {
   const hostname = request.headers.get('host') || '';
 
   if (hostname === wwwHost) {
