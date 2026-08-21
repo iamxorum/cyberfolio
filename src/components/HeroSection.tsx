@@ -38,10 +38,10 @@ export default function HeroSection() {
             <div className="w-3 h-3 rounded-full bg-green-500/80 border border-green-400 shadow-[0_0_8px_rgba(34,197,94,0.6)] hover:brightness-125 transition-all"></div>
           </div>
           <div className="flex flex-col gap-2 text-left z-10">
-            <h1 className="text-[var(--terminal-text)] text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-black leading-tight tracking-[-0.033em] font-mono glow-text">
+            <h1 className="animate-reveal text-[var(--terminal-text)] text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-black leading-tight tracking-[-0.033em] font-mono glow-text">
               {contentConfig.home.hero.title}<span className="blinking-cursor text-primary">_</span>
             </h1>
-            <h2 className="text-[var(--terminal-text-dim)] text-xs sm:text-sm md:text-base lg:text-lg font-mono leading-normal max-w-full md:max-w-[600px] mt-2 whitespace-pre-line">
+            <h2 className="animate-reveal text-[var(--terminal-text-dim)] text-xs sm:text-sm md:text-base lg:text-lg font-mono leading-normal max-w-full md:max-w-[600px] mt-2 whitespace-pre-line" style={{ animationDelay: '140ms' }}>
               <span className="text-primary font-bold">{siteConfig.domain}</span> {contentConfig.home.hero.subtitle}
             </h2>
           </div>

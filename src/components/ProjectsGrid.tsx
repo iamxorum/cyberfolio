@@ -18,7 +18,7 @@ export default function ProjectsGrid() {
       </div>
       <div className="flex flex-col gap-6 sm:gap-10 px-2 sm:px-4 py-4 sm:py-6 @container">
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4 p-0">
-          {projects.map((project) => {
+          {projects.map((project, index) => {
             const statusColorMap = {
               green: 'text-green-400',
               yellow: 'text-yellow-400',
@@ -44,10 +44,11 @@ export default function ProjectsGrid() {
                 role={isClickable ? 'link' : undefined}
                 tabIndex={isClickable ? 0 : undefined}
                 onMouseMove={handleSpotlight}
-                className={`flex flex-1 gap-3 sm:gap-4 rounded border-2 border-[var(--terminal-border)] bg-[var(--terminal-surface-alt)] p-4 sm:p-5 flex-col transition-[transform,background-color,border-color,box-shadow] duration-300 group relative ${isClickable
+                className={`animate-reveal flex flex-1 gap-3 sm:gap-4 rounded border-2 border-[var(--terminal-border)] bg-[var(--terminal-surface-alt)] p-4 sm:p-5 flex-col transition-[transform,background-color,border-color,box-shadow] duration-300 group relative ${isClickable
                   ? 'hover:bg-[var(--terminal-surface-hover)] hover:border-primary hover:-translate-y-1 hover:shadow-[0_0_25px_rgba(var(--terminal-accent-rgb),0.3)] active:scale-[0.98] active:translate-y-0 cursor-pointer'
                   : 'opacity-75 cursor-not-allowed border-dashed'
                   }`}
+                style={{ animationDelay: `${Math.min(index, 8) * 110}ms` }}
                 onClick={() => isClickable && window.open(project.link, '_blank')}
                 onKeyDown={(e) => {
                   if (isClickable && (e.key === 'Enter' || e.key === ' ')) {

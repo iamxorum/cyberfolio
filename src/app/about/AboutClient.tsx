@@ -129,7 +129,7 @@ export default function AboutClient() {
                   </div>
                 </div>
                 <div className="p-4 sm:p-6 font-mono text-xs sm:text-sm leading-relaxed text-[var(--terminal-text-light)]">
-                  <p className="mb-3 sm:mb-4">
+                  <p className="animate-reveal mb-3 sm:mb-4">
                     {(() => {
                       const title = contentConfig.about.bio.title;
 
@@ -148,7 +148,7 @@ export default function AboutClient() {
                     })()}
                   </p>
                   {contentConfig.about.bio.paragraphs.map((paragraph, index) => (
-                    <p key={index} className="mb-3 sm:mb-4">
+                    <p key={index} className="animate-reveal mb-3 sm:mb-4" style={{ animationDelay: `${150 + Math.min(index, 6) * 130}ms` }}>
                       {paragraph}
                     </p>
                   ))}
@@ -158,7 +158,7 @@ export default function AboutClient() {
               <div className="flex flex-col md:flex-row gap-4 sm:gap-6">
                 {/* Left Column - Profile */}
                 <div className="w-full md:w-1/3 flex flex-col gap-3 sm:gap-4">
-                  <div className="bg-[var(--terminal-surface)] border border-[var(--terminal-border)] rounded p-1 relative overflow-hidden group">
+                  <div className="animate-reveal bg-[var(--terminal-surface)] border border-[var(--terminal-border)] rounded p-1 relative overflow-hidden group">
                     <div className="absolute inset-0 bg-gradient-to-b from-transparent via-primary/10 to-transparent h-[20%] w-full animate-scan pointer-events-none z-10 opacity-30"></div>
                     <div className="relative bg-[var(--terminal-bg-dark)] aspect-square flex items-center justify-center overflow-hidden mb-0">
                       <div className="absolute inset-0 bg-[url('/noise.svg')] opacity-20"></div>
@@ -335,10 +335,10 @@ export default function AboutClient() {
                     <div tabIndex={0} role="region" aria-label="Skills list" className="mt-3 sm:mt-4 space-y-1.5 sm:space-y-2 max-h-40 sm:max-h-48 overflow-y-auto pr-2 sm:pr-3">
                       {(selectedCategory ? getSkillsByCategory(selectedCategory) : Object.values(skillsByCategory).flat())
                         .sort((a, b) => getScoreFromLevel(b.level) - getScoreFromLevel(a.level))
-                        .map((skill) => {
+                        .map((skill, index) => {
                           const score = getScoreFromLevel(skill.level);
                           return (
-                            <div key={skill.name} className="flex items-center justify-between text-[9px] sm:text-[10px]">
+                            <div key={skill.name} className="animate-reveal flex items-center justify-between text-[9px] sm:text-[10px]" style={{ animationDelay: `${Math.min(index, 10) * 60}ms` }}>
                               <div className="flex items-center gap-1 sm:gap-2 min-w-0 flex-1">
                                 <span className="text-[var(--terminal-text-muted)] truncate">{skill.name}</span>
                                 <span className="text-[var(--terminal-text-dim)] hidden sm:inline">({skill.category})</span>
@@ -416,7 +416,7 @@ export default function AboutClient() {
                     <div id="experience" className="border border-[var(--terminal-border)] rounded bg-[var(--terminal-bg)] p-4 scroll-mt-20">
                       <h2 className="text-xs font-mono text-[var(--terminal-text-dim)] mb-3">RECENT_ACTIVITY_LOG</h2>
                       <div className="space-y-3 font-mono text-sm">
-                        {[...experience].reverse().map((exp) => {
+                        {[...experience].reverse().map((exp, index) => {
                           const isOngoing = !exp.endDate || exp.endDate.toLowerCase() === 'ongoing';
                           const dateRange = isOngoing
                             ? `${exp.startDate} - Present`
@@ -425,7 +425,7 @@ export default function AboutClient() {
                               : `${exp.startDate} - ${exp.endDate}`;
 
                           return (
-                            <div key={exp.id} className="flex gap-3 items-start group">
+                            <div key={exp.id} className="animate-reveal flex gap-3 items-start group" style={{ animationDelay: `${Math.min(index, 6) * 120}ms` }}>
                               <div className="text-[var(--terminal-text-dim)] text-xs w-36 flex-shrink-0">
                                 <div>{dateRange}</div>
                                 {exp.type && (

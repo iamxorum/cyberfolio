@@ -33,10 +33,10 @@ export default function ProjectsClient() {
               {/* Page Heading & Controls */}
               <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-4 sm:gap-6 border-b border-[var(--terminal-border-alt)] pb-4 sm:pb-6">
                 <div className="flex flex-col gap-1 sm:gap-2">
-                  <h1 className="text-[var(--terminal-text)] text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-black leading-tight tracking-tight uppercase">
+                  <h1 className="animate-reveal text-[var(--terminal-text)] text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-black leading-tight tracking-tight uppercase">
                     {contentConfig.projects.title}
                   </h1>
-                  <p className="text-[var(--terminal-text-muted)] text-sm sm:text-base md:text-lg font-mono">
+                  <p className="animate-reveal text-[var(--terminal-text-muted)] text-sm sm:text-base md:text-lg font-mono" style={{ animationDelay: '130ms' }}>
                     {contentConfig.projects.subtitle}
                   </p>
                 </div>
@@ -69,7 +69,7 @@ export default function ProjectsClient() {
                       <div className="col-span-2 text-right">ACTION</div>
                     </div>
                     {/* Personal Project Rows */}
-                    {projects.filter(p => p.projectType === 'personal').map((project) => {
+                    {projects.filter(p => p.projectType === 'personal').map((project, index) => {
                   
                   const hashId = `0x${project.id.slice(0, 6).toUpperCase().padEnd(6, '0')}`;
                   
@@ -114,7 +114,8 @@ export default function ProjectsClient() {
                   return (
                     <div
                       key={project.id}
-                      className="group grid grid-cols-1 md:grid-cols-12 gap-2 md:gap-4 px-3 sm:px-4 md:px-6 py-3 sm:py-4 border-b border-[var(--terminal-border-alt)] hover:bg-[var(--terminal-hover-overlay)] transition-colors items-center relative overflow-hidden last:border-b-0"
+                      className="animate-reveal group grid grid-cols-1 md:grid-cols-12 gap-2 md:gap-4 px-3 sm:px-4 md:px-6 py-3 sm:py-4 border-b border-[var(--terminal-border-alt)] hover:bg-[var(--terminal-hover-overlay)] transition-colors items-center relative overflow-hidden last:border-b-0"
+                      style={{ animationDelay: `${Math.min(index, 8) * 100}ms` }}
                     >
                       <div className="absolute left-0 top-0 bottom-0 w-[2px] bg-transparent group-hover:bg-primary transition-colors"></div>
                       <div className="col-span-2 flex items-center gap-2 text-[var(--terminal-text-dim)] font-mono text-[10px] sm:text-xs md:text-sm">
@@ -207,7 +208,7 @@ export default function ProjectsClient() {
                         <div className="col-span-2 text-right">ACTION</div>
                       </div>
                       {/* Contribution Project Rows */}
-                      {projects.filter(p => p.projectType === 'contribution').map((project) => {
+                      {projects.filter(p => p.projectType === 'contribution').map((project, index) => {
                         const hashId = `0x${project.id.slice(0, 6).toUpperCase().padEnd(6, '0')}`;
                         
                         const statusColorMap = {
@@ -249,7 +250,8 @@ export default function ProjectsClient() {
                         return (
                           <div
                             key={project.id}
-                            className="group grid grid-cols-1 md:grid-cols-12 gap-2 md:gap-4 px-3 sm:px-4 md:px-6 py-3 sm:py-4 border-b border-[var(--terminal-border-alt)] hover:bg-[var(--terminal-hover-overlay)] transition-colors items-center relative overflow-hidden last:border-b-0"
+                            className="animate-reveal group grid grid-cols-1 md:grid-cols-12 gap-2 md:gap-4 px-3 sm:px-4 md:px-6 py-3 sm:py-4 border-b border-[var(--terminal-border-alt)] hover:bg-[var(--terminal-hover-overlay)] transition-colors items-center relative overflow-hidden last:border-b-0"
+                            style={{ animationDelay: `${Math.min(index, 8) * 100}ms` }}
                           >
                             <div className="absolute left-0 top-0 bottom-0 w-[2px] bg-transparent group-hover:bg-primary transition-colors"></div>
                             <div className="col-span-2 flex items-center gap-2 text-[var(--terminal-text-dim)] font-mono text-[10px] sm:text-xs md:text-sm">

@@ -15,6 +15,7 @@ export default function InitScreen({ onInit }: InitScreenProps) {
   const [cursorVisible, setCursorVisible] = useState(true);
   const [isExiting, setIsExiting] = useState(false);
   const textRef = useRef<HTMLDivElement>(null);
+  const rgbRef = useRef<HTMLDivElement>(null);
   const doneRef = useRef(false);
   const onInitRef = useRef(onInit);
 
@@ -28,7 +29,6 @@ export default function InitScreen({ onInit }: InitScreenProps) {
       doneRef.current = true;
 
       localStorage.setItem('iamxorum_initialized', Date.now().toString());
-      document.documentElement.classList.add('boot-skip');
 
       if (textRef.current) {
         textRef.current.style.animation = 'glitch 0.25s';
@@ -37,8 +37,12 @@ export default function InitScreen({ onInit }: InitScreenProps) {
         textRef.current.style.transform = 'scale(1.08) translateY(-10px)';
         textRef.current.style.filter = 'blur(8px)';
       }
+      rgbRef.current?.classList.add('rgb-glitch-out');
       setIsExiting(true);
-      setTimeout(() => onInitRef.current(), 350);
+      setTimeout(() => {
+        document.documentElement.classList.add('boot-skip');
+        onInitRef.current();
+      }, 350);
     };
 
     let skipEnabled = false;
@@ -138,7 +142,7 @@ export default function InitScreen({ onInit }: InitScreenProps) {
       <div className="absolute inset-0 bg-gradient-to-b from-transparent via-primary/5 to-transparent h-[2px] animate-scan"></div>
 
       <div ref={textRef} className="relative z-10 text-center px-4">
-        <div className="text-primary text-3xl sm:text-5xl md:text-6xl font-bold tracking-wider font-mono">
+        <div ref={rgbRef} data-text={displayText} className="text-primary text-3xl sm:text-5xl md:text-6xl font-bold tracking-wider font-mono">
           {displayText}
           {cursorVisible && <span className="text-primary animate-pulse">_</span>}
         </div>

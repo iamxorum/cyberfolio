@@ -31,5 +31,11 @@ export function useAppInitialization() {
     };
   }, []);
 
+  useEffect(() => {
+    if (initialized) {
+      document.documentElement.classList.add('boot-done');
+    }
+  }, [initialized]);
+
   return { initialized, setInitialized, userId };
 }
