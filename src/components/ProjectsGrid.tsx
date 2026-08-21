@@ -1,25 +1,7 @@
 'use client';
-import { useEffect, useRef } from 'react';
-import { animate, stagger } from 'animejs';
 import { projects } from '@/config';
-import { prefersReducedMotion } from '@/lib/motion';
 
 export default function ProjectsGrid() {
-  const projectsRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    if (projectsRef.current && !prefersReducedMotion()) {
-      const elements = projectsRef.current.querySelectorAll('div[class*="flex flex-1"]');
-      animate(Array.from(elements), {
-        opacity: [0, 0.7, 1],
-        scale: [0.98, 1],
-        delay: stagger(250),
-        duration: 700,
-        easing: 'easeOutQuad',
-      });
-    }
-  }, []);
-
   if (projects.length === 0) return null;
 
   return (
@@ -34,7 +16,7 @@ export default function ProjectsGrid() {
           <span className="text-primary">&gt;</span> ./run_projects.sh
         </h2>
       </div>
-      <div className="flex flex-col gap-6 sm:gap-10 px-2 sm:px-4 py-4 sm:py-6 @container" ref={projectsRef}>
+      <div className="flex flex-col gap-6 sm:gap-10 px-2 sm:px-4 py-4 sm:py-6 @container">
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4 p-0">
           {projects.map((project) => {
             const statusColorMap = {

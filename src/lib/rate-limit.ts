@@ -1,10 +1,6 @@
 const buckets = new Map<string, { count: number; resetAt: number }>();
 let checksSinceSweep = 0;
 
-/**
- * Simple in-memory fixed-window rate limiter. Good enough for a single-instance
- * personal-site deployment; state is per-process and resets on restart/redeploy.
- */
 export function isRateLimited(key: string, limit: number, windowMs: number): boolean {
   const now = Date.now();
 
@@ -28,6 +24,9 @@ export function isRateLimited(key: string, limit: number, windowMs: number): boo
 }
 
 export function getClientKey(request: Request): string {
+  const cfConnectingIp = request.headers.get('cf-connecting-ip');
+  if (cfConnectingIp) return cfConnectingIp.trim();
+
   const forwardedFor = request.headers.get('x-forwarded-for');
   if (forwardedFor) return forwardedFor.split(',')[0].trim();
 

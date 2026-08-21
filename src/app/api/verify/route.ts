@@ -2,23 +2,16 @@ import { NextResponse } from 'next/server';
 import { siteConfig } from '@/config';
 import { isRateLimited, getClientKey } from '@/lib/rate-limit';
 import { getTurnstileSecretKey } from '@/lib/turnstile';
+import { isAllowedOrigin } from '@/lib/origin';
 
 const isDevelopment = process.env.NODE_ENV === 'development';
 
-const ALLOWED_ORIGINS = [
-    `https://${siteConfig.domain}`,
-    `https://www.${siteConfig.domain}`,
-    ...(isDevelopment ? ['http://localhost:3000'] : []),
-];
-
 export async function POST(request: Request) {
-    const origin = request.headers.get('origin') || '';
-    const referer = request.headers.get('referer') || '';
-
-    const isAllowed = ALLOWED_ORIGINS.includes(origin) ||
-        ALLOWED_ORIGINS.some(allowed => referer.startsWith(allowed));
+    const isAllowed = isAllowedOrigin(request, siteConfig.domain, isDevelopment ? ['http://localhost:3000'] : []);
 
     if (!isAllowed) {
+        const origin = request.headers.get('origin') || '';
+        const referer = request.headers.get('referer') || '';
         console.warn(`[SECURITY] Blocked request from origin: ${origin} / referer: ${referer}`);
         return NextResponse.json({ success: false, error: 'Access Denied: Invalid Origin' }, { status: 403 });
     }

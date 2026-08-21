@@ -23,10 +23,17 @@ export default function Header() {
   };
 
   return (
-    <div
-      className="w-full flex justify-center sticky top-0 z-50 bg-[var(--terminal-bg)]/95 border-b border-[var(--terminal-border)] backdrop-blur-sm"
-      style={{ viewTransitionName: 'site-header' } as React.CSSProperties}
-    >
+    <>
+      <a
+        href="#main-content"
+        className="fixed top-2 -left-[9999px] focus:left-2 z-[100] bg-primary text-black text-sm font-bold font-mono px-4 py-2 rounded"
+      >
+        Skip to content
+      </a>
+      <div
+        className="w-full flex justify-center sticky top-0 z-50 bg-[var(--terminal-bg)]/95 border-b border-[var(--terminal-border)] backdrop-blur-sm"
+        style={{ viewTransitionName: 'site-header' } as React.CSSProperties}
+      >
       <div className="layout-content-container flex flex-col max-w-[1200px] w-full flex-1">
         <header className="flex items-center justify-between whitespace-nowrap px-3 sm:px-4 md:px-6 lg:px-10 py-2 sm:py-3">
           <Link href="/" className="flex items-center gap-2 sm:gap-4 text-[var(--terminal-text)] min-w-0 hover:opacity-80 transition-opacity">
@@ -64,7 +71,8 @@ export default function Header() {
           </div>
         </header>
       </div>
-    </div>
+      </div>
+    </>
   );
 }
 

@@ -1,27 +1,11 @@
 'use client';
-import { useEffect, useRef } from 'react';
-import { animate, stagger } from 'animejs';
+import { useRef } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { siteConfig, contentConfig, badges } from '@/config';
-import { prefersReducedMotion } from '@/lib/motion';
 
 export default function HeroSection() {
-  const heroRef = useRef<HTMLDivElement>(null);
   const cardRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    if (heroRef.current && !prefersReducedMotion()) {
-      const elements = heroRef.current.querySelectorAll('h1, h2, button');
-      animate(Array.from(elements), {
-        opacity: [0, 0.4, 1],
-        scale: [0.98, 1],
-        delay: stagger(400),
-        duration: 1500,
-        easing: 'easeOutQuad',
-      });
-    }
-  }, []);
 
   const handleSpotlight = (e: React.MouseEvent<HTMLDivElement>) => {
     const el = cardRef.current;
@@ -32,7 +16,7 @@ export default function HeroSection() {
   };
 
   return (
-    <div className="@container mb-8" ref={heroRef}>
+    <div className="@container mb-8">
       <div className="@[480px]:p-4">
         <div
           ref={cardRef}
@@ -54,10 +38,6 @@ export default function HeroSection() {
             <div className="w-3 h-3 rounded-full bg-green-500/80 border border-green-400 shadow-[0_0_8px_rgba(34,197,94,0.6)] hover:brightness-125 transition-all"></div>
           </div>
           <div className="flex flex-col gap-2 text-left z-10">
-            <div className="inline-flex items-center gap-2 px-2 py-1 bg-primary/30 border border-primary/30 rounded w-fit mb-2">
-              <div className="w-2 h-2 bg-[var(--terminal-success)] rounded-full animate-pulse"></div>
-              <span className="text-primary text-xs font-mono tracking-widest">SYSTEM_READY</span>
-            </div>
             <h1 className="text-[var(--terminal-text)] text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-black leading-tight tracking-[-0.033em] font-mono glow-text">
               {contentConfig.home.hero.title}<span className="blinking-cursor text-primary">_</span>
             </h1>

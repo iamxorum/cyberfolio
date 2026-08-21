@@ -67,7 +67,6 @@ export default function Discography() {
             {/* HEADER */}
             <div className="flex justify-between items-center border-b border-[var(--terminal-border)] pb-4 mb-2 relative z-10">
                 <h2 className="text-xl font-bold tracking-tighter text-[var(--terminal-text)] flex items-center gap-2">
-                    <div className="w-2 h-2 rounded-full animate-pulse" style={{ backgroundColor: activeColor }} />
                     DISCOGRAPHY
                 </h2>
                 <div className="hidden sm:block text-[10px] text-[var(--terminal-text-muted)] uppercase tracking-[0.2em]">
@@ -100,7 +99,7 @@ export default function Discography() {
                                         <PlatformIcon
                                             platform={track.platform}
                                             className="text-lg flex-shrink-0 transition-colors"
-                                            style={{ color: isSelected ? platformColors[track.platform] : '#333' }}
+                                            style={{ color: isSelected ? platformColors[track.platform] : 'rgba(var(--terminal-text-rgb), 0.4)' }}
                                         />
                                         <div className="truncate">
                                             <div className={`text-xs font-bold uppercase truncate ${isSelected ? 'text-[var(--terminal-text)]' : 'text-[var(--terminal-text)]/40'}`}>

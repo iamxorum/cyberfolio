@@ -54,12 +54,9 @@ export async function generateSocialImage() {
             </div>
           </div>
 
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end' }}>
+          <div style={{ display: 'flex', alignItems: 'flex-end' }}>
             <div style={{ display: 'flex', color: '#919256', fontSize: 22 }}>
               {siteConfig.domain}
-            </div>
-            <div style={{ display: 'flex', color: '#337b73', fontSize: 22 }}>
-              [ SYSTEM_READY ]
             </div>
           </div>
         </div>

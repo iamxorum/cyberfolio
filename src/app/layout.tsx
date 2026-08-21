@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { ViewTransition } from "react";
 import { JetBrains_Mono } from "next/font/google";
 import { siteConfig, scripts, experience, education, getTopSkills } from "../config";
@@ -26,6 +26,9 @@ export const metadata: Metadata = {
     index: true,
     follow: true,
   },
+  alternates: {
+    canonical: siteUrl,
+  },
   openGraph: {
     title: siteConfig.title,
     description: siteConfig.description,
@@ -33,17 +36,25 @@ export const metadata: Metadata = {
     siteName: siteConfig.title,
     locale: "en_US",
     type: "website",
+    images: [`${siteUrl}/opengraph-image`],
   },
   twitter: {
     card: "summary_large_image",
     title: siteConfig.title,
     description: siteConfig.description,
+    images: [`${siteUrl}/opengraph-image`],
   },
+  manifest: '/manifest.webmanifest',
   ...(siteConfig.favicon && {
     icons: {
       icon: siteConfig.favicon,
+      apple: '/apple-touch-icon.png',
     },
   }),
+};
+
+export const viewport: Viewport = {
+  themeColor: '#141022',
 };
 
 const currentRole = experience.find(
@@ -99,10 +110,23 @@ export default function RootLayout({
             rel="stylesheet"
           />
         </noscript>
+        <noscript>
+          <style dangerouslySetInnerHTML={{ __html: `.boot-screen-overlay{display:none !important;}` }} />
+        </noscript>
         {/* Applied before hydration to avoid a flash of the wrong theme */}
         <script
           dangerouslySetInnerHTML={{
             __html: `(function(){try{var t=localStorage.getItem('theme');var root=document.documentElement;if(t==='light'){root.classList.remove('dark');root.classList.add('light');}else{root.classList.remove('light');root.classList.add('dark');}}catch(e){}})();`,
+          }}
+        />
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `(function(){try{var t=localStorage.getItem('iamxorum_initialized');if(t&&(Date.now()-parseInt(t))<86400000){document.documentElement.classList.add('boot-skip');}}catch(e){}})();`,
+          }}
+        />
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `(function(){try{var t=localStorage.getItem('iamxorum_turnstile_verified');if(t&&(Date.now()-parseInt(t))<86400000){document.documentElement.classList.add('turnstile-skip');}}catch(e){}})();`,
           }}
         />
         <script

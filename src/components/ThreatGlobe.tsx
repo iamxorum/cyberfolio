@@ -1,6 +1,7 @@
 'use client';
 import { useEffect, useRef, useState, useMemo } from 'react';
 import dynamic from 'next/dynamic';
+import Image from 'next/image';
 import { dcConfig } from '../config';
 import { formatRelativeTime } from '@/lib/format-time';
 
@@ -14,6 +15,7 @@ interface BannedIP {
   lng: number;
   weight?: number;
   source: 'local' | 'public';
+  isNew?: boolean;
 }
 
 interface ThreatData {
@@ -27,6 +29,10 @@ interface GlobePointDatum {
   lng: number;
   source?: 'local' | 'public';
   isServer?: boolean;
+  isNew?: boolean;
+  ip?: string;
+  country?: string;
+  city?: string;
 }
 
 interface GlobeRingDatum {
@@ -35,6 +41,7 @@ interface GlobeRingDatum {
   source: 'local' | 'public';
   maxRadius: number;
   repeatPeriod: number;
+  isNew?: boolean;
 }
 
 interface GlobeArcDatum {
@@ -72,20 +79,30 @@ const AnimatedCounter = ({ value }: { value: number }) => {
 
 const getPointRadius = (obj: object) => {
   const d = obj as GlobePointDatum;
-  return d.isServer ? 0.8 : (d.source === 'local' ? 0.3 : 0.15);
+  if (d.isServer) return 0.8;
+  if (d.isNew) return d.source === 'local' ? 0.45 : 0.3;
+  return d.source === 'local' ? 0.3 : 0.15;
 };
 const getPointColor = (obj: object) => {
   const d = obj as GlobePointDatum;
   if (d.isServer) return '#ffffff';
+  if (d.isNew) return '#fbbf24';
   return d.source === 'local' ? '#ef4444' : '#3b82f6';
 };
-const getRingColor = (obj: object) => (obj as GlobeRingDatum).source === 'local' ? 'rgba(239, 68, 68, 0.6)' : 'rgba(59, 130, 246, 0.3)';
+const getRingColor = (obj: object) => {
+  const d = obj as GlobeRingDatum;
+  if (d.isNew) return 'rgba(251, 191, 36, 0.8)';
+  return d.source === 'local' ? 'rgba(239, 68, 68, 0.6)' : 'rgba(59, 130, 246, 0.3)';
+};
 const getArcStroke = (obj: object) => (obj as GlobeArcDatum).source === 'local' ? 0.5 : 0.3;
 
 export default function ThreatGlobe() {
   const [threatData, setThreatData] = useState<ThreatData | null>(null);
   const [hasError, setHasError] = useState(false);
-  const [windowWidth, setWindowWidth] = useState(0);
+  const [windowWidth, setWindowWidth] = useState(() => (typeof window !== 'undefined' ? window.innerWidth : 1024));
+  const [atmosphereColor, setAtmosphereColor] = useState('#2650d7');
+  const [newIps, setNewIps] = useState<Set<string>>(new Set());
+  const [selectedPoint, setSelectedPoint] = useState<GlobePointDatum | null>(null);
 
   const [isRendering, setIsRendering] = useState(false);
   const [isGlobeReady, setIsGlobeReady] = useState(false);
@@ -101,6 +118,7 @@ export default function ThreatGlobe() {
 
   const flyToCountry = (item: { country: string; lat: number; lng: number }) => {
     if (!globeRef.current) return;
+    setSelectedPoint(null);
     const controls = globeRef.current.controls();
     controls.autoRotate = false;
     setSelectedCountry(item.country);
@@ -116,18 +134,41 @@ export default function ThreatGlobe() {
   useEffect(() => {
     fetch('/data/banned_ips.json')
       .then((res) => res.ok ? res.json() : null)
-      .then((data) => {
+      .then((data: ThreatData | null) => {
         if (data) {
           setThreatData(data);
+
+          try {
+            const seenRaw = localStorage.getItem('threatglobe_seen_ips');
+            const seen = new Set<string>(seenRaw ? JSON.parse(seenRaw) : []);
+            const currentIps = data.recent_bans.map((ban) => ban.ip);
+            const fresh = seen.size > 0 ? currentIps.filter((ip) => !seen.has(ip)) : [];
+            setNewIps(new Set(fresh));
+            localStorage.setItem('threatglobe_seen_ips', JSON.stringify(currentIps.slice(0, 2000)));
+          } catch {
+          }
+
           setTimeout(() => setIsRendering(true), 400);
         }
       })
       .catch(() => setHasError(true));
 
-    const handleResize = () => setWindowWidth(window.innerWidth);
+    const accentRgb = getComputedStyle(document.documentElement).getPropertyValue('--terminal-accent-rgb').trim();
+    if (accentRgb) setAtmosphereColor(`rgb(${accentRgb})`);
+
+    let resizeThrottle: ReturnType<typeof setTimeout> | null = null;
+    const handleResize = () => {
+      if (resizeThrottle) return;
+      resizeThrottle = setTimeout(() => {
+        setWindowWidth(window.innerWidth);
+        resizeThrottle = null;
+      }, 150);
+    };
     window.addEventListener('resize', handleResize);
-    handleResize();
-    return () => window.removeEventListener('resize', handleResize);
+    return () => {
+      window.removeEventListener('resize', handleResize);
+      if (resizeThrottle) clearTimeout(resizeThrottle);
+    };
   }, []);
 
   const { pointsData, arcsData, countryLeaderboard, ringsData } = useMemo(() => {
@@ -144,11 +185,13 @@ export default function ThreatGlobe() {
       const latBucket = Math.round(ban.lat * 2) / 2;
       const lngBucket = Math.round(ban.lng * 2) / 2;
       const key = `${latBucket},${lngBucket},${ban.source}`;
+      const banIsNew = newIps.has(ban.ip);
 
       if (clusters[key]) {
         clusters[key].weight = (clusters[key].weight || 1) + 1;
+        if (banIsNew) clusters[key].isNew = true;
       } else {
-        clusters[key] = { ...ban, weight: 1 };
+        clusters[key] = { ...ban, weight: 1, isNew: banIsNew };
       }
 
       if (!countryStats[ban.country]) {
@@ -186,13 +229,14 @@ export default function ThreatGlobe() {
       });
 
     const randomRings = points
-      .filter(() => Math.random() > 0.5)
+      .filter((p) => p.isNew || Math.random() > 0.5)
       .map(p => ({
         lat: p.lat,
         lng: p.lng,
         source: p.source,
-        maxRadius: p.source === 'local' ? 2.5 : 1.2,
-        repeatPeriod: p.source === 'local' ? 1500 : 3000
+        isNew: p.isNew,
+        maxRadius: p.isNew ? 3.2 : (p.source === 'local' ? 2.5 : 1.2),
+        repeatPeriod: p.isNew ? 1100 : (p.source === 'local' ? 1500 : 3000)
       }));
 
     const leaderboard = Object.entries(countryStats)
@@ -212,7 +256,7 @@ export default function ThreatGlobe() {
       countryLeaderboard: leaderboard,
       ringsData: randomRings
     };
-  }, [threatData]);
+  }, [threatData, newIps]);
 
   useEffect(() => {
     if (globeRef.current && isGlobeReady) {
@@ -233,7 +277,17 @@ export default function ThreatGlobe() {
     return 'bg-[#22c55e]';
   };
 
-  if (hasError || !threatData) return null;
+  if (hasError || !threatData) {
+    return (
+      <div className="flex flex-col items-center justify-center gap-2 px-4 py-10 mb-8 border border-[var(--terminal-border)] rounded bg-[rgba(var(--terminal-bg-rgb),0.60)] text-center font-mono">
+        <span className="material-symbols-outlined text-3xl text-[var(--terminal-text-dim)]">satellite_alt</span>
+        <p className="text-sm text-[var(--terminal-text-dim)]">Threat feed unavailable</p>
+        <p className="text-xs text-[var(--terminal-text-muted)] max-w-xs">
+          Live firewall data couldn&apos;t be loaded right now — check back later.
+        </p>
+      </div>
+    );
+  }
 
   return (
     <div className="flex flex-col gap-6 px-3 sm:px-5 py-6 sm:py-8 mb-8 border border-[var(--terminal-border)] rounded bg-[rgba(var(--terminal-bg-rgb),0.60)] relative overflow-hidden group">
@@ -244,7 +298,7 @@ export default function ThreatGlobe() {
         <div>
           <h2 className="text-lg sm:text-2xl font-bold font-mono tracking-widest text-[#ef4444] glow-text flex items-center gap-2">
             <span className="material-symbols-outlined">radar</span>
-            GLOBAL_THREAT_MONITOR
+            THREAT_FEED
           </h2>
           <p className="text-xs text-[var(--terminal-text-muted)] mt-1">
             <span className="text-[#ef4444] font-bold">Local</span> Fail2Ban & <span className="text-[#3b82f6] font-bold">Public</span> CrowdSec CAPI
@@ -252,12 +306,11 @@ export default function ThreatGlobe() {
           {threatData.last_updated && (
             <p className="text-[10px] text-[var(--terminal-text-dim)] mt-1">
               Last synced: {formatRelativeTime(threatData.last_updated)}
+              {newIps.size > 0 && (
+                <span className="text-[#fbbf24] ml-1.5">· {newIps.size.toLocaleString()} new</span>
+              )}
             </p>
           )}
-        </div>
-        <div className="bg-green-500/10 px-3 py-1 rounded border border-green-500/30 flex items-center gap-2">
-          <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
-          <span className="text-green-400 font-mono text-xs font-bold tracking-widest">FIREWALL_ACTIVE</span>
         </div>
       </div>
 
@@ -265,13 +318,15 @@ export default function ThreatGlobe() {
       <div className="flex flex-col lg:flex-row gap-6 items-center relative z-10">
 
         {/* LEFT COLUMN: GLOBE */}
-        <div className="w-full lg:w-1/2 flex items-center justify-center relative min-h-[300px] sm:min-h-[450px] border border-[var(--terminal-border)]/20 rounded bg-[rgba(var(--terminal-bg-rgb),0.20)] overflow-hidden">
-          <div className="w-full aspect-square relative max-w-[450px] flex items-center justify-center">
+        <div className="w-full lg:w-1/2 flex items-center justify-center relative min-h-[300px] sm:min-h-[450px] xl:min-h-[550px] border border-[var(--terminal-border)]/20 rounded bg-[rgba(var(--terminal-bg-rgb),0.20)] overflow-hidden">
+          <div className="absolute inset-x-0 top-0 h-1/4 bg-gradient-to-b from-transparent via-[rgba(var(--terminal-accent-rgb),0.10)] to-transparent pointer-events-none animate-panel-scan z-10"></div>
+
+          <div className="w-full aspect-square relative max-w-[450px] xl:max-w-[550px] flex items-center justify-center">
 
             {!isGlobeReady && (
               <div className="absolute inset-0 z-20 flex flex-col items-center justify-center bg-[rgba(var(--terminal-bg-rgb),0.40)] backdrop-blur-sm rounded-full animate-pulse text-[#ef4444] font-mono text-xs">
                 <span className="material-symbols-outlined animate-spin mb-2">satellite_alt</span>
-                COMPILING_GLOBE...
+                RENDERING_GLOBE...
               </div>
             )}
 
@@ -280,8 +335,8 @@ export default function ThreatGlobe() {
                 <Globe
                   ref={globeRef}
                   onGlobeReady={() => setIsGlobeReady(true)}
-                  width={windowWidth < 640 ? windowWidth - 80 : (windowWidth < 1024 ? 350 : 400)}
-                  height={windowWidth < 640 ? windowWidth - 80 : (windowWidth < 1024 ? 350 : 400)}
+                  width={windowWidth < 640 ? windowWidth - 80 : windowWidth < 1024 ? 350 : windowWidth < 1280 ? 400 : 500}
+                  height={windowWidth < 640 ? windowWidth - 80 : windowWidth < 1024 ? 350 : windowWidth < 1280 ? 400 : 500}
                   globeImageUrl="https://unpkg.com/three-globe/example/img/earth-dark.jpg"
                   backgroundColor="rgba(0,0,0,0)"
 
@@ -289,6 +344,10 @@ export default function ThreatGlobe() {
                   pointAltitude={0.01}
                   pointRadius={getPointRadius}
                   pointColor={getPointColor}
+                  onPointClick={(point: object) => {
+                    const p = point as GlobePointDatum;
+                    if (!p.isServer) setSelectedPoint(p);
+                  }}
 
                   ringsData={ringsData}
                   ringColor={getRingColor}
@@ -305,7 +364,7 @@ export default function ThreatGlobe() {
                   arcDashAnimateTime={(obj: object) => (obj as GlobeArcDatum).dashAnimateTime}
                   arcAltitudeAutoScale={0.5}
 
-                  atmosphereColor="#2650d7"
+                  atmosphereColor={atmosphereColor}
                   atmosphereAltitude={0.1}
                 />
 
@@ -319,6 +378,44 @@ export default function ThreatGlobe() {
                     <span className="text-[var(--terminal-text)]/70 uppercase">Community_Blacklist (CAPI)</span>
                   </div>
                 </div>
+
+                {selectedPoint && (
+                  <div className="absolute top-2 right-2 z-20 flex flex-col gap-1 font-mono text-[10px] bg-[rgba(var(--terminal-bg-rgb),0.85)] p-2.5 rounded border border-[var(--terminal-border)] backdrop-blur-sm max-w-[180px]">
+                    <div className="flex items-start justify-between gap-2">
+                      <div className="flex items-center gap-1.5">
+                        {selectedPoint.country && (
+                          <Image
+                            src={`https://flagcdn.com/w20/${selectedPoint.country.toLowerCase()}.png`}
+                            alt=""
+                            width={14}
+                            height={10}
+                            style={{ width: '14px', height: '10px' }}
+                            className="rounded-[1px] flex-shrink-0"
+                            unoptimized
+                          />
+                        )}
+                        <span className="text-[var(--terminal-text)] font-bold">{selectedPoint.country}</span>
+                        {selectedPoint.isNew && <span className="text-[#fbbf24] text-[8px]">NEW</span>}
+                      </div>
+                      <button
+                        onClick={() => setSelectedPoint(null)}
+                        aria-label="Close"
+                        className="text-[var(--terminal-text-dim)] hover:text-[var(--terminal-text)] leading-none -mt-0.5"
+                      >
+                        ×
+                      </button>
+                    </div>
+                    {selectedPoint.city && (
+                      <span className="text-[var(--terminal-text-muted)]">{selectedPoint.city}</span>
+                    )}
+                    <span className={selectedPoint.source === 'local' ? 'text-[#ef4444]' : 'text-[#3b82f6]'}>
+                      {selectedPoint.source === 'local' ? 'Local (Fail2Ban)' : 'Public (CrowdSec)'}
+                    </span>
+                    {selectedPoint.ip && (
+                      <span className="text-[var(--terminal-text-dim)] truncate">{selectedPoint.ip}</span>
+                    )}
+                  </div>
+                )}
               </>
             )}
           </div>
@@ -355,7 +452,18 @@ export default function ThreatGlobe() {
                   }`}
                 >
                   <div className="col-span-2 text-center text-[var(--terminal-text-dim)]">[{String(idx + 1).padStart(2, '0')}]</div>
-                  <div className={`col-span-3 font-bold truncate ${selectedCountry === item.country ? 'text-[#ef4444]' : 'text-[var(--terminal-text)]'}`}>{item.country}</div>
+                  <div className={`col-span-3 font-bold truncate flex items-center gap-1.5 ${selectedCountry === item.country ? 'text-[#ef4444]' : 'text-[var(--terminal-text)]'}`}>
+                    <Image
+                      src={`https://flagcdn.com/w20/${item.country.toLowerCase()}.png`}
+                      alt=""
+                      width={14}
+                      height={10}
+                      style={{ width: '14px', height: '10px' }}
+                      className="rounded-[1px] flex-shrink-0"
+                      unoptimized
+                    />
+                    {item.country}
+                  </div>
                   <div className="col-span-3 text-right text-[var(--terminal-text-dim)] group-hover/row:text-[#ef4444] transition-colors">
                     {item.count.toLocaleString()}
                   </div>

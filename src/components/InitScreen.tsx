@@ -28,6 +28,7 @@ export default function InitScreen({ onInit }: InitScreenProps) {
       doneRef.current = true;
 
       localStorage.setItem('iamxorum_initialized', Date.now().toString());
+      document.documentElement.classList.add('boot-skip');
 
       if (textRef.current) {
         textRef.current.style.animation = 'glitch 0.25s';
@@ -40,16 +41,23 @@ export default function InitScreen({ onInit }: InitScreenProps) {
       setTimeout(() => onInitRef.current(), 350);
     };
 
+    let skipEnabled = false;
+    const skipGraceTimer = setTimeout(() => { skipEnabled = true; }, 400);
+    const skipOnTrustedEvent = (event: Event) => {
+      if (skipEnabled && event.isTrusted) finish();
+    };
+
     if (prefersReducedMotion()) {
       // eslint-disable-next-line react-hooks/set-state-in-effect
       setDisplayText(fullText);
       const holdTimeout = setTimeout(finish, 300);
-      window.addEventListener('keydown', finish);
-      window.addEventListener('click', finish);
+      window.addEventListener('keydown', skipOnTrustedEvent);
+      window.addEventListener('click', skipOnTrustedEvent);
       return () => {
         clearTimeout(holdTimeout);
-        window.removeEventListener('keydown', finish);
-        window.removeEventListener('click', finish);
+        clearTimeout(skipGraceTimer);
+        window.removeEventListener('keydown', skipOnTrustedEvent);
+        window.removeEventListener('click', skipOnTrustedEvent);
       };
     }
 
@@ -103,13 +111,14 @@ export default function InitScreen({ onInit }: InitScreenProps) {
     const scrambleInterval = setInterval(updateText, 40);
 
     // Let an impatient visitor skip straight to the site.
-    window.addEventListener('keydown', finish);
-    window.addEventListener('click', finish);
+    window.addEventListener('keydown', skipOnTrustedEvent);
+    window.addEventListener('click', skipOnTrustedEvent);
 
     return () => {
       clearInterval(scrambleInterval);
-      window.removeEventListener('keydown', finish);
-      window.removeEventListener('click', finish);
+      clearTimeout(skipGraceTimer);
+      window.removeEventListener('keydown', skipOnTrustedEvent);
+      window.removeEventListener('click', skipOnTrustedEvent);
     };
   }, []);
 
@@ -120,7 +129,7 @@ export default function InitScreen({ onInit }: InitScreenProps) {
 
   return (
     <div
-      className={`fixed inset-0 z-[9999] bg-[var(--terminal-bg-dark)] flex items-center justify-center font-mono transition-opacity duration-300 ${isExiting ? 'opacity-0 pointer-events-none' : 'opacity-100'
+      className={`boot-screen-overlay fixed inset-0 z-[9999] bg-[var(--terminal-bg-dark)] flex items-center justify-center font-mono transition-opacity duration-300 ${isExiting ? 'opacity-0 pointer-events-none' : 'opacity-100'
         }`}
     >
       <div className="absolute inset-0 opacity-10">

@@ -9,10 +9,25 @@ body {
   background: var(--terminal-bg);
   color: var(--terminal-text);
   font-family: 'JetBrains Mono', 'Fira Code', 'Consolas', 'Monaco', 'Courier New', monospace;
-  transition: background-color 200ms ease, color 200ms ease;
 }
 
-/* Consistent keyboard focus ring across every interactive element; mouse/touch focus stays silent. */
+*, *::before, *::after {
+  transition: background-color 200ms ease, border-color 200ms ease, color 200ms ease, fill 200ms ease, stroke 200ms ease;
+}
+
+html.boot-skip .boot-screen-overlay {
+  display: none;
+}
+
+html:not(.turnstile-skip) .turnstile-gated-content {
+  filter: blur(12px);
+  pointer-events: none;
+  user-select: none;
+}
+html.turnstile-skip .turnstile-gate-overlay {
+  display: none;
+}
+
 a, button, input, [role="button"], [tabindex] {
   -webkit-tap-highlight-color: transparent;
 }
@@ -142,6 +157,21 @@ input:focus-visible,
 
 .animate-scan {
   animation: scan 3s linear infinite;
+}
+
+/* Percentage-relative (not vh-relative like .animate-scan above, which assumes a near-viewport-scale
+   container) so this sweeps correctly across a small, contained panel regardless of its actual pixel
+   height. Periodic, not continuous: the sweep itself takes ~45% of the cycle, then stays invisible for
+   the rest before repeating — an occasional pass, not a constant scanning loop. */
+@keyframes panel-scan {
+  0% { transform: translateY(-100%); opacity: 0; }
+  8% { opacity: 0.8; }
+  45% { transform: translateY(400%); opacity: 0.8; }
+  50%, 100% { transform: translateY(400%); opacity: 0; }
+}
+
+.animate-panel-scan {
+  animation: panel-scan 7s ease-in-out infinite;
 }
 
 @keyframes fade-in {

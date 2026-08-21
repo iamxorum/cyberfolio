@@ -14,10 +14,9 @@ const cspHeader = `
   object-src 'none';
   base-uri 'self';
   form-action 'self';
-  frame-src 'self' https://open.spotify.com https://www.youtube.com https://w.soundcloud.com ${security.frames.join(' ')};
+  frame-src 'self' ${security.frames.join(' ')};
   connect-src 'self' ws: wss: iamxorum.ro *.iamxorum.ro ${security.connects.join(' ')};
   worker-src 'self' blob:;
-  child-src 'self' https://challenges.cloudflare.com;
   ${isDev ? '' : 'upgrade-insecure-requests;'}
 `.replace(/\n/g, '').replace(/\s{2,}/g, ' ').trim();
 
@@ -34,6 +33,7 @@ const dynamicRemotePatterns = security.images.map((domain) => {
 const nextConfig: NextConfig = {
   allowedDevOrigins: ['10.8.0.108'],
   output: 'standalone',
+  poweredByHeader: false,
 
   experimental: {
     viewTransition: true,
@@ -50,13 +50,30 @@ const nextConfig: NextConfig = {
           { key: 'X-Content-Type-Options', value: 'nosniff' },
           { key: 'X-Frame-Options', value: 'SAMEORIGIN' },
           { key: 'Referrer-Policy', value: 'strict-origin-when-cross-origin' },
+          { key: 'Strict-Transport-Security', value: 'max-age=63072000; includeSubDomains' },
+          { key: 'Permissions-Policy', value: 'camera=(), microphone=(), geolocation=(), interest-cohort=()' },
         ],
+      },
+      // Everything in these paths is committed config content, immutable at a given URL —
+      // unlike public/data/banned_ips.json, which is live threat data and deliberately not cached here.
+      {
+        source: '/assets/:path*',
+        headers: [{ key: 'Cache-Control', value: 'public, max-age=31536000, immutable' }],
+      },
+      {
+        source: '/og-fonts/:path*',
+        headers: [{ key: 'Cache-Control', value: 'public, max-age=31536000, immutable' }],
+      },
+      {
+        source: '/noise.svg',
+        headers: [{ key: 'Cache-Control', value: 'public, max-age=31536000, immutable' }],
       },
     ];
   },
 
   images: {
     remotePatterns: dynamicRemotePatterns,
+    formats: ['image/avif', 'image/webp'],
   },
 };
 

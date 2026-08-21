@@ -11,7 +11,7 @@ export default function NotFound() {
         <Header />
         <div className="px-4 sm:px-6 md:px-10 lg:px-20 xl:px-40 flex flex-1 justify-center py-5 relative z-10">
           <div className="layout-content-container flex flex-col max-w-[960px] w-full flex-1">
-            <main className="flex flex-1 items-center justify-center py-16">
+            <main id="main-content" tabIndex={-1} className="flex flex-1 items-center justify-center py-16">
               <div className="max-w-lg w-full border border-[var(--terminal-border)] bg-[var(--terminal-surface)] rounded p-8 text-center relative overflow-hidden shadow-[0_0_20px_rgba(var(--terminal-accent-rgb),0.15)]">
                 <div className="absolute inset-0 bg-gradient-to-b from-transparent via-primary/5 to-transparent h-[10%] w-full animate-scan pointer-events-none"></div>
 

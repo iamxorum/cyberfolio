@@ -20,7 +20,7 @@ const ThreatGlobeSkeleton = () => (
         radar
       </span>
       <p className="font-mono text-[var(--terminal-text-dim)] tracking-widest text-sm">
-        INITIALIZING_THREAT_MATRIX...
+        LOADING_THREAT_FEED...
       </p>
       <div className="w-48 h-1 bg-[var(--terminal-surface)] rounded overflow-hidden mt-2">
         <div className="h-full bg-primary w-1/2 animate-[ping_1.5s_ease-in-out_infinite]"></div>
@@ -35,12 +35,12 @@ const ThreatGlobe = dynamic(() => import('@/components/ThreatGlobe'), {
 });
 
 export default function Home() {
-  const { initialized, checked, setInitialized, userId } = useAppInitialization();
+  const { initialized, setInitialized, userId } = useAppInitialization();
   const { uptime, responseTime, viewport } = useSystemStats();
 
   return (
     <div className="relative flex h-auto min-h-screen w-full flex-col bg-[var(--terminal-bg)] text-[var(--terminal-text)] group/design-root overflow-x-hidden font-display">
-      {checked && !initialized && <InitScreen onInit={() => setInitialized(true)} />}
+      {!initialized && <InitScreen onInit={() => setInitialized(true)} />}
 
       <div className="fixed inset-0 z-0 opacity-[0.03] pointer-events-none" style={{ backgroundImage: `linear-gradient(var(--terminal-accent-alt) 1px, transparent 1px), linear-gradient(90deg, var(--terminal-accent-alt) 1px, transparent 1px)`, backgroundSize: '40px 40px' }}></div>
 
@@ -49,7 +49,7 @@ export default function Home() {
 
         <div className="px-4 sm:px-6 md:px-10 lg:px-20 xl:px-40 flex flex-1 justify-center py-5">
           <div className="layout-content-container flex flex-col max-w-[960px] w-full flex-1">
-            <main className="contents">
+            <main id="main-content" tabIndex={-1}>
               <HeroSection />
               <SystemStats
                 uptime={uptime}
