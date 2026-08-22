@@ -89,10 +89,6 @@ html.dark {
   --foreground: #ffffff;
 }
 
-/* Same hue family (teal border, gold/olive primary) as dark mode. Primary/accent,
-   text-dim, and success are darkened from the original first pass — measured against
-   WCAG AA (4.5:1) across every surface tint they actually render on (raw bg, card
-   surface, surface-alt, table header), not just the flat background. */
 html.light {
   --color-primary: #645407;
   --color-bg: #f2efe4;

@@ -281,7 +281,7 @@ export default function CVClient({ contributionStats = {} }: CVClientProps) {
 
             {activeTab === 'letter' && (
             <>
-            {/* Cover Letter Style Selector — independent from CV styles */}
+            {/* Cover Letter Style Selector | independent from CV styles */}
             <div className="mb-6 p-4 sm:p-6 rounded border border-[var(--terminal-border)] bg-[var(--terminal-surface)] no-print">
               <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-4">
                 <div>

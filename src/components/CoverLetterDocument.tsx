@@ -82,9 +82,9 @@ export default function CoverLetterDocument({ siteConfig, style, email }: CoverL
 
   return (
     <Document
-      title={`Cover Letter — ${siteConfig.fullName} — ${style.name}`}
+      title={`Cover Letter | ${siteConfig.fullName} - ${style.name}`}
       author={siteConfig.fullName}
-      subject={`Cover Letter — ${style.name}`}
+      subject={`Cover Letter | ${style.name}`}
       creator={siteConfig.fullName}
       producer={siteConfig.fullName}
     >

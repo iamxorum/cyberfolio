@@ -124,7 +124,7 @@ export default function Discography() {
                     <div className="relative group rounded-xl overflow-hidden border border-[rgba(var(--terminal-text-rgb),0.10)] shadow-2xl bg-[#111]">
                         <iframe
                             key={activeTrack.id}
-                            title={`${activeTrack.platform} player — ${activeTrack.title}`}
+                            title={`${activeTrack.platform} player | ${activeTrack.title}`}
                             src={embedUrl}
                             width="100%"
                             height="352"

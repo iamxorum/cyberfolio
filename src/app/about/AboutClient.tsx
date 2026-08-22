@@ -91,7 +91,7 @@ export default function AboutClient() {
                 <span className="inline-block w-2 h-4 bg-primary ml-1 animate-pulse"></span>
               </div>
 
-              {/* Quick nav — a long page benefits from a table of contents, on mobile and desktop alike. */}
+              {/* Quick nav | a long page benefits from a table of contents, on mobile and desktop alike. */}
               <nav aria-label="Section jump links" className="flex flex-wrap gap-2 text-[10px] sm:text-xs font-mono">
                 {[
                   { href: '#bio', label: 'BIO' },
@@ -111,7 +111,7 @@ export default function AboutClient() {
                 ))}
               </nav>
 
-              {/* Bio Section — full-width, ahead of the two-column grid below, so the
+              {/* Bio Section | full-width, ahead of the two-column grid below, so the
                   human intro reads before the dense skills/education sidebar on mobile too. */}
               <div id="bio" className="bg-[var(--terminal-bg)] border border-[var(--terminal-border)] rounded relative overflow-hidden scroll-mt-20">
                 <div className="bg-[var(--terminal-surface-alt)] px-3 sm:px-4 py-2 border-b border-[var(--terminal-border)] flex justify-between items-center">

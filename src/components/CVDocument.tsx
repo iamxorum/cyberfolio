@@ -334,9 +334,9 @@ export default function CVDocument({
 
   return (
     <Document
-      title={`CV — ${siteConfig.fullName}`}
+      title={`CV | ${siteConfig.fullName}`}
       author={siteConfig.fullName}
-      subject={`${style.name} - CV`}
+      subject={`${style.name} | CV`}
       keywords={keywords}
       creator={siteConfig.fullName}
       producer={siteConfig.fullName}

@@ -105,8 +105,6 @@ input:focus-visible,
   to { translate: 0; }
 }
 
-/* The blanket *-reset above can't reach these — view-transition pseudo-elements live
-   in a separate tree the universal selector doesn't match. */
 @media (prefers-reduced-motion: reduce) {
   ::view-transition-old(*),
   ::view-transition-new(*),
@@ -152,8 +150,6 @@ input:focus-visible,
   background-size: 30px 30px;
 }
 
-/* Inlined /noise.svg (343 bytes) — avoids a separate network request for a
-   decorative texture that Lighthouse was flagging as the (undiscoverable) LCP resource. */
 .bg-noise-texture {
   background-image: url("data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyMDAiIGhlaWdodD0iMjAwIj4KICA8ZmlsdGVyIGlkPSJuIj4KICAgIDxmZVR1cmJ1bGVuY2UgdHlwZT0iZnJhY3RhbE5vaXNlIiBiYXNlRnJlcXVlbmN5PSIwLjkiIG51bU9jdGF2ZXM9IjIiIHN0aXRjaFRpbGVzPSJzdGl0Y2giIC8+CiAgICA8ZmVDb2xvck1hdHJpeCB0eXBlPSJtYXRyaXgiIHZhbHVlcz0iMCAwIDAgMCAxICAwIDAgMCAwIDEgIDAgMCAwIDAgMSAgMCAwIDAgMC42IDAiIC8+CiAgPC9maWx0ZXI+CiAgPHJlY3Qgd2lkdGg9IjIwMCIgaGVpZ2h0PSIyMDAiIGZpbHRlcj0idXJsKCNuKSIgLz4KPC9zdmc+Cg==");
 }
@@ -167,10 +163,6 @@ input:focus-visible,
   animation: scan 3s linear infinite;
 }
 
-/* Percentage-relative (not vh-relative like .animate-scan above, which assumes a near-viewport-scale
-   container) so this sweeps correctly across a small, contained panel regardless of its actual pixel
-   height. Periodic, not continuous: the sweep itself takes ~45% of the cycle, then stays invisible for
-   the rest before repeating — an occasional pass, not a constant scanning loop. */
 @keyframes panel-scan {
   0% { transform: translateY(-100%); opacity: 0; }
   8% { opacity: 0.8; }

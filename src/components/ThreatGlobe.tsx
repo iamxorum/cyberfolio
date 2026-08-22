@@ -276,7 +276,7 @@ export default function ThreatGlobe() {
     };
   }, [threatData]);
 
-  // Dots load in gradually (batches, not all 400+ at once) — both for a nicer reveal
+  // Dots load in gradually (batches, not all 400+ at once) - both for a nicer reveal
   // and to spread the three.js mesh-creation cost across frames instead of one spike.
   useEffect(() => {
     setRevealedBanCount(0);
@@ -357,7 +357,7 @@ export default function ThreatGlobe() {
         <span className="material-symbols-outlined text-3xl text-[var(--terminal-text-dim)]">satellite_alt</span>
         <p className="text-sm text-[var(--terminal-text-dim)]">Threat feed unavailable</p>
         <p className="text-xs text-[var(--terminal-text-muted)] max-w-xs">
-          Live firewall data couldn&apos;t be loaded right now — check back later.
+          Live firewall data couldn&apos;t be loaded right now...
         </p>
       </div>
     );

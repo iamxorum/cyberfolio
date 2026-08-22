@@ -5,7 +5,7 @@ import { useEffect, useState } from 'react';
 const STORAGE_KEY = 'iamxorum_turnstile_verified';
 const VALID_MS = 24 * 60 * 60 * 1000;
 
-/** Shared 24h Turnstile pass across gated pages (About, CV) — verifying on one unlocks the other for the same window. */
+/** Shared 24h Turnstile pass across gated pages (About, CV) - verifying on one unlocks the other for the same window. */
 export function useTurnstileVerification() {
   const [isVerified, setIsVerified] = useState(false);
 
