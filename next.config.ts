@@ -7,7 +7,7 @@ const isDev = process.env.NODE_ENV === 'development';
 
 const cspHeader = `
   default-src 'self';
-  script-src 'self' 'unsafe-inline' ${security.scripts.join(' ')};
+  script-src 'self' 'unsafe-inline' 'wasm-unsafe-eval' ${security.scripts.join(' ')};
   style-src 'self' 'unsafe-inline' ${security.styles.join(' ')};
   img-src 'self' blob: data: ${security.images.join(' ')};
   font-src 'self' ${security.fonts.join(' ')};

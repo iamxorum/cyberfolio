@@ -116,7 +116,7 @@ export default function ThreatGlobe() {
   const [isRendering, setIsRendering] = useState(false);
   const [isGlobeReady, setIsGlobeReady] = useState(false);
   const [selectedCountry, setSelectedCountry] = useState<string | null>(null);
-  const [pointsEntered, setPointsEntered] = useState(false);
+  const [revealedBanCount, setRevealedBanCount] = useState(0);
   const [visibleSources, setVisibleSources] = useState({ local: true, public: true });
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -194,9 +194,9 @@ export default function ThreatGlobe() {
     };
   }, []);
 
-  const { pointsData, arcsData, countryLeaderboard, ringsData } = useMemo(() => {
+  const { banPoints, serverNodes, arcsData, countryLeaderboard, ringsData } = useMemo(() => {
     if (!threatData || !threatData.recent_bans) {
-      return {  pointsData: [], arcsData: [], countryLeaderboard: [], ringsData: [] };
+      return { banPoints: [], serverNodes: [], arcsData: [], countryLeaderboard: [], ringsData: [] };
     }
 
     const clusters: Record<string, BannedIP> = {};
@@ -225,10 +225,7 @@ export default function ThreatGlobe() {
       .sort((a, b) => (b.weight || 1) - (a.weight || 1))
       .slice(0, 400);
 
-    const pointsCombined = [
-      ...points,
-      ...dcConfig.nodes.map(node => ({ lat: node.lat, lng: node.lng, isServer: true, id: node.id, name: node.name }))
-    ];
+    const nodes = dcConfig.nodes.map(node => ({ lat: node.lat, lng: node.lng, isServer: true, id: node.id, name: node.name }));
 
     const allArcs = points
       .filter(point => point.source === 'local')
@@ -271,24 +268,56 @@ export default function ThreatGlobe() {
       .slice(0, 15);
 
     return {
-      pointsData: pointsCombined,
+      banPoints: points,
+      serverNodes: nodes,
       arcsData: allArcs,
       countryLeaderboard: leaderboard,
       ringsData: randomRings
     };
   }, [threatData]);
 
+  // Dots load in gradually (batches, not all 400+ at once) — both for a nicer reveal
+  // and to spread the three.js mesh-creation cost across frames instead of one spike.
+  useEffect(() => {
+    setRevealedBanCount(0);
+    if (!isGlobeReady || banPoints.length === 0) return;
+
+    if (prefersReducedMotion()) {
+      setRevealedBanCount(banPoints.length);
+      return;
+    }
+
+    const INTERVAL_MS = 100;
+    const TOTAL_STEPS = 40; // ~4s total reveal, regardless of dataset size
+    const BATCH_SIZE = Math.max(1, Math.ceil(banPoints.length / TOTAL_STEPS));
+    const interval = setInterval(() => {
+      setRevealedBanCount((count) => {
+        const next = count + BATCH_SIZE;
+        if (next >= banPoints.length) {
+          clearInterval(interval);
+          return banPoints.length;
+        }
+        return next;
+      });
+    }, INTERVAL_MS);
+    return () => clearInterval(interval);
+  }, [isGlobeReady, banPoints]);
+
+  const revealedBanPoints = useMemo(() => banPoints.slice(0, revealedBanCount), [banPoints, revealedBanCount]);
+  const revealedKey = (p: { lat: number; lng: number; source: 'local' | 'public' }) => `${p.lat},${p.lng},${p.source}`;
+  const revealedKeySet = useMemo(() => new Set(revealedBanPoints.map(revealedKey)), [revealedBanPoints]);
+
   const visiblePointsData = useMemo(
-    () => pointsData.filter((p) => (p as GlobePointDatum).isServer || visibleSources[(p as GlobePointDatum).source as 'local' | 'public']),
-    [pointsData, visibleSources]
+    () => [...revealedBanPoints.filter((p) => visibleSources[p.source]), ...serverNodes],
+    [revealedBanPoints, serverNodes, visibleSources]
   );
   const visibleArcsData = useMemo(
-    () => arcsData.filter((a) => visibleSources[a.source]),
-    [arcsData, visibleSources]
+    () => arcsData.filter((a) => visibleSources[a.source] && revealedKeySet.has(`${a.startLat},${a.startLng},${a.source}`)),
+    [arcsData, visibleSources, revealedKeySet]
   );
   const visibleRingsData = useMemo(
-    () => ringsData.filter((r) => visibleSources[r.source]),
-    [ringsData, visibleSources]
+    () => ringsData.filter((r) => visibleSources[r.source] && revealedKeySet.has(revealedKey(r))),
+    [ringsData, visibleSources, revealedKeySet]
   );
 
   useEffect(() => {
@@ -301,9 +330,6 @@ export default function ThreatGlobe() {
       controls.maxDistance = 450;
 
       globeRef.current.pointOfView(dcConfig.mapCenter, 1500);
-
-      const growTimeout = setTimeout(() => setPointsEntered(true), 50);
-      return () => clearTimeout(growTimeout);
     }
   }, [isGlobeReady]);
 
@@ -384,7 +410,7 @@ export default function ThreatGlobe() {
               </div>
             )}
 
-            {isRendering && typeof window !== 'undefined' && pointsData.length > 0 && (
+            {isRendering && typeof window !== 'undefined' && (banPoints.length > 0 || serverNodes.length > 0) && (
               <>
                 <Globe
                   ref={globeRef}
@@ -396,7 +422,7 @@ export default function ThreatGlobe() {
 
                   pointsData={visiblePointsData}
                   pointAltitude={0.01}
-                  pointRadius={(obj: object) => (pointsEntered ? getPointRadius(obj) : 0)}
+                  pointRadius={getPointRadius}
                   pointsTransitionDuration={600}
                   pointColor={getPointColor}
                   pointLabel={(obj: object) => {

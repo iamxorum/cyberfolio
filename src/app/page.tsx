@@ -40,7 +40,7 @@ const DiscographySkeleton = () => (
       <span className="material-symbols-outlined text-4xl text-primary animate-spin">
         graphic_eq
       </span>
-      <p className="font-mono text-[var(--terminal-text-dim)] tracking-widest text-sm">
+      <p className="font-mono text-[var(--terminal-text-muted)] tracking-widest text-sm">
         LOADING_DISCOGRAPHY...
       </p>
     </div>
