@@ -24,7 +24,7 @@ export default function HeroSection() {
           className="flex min-h-[480px] flex-col gap-6 bg-cover bg-center bg-no-repeat @[480px]:gap-8 @[480px]:rounded items-start justify-end px-4 pb-10 @[480px]:px-10 border border-[var(--terminal-border)] relative overflow-hidden group"
           style={{ backgroundImage: `linear-gradient(rgba(var(--terminal-bg-rgb), 0.8) 0%, rgba(var(--terminal-bg-rgb), 0.95) 100%)` }}
         >
-          <div className="absolute inset-0 bg-[url('/noise.svg')] opacity-15 pointer-events-none z-0 mix-blend-overlay"></div>
+          <div className="absolute inset-0 bg-noise-texture opacity-15 pointer-events-none z-0 mix-blend-overlay"></div>
           <div className="absolute inset-0 matrix-bg opacity-30 pointer-events-none z-0"></div>
           <div
             className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none z-0"
@@ -69,8 +69,8 @@ export default function HeroSection() {
                         alt={badge.name}
                         width={220}
                         height={60}
-                        className="h-auto w-[180px] sm:w-[220px] rounded-[3px] block"
-                        style={{ height: 'auto', ...badge.imageStyle }}
+                        className="w-[180px] sm:w-[220px] rounded-[3px] block"
+                        style={{ aspectRatio: '220 / 60', height: 'auto', ...badge.imageStyle }}
                         unoptimized
                       />
                     </div>

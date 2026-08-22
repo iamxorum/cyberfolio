@@ -100,13 +100,13 @@ export default function RootLayout({
         {/* Loaded via preload+swap so the icon font stylesheet doesn't block first paint */}
         <script
           dangerouslySetInnerHTML={{
-            __html: `(function(){var h='https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap';var p=document.createElement('link');p.rel='preload';p.as='style';p.href=h;document.head.appendChild(p);var l=document.createElement('link');l.rel='stylesheet';l.href=h;l.media='print';l.onload=function(){this.media='all';};document.head.appendChild(l);})();`,
+            __html: `(function(){var h='https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@400,0&display=swap';var p=document.createElement('link');p.rel='preload';p.as='style';p.href=h;document.head.appendChild(p);var l=document.createElement('link');l.rel='stylesheet';l.href=h;l.media='print';l.onload=function(){this.media='all';};document.head.appendChild(l);})();`,
           }}
         />
         <noscript>
           {/* eslint-disable-next-line @next/next/no-page-custom-font */}
           <link
-            href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap"
+            href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@400,0&display=swap"
             rel="stylesheet"
           />
         </noscript>

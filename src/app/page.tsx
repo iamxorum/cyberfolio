@@ -34,6 +34,19 @@ const ThreatGlobe = dynamic(() => import('@/components/ThreatGlobe'), {
   loading: () => <ThreatGlobeSkeleton />
 });
 
+const DiscographySkeleton = () => (
+  <div className="flex flex-col gap-6 px-4 py-6 mb-8 border border-[var(--terminal-border)] rounded bg-[rgba(var(--terminal-bg-rgb),0.80)] min-h-[420px] items-center justify-center relative overflow-hidden">
+    <div className="animate-pulse flex flex-col items-center gap-4 z-10">
+      <span className="material-symbols-outlined text-4xl text-primary animate-spin">
+        graphic_eq
+      </span>
+      <p className="font-mono text-[var(--terminal-text-dim)] tracking-widest text-sm">
+        LOADING_DISCOGRAPHY...
+      </p>
+    </div>
+  </div>
+);
+
 export default function Home() {
   const { initialized, setInitialized, userId } = useAppInitialization();
   const { uptime, responseTime, viewport } = useSystemStats();
@@ -62,7 +75,9 @@ export default function Home() {
                 <ThreatGlobe />
               </LazyMount>
               <br/>
-              <Discography />
+              <LazyMount fallback={<DiscographySkeleton />}>
+                <Discography />
+              </LazyMount>
             </main>
             <Footer />
           </div>

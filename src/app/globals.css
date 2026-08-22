@@ -152,6 +152,12 @@ input:focus-visible,
   background-size: 30px 30px;
 }
 
+/* Inlined /noise.svg (343 bytes) — avoids a separate network request for a
+   decorative texture that Lighthouse was flagging as the (undiscoverable) LCP resource. */
+.bg-noise-texture {
+  background-image: url("data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyMDAiIGhlaWdodD0iMjAwIj4KICA8ZmlsdGVyIGlkPSJuIj4KICAgIDxmZVR1cmJ1bGVuY2UgdHlwZT0iZnJhY3RhbE5vaXNlIiBiYXNlRnJlcXVlbmN5PSIwLjkiIG51bU9jdGF2ZXM9IjIiIHN0aXRjaFRpbGVzPSJzdGl0Y2giIC8+CiAgICA8ZmVDb2xvck1hdHJpeCB0eXBlPSJtYXRyaXgiIHZhbHVlcz0iMCAwIDAgMCAxICAwIDAgMCAwIDEgIDAgMCAwIDAgMSAgMCAwIDAgMC42IDAiIC8+CiAgPC9maWx0ZXI+CiAgPHJlY3Qgd2lkdGg9IjIwMCIgaGVpZ2h0PSIyMDAiIGZpbHRlcj0idXJsKCNuKSIgLz4KPC9zdmc+Cg==");
+}
+
 @keyframes scan {
   0% { transform: translateY(-100%); }
   100% { transform: translateY(100vh); }
@@ -176,12 +182,18 @@ input:focus-visible,
   animation: panel-scan 7s ease-in-out infinite;
 }
 
-/* Content entrance animation, restored 2026-08-21 after the original anime.js version was
-   removed for causing a flash-of-full-content on hard refresh (JS animate() only starts
-   after hydration, one frame after the browser already painted the SSR'd, fully-visible
-   HTML). Pure CSS instead: the 0% state is baked into the class itself, so it's already
-   applied at first paint, no JS timing gap to flash through. Reduced-motion is handled by
-   the global *,*::before,*::after reset above, not a separate JS check. */
+.globe-tooltip {
+  font-family: var(--font-display), monospace;
+  font-size: 10px;
+  line-height: 1.4;
+  background: rgba(var(--terminal-bg-rgb), 0.9);
+  border: 1px solid var(--terminal-border);
+  border-radius: 3px;
+  padding: 4px 7px;
+  color: var(--terminal-text);
+  white-space: nowrap;
+}
+
 @keyframes reveal-in {
   0% {
     opacity: 0;

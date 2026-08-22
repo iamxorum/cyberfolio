@@ -91,7 +91,7 @@ export const siteConfig: SiteConfig = {
     ],
   },
 
-  systemVersion: 'v1.5.2',
+  systemVersion: 'v1.5.3',
 
   favicon: 'path/to/favicon.ico',
 

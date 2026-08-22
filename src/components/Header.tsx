@@ -60,6 +60,7 @@ export default function Header() {
             <ThemeToggle />
             <Link
               href="/cv"
+              prefetch={false}
               className={`flex min-w-[50px] sm:min-w-[60px] md:min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded bg-primary hover:bg-primary/80 active:scale-[0.96] transition-all h-8 sm:h-9 px-2 sm:px-4 text-[var(--terminal-on-primary)] text-[10px] sm:text-xs md:text-sm font-bold leading-normal tracking-[0.015em] shadow-[0_0_15px_rgba(var(--terminal-accent-rgb),0.4)] border border-primary/30 ${
                 pathname === '/cv' ? 'ring-2 ring-primary/50' : ''
               }`}

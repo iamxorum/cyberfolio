@@ -161,7 +161,7 @@ export default function AboutClient() {
                   <div className="animate-reveal bg-[var(--terminal-surface)] border border-[var(--terminal-border)] rounded p-1 relative overflow-hidden group">
                     <div className="absolute inset-0 bg-gradient-to-b from-transparent via-primary/10 to-transparent h-[20%] w-full animate-scan pointer-events-none z-10 opacity-30"></div>
                     <div className="relative bg-[var(--terminal-bg-dark)] aspect-square flex items-center justify-center overflow-hidden mb-0">
-                      <div className="absolute inset-0 bg-[url('/noise.svg')] opacity-20"></div>
+                      <div className="absolute inset-0 bg-noise-texture opacity-20"></div>
                       <Image
                         src={siteConfig.profileImage}
                         alt="Profile"

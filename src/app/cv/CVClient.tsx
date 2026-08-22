@@ -1,11 +1,9 @@
 'use client';
 
 import { useState } from 'react';
-import { pdf } from '@react-pdf/renderer';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import CVTemplate from '@/components/CVTemplate';
-import CVDocument from '@/components/CVDocument';
 import ScaleToFit from '@/components/ScaleToFit';
 import TurnstileGate from '@/components/TurnstileGate';
 import { cvConfig, siteConfig, experience, education, languages, certifications, hobbies, projects } from '../../config';
@@ -27,6 +25,11 @@ export default function CVClient({ contributionStats = {} }: CVClientProps) {
     setIsDownloading(true);
 
     try {
+      const [{ pdf }, { default: CVDocument }] = await Promise.all([
+        import('@react-pdf/renderer'),
+        import('@/components/CVDocument'),
+      ]);
+
       const blob = await pdf(
         <CVDocument
           style={selectedCVStyle}

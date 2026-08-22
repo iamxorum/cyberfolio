@@ -7,7 +7,7 @@ const isDev = process.env.NODE_ENV === 'development';
 
 const cspHeader = `
   default-src 'self';
-  script-src 'self' 'unsafe-eval' 'unsafe-inline' ${security.scripts.join(' ')};
+  script-src 'self' 'unsafe-inline' ${security.scripts.join(' ')};
   style-src 'self' 'unsafe-inline' ${security.styles.join(' ')};
   img-src 'self' blob: data: ${security.images.join(' ')};
   font-src 'self' ${security.fonts.join(' ')};
@@ -62,10 +62,6 @@ const nextConfig: NextConfig = {
       },
       {
         source: '/og-fonts/:path*',
-        headers: [{ key: 'Cache-Control', value: 'public, max-age=31536000, immutable' }],
-      },
-      {
-        source: '/noise.svg',
         headers: [{ key: 'Cache-Control', value: 'public, max-age=31536000, immutable' }],
       },
     ];
