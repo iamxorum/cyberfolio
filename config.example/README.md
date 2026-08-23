@@ -1,111 +1,54 @@
 # Configuration Guide
 
-This folder contains all the configuration files for the portfolio site. Edit these files to customize the site for your own use.
+Everything in this folder is a template. Copy it to `config/` (gitignored — your real content never touches git) and fill it in with your own life.
 
-## Files
-
-### `site.config.ts`
-Contains site-wide settings:
-- Domain name
-- Username and personal info
-- Birth date (for age calculation)
-- Location, role, status
-- Social media links
-- System version
-
-### `projects.config.ts`
-Defines all projects displayed on the site:
-- Project name, description, status
-- Tags and icons
-- Links and repositories
-- Status colors
-- Visibility (public/private)
-- Category (production/thesis/personal/open-source/commercial/academic)
-
-**To add a project:**
-1. Add a new object to the `projects` array
-2. Fill in all required fields including `visibility` and `category`
-3. The project will automatically appear on the home page and projects page
-
-**Visibility options:**
-- `public` - Publicly accessible project
-- `private` - Private/internal project
-
-**Category options:**
-- `production` - Production/live project
-- `thesis` - Academic thesis project
-- `personal` - Personal project
-- `open-source` - Open source project
-- `commercial` - Commercial/client project
-- `academic` - Academic/research project
-
-### `content.config.ts`
-Contains all text content for the site:
-- Home page hero text
-- About page bio and skills
-- Timeline events
-- Project page content
-
-### `skills.config.ts`
-Defines all skills with scores (0-100) for the radar chart:
-- Skill name, score, and category
-- Automatically displays top 6 skills in hexagon radar chart
-- Scores are used to calculate the radar chart visualization
-
-**To add/modify skills:**
-1. Add or edit entries in the `skills` array
-2. Set `score` from 0-100 (percentage)
-3. The radar chart will automatically show the top 6 skills by score
-
-### `education.config.ts`
-Defines education history:
-- Institution name, degree, field of study
-- Start and end dates
-- Location and description
-- Icons for visual representation
-
-**To add education:**
-1. Add a new object to the `education` array
-2. Fill in institution, degree, dates, etc.
-3. Education will appear on the about page
-
-### `certifications.config.ts`
-Defines professional certifications:
-- Certification name and issuer
-- Issue and expiry dates
-- Credential ID and verification URL
-- Description and icons
-
-**To add certifications:**
-1. Add a new object to the `certifications` array
-2. Fill in name, issuer, dates, credential info
-3. Certifications will appear on the about page
-
-## Usage
-
-All configs are exported from `index.ts`:
-
-```typescript
-import { siteConfig, projects, contentConfig, skills, getTopSkills, education, certifications } from '@/config';
+```bash
+cp -r config.example config
 ```
 
-## Customization
+That's it. Edit the files below, `npm run dev`, and the site rebuilds around your content — nothing else in the codebase needs to change.
 
-1. **Change domain/username**: Edit `site.config.ts`
-2. **Add projects**: Add entries to `projects.config.ts`
-3. **Update bio**: Edit `content.config.ts`
-4. **Change birth date**: Update `site.config.ts` (affects age calculation)
-5. **Modify skills**: Edit `skills.config.ts` - set scores (0-100) for each skill
-6. **Add education**: Edit `education.config.ts` - add your educational background
-7. **Add certifications**: Edit `certifications.config.ts` - add professional certifications
-6. **Add education**: Edit `education.config.ts` - add your educational background
-7. **Add certifications**: Edit `certifications.config.ts` - add professional certifications
-8. **Choose own color theme**: Edit the color scheme in `colors.css` (from greenish hacker mode to pink anime portfolio etc...), The important thing is that the color scheme has to fit (you can't put light green on yellow...)
+## Quick reference
+
+| File | Controls |
+|---|---|
+| `site.config.ts` | Domain, name, role, location, birth date (age calc), socials, favicon, and the CSP/image allowlist domains |
+| `security.config.ts` | Cloudflare Turnstile site key + widget theme (bot gate on `/about` and `/cv`) |
+| `canary.config.ts` | Optional AWS-credential honeypot baked into the client JS bundle — see below |
+| `content.config.ts` | Hero text, about bio paragraphs, projects page copy |
+| `projects.config.ts` | Every project card — name, tags, links, status, visibility, category |
+| `skills.config.ts` | Skills + 0–100 scores for the radar chart (top 6 by score render) |
+| `education.config.ts` | Schools, degrees, dates |
+| `certifications.config.ts` | Certs, issuers, credential links |
+| `languages.config.ts` | Spoken languages + CEFR-style proficiency |
+| `experience.config.ts` | Work history for the About page and CV |
+| `hobbies.config.ts` | Interests shown on the About page |
+| `badges.config.ts` | External contributor/verification badges (optional, empty by default) |
+| `music.config.ts` | Discography tracks (Spotify/SoundCloud/YouTube embeds) |
+| `cv.config.ts` | CV styles — each is a domain-targeted résumé variant with its own skill filter and accent color |
+| `cover-letter.config.ts` | Cover letter styles — independent from CV styles, same PDF export pipeline |
+| `dc.config.ts` | The infrastructure nodes ThreatGlobe arcs attacks toward |
+| `scripts.config.ts` | Third-party `<script>` tags (analytics, etc.) — empty by default |
+
+## The fields worth explaining
+
+**`projects.config.ts`** — `visibility: 'public' | 'private'` decides what actually renders anywhere (private stays entirely out of the bundle's visible output, useful for client work under NDA). `category` is cosmetic tagging (`production` / `thesis` / `personal` / `open-source` / `commercial` / `academic`).
+
+**`skills.config.ts`** — score is 0–100. The radar chart always shows your top 6 by score, so if you add a 7th skill scoring higher than an existing one, it bumps something off the chart automatically.
+
+**`cv.config.ts` vs `cover-letter.config.ts`** — deliberately decoupled. A CV style and a cover letter style don't need matching `id`s or even matching `domain`s — you can have a cover letter for "Data Analyst" with no corresponding CV style. Both export real vector-text PDFs via `@react-pdf/renderer`, not a print/screenshot hack.
+
+**`site.config.ts`'s `security` block** — not the same thing as `security.config.ts`. This one is CSP/`next/image` allowlist domains (script/style/image/font/frame/connect sources); `security.config.ts` is just the Turnstile widget key. Two files, two very different jobs, easy to mix up.
+
+**`dc.config.ts`** — if you're using ThreatGlobe (see root README), these are the real (or fictional, your call) server locations that banned-IP arcs animate toward. `mapCenter` is just where the globe opens facing.
+
+**`canary.config.ts`** — optional, and genuinely fun if you're into this kind of thing. Generate a free fake-AWS-credential token at [canarytokens.org](https://canarytokens.org), drop the key/secret in here, and it gets baked directly into the client JS bundle (referenced from a component so the minifier can't tree-shake it away). Anyone scraping your site's JS for hardcoded secrets — bots or humans — gets an alert sent to *you* the moment they try to use it. Leave it with placeholder values if you don't want this; nothing breaks either way.
 
 ## Notes
 
-- All dates use JavaScript Date format (month is 0-indexed: 0 = January, 11 = December)
-- Project status colors: 'green', 'yellow', 'blue', 'orange', 'red'
-- Icons use Material Symbols Outlined names
-- Changes require a rebuild/restart of the Next.js dev server
-
+- Dates in most configs use JS `Date` convention: month is 0-indexed (`0` = January).
+- Project status colors: `green` / `yellow` / `blue` / `orange` / `red`.
+- Icons are [Material Symbols Outlined](https://fonts.google.com/icons) names (`code`, `work`, `timer`, ...).
+- Color theme lives in `src/app/colors.css`, not in these configs — swap the whole hacker-green palette for anything else, just keep contrast sane (don't put light green on yellow).
+- Everything here is imported through `src/config/index.ts` — if you add a new file, barrel-export it there too.
+- Config changes need a dev-server restart (or rebuild in prod) to take effect — these are compiled in, not read at runtime.
