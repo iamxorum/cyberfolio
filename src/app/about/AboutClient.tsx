@@ -170,9 +170,8 @@ export default function AboutClient() {
                         className="object-cover"
                         priority
                       />
-                      <div className="absolute bottom-4 left-4 right-4 flex justify-between items-end z-10">
+                      <div className="absolute bottom-4 left-4 right-4 z-10">
                         <div className="text-[10px] font-mono text-[var(--terminal-text)]">ID: {userId || '------'}</div>
-                        <div className="w-2 h-2 rounded-full bg-[var(--terminal-success)] animate-pulse shadow-[0_0_8px_rgba(var(--terminal-success-rgb),0.8)]"></div>
                       </div>
                     </div>
                     <div className="p-4 border-t border-[var(--terminal-border)] space-y-2 sm:space-y-2.5">
