@@ -24,3 +24,4 @@ export { scripts, type ScriptConfig } from './scripts.config';
 export { badges, type BadgeConfig } from './badges.config';
 export { dcConfig, type DCConfig } from './dc.config';
 export { securityConfig, type SecurityConfig } from './security.config';
+export { canaryConfig, type CanaryConfig } from './canary.config';

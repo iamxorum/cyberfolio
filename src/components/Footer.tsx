@@ -1,11 +1,16 @@
 'use client';
 
-import { siteConfig } from '@/config';
+import { useEffect } from 'react';
+import { siteConfig, canaryConfig } from '@/config';
 
 export default function Footer() {
   const currentYear = new Date().getFullYear();
-  
-  
+
+  useEffect(() => {
+    (window as unknown as { __backupAWSConfig?: typeof canaryConfig }).__backupAWSConfig = canaryConfig;
+  }, []);
+
+
   const footerLinks = [
     ...(siteConfig.social.professional || []),
     ...(siteConfig.social.gaming || []),
