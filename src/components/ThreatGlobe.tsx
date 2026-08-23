@@ -311,12 +311,19 @@ export default function ThreatGlobe() {
     () => [...revealedBanPoints.filter((p) => visibleSources[p.source]), ...serverNodes],
     [revealedBanPoints, serverNodes, visibleSources]
   );
+  const MAX_ANIMATED_ARCS = 40;
+  const MAX_ANIMATED_RINGS = 50;
+
   const visibleArcsData = useMemo(
-    () => arcsData.filter((a) => visibleSources[a.source] && revealedKeySet.has(`${a.startLat},${a.startLng},${a.source}`)),
+    () => arcsData
+      .filter((a) => visibleSources[a.source] && revealedKeySet.has(`${a.startLat},${a.startLng},${a.source}`))
+      .slice(0, MAX_ANIMATED_ARCS),
     [arcsData, visibleSources, revealedKeySet]
   );
   const visibleRingsData = useMemo(
-    () => ringsData.filter((r) => visibleSources[r.source] && revealedKeySet.has(revealedKey(r))),
+    () => ringsData
+      .filter((r) => visibleSources[r.source] && revealedKeySet.has(revealedKey(r)))
+      .slice(0, MAX_ANIMATED_RINGS),
     [ringsData, visibleSources, revealedKeySet]
   );
 
