@@ -1,22 +1,7 @@
-/* Hallmark · genre: modern-minimal · macrostructure: Marquee Hero (adapted: short subhead kept, no fold CTA)
- * nav: N1a Wordmark + 2 links (justified — only 2 real destinations from this page) · footer: Ft2 Inline single line
- * theme: custom Coral-family (no source CSS retrievable via WebFetch on sebastiannichtern.com — DNA source is
- *   structural/rhythm only, not tokens) · paper oklch(97% 0.010 40) · accent oklch(58% 0.19 27) warm-coral
- * display: Inter Tight 700 · body: Inter 400 · enrichment: Tier B hand-built SVG (2 marks: hero circle, grade
- *   underline — two distinct motifs, still restrained, not scattered)
- * motion: pure-CSS `@keyframes` only, zero client JS, zero hydration dependency — deliberately NOT the pattern
- *   the site's "no entrance animations" policy (Architecture.md) bans. That bug was a JS ref/class toggle in
- *   useLayoutEffect whose hidden-state could diverge between SSR HTML and the client on a hard refresh (content
- *   flashed visible, then snapped hidden, then faded back in). Here the "start hidden" state is baked into the
- *   static className/stylesheet itself — present in the SSR HTML from the first byte — and the animation is a
- *   plain CSS `animation-fill-mode: both` transition with no JS involved at any point, so there is no state to
- *   diverge and nothing to flash. Reveal is stagger-on-load only (no IntersectionObserver / scroll-trigger — this
- *   is a single compact page, not a long scroll). prefers-reduced-motion: reduce disables all of it (static, fully visible).
- */
 import { Inter, Inter_Tight } from 'next/font/google';
 import Link from 'next/link';
 import { siteConfig, experience, education, projects, certifications, cvConfig } from '@/config';
-import { getContactInfo, filterForCV } from '@/lib/cv-helpers';
+import { getContactInfo, filterForCV, sortExperienceByDate } from '@/lib/cv-helpers';
 
 const interTight = Inter_Tight({ subsets: ['latin'], weight: ['600', '700'], variable: '--font-summary-display' });
 const inter = Inter({ subsets: ['latin'], weight: ['400', '500'], variable: '--font-summary-body' });
@@ -41,7 +26,6 @@ function getYearsExperience(): number {
   return Math.floor(totalMonths / 12);
 }
 
-/** All of this page's motion, in one place: hand-drawn stroke draw-in + staggered on-load rise. Pure CSS, no JS. */
 function SummaryMotionStyle() {
   return (
     <style>{`
@@ -76,7 +60,6 @@ function SummaryMotionStyle() {
   );
 }
 
-/** Hand-drawn annotation mark — two slightly offset, hand-authored ellipses (Tier B SVG). Used once, in the hero, on purpose. */
 function HandDrawnCircle() {
   return (
     <svg
@@ -92,7 +75,6 @@ function HandDrawnCircle() {
   );
 }
 
-/** A second, distinct hand-drawn motif — a wobbly underline, anchored under an actual highlighted fact (a grade), not a generic label. */
 function HandDrawnUnderline() {
   return (
     <svg
@@ -114,10 +96,8 @@ function HandDrawnUnderline() {
 }
 
 const linkClass = 'transition active:scale-[0.97] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-[var(--summary-accent)] rounded-sm';
-// Ambient hover only (shadow deepens) — these cards aren't links themselves, so no border/scale change that would imply clickability.
 const cardClass = 'rounded-2xl border p-6 shadow-[0_1px_2px_oklch(20%_0.014_35_/_0.05)] hover:shadow-[0_6px_20px_oklch(20%_0.014_35_/_0.10)] transition duration-200';
 
-/** Stagger delay for on-load reveal, computed at render/SSR time — a static inline style, not runtime JS state. */
 function revealDelay(stepMs: number, index = 0): React.CSSProperties {
   return { animationDelay: `${index * stepMs}ms` };
 }
@@ -132,7 +112,6 @@ function channelIcon(href: string): ChannelIconName {
   return 'globe';
 }
 
-/** Real brand marks for GitHub/LinkedIn (inline SVG, no external request), plain line icons for mail/phone/globe. */
 function ContactIcon({ name, className }: { name: ChannelIconName; className?: string }) {
   if (name === 'github') {
     return (
@@ -174,12 +153,11 @@ function ContactIcon({ name, className }: { name: ChannelIconName; className?: s
 export default function SummaryView() {
   const yearsExperience = getYearsExperience();
   const publicProjects = projects.filter((p) => p.visibility === 'public');
-  // "Shipped" = built it myself. Contributions (PRs into someone else's project) are real but a different kind of credit — kept separate, not folded into the same count.
   const shippedProjects = publicProjects.filter((p) => p.projectType === 'personal');
   const contributionProjects = publicProjects.filter((p) => p.projectType === 'contribution');
+  const sortedExperience = sortExperienceByDate(experience);
   const contactInfo = getContactInfo(siteConfig, cvConfig.email);
   const email = contactInfo.personal.find((item) => item.href?.startsWith('mailto:'));
-  // location has no href and is already stated in the hero eyebrow — every channel here is a real, clickable CTA
   const socialChannels = [...contactInfo.personal, ...contactInfo.links].filter((item) => item.href && item !== email);
   const summaryEducation = filterForCV(education);
 
@@ -269,7 +247,7 @@ export default function SummaryView() {
         <section className="py-10 sm:py-14">
           <h2 className="text-xs font-semibold uppercase tracking-wider" style={{ color: 'var(--summary-ink-muted)' }}>Experience</h2>
           <div className="mt-6 flex flex-col gap-4">
-            {experience.map((exp, idx) => (
+            {sortedExperience.map((exp, idx) => (
               <div
                 key={exp.id}
                 className={`summary-reveal ${cardClass}`}
