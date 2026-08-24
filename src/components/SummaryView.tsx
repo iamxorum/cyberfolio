@@ -74,21 +74,25 @@ export default function SummaryView() {
           </p>
           <a
             href="#contact"
-            className="mt-8 inline-flex items-center gap-2 rounded-full border px-5 py-2.5 text-sm font-semibold transition-transform active:scale-[0.97] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-[var(--summary-accent)]"
-            style={{ borderColor: 'var(--summary-accent)', color: 'var(--summary-accent)' }}
+            className="mt-8 inline-flex items-center gap-2 rounded-full px-6 py-3 text-sm font-semibold transition-transform active:scale-[0.97] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-[var(--summary-accent)]"
+            style={{ backgroundColor: 'var(--summary-accent)', color: 'var(--summary-accent-ink)' }}
           >
             Get in touch →
           </a>
         </section>
 
         {/* Supporting stats */}
-        <section className="grid grid-cols-3 border-y py-8" style={{ borderColor: 'var(--summary-rule)' }}>
+        <section className="grid grid-cols-3 gap-3 sm:gap-4">
           {[
             { value: publicProjects.length, label: 'shipped projects' },
             { value: certifications.length, label: 'certifications' },
             { value: companiesCount, label: 'companies' },
           ].map((stat) => (
-            <div key={stat.label} className="text-center">
+            <div
+              key={stat.label}
+              className="rounded-2xl border px-4 py-6 text-center sm:px-6 sm:py-8"
+              style={{ backgroundColor: 'var(--summary-paper-2)', borderColor: 'var(--summary-rule)' }}
+            >
               <div className="font-bold tabular-nums" style={{ fontFamily: 'var(--font-summary-display), sans-serif', fontSize: 'clamp(1.75rem, 4vw, 2.5rem)', letterSpacing: '-0.02em' }}>
                 {stat.value}
               </div>
@@ -100,9 +104,13 @@ export default function SummaryView() {
         {/* Experience highlights */}
         <section className="py-12 sm:py-16">
           <h2 className="text-xs font-semibold uppercase tracking-wider" style={{ color: 'var(--summary-ink-muted)' }}>Experience</h2>
-          <div className="mt-6 flex flex-col gap-6">
+          <div className="mt-6 flex flex-col gap-4">
             {experience.map((exp) => (
-              <div key={exp.id} className="border-t pt-6" style={{ borderColor: 'var(--summary-rule)' }}>
+              <div
+                key={exp.id}
+                className="rounded-2xl border p-6"
+                style={{ backgroundColor: 'var(--summary-paper-2)', borderColor: 'var(--summary-rule)', boxShadow: '0 1px 2px oklch(20% 0.014 35 / 0.05)' }}
+              >
                 <div className="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1">
                   <p className="font-semibold" style={{ fontFamily: 'var(--font-summary-display), sans-serif' }}>{exp.role} · {exp.company}</p>
                   <p className="text-sm tabular-nums" style={{ color: 'var(--summary-ink-muted)' }}>{exp.startDate} – {exp.endDate === 'ongoing' ? 'present' : exp.endDate}</p>
@@ -118,9 +126,13 @@ export default function SummaryView() {
         {/* Selected projects */}
         <section className="py-12 sm:py-16">
           <h2 className="text-xs font-semibold uppercase tracking-wider" style={{ color: 'var(--summary-ink-muted)' }}>Selected projects</h2>
-          <div className="mt-6 flex flex-col gap-6">
+          <div className="mt-6 grid grid-cols-1 gap-4 sm:grid-cols-2">
             {publicProjects.map((project) => (
-              <div key={project.id} className="border-t pt-6" style={{ borderColor: 'var(--summary-rule)' }}>
+              <div
+                key={project.id}
+                className="rounded-2xl border p-6"
+                style={{ backgroundColor: 'var(--summary-paper-2)', borderColor: 'var(--summary-rule)', boxShadow: '0 1px 2px oklch(20% 0.014 35 / 0.05)' }}
+              >
                 <div className="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1">
                   <p className="font-semibold" style={{ fontFamily: 'var(--font-summary-display), sans-serif' }}>{project.name}</p>
                   {project.link && (
@@ -135,7 +147,7 @@ export default function SummaryView() {
                     </a>
                   )}
                 </div>
-                <p className="mt-2 max-w-[65ch]" style={{ color: 'var(--summary-ink-muted)', lineHeight: 1.6 }}>{project.description}</p>
+                <p className="mt-2" style={{ color: 'var(--summary-ink-muted)', lineHeight: 1.6 }}>{project.description}</p>
               </div>
             ))}
           </div>
