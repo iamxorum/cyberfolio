@@ -3,8 +3,10 @@ export interface Experience {
   company: string;
   role: string;
   startDate: string;
-  endDate?: string; 
+  endDate?: string;
   description?: string;
+  /** One plain-language, jargon-free sentence for non-technical contexts (e.g. the /summary recruiter view). Falls back to `description` when unset. */
+  plainSummary?: string;
   location?: string;
   type?: 'full-time' | 'part-time' | 'contract' | 'freelance' | 'internship';
   type2?: string; 

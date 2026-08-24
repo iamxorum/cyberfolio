@@ -2,15 +2,17 @@
  * nav: N1a Wordmark + 2 links (justified — only 2 real destinations from this page) · footer: Ft2 Inline single line
  * theme: custom Coral-family (no source CSS retrievable via WebFetch on sebastiannichtern.com — DNA source is
  *   structural/rhythm only, not tokens) · paper oklch(97% 0.010 40) · accent oklch(58% 0.19 27) warm-coral
- * display: Inter Tight 700 · body: Inter 400 · enrichment: Tier B hand-built SVG (2-ellipse hand-drawn circle,
- *   used once — restraint, not scattered) · studied: partial (structure from study.md URL-mode pass, tokens own)
- * motion: none — project has a standing "no entrance animations" policy (see Architecture.md); only
- *   interaction press/focus feedback ships, no scroll reveals, no counters
+ * display: Inter Tight 700 · body: Inter 400 · enrichment: Tier B hand-built SVG (2 marks: hero circle, projects
+ *   underline — two distinct motifs, still restrained, not scattered)
+ * motion: the site has a standing "no entrance animations" policy (Architecture.md) against hiding real content
+ *   behind opacity:0 pre-hydration — that's not what this is. The two hand-drawn marks draw themselves in via
+ *   stroke-dashoffset once on first paint; the words they annotate are fully visible from SSR, only the
+ *   decorative stroke animates. prefers-reduced-motion: reduce disables it entirely (marks render static/complete).
  */
 import { Inter, Inter_Tight } from 'next/font/google';
 import Link from 'next/link';
-import { siteConfig, experience, projects, certifications, cvConfig } from '@/config';
-import { getContactInfo } from '@/lib/cv-helpers';
+import { siteConfig, experience, education, projects, certifications, cvConfig } from '@/config';
+import { getContactInfo, filterForCV } from '@/lib/cv-helpers';
 
 const interTight = Inter_Tight({ subsets: ['latin'], weight: ['600', '700'], variable: '--font-summary-display' });
 const inter = Inter({ subsets: ['latin'], weight: ['400', '500'], variable: '--font-summary-body' });
@@ -35,11 +37,25 @@ function getYearsExperience(): number {
   return Math.floor(totalMonths / 12);
 }
 
-const experienceHighlights: Record<string, string> = {
-  exp_1: 'Started in technical support, solving real customer problems — the foundation for everything since.',
-  exp_2: 'Rebuilt an internal tool from the ground up and automated a multi-day manual process down to a few hours.',
-  exp_3: 'Keeps banking infrastructure running on Google Cloud and OpenShift — gets paged when something breaks, and works to make sure it doesn\'t happen again.',
-};
+/** Draw-in animation for both hand-drawn marks — the stroke reveals once on first paint. Content under it is never hidden. */
+function HandDrawnStyle() {
+  return (
+    <style>{`
+      @keyframes summary-draw { to { stroke-dashoffset: 0; } }
+      .summary-hand-drawn ellipse, .summary-hand-drawn path {
+        stroke-dasharray: 600;
+        stroke-dashoffset: 600;
+        animation: summary-draw 750ms cubic-bezier(0.16, 1, 0.3, 1) 150ms forwards;
+      }
+      @media (prefers-reduced-motion: reduce) {
+        .summary-hand-drawn ellipse, .summary-hand-drawn path {
+          stroke-dashoffset: 0;
+          animation: none;
+        }
+      }
+    `}</style>
+  );
+}
 
 /** Hand-drawn annotation mark — two slightly offset, hand-authored ellipses (Tier B SVG). Used once, in the hero, on purpose. */
 function HandDrawnCircle() {
@@ -47,12 +63,33 @@ function HandDrawnCircle() {
     <svg
       viewBox="0 0 220 100"
       preserveAspectRatio="none"
-      className="pointer-events-none absolute -inset-x-3 -inset-y-3 -z-10 h-[calc(100%+1.5rem)] w-[calc(100%+1.5rem)] sm:-inset-x-5 sm:-inset-y-4 sm:h-[calc(100%+2rem)] sm:w-[calc(100%+2.5rem)]"
+      className="summary-hand-drawn pointer-events-none absolute -inset-x-3 -inset-y-3 -z-10 h-[calc(100%+1.5rem)] w-[calc(100%+1.5rem)] sm:-inset-x-5 sm:-inset-y-4 sm:h-[calc(100%+2rem)] sm:w-[calc(100%+2.5rem)]"
       fill="none"
       aria-hidden="true"
     >
       <ellipse cx="110" cy="50" rx="104" ry="42" stroke="var(--summary-accent)" strokeWidth="3" strokeLinecap="round" transform="rotate(-3 110 50)" opacity="0.55" />
       <ellipse cx="113" cy="48" rx="99" ry="37" stroke="var(--summary-accent)" strokeWidth="2.5" strokeLinecap="round" transform="rotate(2 113 48)" opacity="0.35" />
+    </svg>
+  );
+}
+
+/** A second, distinct hand-drawn motif — a wobbly underline. Used once, under "Education". */
+function HandDrawnUnderline() {
+  return (
+    <svg
+      viewBox="0 0 140 12"
+      preserveAspectRatio="none"
+      className="summary-hand-drawn mt-1 h-[10px] w-[110px]"
+      fill="none"
+      aria-hidden="true"
+    >
+      <path
+        d="M2 7 C 20 3, 35 10, 52 6 S 85 2, 100 7 S 125 10, 138 5"
+        stroke="var(--summary-accent)"
+        strokeWidth="2.5"
+        strokeLinecap="round"
+        opacity="0.6"
+      />
     </svg>
   );
 }
@@ -74,6 +111,7 @@ export default function SummaryView() {
   const email = contactInfo.personal.find((item) => item.href?.startsWith('mailto:'));
   // location has no href and is already stated in the hero eyebrow — every channel here is a real, clickable CTA
   const socialChannels = [...contactInfo.personal, ...contactInfo.links].filter((item) => item.href && item !== email);
+  const summaryEducation = filterForCV(education);
 
   const summaryVars = {
     '--summary-paper': 'oklch(97% 0.010 40)',
@@ -90,6 +128,7 @@ export default function SummaryView() {
       className={`${interTight.variable} ${inter.variable} min-h-screen overflow-x-clip`}
       style={{ ...summaryVars, backgroundColor: 'var(--summary-paper)', color: 'var(--summary-ink)', fontFamily: 'var(--font-summary-body), sans-serif' }}
     >
+      <HandDrawnStyle />
       <a
         href="#main-content"
         className={`fixed top-2 -left-[9999px] focus:left-2 z-[100] px-4 py-2 rounded text-sm font-bold ${linkClass}`}
@@ -171,12 +210,35 @@ export default function SummaryView() {
                   <p className="text-sm tabular-nums" style={{ color: 'var(--summary-ink-muted)' }}>{exp.startDate} – {exp.endDate === 'ongoing' ? 'present' : exp.endDate}</p>
                 </div>
                 <p className="mt-2 max-w-[65ch]" style={{ color: 'var(--summary-ink-muted)', lineHeight: 1.6 }}>
-                  {experienceHighlights[exp.id] || exp.description}
+                  {exp.plainSummary || exp.description}
                 </p>
               </div>
             ))}
           </div>
         </section>
+
+        {/* Education */}
+        {summaryEducation.length > 0 && (
+          <section className="py-10 sm:py-14">
+            <h2 className="inline-block text-xs font-semibold uppercase tracking-wider" style={{ color: 'var(--summary-ink-muted)' }}>Education</h2>
+            <HandDrawnUnderline />
+            <div className="mt-4 flex flex-col gap-4">
+              {summaryEducation.map((edu) => (
+                <div
+                  key={edu.id}
+                  className="rounded-2xl border p-6"
+                  style={{ backgroundColor: 'var(--summary-paper-2)', borderColor: 'var(--summary-rule)', boxShadow: '0 1px 2px oklch(20% 0.014 35 / 0.05)' }}
+                >
+                  <div className="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1">
+                    <p className="font-semibold" style={{ fontFamily: 'var(--font-summary-display), sans-serif' }}>{edu.degree}{edu.field && `, ${edu.field}`}</p>
+                    <p className="text-sm tabular-nums" style={{ color: 'var(--summary-ink-muted)' }}>{edu.startDate} – {edu.endDate || 'present'}</p>
+                  </div>
+                  <p className="mt-2" style={{ color: 'var(--summary-ink-muted)', lineHeight: 1.6 }}>{edu.institution}</p>
+                </div>
+              ))}
+            </div>
+          </section>
+        )}
 
         {/* Selected projects */}
         <section className="py-10 sm:py-14">
