@@ -122,11 +122,53 @@ function revealDelay(stepMs: number, index = 0): React.CSSProperties {
   return { animationDelay: `${index * stepMs}ms` };
 }
 
-function channelIcon(href: string): string {
-  if (href.startsWith('tel:')) return 'call';
-  if (href.includes('linkedin.com')) return 'work';
-  if (href.includes('github.com')) return 'code';
-  return 'public';
+type ChannelIconName = 'mail' | 'phone' | 'linkedin' | 'github' | 'globe';
+
+function channelIcon(href: string): ChannelIconName {
+  if (href.startsWith('mailto:')) return 'mail';
+  if (href.startsWith('tel:')) return 'phone';
+  if (href.includes('linkedin.com')) return 'linkedin';
+  if (href.includes('github.com')) return 'github';
+  return 'globe';
+}
+
+/** Real brand marks for GitHub/LinkedIn (inline SVG, no external request), plain line icons for mail/phone/globe. */
+function ContactIcon({ name, className }: { name: ChannelIconName; className?: string }) {
+  if (name === 'github') {
+    return (
+      <svg viewBox="0 0 24 24" className={className} fill="currentColor" aria-hidden="true">
+        <path d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12" />
+      </svg>
+    );
+  }
+  if (name === 'linkedin') {
+    return (
+      <svg viewBox="0 0 24 24" className={className} fill="currentColor" aria-hidden="true">
+        <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z" />
+      </svg>
+    );
+  }
+  if (name === 'mail') {
+    return (
+      <svg viewBox="0 0 24 24" className={className} fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+        <rect x="3" y="5" width="18" height="14" rx="2" />
+        <path d="m3 7 9 6 9-6" />
+      </svg>
+    );
+  }
+  if (name === 'phone') {
+    return (
+      <svg viewBox="0 0 24 24" className={className} fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+        <path d="M6.6 10.8a15.1 15.1 0 0 0 6.6 6.6l2.2-2.2a1.2 1.2 0 0 1 1.2-.3c1.3.4 2.7.7 4.1.7.7 0 1.3.6 1.3 1.3V21c0 .7-.6 1.3-1.3 1.3C10.7 22.3 1.7 13.3 1.7 2.3 1.7 1.6 2.3 1 3 1h3.7c.7 0 1.3.6 1.3 1.3 0 1.4.2 2.8.7 4.1.1.4 0 .9-.3 1.2L6.6 10.8Z" />
+      </svg>
+    );
+  }
+  return (
+    <svg viewBox="0 0 24 24" className={className} fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+      <circle cx="12" cy="12" r="9" />
+      <path d="M3 12h18M12 3c2.5 2.7 3.8 6 3.8 9s-1.3 6.3-3.8 9c-2.5-2.7-3.8-6-3.8-9S9.5 5.7 12 3Z" />
+    </svg>
+  );
 }
 
 export default function SummaryView() {
@@ -194,7 +236,7 @@ export default function SummaryView() {
             .
           </h1>
           <p className="summary-reveal mt-6 max-w-[46ch] text-lg sm:text-xl" style={{ color: 'var(--summary-ink-muted)', lineHeight: 1.5, ...revealDelay(180) }}>
-            {yearsExperience}+ years in production infrastructure — and automating the parts that shouldn&apos;t need a human.
+            {yearsExperience}+ years in production infrastructure... and automating the parts that shouldn&apos;t need a human.
           </p>
         </section>
 
@@ -288,7 +330,7 @@ export default function SummaryView() {
             {publicProjects.map((project, idx) => (
               <div
                 key={project.id}
-                className={`group summary-reveal ${cardClass} hover:-translate-y-0.5`}
+                className={`group summary-reveal ${cardClass}`}
                 style={{ backgroundColor: 'var(--summary-paper-2)', borderColor: 'var(--summary-rule)', ...revealDelay(80, idx) }}
               >
                 <div className="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1">
@@ -321,7 +363,7 @@ export default function SummaryView() {
               Let&apos;s talk.
             </h2>
             <p className="mx-auto mt-3 max-w-[40ch]" style={{ color: 'var(--summary-ink-muted)', lineHeight: 1.6 }}>
-              No form, no funnel — just an email.
+              No form, no funnel, just an email.
             </p>
             {email && (
               <a
@@ -329,6 +371,7 @@ export default function SummaryView() {
                 className={`mt-8 inline-flex items-center gap-2 rounded-full px-8 py-4 text-base font-semibold hover:-translate-y-0.5 hover:shadow-lg ${linkClass}`}
                 style={{ backgroundColor: 'var(--summary-accent)', color: 'var(--summary-accent-ink)' }}
               >
+                <ContactIcon name="mail" className="h-[18px] w-[18px]" />
                 Email me →
               </a>
             )}
@@ -348,7 +391,7 @@ export default function SummaryView() {
                   rel={item.href!.startsWith('http') ? 'noopener noreferrer' : undefined}
                   className={`inline-flex items-center gap-2 rounded-full border px-4 py-2 text-sm font-medium text-[var(--summary-ink-muted)] border-[var(--summary-rule)] hover:scale-[1.04] hover:text-[var(--summary-accent)] hover:border-[var(--summary-accent)] ${linkClass}`}
                 >
-                  <span className="material-symbols-outlined text-[18px]" aria-hidden="true">{channelIcon(item.href!)}</span>
+                  <ContactIcon name={channelIcon(item.href!)} className="h-[16px] w-[16px]" />
                   {item.text}
                 </a>
               ))}
