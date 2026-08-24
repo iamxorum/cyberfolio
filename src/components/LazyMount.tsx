@@ -5,7 +5,6 @@ import { useEffect, useRef, useState, type ReactNode } from 'react';
 interface LazyMountProps {
   children: ReactNode;
   fallback: ReactNode;
-  /** How far ahead of the viewport to start loading, so content is ready by the time it scrolls into view. */
   rootMargin?: string;
 }
 
