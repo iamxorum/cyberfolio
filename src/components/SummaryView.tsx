@@ -73,13 +73,13 @@ function HandDrawnCircle() {
   );
 }
 
-/** A second, distinct hand-drawn motif — a wobbly underline. Used once, under "Education". */
+/** A second, distinct hand-drawn motif — a wobbly underline, anchored under an actual highlighted fact (a grade), not a generic label. */
 function HandDrawnUnderline() {
   return (
     <svg
       viewBox="0 0 140 12"
       preserveAspectRatio="none"
-      className="summary-hand-drawn mt-1 h-[10px] w-[110px]"
+      className="summary-hand-drawn pointer-events-none absolute -bottom-1.5 left-0 h-[8px] w-full"
       fill="none"
       aria-hidden="true"
     >
@@ -95,6 +95,8 @@ function HandDrawnUnderline() {
 }
 
 const linkClass = 'transition active:scale-[0.97] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-[var(--summary-accent)] rounded-sm';
+// Ambient hover only (shadow deepens) — these cards aren't links themselves, so no border/scale change that would imply clickability.
+const cardClass = 'rounded-2xl border p-6 shadow-[0_1px_2px_oklch(20%_0.014_35_/_0.05)] hover:shadow-[0_6px_20px_oklch(20%_0.014_35_/_0.10)] transition-shadow duration-200';
 
 function channelIcon(href: string): string {
   if (href.startsWith('tel:')) return 'call';
@@ -202,8 +204,8 @@ export default function SummaryView() {
             {experience.map((exp) => (
               <div
                 key={exp.id}
-                className="rounded-2xl border p-6"
-                style={{ backgroundColor: 'var(--summary-paper-2)', borderColor: 'var(--summary-rule)', boxShadow: '0 1px 2px oklch(20% 0.014 35 / 0.05)' }}
+                className={cardClass}
+                style={{ backgroundColor: 'var(--summary-paper-2)', borderColor: 'var(--summary-rule)' }}
               >
                 <div className="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1">
                   <p className="font-semibold" style={{ fontFamily: 'var(--font-summary-display), sans-serif' }}>{exp.role} · {exp.company}</p>
@@ -220,20 +222,35 @@ export default function SummaryView() {
         {/* Education */}
         {summaryEducation.length > 0 && (
           <section className="py-10 sm:py-14">
-            <h2 className="inline-block text-xs font-semibold uppercase tracking-wider" style={{ color: 'var(--summary-ink-muted)' }}>Education</h2>
-            <HandDrawnUnderline />
-            <div className="mt-4 flex flex-col gap-4">
-              {summaryEducation.map((edu) => (
+            <h2 className="text-xs font-semibold uppercase tracking-wider" style={{ color: 'var(--summary-ink-muted)' }}>Education</h2>
+            <div className="mt-6 flex flex-col gap-4">
+              {summaryEducation.map((edu, idx) => (
                 <div
                   key={edu.id}
-                  className="rounded-2xl border p-6"
-                  style={{ backgroundColor: 'var(--summary-paper-2)', borderColor: 'var(--summary-rule)', boxShadow: '0 1px 2px oklch(20% 0.014 35 / 0.05)' }}
+                  className={cardClass}
+                  style={{ backgroundColor: 'var(--summary-paper-2)', borderColor: 'var(--summary-rule)' }}
                 >
                   <div className="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1">
                     <p className="font-semibold" style={{ fontFamily: 'var(--font-summary-display), sans-serif' }}>{edu.degree}{edu.field && `, ${edu.field}`}</p>
                     <p className="text-sm tabular-nums" style={{ color: 'var(--summary-ink-muted)' }}>{edu.startDate} – {edu.endDate || 'present'}</p>
                   </div>
-                  <p className="mt-2" style={{ color: 'var(--summary-ink-muted)', lineHeight: 1.6 }}>{edu.institution}</p>
+                  <p className="mt-2" style={{ color: 'var(--summary-ink-muted)', lineHeight: 1.6 }}>
+                    {edu.institution}
+                    {edu.grade && (
+                      <>
+                        {' · '}
+                        <span className="relative inline-block px-0.5 font-medium" style={{ color: 'var(--summary-ink)' }}>
+                          {edu.grade}
+                          {idx === 0 && <HandDrawnUnderline />}
+                        </span>
+                      </>
+                    )}
+                  </p>
+                  {edu.thesisUrl && (
+                    <a href={edu.thesisUrl} className={`mt-3 inline-flex items-center gap-1 text-sm font-medium ${linkClass}`} style={{ color: 'var(--summary-accent)' }}>
+                      View thesis →
+                    </a>
+                  )}
                 </div>
               ))}
             </div>
@@ -247,8 +264,8 @@ export default function SummaryView() {
             {publicProjects.map((project) => (
               <div
                 key={project.id}
-                className="rounded-2xl border p-6"
-                style={{ backgroundColor: 'var(--summary-paper-2)', borderColor: 'var(--summary-rule)', boxShadow: '0 1px 2px oklch(20% 0.014 35 / 0.05)' }}
+                className={`group ${cardClass}`}
+                style={{ backgroundColor: 'var(--summary-paper-2)', borderColor: 'var(--summary-rule)' }}
               >
                 <div className="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1">
                   <p className="font-semibold" style={{ fontFamily: 'var(--font-summary-display), sans-serif' }}>{project.name}</p>
@@ -257,7 +274,7 @@ export default function SummaryView() {
                       href={project.link}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className={`text-sm font-medium ${linkClass}`}
+                      className={`text-sm font-medium group-hover:underline underline-offset-2 ${linkClass}`}
                       style={{ color: 'var(--summary-accent)' }}
                     >
                       View →
