@@ -158,7 +158,7 @@ export default function SummaryView() {
   const sortedExperience = sortExperienceByDate(experience);
   const contactInfo = getContactInfo(siteConfig, cvConfig.email);
   const email = contactInfo.personal.find((item) => item.href?.startsWith('mailto:'));
-  const socialChannels = [...contactInfo.personal, ...contactInfo.links].filter((item) => item.href && item !== email);
+  const socialChannels = [...contactInfo.personal, ...contactInfo.links].filter((item) => item.href && item !== email && !item.href.startsWith('tel:'));
   const summaryEducation = filterForCV(education);
 
   const summaryVars = {
