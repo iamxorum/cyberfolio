@@ -2,12 +2,16 @@
  * nav: N1a Wordmark + 2 links (justified — only 2 real destinations from this page) · footer: Ft2 Inline single line
  * theme: custom Coral-family (no source CSS retrievable via WebFetch on sebastiannichtern.com — DNA source is
  *   structural/rhythm only, not tokens) · paper oklch(97% 0.010 40) · accent oklch(58% 0.19 27) warm-coral
- * display: Inter Tight 700 · body: Inter 400 · enrichment: Tier B hand-built SVG (2 marks: hero circle, projects
+ * display: Inter Tight 700 · body: Inter 400 · enrichment: Tier B hand-built SVG (2 marks: hero circle, grade
  *   underline — two distinct motifs, still restrained, not scattered)
- * motion: the site has a standing "no entrance animations" policy (Architecture.md) against hiding real content
- *   behind opacity:0 pre-hydration — that's not what this is. The two hand-drawn marks draw themselves in via
- *   stroke-dashoffset once on first paint; the words they annotate are fully visible from SSR, only the
- *   decorative stroke animates. prefers-reduced-motion: reduce disables it entirely (marks render static/complete).
+ * motion: pure-CSS `@keyframes` only, zero client JS, zero hydration dependency — deliberately NOT the pattern
+ *   the site's "no entrance animations" policy (Architecture.md) bans. That bug was a JS ref/class toggle in
+ *   useLayoutEffect whose hidden-state could diverge between SSR HTML and the client on a hard refresh (content
+ *   flashed visible, then snapped hidden, then faded back in). Here the "start hidden" state is baked into the
+ *   static className/stylesheet itself — present in the SSR HTML from the first byte — and the animation is a
+ *   plain CSS `animation-fill-mode: both` transition with no JS involved at any point, so there is no state to
+ *   diverge and nothing to flash. Reveal is stagger-on-load only (no IntersectionObserver / scroll-trigger — this
+ *   is a single compact page, not a long scroll). prefers-reduced-motion: reduce disables all of it (static, fully visible).
  */
 import { Inter, Inter_Tight } from 'next/font/google';
 import Link from 'next/link';
@@ -37,8 +41,8 @@ function getYearsExperience(): number {
   return Math.floor(totalMonths / 12);
 }
 
-/** Draw-in animation for both hand-drawn marks — the stroke reveals once on first paint. Content under it is never hidden. */
-function HandDrawnStyle() {
+/** All of this page's motion, in one place: hand-drawn stroke draw-in + staggered on-load rise. Pure CSS, no JS. */
+function SummaryMotionStyle() {
   return (
     <style>{`
       @keyframes summary-draw { to { stroke-dashoffset: 0; } }
@@ -47,9 +51,24 @@ function HandDrawnStyle() {
         stroke-dashoffset: 600;
         animation: summary-draw 750ms cubic-bezier(0.16, 1, 0.3, 1) 150ms forwards;
       }
+
+      @keyframes summary-rise {
+        from { opacity: 0; transform: translateY(16px); }
+        to { opacity: 1; transform: translateY(0); }
+      }
+      .summary-reveal {
+        opacity: 0;
+        animation: summary-rise 650ms cubic-bezier(0.16, 1, 0.3, 1) both;
+      }
+
       @media (prefers-reduced-motion: reduce) {
         .summary-hand-drawn ellipse, .summary-hand-drawn path {
           stroke-dashoffset: 0;
+          animation: none;
+        }
+        .summary-reveal {
+          opacity: 1;
+          transform: none;
           animation: none;
         }
       }
@@ -96,7 +115,12 @@ function HandDrawnUnderline() {
 
 const linkClass = 'transition active:scale-[0.97] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-[var(--summary-accent)] rounded-sm';
 // Ambient hover only (shadow deepens) — these cards aren't links themselves, so no border/scale change that would imply clickability.
-const cardClass = 'rounded-2xl border p-6 shadow-[0_1px_2px_oklch(20%_0.014_35_/_0.05)] hover:shadow-[0_6px_20px_oklch(20%_0.014_35_/_0.10)] transition-shadow duration-200';
+const cardClass = 'rounded-2xl border p-6 shadow-[0_1px_2px_oklch(20%_0.014_35_/_0.05)] hover:shadow-[0_6px_20px_oklch(20%_0.014_35_/_0.10)] transition duration-200';
+
+/** Stagger delay for on-load reveal, computed at render/SSR time — a static inline style, not runtime JS state. */
+function revealDelay(stepMs: number, index = 0): React.CSSProperties {
+  return { animationDelay: `${index * stepMs}ms` };
+}
 
 function channelIcon(href: string): string {
   if (href.startsWith('tel:')) return 'call';
@@ -130,7 +154,7 @@ export default function SummaryView() {
       className={`${interTight.variable} ${inter.variable} min-h-screen overflow-x-clip`}
       style={{ ...summaryVars, backgroundColor: 'var(--summary-paper)', color: 'var(--summary-ink)', fontFamily: 'var(--font-summary-body), sans-serif' }}
     >
-      <HandDrawnStyle />
+      <SummaryMotionStyle />
       <a
         href="#main-content"
         className={`fixed top-2 -left-[9999px] focus:left-2 z-[100] px-4 py-2 rounded text-sm font-bold ${linkClass}`}
@@ -155,12 +179,12 @@ export default function SummaryView() {
       <main id="main-content" className="mx-auto max-w-[1120px] px-6 sm:px-10">
         {/* Hero — Marquee: one statement, no fold CTA */}
         <section className="pt-10 pb-14 sm:pt-16 sm:pb-20">
-          <p className="text-sm font-medium tracking-wide" style={{ color: 'var(--summary-ink-muted)' }}>
+          <p className="summary-reveal text-sm font-medium tracking-wide" style={{ color: 'var(--summary-ink-muted)' }}>
             {siteConfig.role} · based in {siteConfig.location}
           </p>
           <h1
-            className="mt-4 max-w-[18ch] font-bold break-words"
-            style={{ fontFamily: 'var(--font-summary-display), sans-serif', fontSize: 'clamp(2.5rem, 8vw, 5.5rem)', lineHeight: 1.02, letterSpacing: '-0.03em' }}
+            className="summary-reveal mt-4 max-w-[18ch] font-bold break-words"
+            style={{ fontFamily: 'var(--font-summary-display), sans-serif', fontSize: 'clamp(2.5rem, 8vw, 5.5rem)', lineHeight: 1.02, letterSpacing: '-0.03em', ...revealDelay(90) }}
           >
             Keeps production systems{' '}
             <span className="relative inline-block px-1">
@@ -169,7 +193,7 @@ export default function SummaryView() {
             </span>
             .
           </h1>
-          <p className="mt-6 max-w-[46ch] text-lg sm:text-xl" style={{ color: 'var(--summary-ink-muted)', lineHeight: 1.5 }}>
+          <p className="summary-reveal mt-6 max-w-[46ch] text-lg sm:text-xl" style={{ color: 'var(--summary-ink-muted)', lineHeight: 1.5, ...revealDelay(180) }}>
             {yearsExperience}+ years in production infrastructure — and automating the parts that shouldn&apos;t need a human.
           </p>
         </section>
@@ -183,11 +207,11 @@ export default function SummaryView() {
             { value: publicProjects.length, label: 'shipped projects' },
             { value: certifications.length, label: 'certifications' },
             { value: companiesCount, label: 'companies' },
-          ].map((stat) => (
+          ].map((stat, idx) => (
             <div
               key={stat.label}
-              className="rounded-2xl border px-4 py-6 text-center sm:px-6 sm:py-8"
-              style={{ backgroundColor: 'var(--summary-paper-2)', borderColor: 'var(--summary-rule)' }}
+              className="summary-reveal rounded-2xl border px-4 py-6 text-center sm:px-6 sm:py-8"
+              style={{ backgroundColor: 'var(--summary-paper-2)', borderColor: 'var(--summary-rule)', ...revealDelay(70, idx) }}
             >
               <div className="font-bold tabular-nums" style={{ fontFamily: 'var(--font-summary-display), sans-serif', fontSize: 'clamp(1.5rem, 4vw, 2.25rem)', letterSpacing: '-0.02em' }}>
                 {stat.value}
@@ -201,11 +225,11 @@ export default function SummaryView() {
         <section className="py-10 sm:py-14">
           <h2 className="text-xs font-semibold uppercase tracking-wider" style={{ color: 'var(--summary-ink-muted)' }}>Experience</h2>
           <div className="mt-6 flex flex-col gap-4">
-            {experience.map((exp) => (
+            {experience.map((exp, idx) => (
               <div
                 key={exp.id}
-                className={cardClass}
-                style={{ backgroundColor: 'var(--summary-paper-2)', borderColor: 'var(--summary-rule)' }}
+                className={`summary-reveal ${cardClass}`}
+                style={{ backgroundColor: 'var(--summary-paper-2)', borderColor: 'var(--summary-rule)', ...revealDelay(80, idx) }}
               >
                 <div className="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1">
                   <p className="font-semibold" style={{ fontFamily: 'var(--font-summary-display), sans-serif' }}>{exp.role} · {exp.company}</p>
@@ -227,8 +251,8 @@ export default function SummaryView() {
               {summaryEducation.map((edu, idx) => (
                 <div
                   key={edu.id}
-                  className={cardClass}
-                  style={{ backgroundColor: 'var(--summary-paper-2)', borderColor: 'var(--summary-rule)' }}
+                  className={`summary-reveal ${cardClass}`}
+                  style={{ backgroundColor: 'var(--summary-paper-2)', borderColor: 'var(--summary-rule)', ...revealDelay(80, idx) }}
                 >
                   <div className="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1">
                     <p className="font-semibold" style={{ fontFamily: 'var(--font-summary-display), sans-serif' }}>{edu.degree}{edu.field && `, ${edu.field}`}</p>
@@ -261,11 +285,11 @@ export default function SummaryView() {
         <section className="py-10 sm:py-14">
           <h2 className="text-xs font-semibold uppercase tracking-wider" style={{ color: 'var(--summary-ink-muted)' }}>Selected projects</h2>
           <div className="mt-6 grid grid-cols-1 gap-4 sm:grid-cols-2">
-            {publicProjects.map((project) => (
+            {publicProjects.map((project, idx) => (
               <div
                 key={project.id}
-                className={`group ${cardClass}`}
-                style={{ backgroundColor: 'var(--summary-paper-2)', borderColor: 'var(--summary-rule)' }}
+                className={`group summary-reveal ${cardClass} hover:-translate-y-0.5`}
+                style={{ backgroundColor: 'var(--summary-paper-2)', borderColor: 'var(--summary-rule)', ...revealDelay(80, idx) }}
               >
                 <div className="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1">
                   <p className="font-semibold" style={{ fontFamily: 'var(--font-summary-display), sans-serif' }}>{project.name}</p>
@@ -290,7 +314,7 @@ export default function SummaryView() {
         {/* Contact — one job, one button */}
         <section id="contact" className="py-14 sm:py-20 scroll-mt-20">
           <div
-            className="rounded-3xl border px-6 py-12 text-center sm:px-16 sm:py-16"
+            className="summary-reveal rounded-3xl border px-6 py-12 text-center sm:px-16 sm:py-16"
             style={{ backgroundColor: 'var(--summary-paper-2)', borderColor: 'var(--summary-rule)' }}
           >
             <h2 className="font-bold" style={{ fontFamily: 'var(--font-summary-display), sans-serif', fontSize: 'clamp(1.5rem, 4vw, 2.25rem)', letterSpacing: '-0.02em' }}>
@@ -302,7 +326,7 @@ export default function SummaryView() {
             {email && (
               <a
                 href={email.href}
-                className={`mt-8 inline-flex items-center gap-2 rounded-full px-8 py-4 text-base font-semibold ${linkClass}`}
+                className={`mt-8 inline-flex items-center gap-2 rounded-full px-8 py-4 text-base font-semibold hover:-translate-y-0.5 hover:shadow-lg ${linkClass}`}
                 style={{ backgroundColor: 'var(--summary-accent)', color: 'var(--summary-accent-ink)' }}
               >
                 Email me →
@@ -313,7 +337,7 @@ export default function SummaryView() {
 
         {/* Elsewhere — every channel gets a real CTA, grey by default, coral on hover */}
         {socialChannels.length > 0 && (
-          <section className="pb-14 sm:pb-20">
+          <section className="summary-reveal pb-14 sm:pb-20">
             <h2 className="text-center text-xs font-semibold uppercase tracking-wider" style={{ color: 'var(--summary-ink-muted)' }}>Elsewhere</h2>
             <div className="mt-6 flex flex-wrap items-center justify-center gap-3">
               {socialChannels.map((item) => (
@@ -322,7 +346,7 @@ export default function SummaryView() {
                   href={item.href}
                   target={item.href!.startsWith('http') ? '_blank' : undefined}
                   rel={item.href!.startsWith('http') ? 'noopener noreferrer' : undefined}
-                  className={`inline-flex items-center gap-2 rounded-full border px-4 py-2 text-sm font-medium text-[var(--summary-ink-muted)] border-[var(--summary-rule)] hover:text-[var(--summary-accent)] hover:border-[var(--summary-accent)] ${linkClass}`}
+                  className={`inline-flex items-center gap-2 rounded-full border px-4 py-2 text-sm font-medium text-[var(--summary-ink-muted)] border-[var(--summary-rule)] hover:scale-[1.04] hover:text-[var(--summary-accent)] hover:border-[var(--summary-accent)] ${linkClass}`}
                 >
                   <span className="material-symbols-outlined text-[18px]" aria-hidden="true">{channelIcon(item.href!)}</span>
                   {item.text}
