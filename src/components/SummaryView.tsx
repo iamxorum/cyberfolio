@@ -174,7 +174,9 @@ function ContactIcon({ name, className }: { name: ChannelIconName; className?: s
 export default function SummaryView() {
   const yearsExperience = getYearsExperience();
   const publicProjects = projects.filter((p) => p.visibility === 'public');
-  const companiesCount = new Set(experience.map((e) => e.company)).size;
+  // "Shipped" = built it myself. Contributions (PRs into someone else's project) are real but a different kind of credit — kept separate, not folded into the same count.
+  const shippedProjects = publicProjects.filter((p) => p.projectType === 'personal');
+  const contributionProjects = publicProjects.filter((p) => p.projectType === 'contribution');
   const contactInfo = getContactInfo(siteConfig, cvConfig.email);
   const email = contactInfo.personal.find((item) => item.href?.startsWith('mailto:'));
   // location has no href and is already stated in the hero eyebrow — every channel here is a real, clickable CTA
@@ -236,7 +238,7 @@ export default function SummaryView() {
             .
           </h1>
           <p className="summary-reveal mt-6 max-w-[46ch] text-lg sm:text-xl" style={{ color: 'var(--summary-ink-muted)', lineHeight: 1.5, ...revealDelay(180) }}>
-            {yearsExperience}+ years in production infrastructure... and automating the parts that shouldn&apos;t need a human.
+            {yearsExperience+1}+ years in production infrastructure... and automating the parts that shouldn&apos;t need a human.
           </p>
         </section>
 
@@ -245,10 +247,10 @@ export default function SummaryView() {
         {/* Supporting stats */}
         <section className="grid grid-cols-2 gap-3 py-10 sm:grid-cols-4 sm:gap-4 sm:py-14">
           {[
-            { value: `${yearsExperience}+`, label: 'years experience' },
-            { value: publicProjects.length, label: 'shipped projects' },
+            { value: `${yearsExperience+1}+`, label: 'years experience' },
+            { value: shippedProjects.length, label: 'shipped projects' },
+            { value: contributionProjects.length, label: 'open-source contributions' },
             { value: certifications.length, label: 'certifications' },
-            { value: companiesCount, label: 'companies' },
           ].map((stat, idx) => (
             <div
               key={stat.label}
@@ -334,7 +336,12 @@ export default function SummaryView() {
                 style={{ backgroundColor: 'var(--summary-paper-2)', borderColor: 'var(--summary-rule)', ...revealDelay(80, idx) }}
               >
                 <div className="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1">
-                  <p className="font-semibold" style={{ fontFamily: 'var(--font-summary-display), sans-serif' }}>{project.name}</p>
+                  <p className="font-semibold" style={{ fontFamily: 'var(--font-summary-display), sans-serif' }}>
+                    {project.name}
+                    <span className="ml-2 align-middle text-xs font-normal" style={{ color: 'var(--summary-ink-muted)' }}>
+                      {project.projectType === 'contribution' ? '· contribution' : '· personal'}
+                    </span>
+                  </p>
                   {project.link && (
                     <a
                       href={project.link}
