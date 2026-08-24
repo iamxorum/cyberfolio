@@ -57,7 +57,14 @@ function HandDrawnCircle() {
   );
 }
 
-const linkClass = 'transition-transform active:scale-[0.97] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-[var(--summary-accent)] rounded-sm';
+const linkClass = 'transition active:scale-[0.97] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-[var(--summary-accent)] rounded-sm';
+
+function channelIcon(href: string): string {
+  if (href.startsWith('tel:')) return 'call';
+  if (href.includes('linkedin.com')) return 'work';
+  if (href.includes('github.com')) return 'code';
+  return 'public';
+}
 
 export default function SummaryView() {
   const yearsExperience = getYearsExperience();
@@ -65,7 +72,8 @@ export default function SummaryView() {
   const companiesCount = new Set(experience.map((e) => e.company)).size;
   const contactInfo = getContactInfo(siteConfig, cvConfig.email);
   const email = contactInfo.personal.find((item) => item.href?.startsWith('mailto:'));
-  const secondaryContact = [...contactInfo.personal, ...contactInfo.links].filter((item) => item !== email);
+  // location has no href and is already stated in the hero eyebrow — every channel here is a real, clickable CTA
+  const socialChannels = [...contactInfo.personal, ...contactInfo.links].filter((item) => item.href && item !== email);
 
   const summaryVars = {
     '--summary-paper': 'oklch(97% 0.010 40)',
@@ -221,27 +229,29 @@ export default function SummaryView() {
                 Email me →
               </a>
             )}
-            {secondaryContact.length > 0 && (
-              <div className="mt-8 flex flex-wrap items-center justify-center gap-x-5 gap-y-2 text-sm" style={{ color: 'var(--summary-ink-muted)' }}>
-                {secondaryContact.map((item) => (
-                  item.href ? (
-                    <a
-                      key={item.text}
-                      href={item.href}
-                      target={item.href.startsWith('http') ? '_blank' : undefined}
-                      rel={item.href.startsWith('http') ? 'noopener noreferrer' : undefined}
-                      className={linkClass}
-                    >
-                      {item.text}
-                    </a>
-                  ) : (
-                    <span key={item.text}>{item.text}</span>
-                  )
-                ))}
-              </div>
-            )}
           </div>
         </section>
+
+        {/* Elsewhere — every channel gets a real CTA, grey by default, coral on hover */}
+        {socialChannels.length > 0 && (
+          <section className="pb-14 sm:pb-20">
+            <h2 className="text-center text-xs font-semibold uppercase tracking-wider" style={{ color: 'var(--summary-ink-muted)' }}>Elsewhere</h2>
+            <div className="mt-6 flex flex-wrap items-center justify-center gap-3">
+              {socialChannels.map((item) => (
+                <a
+                  key={item.text}
+                  href={item.href}
+                  target={item.href!.startsWith('http') ? '_blank' : undefined}
+                  rel={item.href!.startsWith('http') ? 'noopener noreferrer' : undefined}
+                  className={`inline-flex items-center gap-2 rounded-full border px-4 py-2 text-sm font-medium text-[var(--summary-ink-muted)] border-[var(--summary-rule)] hover:text-[var(--summary-accent)] hover:border-[var(--summary-accent)] ${linkClass}`}
+                >
+                  <span className="material-symbols-outlined text-[18px]" aria-hidden="true">{channelIcon(item.href!)}</span>
+                  {item.text}
+                </a>
+              ))}
+            </div>
+          </section>
+        )}
       </main>
 
       {/* Footer — Ft2 inline single line */}
