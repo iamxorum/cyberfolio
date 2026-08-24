@@ -28,6 +28,12 @@ const styles = StyleSheet.create({
     fontFamily: 'Times-Bold',
     fontSize: 20,
     letterSpacing: 0.8,
+    marginBottom: 3,
+  },
+  roleTagline: {
+    fontFamily: 'Courier-Bold',
+    fontSize: 11,
+    letterSpacing: 0.2,
     marginBottom: 6,
   },
   contactLine: {
@@ -91,6 +97,7 @@ export default function CoverLetterDocument({ siteConfig, style, email }: CoverL
       <Page size="A4" style={styles.page} wrap>
         <View style={[styles.header, { borderBottomColor: accentColor }]}>
           <Text style={[styles.name, { color: accentColor }]}>{siteConfig.fullName}</Text>
+          <Text style={[styles.roleTagline, { color: accentColor }]}>{'> '}{style.name}</Text>
           <ContactLine items={contactInfo.personal} />
           <ContactLine items={contactInfo.links} />
         </View>

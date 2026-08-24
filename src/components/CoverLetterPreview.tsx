@@ -18,9 +18,12 @@ export default function CoverLetterPreview({ siteConfig, style, email }: CoverLe
   return (
     <div className="cover-letter-template ats-friendly bg-white text-black" style={{ fontFamily: 'Times New Roman, serif', fontSize: '11pt', lineHeight: '1.5' }}>
       <div style={{ marginBottom: '18pt', paddingBottom: '10pt', borderBottom: `2.5pt solid ${accentColor}` }}>
-        <h1 style={{ fontSize: '20pt', fontWeight: 'bold', marginBottom: '6pt', letterSpacing: '0.8pt', color: accentColor }}>
+        <h1 style={{ fontSize: '20pt', fontWeight: 'bold', marginBottom: '3pt', letterSpacing: '0.8pt', color: accentColor }}>
           {siteConfig.fullName}
         </h1>
+        <div style={{ fontFamily: 'JetBrains Mono, monospace', fontWeight: 700, fontSize: '11pt', letterSpacing: '0.2pt', marginBottom: '6pt', color: accentColor }}>
+          {'> '}{style.name}
+        </div>
         {[contactInfo.personal, contactInfo.links].map((group, groupIdx) => group.length > 0 && (
           <div key={groupIdx} style={{ fontSize: '10.5pt', color: '#4a4a4a', letterSpacing: '0.1pt', marginTop: groupIdx > 0 ? '2pt' : 0 }}>
             {group.map((item, idx) => (

@@ -77,9 +77,12 @@ export default function CVTemplate({
     <div className="flex justify-between items-start mb-6" style={{ marginBottom: '14pt', paddingBottom: '10pt', borderBottom: `2.5pt solid ${accentColor}`, position: 'relative' }}>
       {/* Left side */}
       <div className="flex-1 text-left">
-        <h1 className="mb-1" style={{ fontSize: '22pt', fontWeight: 'bold', marginBottom: '4pt', letterSpacing: '0.8pt', lineHeight: '1.15', color: accentColor }}>
+        <h1 className="mb-1" style={{ fontSize: '22pt', fontWeight: 'bold', marginBottom: '2pt', letterSpacing: '0.8pt', lineHeight: '1.15', color: accentColor }}>
           {siteConfig.fullName}
         </h1>
+        <div style={{ fontFamily: 'JetBrains Mono, monospace', fontWeight: 700, fontSize: '11.5pt', letterSpacing: '0.2pt', marginBottom: '6pt', color: accentColor }}>
+          {'> '}{style.name}
+        </div>
         {[contactInfo.personal, contactInfo.links].map((group, groupIdx) => group.length > 0 && (
           <div key={groupIdx} style={{ fontSize: '10.5pt', lineHeight: '1.5', color: '#4a4a4a', letterSpacing: '0.1pt', marginTop: groupIdx > 0 ? '2pt' : 0 }}>
             {group.map((item, idx) => (
@@ -183,17 +186,20 @@ export default function CVTemplate({
           {certifications.length > 0 && (
             <section className="mb-4" style={{ marginBottom: '10pt' }}>
               <SectionHeader accentColor={accentColor}>CERTIFICATIONS</SectionHeader>
-              {certifications.map((cert) => (
-                <div key={cert.id} className="mb-4" style={{ marginBottom: '6pt', pageBreakInside: 'avoid' }}>
-                  <div style={{ fontSize: '12pt', fontWeight: '600', marginBottom: '2pt', color: '#000', letterSpacing: '0.1pt' }}>
-                    {cert.name}
+              {certifications.map((cert, idx) => {
+                const newIssuer = idx > 0 && cert.issuer !== certifications[idx - 1].issuer;
+                return (
+                  <div key={cert.id} className="mb-4" style={{ marginBottom: '6pt', marginTop: newIssuer ? '4pt' : 0, pageBreakInside: 'avoid' }}>
+                    <div style={{ fontSize: '12pt', fontWeight: '600', marginBottom: '2pt', color: '#000', letterSpacing: '0.1pt' }}>
+                      {cert.name}
+                    </div>
+                    <div style={{ fontSize: '10.5pt', color: '#2a2a2a', letterSpacing: '0.05pt' }}>
+                      {cert.issuer} | {cert.issueDate}
+                      {cert.expiryDate && ` - ${cert.expiryDate}`}
+                    </div>
                   </div>
-                  <div style={{ fontSize: '10.5pt', color: '#2a2a2a', letterSpacing: '0.05pt' }}>
-                    {cert.issuer} | {cert.issueDate}
-                    {cert.expiryDate && ` - ${cert.expiryDate}`}
-                  </div>
-                </div>
-              ))}
+                );
+              })}
             </section>
           )}
         </div>
@@ -275,25 +281,31 @@ export default function CVTemplate({
                     <div style={{ fontSize: '10.5pt', lineHeight: '1.5', marginBottom: '2pt', color: '#1a1a1a', textAlign: 'justify' }}>
                       {project.description}
                     </div>
-                    {contributionStats[project.id] && contributionStats[project.id]!.mergedCount > 0 && (
+                    {(project.repository || (contributionStats[project.id] && contributionStats[project.id]!.mergedCount > 0)) && (
                       <div style={{ fontSize: '10pt', color: '#3a3a3a', marginTop: '2pt' }}>
-                        <strong style={{ color: '#000' }}>Contributions:</strong>{' '}
-                        <a href={contributionStats[project.id]!.searchUrl} target="_blank" rel="noopener noreferrer" style={{ color: 'inherit' }}>
-                          {contributionStats[project.id]!.mergedCount} merged PR{contributionStats[project.id]!.mergedCount !== 1 ? 's' : ''}
-                        </a>
-                        {contributionStats[project.id]!.reviewCount > 0 && (
+                        {contributionStats[project.id] && contributionStats[project.id]!.mergedCount > 0 && (
                           <>
-                            {', '}
-                            <a href={contributionStats[project.id]!.reviewSearchUrl} target="_blank" rel="noopener noreferrer" style={{ color: 'inherit' }}>
-                              {contributionStats[project.id]!.reviewCount} code review{contributionStats[project.id]!.reviewCount !== 1 ? 's' : ''}
+                            <strong style={{ color: '#000' }}>Contributions:</strong>{' '}
+                            <a href={contributionStats[project.id]!.searchUrl} target="_blank" rel="noopener noreferrer" style={{ color: 'inherit' }}>
+                              {contributionStats[project.id]!.mergedCount} merged PR{contributionStats[project.id]!.mergedCount !== 1 ? 's' : ''}
                             </a>
+                            {contributionStats[project.id]!.reviewCount > 0 && (
+                              <>
+                                {', '}
+                                <a href={contributionStats[project.id]!.reviewSearchUrl} target="_blank" rel="noopener noreferrer" style={{ color: 'inherit' }}>
+                                  {contributionStats[project.id]!.reviewCount} code review{contributionStats[project.id]!.reviewCount !== 1 ? 's' : ''}
+                                </a>
+                              </>
+                            )}
                           </>
                         )}
-                      </div>
-                    )}
-                    {project.repository && (
-                      <div style={{ fontSize: '10pt', color: '#3a3a3a', marginTop: '2pt' }}>
-                        <strong style={{ color: '#000' }}>Repository:</strong> <a href={project.repository} target="_blank" rel="noopener noreferrer" style={{ color: 'inherit' }}>{stripUrl(project.repository)}</a>
+                        {contributionStats[project.id] && contributionStats[project.id]!.mergedCount > 0 && project.repository ? '   |   ' : ''}
+                        {project.repository && (
+                          <>
+                            <strong style={{ color: '#000' }}>Repository:</strong>{' '}
+                            <a href={project.repository} target="_blank" rel="noopener noreferrer" style={{ color: 'inherit' }}>{stripUrl(project.repository)}</a>
+                          </>
+                        )}
                       </div>
                     )}
                   </div>
@@ -395,17 +407,20 @@ export default function CVTemplate({
         {certifications.length > 0 && (
           <section className="mb-5" style={{ marginBottom: '12pt' }}>
             <SectionHeader accentColor={accentColor}>CERTIFICATIONS</SectionHeader>
-            {certifications.map((cert) => (
-              <div key={cert.id} className="mb-4" style={{ marginBottom: '6pt', pageBreakInside: 'avoid' }}>
-                <div style={{ fontSize: '12pt', fontWeight: '600', marginBottom: '2pt', color: '#000', letterSpacing: '0.1pt' }}>
-                  {cert.name}
+            {certifications.map((cert, idx) => {
+              const newIssuer = idx > 0 && cert.issuer !== certifications[idx - 1].issuer;
+              return (
+                <div key={cert.id} className="mb-4" style={{ marginBottom: '6pt', marginTop: newIssuer ? '4pt' : 0, pageBreakInside: 'avoid' }}>
+                  <div style={{ fontSize: '12pt', fontWeight: '600', marginBottom: '2pt', color: '#000', letterSpacing: '0.1pt' }}>
+                    {cert.name}
+                  </div>
+                  <div style={{ fontSize: '10.5pt', color: '#2a2a2a', letterSpacing: '0.05pt' }}>
+                    {cert.issuer} | {cert.issueDate}
+                    {cert.expiryDate && ` - ${cert.expiryDate}`}
+                  </div>
                 </div>
-                <div style={{ fontSize: '10.5pt', color: '#2a2a2a', letterSpacing: '0.05pt' }}>
-                  {cert.issuer} | {cert.issueDate}
-                  {cert.expiryDate && ` - ${cert.expiryDate}`}
-                </div>
-              </div>
-            ))}
+              );
+            })}
           </section>
         )}
 
@@ -442,25 +457,31 @@ export default function CVTemplate({
                   <div style={{ fontSize: '10.5pt', lineHeight: '1.5', marginBottom: '2pt', color: '#1a1a1a', textAlign: 'justify' }}>
                     {project.description}
                   </div>
-                  {contributionStats[project.id] && contributionStats[project.id]!.mergedCount > 0 && (
+                  {(project.repository || (contributionStats[project.id] && contributionStats[project.id]!.mergedCount > 0)) && (
                     <div style={{ fontSize: '10pt', color: '#3a3a3a', marginTop: '2pt' }}>
-                      <strong style={{ color: '#000' }}>Contributions:</strong>{' '}
-                      <a href={contributionStats[project.id]!.searchUrl} target="_blank" rel="noopener noreferrer" style={{ color: 'inherit' }}>
-                        {contributionStats[project.id]!.mergedCount} merged PR{contributionStats[project.id]!.mergedCount !== 1 ? 's' : ''}
-                      </a>
-                      {contributionStats[project.id]!.reviewCount > 0 && (
+                      {contributionStats[project.id] && contributionStats[project.id]!.mergedCount > 0 && (
                         <>
-                          {', '}
-                          <a href={contributionStats[project.id]!.reviewSearchUrl} target="_blank" rel="noopener noreferrer" style={{ color: 'inherit' }}>
-                            {contributionStats[project.id]!.reviewCount} code review{contributionStats[project.id]!.reviewCount !== 1 ? 's' : ''}
+                          <strong style={{ color: '#000' }}>Contributions:</strong>{' '}
+                          <a href={contributionStats[project.id]!.searchUrl} target="_blank" rel="noopener noreferrer" style={{ color: 'inherit' }}>
+                            {contributionStats[project.id]!.mergedCount} merged PR{contributionStats[project.id]!.mergedCount !== 1 ? 's' : ''}
                           </a>
+                          {contributionStats[project.id]!.reviewCount > 0 && (
+                            <>
+                              {', '}
+                              <a href={contributionStats[project.id]!.reviewSearchUrl} target="_blank" rel="noopener noreferrer" style={{ color: 'inherit' }}>
+                                {contributionStats[project.id]!.reviewCount} code review{contributionStats[project.id]!.reviewCount !== 1 ? 's' : ''}
+                              </a>
+                            </>
+                          )}
                         </>
                       )}
-                    </div>
-                  )}
-                  {project.repository && (
-                    <div style={{ fontSize: '10pt', color: '#3a3a3a', marginTop: '2pt' }}>
-                      <strong style={{ color: '#000' }}>Repository:</strong> <a href={project.repository} target="_blank" rel="noopener noreferrer" style={{ color: 'inherit' }}>{stripUrl(project.repository)}</a>
+                      {contributionStats[project.id] && contributionStats[project.id]!.mergedCount > 0 && project.repository ? '   |   ' : ''}
+                      {project.repository && (
+                        <>
+                          <strong style={{ color: '#000' }}>Repository:</strong>{' '}
+                          <a href={project.repository} target="_blank" rel="noopener noreferrer" style={{ color: 'inherit' }}>{stripUrl(project.repository)}</a>
+                        </>
+                      )}
                     </div>
                   )}
                 </div>

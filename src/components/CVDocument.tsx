@@ -48,7 +48,13 @@ const styles = StyleSheet.create({
     fontFamily: 'Times-Bold',
     fontSize: 21,
     letterSpacing: 0.8,
-    marginBottom: 7,
+    marginBottom: 3,
+  },
+  roleTagline: {
+    fontFamily: 'Courier-Bold',
+    fontSize: 11.5,
+    letterSpacing: 0.2,
+    marginBottom: 6,
   },
   contactLine: {
     fontSize: 10.5,
@@ -224,14 +230,17 @@ const EducationBlock = ({ education, accentColor, siteDomain }: { education: Edu
 const CertificationsBlock = ({ certifications, accentColor }: { certifications: Certification[]; accentColor: string }) => certifications.length > 0 && (
   <View style={styles.section}>
     <SectionHeader accentColor={accentColor}>Certifications</SectionHeader>
-    {certifications.map((cert) => (
-      <View key={cert.id} style={styles.entry} wrap={false}>
-        <Text style={[styles.entryTitle, { fontSize: 12 }]}>{cert.name}</Text>
-        <Text style={styles.entryMeta}>
-          {cert.issuer} | {cert.issueDate}{cert.expiryDate && ` - ${cert.expiryDate}`}
-        </Text>
-      </View>
-    ))}
+    {certifications.map((cert, idx) => {
+      const newIssuer = idx > 0 && cert.issuer !== certifications[idx - 1].issuer;
+      return (
+        <View key={cert.id} style={[styles.entry, newIssuer ? { marginTop: 4 } : {}]} wrap={false}>
+          <Text style={[styles.entryTitle, { fontSize: 12 }]}>{cert.name}</Text>
+          <Text style={styles.entryMeta}>
+            {cert.issuer} | {cert.issueDate}{cert.expiryDate && ` - ${cert.expiryDate}`}
+          </Text>
+        </View>
+      );
+    })}
   </View>
 );
 
@@ -266,26 +275,31 @@ const ProjectsBlock = ({ projects, accentColor, contributionStats = {} }: { proj
           )}
         </Text>
         <Text style={[styles.entrySubtitle, { textAlign: 'justify' }]}>{project.description}</Text>
-        {stats && stats.mergedCount > 0 && (
+        {(project.repository || (stats && stats.mergedCount > 0)) && (
           <Text style={styles.entryMeta}>
-            <Text style={styles.inlineLabel}>Contributions: </Text>
-            <Link src={stats.searchUrl} style={{ color: '#3a3a3a', textDecoration: 'none' }}>
-              {stats.mergedCount} merged PR{stats.mergedCount !== 1 ? 's' : ''}
-            </Link>
-            {stats.reviewCount > 0 && (
+            {stats && stats.mergedCount > 0 && (
               <>
-                {', '}
-                <Link src={stats.reviewSearchUrl} style={{ color: '#3a3a3a', textDecoration: 'none' }}>
-                  {stats.reviewCount} code review{stats.reviewCount !== 1 ? 's' : ''}
+                <Text style={styles.inlineLabel}>Contributions: </Text>
+                <Link src={stats.searchUrl} style={{ color: '#3a3a3a', textDecoration: 'none' }}>
+                  {stats.mergedCount} merged PR{stats.mergedCount !== 1 ? 's' : ''}
                 </Link>
+                {stats.reviewCount > 0 && (
+                  <>
+                    {', '}
+                    <Link src={stats.reviewSearchUrl} style={{ color: '#3a3a3a', textDecoration: 'none' }}>
+                      {stats.reviewCount} code review{stats.reviewCount !== 1 ? 's' : ''}
+                    </Link>
+                  </>
+                )}
               </>
             )}
-          </Text>
-        )}
-        {project.repository && (
-          <Text style={styles.entryMeta}>
-            <Text style={styles.inlineLabel}>Repository: </Text>
-            <Link src={project.repository} style={{ color: '#3a3a3a', textDecoration: 'none' }}>{stripUrl(project.repository)}</Link>
+            {stats && stats.mergedCount > 0 && project.repository ? '   |   ' : ''}
+            {project.repository && (
+              <>
+                <Text style={styles.inlineLabel}>Repository: </Text>
+                <Link src={project.repository} style={{ color: '#3a3a3a', textDecoration: 'none' }}>{stripUrl(project.repository)}</Link>
+              </>
+            )}
           </Text>
         )}
       </View>
@@ -345,6 +359,7 @@ export default function CVDocument({
         {/* Header */}
         <View style={[styles.header, { borderBottomColor: accentColor }]}>
           <Text style={[styles.name, { color: accentColor }]}>{siteConfig.fullName}</Text>
+          <Text style={[styles.roleTagline, { color: accentColor }]}>{'> '}{style.name}</Text>
           <ContactLine items={contactInfo.personal} />
           <ContactLine items={contactInfo.links} marginTop={2} />
         </View>
