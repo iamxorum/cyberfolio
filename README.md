@@ -18,6 +18,10 @@ Terminal/hacker-themed personal portfolio (Next.js 16, TypeScript, Tailwind CSS 
 - Dynamic CSP, built per-deploy from an allowlist config rather than hardcoded.
 - One security easter egg somewhere in the shipped JS. Not documenting what or where — that's rather the point. If you find it, you *really* shouldn't have been looking there.
 
+## Disclaimer
+
+For those who want to criticize the application because of being AI slopped, yes, I used AI for help me improving in coding. Toxicity is not welcomed here.
+
 ## Stack
 
 Next.js 16 (App Router, `output: standalone`) · React 19 · TypeScript · Tailwind CSS 4 · `react-globe.gl` / `three.js` · `@react-pdf/renderer` · Cloudflare Turnstile
@@ -64,4 +68,4 @@ If this saved you the weekend it took to build, a coffee's appreciated but never
 
 ## License
 
-MIT — use and modify freely. If you build on this for your own portfolio, a mention/link back is appreciated.
+MIT - use and modify freely. If you build on this for your own portfolio, a mention/link back is appreciated.
