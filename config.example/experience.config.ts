@@ -3,8 +3,9 @@ export interface Experience {
   company: string;
   role: string;
   startDate: string;
-  endDate?: string; 
+  endDate?: string;
   description?: string;
+  plainSummary?: string;
   location?: string;
   type?: 'full-time' | 'part-time' | 'contract' | 'freelance' | 'internship';
   type2?: string; 
