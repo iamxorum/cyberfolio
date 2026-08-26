@@ -338,9 +338,11 @@ export default function AboutClient() {
                           const score = getScoreFromLevel(skill.level);
                           return (
                             <div key={skill.name} className="animate-reveal flex items-center justify-between text-[9px] sm:text-[10px]" style={{ animationDelay: `${Math.min(index, 10) * 60}ms` }}>
-                              <div className="flex items-center gap-1 sm:gap-2 min-w-0 flex-1">
-                                <span className="text-[var(--terminal-text-muted)] truncate">{skill.name}</span>
-                                <span className="text-[var(--terminal-text-dim)] hidden sm:inline">({skill.category})</span>
+                              <div className="flex items-center min-w-0 flex-1">
+                                <span className="text-[var(--terminal-text-muted)] truncate">
+                                  {skill.name}
+                                  <span className="text-[var(--terminal-text-dim)] hidden sm:inline"> ({skill.category})</span>
+                                </span>
                               </div>
                               <div className="flex items-center gap-1.5 sm:gap-2 flex-shrink-0">
                                 <div className="w-16 sm:w-20 h-1 sm:h-1.5 bg-[var(--terminal-bg)] border border-[var(--terminal-border)] rounded-sm overflow-hidden">

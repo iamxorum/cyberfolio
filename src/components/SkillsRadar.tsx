@@ -144,14 +144,24 @@ export default function SkillsRadar({ skills }: SkillsRadarProps) {
       const x = centerX + labelRadius * Math.cos(angle);
       const y = centerY + labelRadius * Math.sin(angle);
 
+      const edgePadding = 6;
+      const maxHalfWidth = Math.max(10, Math.min(x, size - x) - edgePadding);
+      let label = skill.name;
+      let textWidth = ctx.measureText(label).width;
+      if (textWidth / 2 > maxHalfWidth) {
+        while (label.length > 1 && ctx.measureText(`${label}…`).width / 2 > maxHalfWidth) {
+          label = label.slice(0, -1);
+        }
+        label = `${label}…`;
+        textWidth = ctx.measureText(label).width;
+      }
 
       ctx.fillStyle = `rgba(${bgR}, ${bgG}, ${bgB}, 0.9)`;
-      const textWidth = ctx.measureText(skill.name).width;
       ctx.fillRect(x - textWidth / 2 - 4, y - 8, textWidth + 8, 16);
 
 
       ctx.fillStyle = terminalTextMuted;
-      ctx.fillText(skill.name, x, y);
+      ctx.fillText(label, x, y);
     });
 
 

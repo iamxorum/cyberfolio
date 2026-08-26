@@ -13,7 +13,7 @@ export const getRelevantSkills = (style: CVStyle) => {
     const categorySkills = skillsByCategory[category].filter(skill => !excludedSkills.has(skill.name));
     if (categorySkills.length === 0) return;
 
-    if (category.toLowerCase() === 'soft skills') {
+    if (category.toLowerCase() === 'soft') {
       softSkills[category] = categorySkills;
     } else {
       technicalSkills[category] = categorySkills;
@@ -96,14 +96,14 @@ export interface ContactGroups {
   links: ContactItem[];
 }
 
-export const getContactInfo = (siteConfig: SiteConfig, email?: string): ContactGroups => {
+export const getContactInfo = (siteConfig: SiteConfig, email?: string, includePhone: boolean = true): ContactGroups => {
   const linkedinLink = siteConfig.social.professional?.find(s => s.name.toLowerCase().includes('linkedin'));
   const githubLink = siteConfig.social.professional?.find(s => s.name.toLowerCase().includes('github'));
   const website = siteConfig.domain ? `https://${siteConfig.domain}` : '';
 
   const personal: ContactItem[] = [];
   if (email) personal.push({ text: email, href: `mailto:${email}` });
-  if (siteConfig.phone) personal.push({ text: siteConfig.phone, href: `tel:${siteConfig.phone.replace(/[^+\d]/g, '')}` });
+  if (includePhone && siteConfig.phone) personal.push({ text: siteConfig.phone, href: `tel:${siteConfig.phone.replace(/[^+\d]/g, '')}` });
   if (siteConfig.location) personal.push({ text: siteConfig.location });
 
   const links: ContactItem[] = [];

@@ -68,7 +68,7 @@ export default function CVTemplate({
   const sortedExperience = sortExperienceByDate(experience);
   const cvEducation = filterForCV(education);
   const cvLanguages = filterForCV(languages);
-  const contactInfo = getContactInfo(siteConfig, email);
+  const contactInfo = getContactInfo(siteConfig, email, false);
 
 
   return (
