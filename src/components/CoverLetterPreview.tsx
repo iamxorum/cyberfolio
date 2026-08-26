@@ -10,7 +10,7 @@ interface CoverLetterPreviewProps {
 }
 
 export default function CoverLetterPreview({ siteConfig, style, email }: CoverLetterPreviewProps) {
-  const contactInfo = getContactInfo(siteConfig, email);
+  const contactInfo = getContactInfo(siteConfig, email, false);
   const today = new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
   const accentColor = style.colorScheme?.primary || '#000000';
   const salutation = style.salutation || 'Dear Hiring Manager,';
@@ -22,7 +22,7 @@ export default function CoverLetterPreview({ siteConfig, style, email }: CoverLe
           {siteConfig.fullName}
         </h1>
         <div style={{ fontFamily: 'JetBrains Mono, monospace', fontWeight: 700, fontSize: '11pt', letterSpacing: '0.2pt', marginBottom: '6pt', color: accentColor }}>
-          {'> '}{style.name}
+          {style.name}
         </div>
         {[contactInfo.personal, contactInfo.links].map((group, groupIdx) => group.length > 0 && (
           <div key={groupIdx} style={{ fontSize: '10.5pt', color: '#4a4a4a', letterSpacing: '0.1pt', marginTop: groupIdx > 0 ? '2pt' : 0 }}>

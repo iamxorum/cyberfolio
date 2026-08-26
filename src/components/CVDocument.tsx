@@ -11,6 +11,7 @@ import {
   getContactInfo,
   filterForCV,
   getPublicProjects,
+  formatDateRange,
   type ContactItem,
 } from '@/lib/cv-helpers';
 import type { ContributionStats } from '@/lib/github-contributions';
@@ -63,20 +64,36 @@ const styles = StyleSheet.create({
     lineHeight: 1.3,
   },
   section: {
-    marginBottom: 9,
+    marginBottom: 7,
   },
   sectionHeader: {
     fontFamily: 'Times-Bold',
-    fontSize: 13,
+    fontSize: 12.5,
     textTransform: 'uppercase',
     letterSpacing: 0.8,
-    marginBottom: 5,
-    paddingBottom: 3,
+    marginBottom: 4,
+    paddingBottom: 2,
     borderBottomWidth: 2,
     borderBottomColor: '#000000',
   },
   entry: {
-    marginBottom: 6,
+    marginBottom: 5,
+  },
+  certLine: {
+    fontSize: 11,
+    lineHeight: 1.35,
+    marginBottom: 2,
+    color: '#1a1a1a',
+    letterSpacing: 0.05,
+  },
+  certName: {
+    fontFamily: 'Times-Bold',
+    color: '#000000',
+  },
+  certMeta: {
+    fontSize: 10,
+    fontFamily: 'Times-Italic',
+    color: '#3a3a3a',
   },
   entryTitle: {
     fontFamily: 'Times-Bold',
@@ -123,21 +140,16 @@ const styles = StyleSheet.create({
     fontFamily: 'Times-Bold',
     color: '#000000',
   },
-  skillCategory: {
-    marginBottom: 6,
+  skillCategoryLine: {
+    fontSize: 10.5,
+    lineHeight: 1.4,
+    marginBottom: 2,
+    color: '#1a1a1a',
+    letterSpacing: 0.05,
   },
   skillCategoryLabel: {
     fontFamily: 'Times-Bold',
-    fontSize: 12,
-    marginBottom: 3,
-    letterSpacing: 0.1,
-  },
-  skillCategoryList: {
-    fontSize: 10.5,
-    marginLeft: 12,
-    lineHeight: 1.5,
-    color: '#1a1a1a',
-    letterSpacing: 0.05,
+    color: '#000000',
   },
   bodyText: {
     fontSize: 11,
@@ -176,6 +188,17 @@ const ContactLine = ({ items, marginTop = 0 }: { items: ContactItem[]; marginTop
   </Text>
 );
 
+const SkillsList = ({ skills }: { skills: Record<string, Skill[]> }) => (
+  <>
+    {Object.entries(skills).map(([category, categorySkills]) => (
+      <Text key={category} style={styles.skillCategoryLine}>
+        <Text style={styles.skillCategoryLabel}>{category}: </Text>
+        {categorySkills.map(s => s.name).join(', ')}
+      </Text>
+    ))}
+  </>
+);
+
 const SkillsBlock = ({ technicalSkills, softSkills, hasSoftSkills, accentColor }: {
   technicalSkills: Record<string, Skill[]>;
   softSkills: Record<string, Skill[]>;
@@ -185,22 +208,12 @@ const SkillsBlock = ({ technicalSkills, softSkills, hasSoftSkills, accentColor }
   <>
     <View style={styles.section} wrap={false}>
       <SectionHeader accentColor={accentColor}>Technical Skills</SectionHeader>
-      {Object.entries(technicalSkills).map(([category, categorySkills]) => (
-        <View key={category} style={styles.skillCategory}>
-          <Text style={styles.skillCategoryLabel}>{category}:</Text>
-          <Text style={styles.skillCategoryList}>{categorySkills.map(s => s.name).join(', ')}</Text>
-        </View>
-      ))}
+      <SkillsList skills={technicalSkills} />
     </View>
     {hasSoftSkills && (
       <View style={styles.section} wrap={false}>
         <SectionHeader accentColor={accentColor}>Soft Skills</SectionHeader>
-        {Object.entries(softSkills).map(([category, categorySkills]) => (
-          <View key={category} style={styles.skillCategory}>
-            <Text style={styles.skillCategoryLabel}>{category}:</Text>
-            <Text style={styles.skillCategoryList}>{categorySkills.map(s => s.name).join(', ')}</Text>
-          </View>
-        ))}
+        <SkillsList skills={softSkills} />
       </View>
     )}
   </>
@@ -214,12 +227,13 @@ const EducationBlock = ({ education, accentColor, siteDomain }: { education: Edu
         <Text style={styles.entryTitle}>{edu.degree}{edu.field && `, ${edu.field}`}</Text>
         <Text style={styles.entrySubtitle}>{edu.institution}{edu.location && `, ${edu.location}`}</Text>
         <Text style={styles.entryMeta}>
-          {edu.startDate} {edu.endDate ? `- ${edu.endDate}` : '- Present'}{edu.grade && ` | ${edu.grade}`}
+          {formatDateRange(edu.startDate, edu.endDate)}{edu.grade && ` | ${edu.grade}`}
         </Text>
         {edu.thesisUrl && (
           <Text style={styles.entryMeta}>
             <Text style={styles.inlineLabel}>Thesis: </Text>
             <Link src={`https://${siteDomain}${edu.thesisUrl}`} style={{ color: '#3a3a3a', textDecoration: 'none' }}>View PDF</Link>
+            {' ('}{stripUrl(`https://${siteDomain}${edu.thesisUrl}`)}{')'}
           </Text>
         )}
       </View>
@@ -228,19 +242,19 @@ const EducationBlock = ({ education, accentColor, siteDomain }: { education: Edu
 );
 
 const CertificationsBlock = ({ certifications, accentColor }: { certifications: Certification[]; accentColor: string }) => certifications.length > 0 && (
-  <View style={styles.section}>
+  <View style={styles.section} wrap={false}>
     <SectionHeader accentColor={accentColor}>Certifications</SectionHeader>
-    {certifications.map((cert, idx) => {
-      const newIssuer = idx > 0 && cert.issuer !== certifications[idx - 1].issuer;
-      return (
-        <View key={cert.id} style={[styles.entry, newIssuer ? { marginTop: 4 } : {}]} wrap={false}>
-          <Text style={[styles.entryTitle, { fontSize: 12 }]}>{cert.name}</Text>
-          <Text style={styles.entryMeta}>
-            {cert.issuer} | {cert.issueDate}{cert.expiryDate && ` - ${cert.expiryDate}`}
-          </Text>
-        </View>
-      );
-    })}
+    {certifications.map((cert) => (
+      <Text key={cert.id} style={styles.certLine}>
+        <Text style={styles.certName}>{cert.name}</Text>
+        {' - '}
+        <Text style={{ color: accentColor }}>{cert.issuer}</Text>
+        {' | '}
+        <Text style={styles.certMeta}>
+          {cert.issueDate}{cert.expiryDate && ` - ${cert.expiryDate}`}
+        </Text>
+      </Text>
+    ))}
   </View>
 );
 
@@ -274,7 +288,7 @@ const ProjectsBlock = ({ projects, accentColor, contributionStats = {} }: { proj
             </Text>
           )}
         </Text>
-        <Text style={[styles.entrySubtitle, { textAlign: 'justify' }]}>{project.description}</Text>
+        <Text style={[styles.entrySubtitle, { textAlign: 'justify' }]}>{project.cvDescription || project.description}</Text>
         {(project.repository || (stats && stats.mergedCount > 0)) && (
           <Text style={styles.entryMeta}>
             {stats && stats.mergedCount > 0 && (
@@ -359,7 +373,7 @@ export default function CVDocument({
         {/* Header */}
         <View style={[styles.header, { borderBottomColor: accentColor }]}>
           <Text style={[styles.name, { color: accentColor }]}>{siteConfig.fullName}</Text>
-          <Text style={[styles.roleTagline, { color: accentColor }]}>{'> '}{style.name}</Text>
+          <Text style={[styles.roleTagline, { color: accentColor }]}>{style.name}</Text>
           <ContactLine items={contactInfo.personal} />
           <ContactLine items={contactInfo.links} marginTop={2} />
         </View>
@@ -372,18 +386,18 @@ export default function CVDocument({
           </View>
         )}
 
-        {/* Professional Experience */}
+        {/* Experience */}
         <View style={styles.section}>
-          <SectionHeader accentColor={accentColor}>Professional Experience</SectionHeader>
+          <SectionHeader accentColor={accentColor}>Experience</SectionHeader>
           {sortedExperience.map((exp) => {
             const descriptionPoints = parseDescription(exp.description);
             return (
-              <View key={exp.id} style={[styles.entry, { marginBottom: 7 }]} wrap={false}>
+              <View key={exp.id} style={[styles.entry, { marginBottom: 5 }]} wrap={false}>
                 <Text style={styles.entryTitle}>
                   {exp.role}, <Text style={{ color: accentColor }}>{exp.company}</Text>{exp.location && `, ${exp.location}`}
                 </Text>
                 <Text style={styles.entryDate}>
-                  {exp.startDate} {exp.endDate ? `- ${exp.endDate}` : '- Present'}
+                  {formatDateRange(exp.startDate, exp.endDate)}
                 </Text>
                 {descriptionPoints.length > 0 && (
                   <View style={styles.bulletList}>

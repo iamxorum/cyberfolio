@@ -48,6 +48,11 @@ const parseDate = (dateStr: string): Date => {
   return isNaN(parsed.getTime()) ? new Date(0) : parsed;
 };
 
+export const formatDateRange = (startDate: string, endDate?: string): string => {
+  const isOngoing = !endDate || endDate.toLowerCase() === 'ongoing';
+  return `${startDate} - ${isOngoing ? 'Present' : endDate}`;
+};
+
 export const sortExperienceByDate = (experience: Experience[]): Experience[] => {
   return [...experience].sort((a, b) => {
     const dateA = parseDate(a.endDate || a.startDate);
@@ -119,5 +124,5 @@ export const filterForCV = <T extends { includeInCV?: boolean }>(items: T[]): T[
 
 export const getPublicProjects = (projects: Project[] | undefined, style: CVStyle): Project[] => {
   const showProjects = style.showProjects !== false;
-  return showProjects && projects ? projects.filter(p => p.visibility === 'public') : [];
+  return showProjects && projects ? filterForCV(projects.filter(p => p.visibility === 'public')) : [];
 };

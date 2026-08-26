@@ -10,6 +10,7 @@ import {
   getContactInfo,
   filterForCV,
   getPublicProjects,
+  formatDateRange,
 } from '@/lib/cv-helpers';
 import type { ContributionStats } from '@/lib/github-contributions';
 
@@ -27,6 +28,38 @@ interface CVTemplateProps {
   useColumnLayout?: boolean;
   contributionStats?: Record<string, ContributionStats | null>;
 }
+
+const SkillsList = ({ skills }: { skills: Record<string, { name: string }[]> }) => (
+  <>
+    {Object.entries(skills).map(([category, categorySkills]) => (
+      <p key={category} style={{ fontSize: '10.5pt', lineHeight: '1.4', marginBottom: '2pt', color: '#1a1a1a', letterSpacing: '0.05pt' }}>
+        <strong style={{ color: '#000', letterSpacing: '0.1pt' }}>{category}: </strong>
+        {categorySkills.map((skill, idx) => (
+          <span key={skill.name}>
+            {skill.name}
+            {idx < categorySkills.length - 1 ? ', ' : ''}
+          </span>
+        ))}
+      </p>
+    ))}
+  </>
+);
+
+const CertificationsList = ({ certifications, accentColor }: { certifications: Certification[]; accentColor: string }) => (
+  <>
+    {certifications.map((cert) => (
+      <p key={cert.id} style={{ fontSize: '11pt', lineHeight: '1.35', marginBottom: '2pt', color: '#1a1a1a', letterSpacing: '0.05pt' }}>
+        <strong style={{ color: '#000', letterSpacing: '0.1pt' }}>{cert.name}</strong>
+        {' - '}
+        <span style={{ color: accentColor }}>{cert.issuer}</span>
+        {' | '}
+        <span style={{ fontSize: '10pt', fontStyle: 'italic', color: '#3a3a3a' }}>
+          {cert.issueDate}{cert.expiryDate && ` - ${cert.expiryDate}`}
+        </span>
+      </p>
+    ))}
+  </>
+);
 
 const SectionHeader = ({ children, accentColor }: { children: string; accentColor: string }) => (
   <h2 className="mb-4" style={{
@@ -61,10 +94,6 @@ export default function CVTemplate({
   const { technicalSkills, softSkills, hasSoftSkills } = getRelevantSkills(style);
   const publicProjects = getPublicProjects(projects, style);
 
-  const formatDate = (date: string) => {
-    return date;
-  };
-
   const sortedExperience = sortExperienceByDate(experience);
   const cvEducation = filterForCV(education);
   const cvLanguages = filterForCV(languages);
@@ -81,7 +110,7 @@ export default function CVTemplate({
           {siteConfig.fullName}
         </h1>
         <div style={{ fontFamily: 'JetBrains Mono, monospace', fontWeight: 700, fontSize: '11.5pt', letterSpacing: '0.2pt', marginBottom: '6pt', color: accentColor }}>
-          {'> '}{style.name}
+          {style.name}
         </div>
         {[contactInfo.personal, contactInfo.links].map((group, groupIdx) => group.length > 0 && (
           <div key={groupIdx} style={{ fontSize: '10.5pt', lineHeight: '1.5', color: '#4a4a4a', letterSpacing: '0.1pt', marginTop: groupIdx > 0 ? '2pt' : 0 }}>
@@ -110,7 +139,7 @@ export default function CVTemplate({
 
     {/* Work Experience */}
     <section className="mb-5" style={{ marginBottom: '12pt' }}>
-      <SectionHeader accentColor={accentColor}>PROFESSIONAL EXPERIENCE</SectionHeader>
+      <SectionHeader accentColor={accentColor}>EXPERIENCE</SectionHeader>
       {sortedExperience.map((exp) => {
         const descriptionPoints = parseDescription(exp.description);
         return (
@@ -122,7 +151,7 @@ export default function CVTemplate({
                 {exp.location && `, ${exp.location}`}
               </h3>
               <div style={{ fontSize: '10.5pt', fontStyle: 'italic', color: '#2a2a2a', letterSpacing: '0.1pt' }}>
-                {formatDate(exp.startDate)} {exp.endDate ? `- ${formatDate(exp.endDate)}` : '- Present'}
+                {formatDateRange(exp.startDate, exp.endDate)}
               </div>
             </div>
 
@@ -169,12 +198,12 @@ export default function CVTemplate({
                     {edu.location && `, ${edu.location}`}
                   </div>
                   <div style={{ fontSize: '10pt', fontStyle: 'italic', color: '#3a3a3a', letterSpacing: '0.05pt' }}>
-                    {formatDate(edu.startDate)} {edu.endDate ? `- ${formatDate(edu.endDate)}` : '- Present'}
+                    {formatDateRange(edu.startDate, edu.endDate)}
                     {edu.grade && ` | ${edu.grade}`}
                   </div>
                   {edu.thesisUrl && (
                     <div style={{ fontSize: '10pt', color: '#3a3a3a', marginTop: '2pt' }}>
-                      <strong style={{ color: '#000' }}>Thesis:</strong> <a href={`https://${siteConfig.domain}${edu.thesisUrl}`} target="_blank" rel="noopener noreferrer" style={{ color: 'inherit' }}>View PDF</a>
+                      <strong style={{ color: '#000' }}>Thesis:</strong> <a href={`https://${siteConfig.domain}${edu.thesisUrl}`} target="_blank" rel="noopener noreferrer" style={{ color: 'inherit' }}>View PDF</a> ({stripUrl(`https://${siteConfig.domain}${edu.thesisUrl}`)})
                     </div>
                   )}
                 </div>
@@ -186,20 +215,7 @@ export default function CVTemplate({
           {certifications.length > 0 && (
             <section className="mb-4" style={{ marginBottom: '10pt' }}>
               <SectionHeader accentColor={accentColor}>CERTIFICATIONS</SectionHeader>
-              {certifications.map((cert, idx) => {
-                const newIssuer = idx > 0 && cert.issuer !== certifications[idx - 1].issuer;
-                return (
-                  <div key={cert.id} className="mb-4" style={{ marginBottom: '6pt', marginTop: newIssuer ? '4pt' : 0, pageBreakInside: 'avoid' }}>
-                    <div style={{ fontSize: '12pt', fontWeight: '600', marginBottom: '2pt', color: '#000', letterSpacing: '0.1pt' }}>
-                      {cert.name}
-                    </div>
-                    <div style={{ fontSize: '10.5pt', color: '#2a2a2a', letterSpacing: '0.05pt' }}>
-                      {cert.issuer} | {cert.issueDate}
-                      {cert.expiryDate && ` - ${cert.expiryDate}`}
-                    </div>
-                  </div>
-                );
-              })}
+              <CertificationsList certifications={certifications} accentColor={accentColor} />
             </section>
           )}
         </div>
@@ -207,44 +223,16 @@ export default function CVTemplate({
         {/* Right Column */}
         <div style={{ flex: '1' }}>
           {/* Technical Skills */}
-          <section className="mb-4" style={{ marginBottom: '10pt' }}>
+          <section className="mb-4" style={{ marginBottom: '8pt' }}>
             <SectionHeader accentColor={accentColor}>TECHNICAL SKILLS</SectionHeader>
-            {Object.entries(technicalSkills).map(([category, categorySkills]) => (
-              <div key={category} className="mb-4" style={{ marginBottom: '6pt' }}>
-                <div style={{ fontSize: '12pt', fontWeight: '600', marginBottom: '3pt', color: '#000', letterSpacing: '0.1pt' }}>
-                  <strong>{category}:</strong>
-                </div>
-                <div style={{ fontSize: '10.5pt', marginLeft: '12pt', lineHeight: '1.5', color: '#1a1a1a', letterSpacing: '0.05pt' }}>
-                  {categorySkills.map((skill, idx) => (
-                    <span key={skill.name}>
-                      {skill.name}
-                      {idx < categorySkills.length - 1 ? ', ' : ''}
-                    </span>
-                  ))}
-                </div>
-              </div>
-            ))}
+            <SkillsList skills={technicalSkills} />
           </section>
 
           {/* Soft Skills */}
           {hasSoftSkills && (
-            <section className="mb-4" style={{ marginBottom: '10pt' }}>
+            <section className="mb-4" style={{ marginBottom: '8pt' }}>
               <SectionHeader accentColor={accentColor}>SOFT SKILLS</SectionHeader>
-              {Object.entries(softSkills).map(([category, categorySkills]) => (
-                <div key={category} className="mb-4" style={{ marginBottom: '6pt' }}>
-                  <div style={{ fontSize: '12pt', fontWeight: '600', marginBottom: '3pt', color: '#000', letterSpacing: '0.1pt' }}>
-                    <strong>{category}:</strong>
-                  </div>
-                  <div style={{ fontSize: '10.5pt', marginLeft: '12pt', lineHeight: '1.5', color: '#1a1a1a', letterSpacing: '0.05pt' }}>
-                    {categorySkills.map((skill, idx) => (
-                      <span key={skill.name}>
-                        {skill.name}
-                        {idx < categorySkills.length - 1 ? ', ' : ''}
-                      </span>
-                    ))}
-                  </div>
-                </div>
-              ))}
+              <SkillsList skills={softSkills} />
             </section>
           )}
 
@@ -279,7 +267,7 @@ export default function CVTemplate({
                       )}
                     </h3>
                     <div style={{ fontSize: '10.5pt', lineHeight: '1.5', marginBottom: '2pt', color: '#1a1a1a', textAlign: 'justify' }}>
-                      {project.description}
+                      {project.cvDescription || project.description}
                     </div>
                     {(project.repository || (contributionStats[project.id] && contributionStats[project.id]!.mergedCount > 0)) && (
                       <div style={{ fontSize: '10pt', color: '#3a3a3a', marginTop: '2pt' }}>
@@ -334,49 +322,21 @@ export default function CVTemplate({
       /* Single Column Layout */
       <>
         {/* Technical Skills */}
-        <section className="mb-5" style={{ marginBottom: '12pt' }}>
+        <section className="mb-5" style={{ marginBottom: '10pt' }}>
           <SectionHeader accentColor={accentColor}>TECHNICAL SKILLS</SectionHeader>
-          {Object.entries(technicalSkills).map(([category, categorySkills]) => (
-            <div key={category} className="mb-4" style={{ marginBottom: '6pt' }}>
-              <div style={{ fontSize: '12pt', fontWeight: '600', marginBottom: '3pt', color: '#000', letterSpacing: '0.1pt' }}>
-                <strong>{category}:</strong>
-              </div>
-              <div style={{ fontSize: '10.5pt', marginLeft: '12pt', lineHeight: '1.5', color: '#1a1a1a', letterSpacing: '0.05pt' }}>
-                {categorySkills.map((skill, idx) => (
-                  <span key={skill.name}>
-                    {skill.name}
-                    {idx < categorySkills.length - 1 ? ', ' : ''}
-                  </span>
-                ))}
-              </div>
-            </div>
-          ))}
+          <SkillsList skills={technicalSkills} />
         </section>
 
         {/* Soft Skills */}
         {hasSoftSkills && (
-          <section className="mb-5" style={{ marginBottom: '12pt' }}>
+          <section className="mb-5" style={{ marginBottom: '10pt' }}>
             <SectionHeader accentColor={accentColor}>SOFT SKILLS</SectionHeader>
-            {Object.entries(softSkills).map(([category, categorySkills]) => (
-              <div key={category} className="mb-4" style={{ marginBottom: '6pt' }}>
-                <div style={{ fontSize: '12pt', fontWeight: '600', marginBottom: '3pt', color: '#000', letterSpacing: '0.1pt' }}>
-                  <strong>{category}:</strong>
-                </div>
-                <div style={{ fontSize: '10.5pt', marginLeft: '12pt', lineHeight: '1.5', color: '#1a1a1a', letterSpacing: '0.05pt' }}>
-                  {categorySkills.map((skill, idx) => (
-                    <span key={skill.name}>
-                      {skill.name}
-                      {idx < categorySkills.length - 1 ? ', ' : ''}
-                    </span>
-                  ))}
-                </div>
-              </div>
-            ))}
+            <SkillsList skills={softSkills} />
           </section>
         )}
 
         {/* Education */}
-        <section className="mb-5" style={{ marginBottom: '12pt' }}>
+        <section className="mb-5" style={{ marginBottom: '9pt' }}>
           <SectionHeader accentColor={accentColor}>EDUCATION</SectionHeader>
           {cvEducation.map((edu) => (
             <div key={edu.id} className="mb-4" style={{ marginBottom: '7pt', pageBreakInside: 'avoid' }}>
@@ -390,12 +350,12 @@ export default function CVTemplate({
                   {edu.location && `, ${edu.location}`}
                 </div>
                 <div style={{ fontSize: '10pt', fontStyle: 'italic', color: '#3a3a3a', letterSpacing: '0.05pt' }}>
-                  {formatDate(edu.startDate)} {edu.endDate ? `- ${formatDate(edu.endDate)}` : '- Present'}
+                  {formatDateRange(edu.startDate, edu.endDate)}
                   {edu.grade && ` | ${edu.grade}`}
                 </div>
                 {edu.thesisUrl && (
                   <div style={{ fontSize: '10pt', color: '#3a3a3a', marginTop: '2pt' }}>
-                    <strong style={{ color: '#000' }}>Thesis:</strong> <a href={`https://${siteConfig.domain}${edu.thesisUrl}`} target="_blank" rel="noopener noreferrer" style={{ color: 'inherit' }}>View PDF</a>
+                    <strong style={{ color: '#000' }}>Thesis:</strong> <a href={`https://${siteConfig.domain}${edu.thesisUrl}`} target="_blank" rel="noopener noreferrer" style={{ color: 'inherit' }}>View PDF</a> ({stripUrl(`https://${siteConfig.domain}${edu.thesisUrl}`)})
                   </div>
                 )}
               </div>
@@ -405,28 +365,15 @@ export default function CVTemplate({
 
         {/* Certifications */}
         {certifications.length > 0 && (
-          <section className="mb-5" style={{ marginBottom: '12pt' }}>
+          <section className="mb-5" style={{ marginBottom: '9pt' }}>
             <SectionHeader accentColor={accentColor}>CERTIFICATIONS</SectionHeader>
-            {certifications.map((cert, idx) => {
-              const newIssuer = idx > 0 && cert.issuer !== certifications[idx - 1].issuer;
-              return (
-                <div key={cert.id} className="mb-4" style={{ marginBottom: '6pt', marginTop: newIssuer ? '4pt' : 0, pageBreakInside: 'avoid' }}>
-                  <div style={{ fontSize: '12pt', fontWeight: '600', marginBottom: '2pt', color: '#000', letterSpacing: '0.1pt' }}>
-                    {cert.name}
-                  </div>
-                  <div style={{ fontSize: '10.5pt', color: '#2a2a2a', letterSpacing: '0.05pt' }}>
-                    {cert.issuer} | {cert.issueDate}
-                    {cert.expiryDate && ` - ${cert.expiryDate}`}
-                  </div>
-                </div>
-              );
-            })}
+            <CertificationsList certifications={certifications} accentColor={accentColor} />
           </section>
         )}
 
         {/* Languages */}
         {cvLanguages.length > 0 && (
-          <section className="mb-5" style={{ marginBottom: '12pt' }}>
+          <section className="mb-5" style={{ marginBottom: '9pt' }}>
             <SectionHeader accentColor={accentColor}>LANGUAGES</SectionHeader>
             <div style={{ fontSize: '11pt', lineHeight: '1.5', color: '#1a1a1a' }}>
               {cvLanguages.map((lang, idx) => (
@@ -441,7 +388,7 @@ export default function CVTemplate({
 
         {/* Projects */}
         {publicProjects.length > 0 && (
-          <section className="mb-5" style={{ marginBottom: '12pt' }}>
+          <section className="mb-5" style={{ marginBottom: '9pt' }}>
             <SectionHeader accentColor={accentColor}>PROJECTS</SectionHeader>
             {publicProjects.map((project) => (
               <div key={project.id} className="mb-4" style={{ marginBottom: '6pt', pageBreakInside: 'avoid' }}>
@@ -455,7 +402,7 @@ export default function CVTemplate({
                     )}
                   </h3>
                   <div style={{ fontSize: '10.5pt', lineHeight: '1.5', marginBottom: '2pt', color: '#1a1a1a', textAlign: 'justify' }}>
-                    {project.description}
+                    {project.cvDescription || project.description}
                   </div>
                   {(project.repository || (contributionStats[project.id] && contributionStats[project.id]!.mergedCount > 0)) && (
                     <div style={{ fontSize: '10pt', color: '#3a3a3a', marginTop: '2pt' }}>
@@ -492,7 +439,7 @@ export default function CVTemplate({
 
         {/* Additional Information / Interests */}
         {style.showHobbies !== false && hobbies.length > 0 && (
-          <section className="mb-5" style={{ marginBottom: '12pt' }}>
+          <section className="mb-5" style={{ marginBottom: '9pt' }}>
             <SectionHeader accentColor={accentColor}>ADDITIONAL INFORMATION</SectionHeader>
             <div style={{ fontSize: '11pt', lineHeight: '1.6', color: '#1a1a1a' }}>
               <strong style={{ color: '#000', letterSpacing: '0.1pt' }}>Interests:</strong> {hobbies.map((hobby, idx) => (

@@ -81,7 +81,7 @@ const ContactLine = ({ items }: { items: ContactItem[] }) => items.length > 0 &&
 );
 
 export default function CoverLetterDocument({ siteConfig, style, email }: CoverLetterDocumentProps) {
-  const contactInfo = getContactInfo(siteConfig, email);
+  const contactInfo = getContactInfo(siteConfig, email, false);
   const today = new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
   const accentColor = style.colorScheme?.primary || '#000000';
   const salutation = style.salutation || 'Dear Hiring Manager,';
@@ -97,7 +97,7 @@ export default function CoverLetterDocument({ siteConfig, style, email }: CoverL
       <Page size="A4" style={styles.page} wrap>
         <View style={[styles.header, { borderBottomColor: accentColor }]}>
           <Text style={[styles.name, { color: accentColor }]}>{siteConfig.fullName}</Text>
-          <Text style={[styles.roleTagline, { color: accentColor }]}>{'> '}{style.name}</Text>
+          <Text style={[styles.roleTagline, { color: accentColor }]}>{style.name}</Text>
           <ContactLine items={contactInfo.personal} />
           <ContactLine items={contactInfo.links} />
         </View>
