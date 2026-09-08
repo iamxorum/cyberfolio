@@ -74,9 +74,6 @@ export default function HeroSection() {
                         unoptimized
                       />
                     </div>
-                    <p className="mt-1 text-[10px] font-mono text-[var(--terminal-text-dim)] group-hover/badge:text-primary transition-colors">
-                      {badge.statusText}
-                    </p>
                   </a>
                 </div>
               ))}
