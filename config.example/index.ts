@@ -1,4 +1,4 @@
-export { siteConfig, type SiteConfig } from './site.config';
+export { siteConfig, type SiteConfig, type SocialLink } from './site.config';
 export { projects, type Project } from './projects.config';
 export { contentConfig, type ContentConfig } from './content.config';
 export {
