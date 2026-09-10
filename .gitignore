@@ -41,13 +41,14 @@ yarn-error.log*
 next-env.d.ts
 
 # config
-config
-assets
-data
-content
+/src/config
+/public/assets
+/public/data
+/public/blog
+/content
 
 # private
-private
+/private
 
 # ops scripts (hardcode internal host/port/paths)
 scripts
