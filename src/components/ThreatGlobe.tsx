@@ -13,6 +13,7 @@ import ThreatFeedUnavailable from '@/components/threat-globe/ThreatFeedUnavailab
 import GlobeStage from '@/components/threat-globe/GlobeStage';
 import TotalMitigatedCard from '@/components/threat-globe/TotalMitigatedCard';
 import CountryLeaderboard from '@/components/threat-globe/CountryLeaderboard';
+import LiveBanTicker from '@/components/threat-globe/LiveBanTicker';
 
 const MAX_ANIMATED_ARCS = 40;
 const MAX_ANIMATED_RINGS = 50;
@@ -64,7 +65,7 @@ export default function ThreatGlobe() {
   }
 
   return (
-    <div className="flex flex-col gap-6 px-3 sm:px-5 py-6 sm:py-8 mb-8 border border-[var(--terminal-border)] rounded bg-[rgba(var(--terminal-bg-rgb),0.60)] relative overflow-hidden group">
+    <div id="threat-feed" className="scroll-mt-20 flex flex-col gap-6 px-3 sm:px-5 py-6 sm:py-8 mb-8 border border-[var(--terminal-border)] rounded bg-[rgba(var(--terminal-bg-rgb),0.60)] relative overflow-hidden group">
       <div className="absolute inset-0 bg-noise-texture opacity-10 mix-blend-overlay pointer-events-none"></div>
 
       {/* --- HEADER --- */}
@@ -116,6 +117,7 @@ export default function ThreatGlobe() {
             isGlobeReady={isGlobeReady}
             onSelect={flyToCountry}
           />
+          <LiveBanTicker entries={banPoints} />
         </div>
       </div>
     </div>

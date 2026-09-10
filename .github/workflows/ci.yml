@@ -23,6 +23,9 @@ jobs:
       - name: Use example config (real config is gitignored)
         run: cp -r config.example/. src/config/
 
+      - name: Use example blog content (real content is gitignored)
+        run: cp -r content.example/. content/
+
       - name: Lint
         run: npm run lint
 

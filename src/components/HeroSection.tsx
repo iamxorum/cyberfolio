@@ -1,8 +1,8 @@
 'use client';
 import { useRef } from 'react';
 import Link from 'next/link';
-import Image from 'next/image';
-import { siteConfig, contentConfig, badges } from '@/config';
+import { siteConfig, contentConfig } from '@/config';
+import TrustBadges from './TrustBadges';
 
 export default function HeroSection() {
   const cardRef = useRef<HTMLDivElement>(null);
@@ -53,32 +53,7 @@ export default function HeroSection() {
               <span className="truncate font-mono text-xs sm:text-sm md:text-base group-hover/cta:translate-x-0.5 transition-transform">{contentConfig.home.hero.ctaSecondary.text}</span>
             </Link>
           </div>
-          {badges.length > 0 && (
-            <div className="mt-6 z-10 flex flex-wrap gap-4">
-              {badges.map((badge) => (
-                <div key={badge.id} className="group/badge opacity-80 hover:opacity-100 transition-opacity">
-                  <a
-                    href={badge.url}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="inline-block"
-                  >
-                    <div className={`relative p-[2px] rounded ${badge.containerClasses || ''}`}>
-                      <Image
-                        src={badge.imageUrl}
-                        alt={badge.name}
-                        width={220}
-                        height={60}
-                        className="w-[180px] sm:w-[220px] rounded-[3px] block"
-                        style={{ aspectRatio: '220 / 60', height: 'auto', ...badge.imageStyle }}
-                        unoptimized
-                      />
-                    </div>
-                  </a>
-                </div>
-              ))}
-            </div>
-          )}
+          <TrustBadges />
         </div>
       </div>
     </div>

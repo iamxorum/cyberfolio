@@ -2,7 +2,6 @@
 
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
-import Terminal from '@/components/Terminal';
 import InitScreen from '@/components/InitScreen';
 import Link from 'next/link';
 import { projects, contentConfig } from '@/config';
@@ -61,8 +60,6 @@ export default function ProjectsClient({ contributionStats = {} }: ProjectsClien
                     <ProjectsTable title="Contributions" icon="group" projects={contributionProjects} contributionStats={contributionStats} />
                   )}
                 </div>
-                {/* Interactive Terminal */}
-                <Terminal />
               </div>
             </main>
             <Footer />

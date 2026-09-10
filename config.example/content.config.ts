@@ -48,6 +48,11 @@ export interface ContentConfig {
     subtitle: string;
     terminalHint: string;
   };
+
+  blog: {
+    title: string;
+    subtitle: string;
+  };
 }
 
 export const contentConfig: ContentConfig = {
@@ -96,5 +101,9 @@ export const contentConfig: ContentConfig = {
     title: '>> SYSTEM_READY',
     subtitle: 'Listing all executable project files in local directory...',
     terminalHint: 'Type "help" to see available commands. Use ↑↓ for history, Tab for autocomplete.',
+  },
+  blog: {
+    title: '>> BLOG',
+    subtitle: 'Notes, write-ups, and things worth remembering.',
   },
 };
