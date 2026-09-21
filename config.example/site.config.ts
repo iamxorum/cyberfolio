@@ -1,6 +1,7 @@
 export interface SiteConfig {
 
   domain: string;
+  alternateDomains?: string[];
   username: string;
   fullName: string;
   title: string;
