@@ -5,7 +5,7 @@ export interface SiteConfig {
   fullName: string;
   title: string;
   description: string;
-  favicon: string;
+  favicon?: string;
 
 
   birthDate: {
@@ -93,7 +93,7 @@ export const siteConfig: SiteConfig = {
     ],
   },
 
-  systemVersion: 'v1.5.7',
+  systemVersion: 'v1.5.8',
 
   favicon: 'path/to/favicon.ico',
 
