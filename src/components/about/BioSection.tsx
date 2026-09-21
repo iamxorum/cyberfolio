@@ -1,4 +1,5 @@
 import { contentConfig } from '@/config';
+import { STAGGER_STEP_MS } from '@/lib/motion';
 
 function BioPromptLine() {
   const title = contentConfig.about.bio.title;
@@ -38,7 +39,7 @@ export default function BioSection() {
           <BioPromptLine />
         </p>
         {contentConfig.about.bio.paragraphs.map((paragraph, index) => (
-          <p key={index} className="animate-reveal mb-3 sm:mb-4" style={{ animationDelay: `${150 + Math.min(index, 6) * 130}ms` }}>
+          <p key={index} className="animate-reveal mb-3 sm:mb-4" style={{ animationDelay: `${150 + Math.min(index, 6) * STAGGER_STEP_MS}ms` }}>
             {paragraph}
           </p>
         ))}

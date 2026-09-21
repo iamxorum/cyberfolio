@@ -20,7 +20,7 @@ export default function TrustBadges() {
               key={badge.id}
               href={badge.url}
               {...(!isInternal && { target: '_blank', rel: 'noopener noreferrer' })}
-              className={`group/badge relative flex items-center gap-2.5 rounded border border-[var(--terminal-border)] px-3 py-2 overflow-hidden transition-all hover:-translate-y-[2px] active:scale-[0.98] ${badge.containerClasses || 'bg-[var(--terminal-surface)]'}`}
+              className={`group/badge relative flex items-center gap-2.5 rounded border border-[var(--terminal-border)] px-3 py-2 overflow-hidden transition hover:-translate-y-[2px] active:scale-[0.98] ${badge.containerClasses || 'bg-[var(--terminal-surface)]'}`}
               style={{ '--badge-accent': accent } as React.CSSProperties}
             >
               <div

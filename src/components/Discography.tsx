@@ -60,7 +60,7 @@ export default function Discography() {
         <div className="flex flex-col gap-6 px-4 py-6 border border-[var(--terminal-border)] rounded bg-[rgba(var(--terminal-bg-rgb),0.80)] font-mono relative overflow-hidden">
             {/* Ambient Glow */}
             <div
-                className="absolute top-0 right-0 w-[400px] h-[400px] opacity-10 blur-[120px] pointer-events-none transition-colors duration-1000"
+                className="absolute top-0 right-0 w-[400px] h-[400px] opacity-10 blur-[120px] pointer-events-none transition-colors duration-300"
                 style={{ backgroundColor: activeColor }}
             />
 
@@ -90,7 +90,7 @@ export default function Discography() {
                                 <button
                                     key={track.id}
                                     onClick={() => { setActiveTrack(track); setCopied(false); }}
-                                    className={`flex items-center justify-between p-3 border transition-all active:scale-[0.98] text-left group rounded w-full
+                                    className={`flex items-center justify-between p-3 border transition active:scale-[0.98] text-left group rounded w-full
                                         ${isSelected
                                         ? 'bg-[rgba(var(--terminal-text-rgb),0.10)] border-[rgba(var(--terminal-text-rgb),0.20)]'
                                         : 'bg-transparent border-[rgba(var(--terminal-text-rgb),0.5)] hover:border-[rgba(var(--terminal-text-rgb),0.10)]'}`}
@@ -131,7 +131,7 @@ export default function Discography() {
                             frameBorder="0"
                             allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
                             loading="lazy"
-                            className="transition-all duration-700 opacity-90 group-hover:opacity-100"
+                            className="transition-opacity duration-200 opacity-90 group-hover:opacity-100"
                         ></iframe>
                     </div>
 
@@ -139,7 +139,7 @@ export default function Discography() {
                         {/* THE NEW COPY LINK COMPONENT */}
                         <button
                             onClick={handleCopy}
-                            className="p-3 border border-[rgba(var(--terminal-text-rgb),0.5)] bg-[rgba(var(--terminal-text-rgb),0.05)] rounded flex flex-col justify-center text-left hover:bg-[rgba(var(--terminal-text-rgb),0.10)] hover:border-[rgba(var(--terminal-text-rgb),0.20)] active:scale-[0.98] transition-all group"
+                            className="p-3 border border-[rgba(var(--terminal-text-rgb),0.5)] bg-[rgba(var(--terminal-text-rgb),0.05)] rounded flex flex-col justify-center text-left hover:bg-[rgba(var(--terminal-text-rgb),0.10)] hover:border-[rgba(var(--terminal-text-rgb),0.20)] active:scale-[0.98] transition group"
                         >
                             <span className="text-[8px] text-[var(--terminal-text-muted)] block uppercase mb-1">
                                 {copied ? 'Success' : 'Share_Stream'}
@@ -147,9 +147,9 @@ export default function Discography() {
                             <div className="flex items-center justify-between w-full">
                                 <div className="flex items-center gap-2">
                                     {copied ? (
-                                        <MdCheck className="text-xs" style={{ color: activeColor }} />
+                                        <MdCheck className="text-xs animate-pop-in" style={{ color: activeColor }} />
                                     ) : (
-                                        <MdContentCopy className="text-xs group-hover:text-[var(--terminal-text)] transition-colors" style={{ color: activeColor }} />
+                                        <MdContentCopy className="text-xs animate-pop-in group-hover:text-[var(--terminal-text)] transition-colors" style={{ color: activeColor }} />
                                     )}
                                     <span className={`text-[10px] font-bold uppercase transition-colors ${copied ? 'text-[var(--terminal-text)]' : 'text-[var(--terminal-text)]/80 group-hover:text-[var(--terminal-text)]'}`}>
                                         {copied ? 'Link_Copied' : 'Copy_Link'}

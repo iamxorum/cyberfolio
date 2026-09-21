@@ -1,7 +1,11 @@
 'use client';
 import { projects } from '@/config';
+import { useSpotlight } from '@/hooks/useSpotlight';
+import { STAGGER_STEP_MS } from '@/lib/motion';
 
 export default function ProjectsGrid() {
+  const handleSpotlight = useSpotlight<HTMLDivElement>();
+
   if (projects.length === 0) return null;
 
   return (
@@ -32,12 +36,6 @@ export default function ProjectsGrid() {
 
             const isClickable = project.visibility === 'public' && !!project.link;
 
-            const handleSpotlight = (e: React.MouseEvent<HTMLDivElement>) => {
-              const rect = e.currentTarget.getBoundingClientRect();
-              e.currentTarget.style.setProperty('--spot-x', `${((e.clientX - rect.left) / rect.width) * 100}%`);
-              e.currentTarget.style.setProperty('--spot-y', `${((e.clientY - rect.top) / rect.height) * 100}%`);
-            };
-
             return (
               <div
                 key={project.id}
@@ -48,7 +46,7 @@ export default function ProjectsGrid() {
                   ? 'hover:bg-[var(--terminal-surface-hover)] hover:border-primary hover:-translate-y-1 hover:shadow-[0_0_25px_rgba(var(--terminal-accent-rgb),0.3)] active:scale-[0.98] active:translate-y-0 cursor-pointer'
                   : 'opacity-75 cursor-not-allowed border-dashed'
                   }`}
-                style={{ animationDelay: `${Math.min(index, 8) * 110}ms` }}
+                style={{ animationDelay: `${Math.min(index, 8) * STAGGER_STEP_MS}ms` }}
                 onClick={() => isClickable && window.open(project.link, '_blank')}
                 onKeyDown={(e) => {
                   if (isClickable && (e.key === 'Enter' || e.key === ' ')) {
@@ -61,7 +59,7 @@ export default function ProjectsGrid() {
                   className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity rounded pointer-events-none"
                   style={{ background: 'radial-gradient(300px circle at var(--spot-x, 50%) var(--spot-y, 50%), rgba(var(--terminal-accent-rgb), 0.12), transparent 70%)' }}
                 ></div>
-                <div className="absolute left-0 top-1/4 h-1/2 w-[2px] bg-primary opacity-0 group-hover:opacity-100 transition-all duration-500 shadow-[0_0_10px_rgba(var(--terminal-accent-rgb),1)]"></div>
+                <div className="absolute left-0 top-1/4 h-1/2 w-[2px] bg-primary opacity-0 group-hover:opacity-100 transition-opacity duration-300 shadow-[0_0_10px_rgba(var(--terminal-accent-rgb),1)]"></div>
 
                 {project.visibility === 'public' && project.link && (
                   <div className="absolute top-3 right-3 opacity-0 group-hover:opacity-100 transition-opacity">

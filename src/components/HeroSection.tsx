@@ -1,25 +1,16 @@
 'use client';
-import { useRef } from 'react';
 import Link from 'next/link';
 import { siteConfig, contentConfig } from '@/config';
 import TrustBadges from './TrustBadges';
+import { useSpotlight } from '@/hooks/useSpotlight';
 
 export default function HeroSection() {
-  const cardRef = useRef<HTMLDivElement>(null);
-
-  const handleSpotlight = (e: React.MouseEvent<HTMLDivElement>) => {
-    const el = cardRef.current;
-    if (!el) return;
-    const rect = el.getBoundingClientRect();
-    el.style.setProperty('--spot-x', `${((e.clientX - rect.left) / rect.width) * 100}%`);
-    el.style.setProperty('--spot-y', `${((e.clientY - rect.top) / rect.height) * 100}%`);
-  };
+  const handleSpotlight = useSpotlight<HTMLDivElement>();
 
   return (
     <div className="@container mb-8">
       <div className="@[480px]:p-4">
         <div
-          ref={cardRef}
           onMouseMove={handleSpotlight}
           className="flex min-h-[480px] flex-col gap-6 bg-cover bg-center bg-no-repeat @[480px]:gap-8 @[480px]:rounded items-start justify-end px-4 pb-10 @[480px]:px-10 border border-[var(--terminal-border)] relative overflow-hidden group"
           style={{ backgroundImage: `linear-gradient(rgba(var(--terminal-bg-rgb), 0.8) 0%, rgba(var(--terminal-bg-rgb), 0.95) 100%)` }}
@@ -33,9 +24,9 @@ export default function HeroSection() {
           <div className="absolute top-0 left-0 right-0 h-10 bg-gradient-to-b from-[rgba(var(--terminal-accent-rgb),0.3)] to-transparent opacity-60 pointer-events-none animate-scan z-10 mix-blend-screen"></div>
 
           <div className="absolute top-4 right-4 flex gap-2 z-20">
-            <div className="w-3 h-3 rounded-full bg-red-500/80 border border-red-400 shadow-[0_0_8px_rgba(239,68,68,0.6)] hover:brightness-125 transition-all"></div>
-            <div className="w-3 h-3 rounded-full bg-yellow-500/80 border border-yellow-400 shadow-[0_0_8px_rgba(234,179,8,0.6)] hover:brightness-125 transition-all"></div>
-            <div className="w-3 h-3 rounded-full bg-green-500/80 border border-green-400 shadow-[0_0_8px_rgba(34,197,94,0.6)] hover:brightness-125 transition-all"></div>
+            <div className="w-3 h-3 rounded-full bg-red-500/80 border border-red-400 shadow-[0_0_8px_rgba(239,68,68,0.6)] hover:brightness-125 transition"></div>
+            <div className="w-3 h-3 rounded-full bg-yellow-500/80 border border-yellow-400 shadow-[0_0_8px_rgba(234,179,8,0.6)] hover:brightness-125 transition"></div>
+            <div className="w-3 h-3 rounded-full bg-green-500/80 border border-green-400 shadow-[0_0_8px_rgba(34,197,94,0.6)] hover:brightness-125 transition"></div>
           </div>
           <div className="flex flex-col gap-2 text-left z-10">
             <h1 className="animate-reveal text-[var(--terminal-text)] text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-black leading-tight tracking-[-0.033em] font-mono glow-text">
@@ -46,10 +37,10 @@ export default function HeroSection() {
             </h2>
           </div>
           <div className="flex flex-wrap gap-3 sm:gap-4 z-10">
-            <Link href={contentConfig.home.hero.ctaPrimary.link} className="flex min-w-[120px] sm:min-w-[140px] cursor-pointer items-center justify-center overflow-hidden rounded h-10 sm:h-12 px-4 sm:px-6 bg-primary text-[var(--terminal-on-primary)] sm:text-base font-bold leading-normal tracking-[0.015em] hover:bg-white hover:-translate-y-[2px] hover:shadow-[0_0_20px_rgba(var(--terminal-accent-rgb),0.6)] active:scale-[0.97] active:translate-y-0 transition-all shadow-[0_0_10px_rgba(var(--terminal-accent-rgb),0.3)] border border-transparent">
+            <Link href={contentConfig.home.hero.ctaPrimary.link} className="flex min-w-[120px] sm:min-w-[140px] cursor-pointer items-center justify-center overflow-hidden rounded h-10 sm:h-12 px-4 sm:px-6 bg-primary text-[var(--terminal-on-primary)] sm:text-base font-bold leading-normal tracking-[0.015em] hover:bg-white hover:-translate-y-[2px] hover:shadow-[0_0_20px_rgba(var(--terminal-accent-rgb),0.6)] active:scale-[0.97] active:translate-y-0 transition shadow-[0_0_10px_rgba(var(--terminal-accent-rgb),0.3)] border border-transparent">
               <span className="truncate font-mono text-xs sm:text-sm md:text-base drop-shadow-[0_0_2px_rgba(0,0,0,0.5)]">{contentConfig.home.hero.ctaPrimary.text}</span>
             </Link>
-            <Link href={contentConfig.home.hero.ctaSecondary.link || '#'} className="flex min-w-[100px] sm:min-w-[120px] cursor-pointer items-center justify-center overflow-hidden rounded h-10 sm:h-12 px-4 sm:px-6 bg-[var(--terminal-surface-alt)] border-2 border-[var(--terminal-accent-alt)] text-[var(--terminal-text-muted)] text-sm sm:text-base font-bold leading-normal tracking-[0.015em] hover:border-primary hover:text-primary hover:bg-[var(--terminal-surface-hover)] hover:shadow-[0_0_20px_rgba(var(--terminal-accent-alt-rgb),0.5)] hover:-translate-y-[2px] active:scale-[0.97] active:translate-y-0 transition-all group/cta">
+            <Link href={contentConfig.home.hero.ctaSecondary.link || '#'} className="flex min-w-[100px] sm:min-w-[120px] cursor-pointer items-center justify-center overflow-hidden rounded h-10 sm:h-12 px-4 sm:px-6 bg-[var(--terminal-surface-alt)] border-2 border-[var(--terminal-accent-alt)] text-[var(--terminal-text-muted)] text-sm sm:text-base font-bold leading-normal tracking-[0.015em] hover:border-primary hover:text-primary hover:bg-[var(--terminal-surface-hover)] hover:shadow-[0_0_20px_rgba(var(--terminal-accent-alt-rgb),0.5)] hover:-translate-y-[2px] active:scale-[0.97] active:translate-y-0 transition group/cta">
               <span className="truncate font-mono text-xs sm:text-sm md:text-base group-hover/cta:translate-x-0.5 transition-transform">{contentConfig.home.hero.ctaSecondary.text}</span>
             </Link>
           </div>

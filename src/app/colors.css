@@ -56,6 +56,12 @@
   --terminal-hover-overlay: rgba(var(--color-text-rgb), 0.02);
   --terminal-hover-border: rgba(var(--color-text-rgb), 0.2);
   --terminal-on-primary: #000000;
+
+  /* Motion tokens — see .claude/skills/improve-animations/AUDIT.md for the rules behind these. */
+  --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+  --duration-fast: 150ms;
+  --duration-base: 200ms;
+  --duration-slow: 300ms;
 }
 
 @theme inline {

@@ -31,8 +31,7 @@ export default function InitScreen({ onInit }: InitScreenProps) {
       localStorage.setItem('iamxorum_initialized', Date.now().toString());
 
       if (textRef.current) {
-        textRef.current.style.animation = 'glitch 0.25s';
-        textRef.current.style.transition = 'opacity 0.35s ease-in, transform 0.35s ease-in, filter 0.35s ease-in';
+        textRef.current.style.transition = 'opacity 0.35s ease-out, transform 0.35s ease-out, filter 0.35s ease-out';
         textRef.current.style.opacity = '0';
         textRef.current.style.transform = 'scale(1.08) translateY(-10px)';
         textRef.current.style.filter = 'blur(8px)';

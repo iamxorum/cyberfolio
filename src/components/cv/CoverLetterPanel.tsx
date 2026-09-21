@@ -12,6 +12,7 @@ import { coverLetterConfig, siteConfig } from '@/config';
 export default function CoverLetterPanel() {
   const [selectedLetterStyle, setSelectedLetterStyle] = useState<string>(coverLetterConfig.styles[0].id);
   const [isDownloadingLetter, setIsDownloadingLetter] = useState(false);
+  const [downloadSucceeded, setDownloadSucceeded] = useState(false);
   const [showLetter, setShowLetter] = useState<boolean>(false);
 
   const selectedCoverLetterStyle = coverLetterConfig.styles.find(s => s.id === selectedLetterStyle) || coverLetterConfig.styles[0];
@@ -34,6 +35,10 @@ export default function CoverLetterPanel() {
       ).toBlob();
 
       downloadBlob(blob, `${siteConfig.fullName.replace(/\s+/g, '_')}_Cover_Letter_${selectedLetterStyle}.pdf`);
+      setDownloadSucceeded(true);
+      setTimeout(() => setDownloadSucceeded(false), 1800);
+    } catch (err) {
+      console.error('Failed to generate cover letter PDF:', err);
     } finally {
       setIsDownloadingLetter(false);
     }
@@ -56,13 +61,13 @@ export default function CoverLetterPanel() {
             <button
               onClick={handleDownloadLetter}
               disabled={isDownloadingLetter}
-              className="flex min-w-[140px] cursor-pointer items-center justify-center overflow-hidden rounded h-10 sm:h-12 px-4 sm:px-6 bg-primary text-[var(--terminal-on-primary)] text-sm sm:text-base font-bold leading-normal tracking-[0.015em] hover:bg-primary/80 transition-all active:scale-[0.97] shadow-[0_0_20px_rgba(var(--terminal-accent-rgb),0.3)] border border-transparent hover:border-[var(--terminal-hover-border)] disabled:opacity-50 disabled:cursor-not-allowed disabled:active:scale-100"
+              className="flex min-w-[140px] cursor-pointer items-center justify-center overflow-hidden rounded h-10 sm:h-12 px-4 sm:px-6 bg-primary text-[var(--terminal-on-primary)] text-sm sm:text-base font-bold leading-normal tracking-[0.015em] hover:bg-primary/80 transition active:scale-[0.97] shadow-[0_0_20px_rgba(var(--terminal-accent-rgb),0.3)] border border-transparent hover:border-[var(--terminal-hover-border)] disabled:opacity-50 disabled:cursor-not-allowed disabled:active:scale-100"
             >
-              <span className={`material-symbols-outlined text-base sm:text-lg mr-2 ${isDownloadingLetter ? 'animate-spin' : ''}`}>
-                {isDownloadingLetter ? 'progress_activity' : 'download'}
+              <span className={`material-symbols-outlined text-base sm:text-lg mr-2 ${isDownloadingLetter ? 'animate-spin' : downloadSucceeded ? 'animate-pop-in' : ''}`}>
+                {isDownloadingLetter ? 'progress_activity' : downloadSucceeded ? 'check' : 'download'}
               </span>
               <span className="truncate font-mono text-xs sm:text-sm md:text-base">
-                {isDownloadingLetter ? 'GENERATING...' : 'DOWNLOAD_PDF'}
+                {isDownloadingLetter ? 'GENERATING...' : downloadSucceeded ? 'DOWNLOADED' : 'DOWNLOAD_PDF'}
               </span>
             </button>
           </div>

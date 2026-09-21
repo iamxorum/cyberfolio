@@ -1,6 +1,7 @@
 import type { Project } from '@/config';
 import type { ContributionStats } from '@/lib/github-contributions';
 import { getProjectHashId } from '@/lib/project-status';
+import { STAGGER_STEP_MS } from '@/lib/motion';
 import ProjectStatusBadges from './ProjectStatusBadges';
 import ProjectActionButton from './ProjectActionButton';
 import ProjectContributionSummary from './ProjectContributionSummary';
@@ -17,7 +18,7 @@ export default function ProjectRow({ project, index, contributionStats = {} }: P
   return (
     <div
       className="animate-reveal group grid grid-cols-1 md:grid-cols-12 gap-2 md:gap-4 px-3 sm:px-4 md:px-6 py-3 sm:py-4 border-b border-[var(--terminal-border-alt)] hover:bg-[var(--terminal-hover-overlay)] transition-colors items-center relative overflow-hidden last:border-b-0"
-      style={{ animationDelay: `${Math.min(index, 8) * 100}ms` }}
+      style={{ animationDelay: `${Math.min(index, 8) * STAGGER_STEP_MS}ms` }}
     >
       <div className="absolute left-0 top-0 bottom-0 w-[2px] bg-transparent group-hover:bg-primary transition-colors"></div>
 

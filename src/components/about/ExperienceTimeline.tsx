@@ -1,4 +1,5 @@
 import { experience } from '@/config';
+import { STAGGER_STEP_MS } from '@/lib/motion';
 
 function getDateRange(exp: (typeof experience)[number]): string {
   const isOngoing = !exp.endDate || exp.endDate.toLowerCase() === 'ongoing';
@@ -18,7 +19,7 @@ export default function ExperienceTimeline() {
           const dateRange = getDateRange(exp);
 
           return (
-            <div key={exp.id} className="animate-reveal flex gap-3 items-start group" style={{ animationDelay: `${Math.min(index, 6) * 120}ms` }}>
+            <div key={exp.id} className="animate-reveal flex gap-3 items-start group" style={{ animationDelay: `${Math.min(index, 6) * STAGGER_STEP_MS}ms` }}>
               <div className="text-[var(--terminal-text-dim)] text-xs w-36 flex-shrink-0">
                 <div>{dateRange}</div>
                 {exp.type && (
