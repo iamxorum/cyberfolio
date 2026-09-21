@@ -15,6 +15,7 @@ export const metadata: Metadata = {
   alternates: { canonical: pageUrl },
   openGraph: { title, description, url: pageUrl, images: [ogImage] },
   twitter: { title, description, images: [ogImage] },
+  robots: { index: false, follow: true },
 };
 
 export default async function CVPage() {
