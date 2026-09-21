@@ -28,6 +28,15 @@ export default function HeroSection() {
             <div className="w-3 h-3 rounded-full bg-yellow-500/80 border border-yellow-400 shadow-[0_0_8px_rgba(234,179,8,0.6)] hover:brightness-125 transition"></div>
             <div className="w-3 h-3 rounded-full bg-green-500/80 border border-green-400 shadow-[0_0_8px_rgba(34,197,94,0.6)] hover:brightness-125 transition"></div>
           </div>
+          {siteConfig.status && (
+            <div className="animate-reveal inline-flex items-center gap-2 self-start rounded border border-green-500/30 bg-green-500/10 px-3 py-1 text-[10px] sm:text-xs font-mono font-bold uppercase tracking-widest text-green-400 z-10">
+              <span className="relative flex size-1.5">
+                <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-green-400 opacity-75"></span>
+                <span className="relative inline-flex size-1.5 rounded-full bg-green-400"></span>
+              </span>
+              {siteConfig.status}
+            </div>
+          )}
           <div className="flex flex-col gap-2 text-left z-10">
             <h1 className="animate-reveal text-[var(--terminal-text)] text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-black leading-tight tracking-[-0.033em] font-mono glow-text">
               {contentConfig.home.hero.title}<span className="blinking-cursor text-primary">_</span>

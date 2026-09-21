@@ -64,13 +64,13 @@ export default function Home() {
           <div className="layout-content-container flex flex-col max-w-[960px] w-full flex-1">
             <main id="main-content" tabIndex={-1}>
               <HeroSection />
+              <ProjectsGrid />
               <SystemStats
                 uptime={uptime}
                 userId={userId}
                 viewport={viewport}
                 responseTime={responseTime}
               />
-              <ProjectsGrid />
               <LazyMount fallback={<ThreatGlobeSkeleton />}>
                 <ThreatGlobe />
               </LazyMount>

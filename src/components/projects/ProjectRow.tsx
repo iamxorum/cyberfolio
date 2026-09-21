@@ -1,3 +1,4 @@
+import Link from 'next/link';
 import type { Project } from '@/config';
 import type { ContributionStats } from '@/lib/github-contributions';
 import { getProjectHashId } from '@/lib/project-status';
@@ -38,7 +39,12 @@ export default function ProjectRow({ project, index, contributionStats = {} }: P
       <div className="col-span-4 flex items-center gap-2 sm:gap-3">
         <span className="material-symbols-outlined text-[var(--terminal-text-muted)] text-base sm:text-lg md:text-xl">{project.icon}</span>
         <div className="flex flex-col min-w-0">
-          <span className="text-[var(--terminal-text)] font-bold text-base sm:text-lg tracking-tight group-hover:text-primary transition-colors break-words">{project.name}</span>
+          <Link
+            href={`/projects/${project.id}`}
+            className="text-[var(--terminal-text)] font-bold text-base sm:text-lg tracking-tight hover:text-primary transition-colors break-words w-fit"
+          >
+            {project.name}
+          </Link>
           <ProjectContributionSummary stats={contributionStats[project.id]} />
         </div>
       </div>

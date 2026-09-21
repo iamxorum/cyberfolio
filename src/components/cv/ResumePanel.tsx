@@ -19,7 +19,7 @@ export default function ResumePanel({ contributionStats }: ResumePanelProps) {
   const [isDownloading, setIsDownloading] = useState(false);
   const [downloadSucceeded, setDownloadSucceeded] = useState(false);
   const [useColumnLayout, setUseColumnLayout] = useState<boolean>(false);
-  const [showCV, setShowCV] = useState<boolean>(false);
+  const [showCV, setShowCV] = useState<boolean>(true);
 
   const selectedCVStyle = cvConfig.styles.find(s => s.id === selectedStyle) || cvConfig.styles[0];
 

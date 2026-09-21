@@ -6,6 +6,7 @@ import { usePathname } from 'next/navigation';
 import { siteConfig } from '@/config';
 import ThemeToggle from './ThemeToggle';
 import RevealContainer from './cv/RevealContainer';
+import EmailCTA from './EmailCTA';
 
 export default function Header() {
   const pathname = usePathname();
@@ -66,14 +67,13 @@ export default function Header() {
                 </Link>
               ))}
             </nav>
-            <a
-              href={`mailto:${siteConfig.email}`}
-              aria-label={`Email ${siteConfig.fullName}`}
-              title={`Email ${siteConfig.fullName}`}
+            <EmailCTA
               className="hidden sm:flex items-center justify-center w-8 h-8 sm:w-9 sm:h-9 rounded border border-[var(--terminal-border)] text-[var(--terminal-text-dim)] hover:text-primary hover:border-primary active:scale-95 transition flex-shrink-0"
+              ariaLabel={`Email ${siteConfig.fullName}`}
+              title={`Email ${siteConfig.fullName}`}
             >
               <span className="material-symbols-outlined text-base sm:text-lg">mail</span>
-            </a>
+            </EmailCTA>
             <div className="hidden sm:block">
               <ThemeToggle />
             </div>
@@ -117,12 +117,12 @@ export default function Header() {
                   {item.label}
                 </Link>
               ))}
-              <a
-                href={`mailto:${siteConfig.email}`}
-                className="rounded px-3 py-2 text-sm font-medium font-mono text-[var(--terminal-text-dim)] hover:text-primary transition-colors"
+              <EmailCTA
+                className="text-left rounded px-3 py-2 text-sm font-medium font-mono text-[var(--terminal-text-dim)] hover:text-primary transition-colors"
+                onNavigate={() => setIsMenuOpen(false)}
               >
                 ./email_me
-              </a>
+              </EmailCTA>
               <div className="flex items-center justify-between px-3 py-2">
                 <span className="text-sm font-mono text-[var(--terminal-text-dim)]">theme</span>
                 <ThemeToggle />

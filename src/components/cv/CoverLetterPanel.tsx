@@ -13,7 +13,7 @@ export default function CoverLetterPanel() {
   const [selectedLetterStyle, setSelectedLetterStyle] = useState<string>(coverLetterConfig.styles[0].id);
   const [isDownloadingLetter, setIsDownloadingLetter] = useState(false);
   const [downloadSucceeded, setDownloadSucceeded] = useState(false);
-  const [showLetter, setShowLetter] = useState<boolean>(false);
+  const [showLetter, setShowLetter] = useState<boolean>(true);
 
   const selectedCoverLetterStyle = coverLetterConfig.styles.find(s => s.id === selectedLetterStyle) || coverLetterConfig.styles[0];
 

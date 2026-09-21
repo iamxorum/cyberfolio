@@ -6,10 +6,8 @@ export default function TrustBadges() {
 
   return (
     <div className="mt-6 z-10">
-      <div className="flex items-center gap-2 text-[var(--terminal-text-dim)] font-mono text-[10px] sm:text-xs mb-2.5">
-        <span>~/security</span>
-        <span>/</span>
-        <span className="text-[var(--terminal-text)]">verified-credentials</span>
+      <div className="text-[var(--terminal-text-dim)] font-mono text-[10px] sm:text-xs mb-2.5">
+        badges
       </div>
       <div className="flex flex-wrap gap-2.5 sm:gap-3">
         {badges.map((badge) => {

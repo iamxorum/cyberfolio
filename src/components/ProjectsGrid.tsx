@@ -1,10 +1,12 @@
 'use client';
+import { useRouter } from 'next/navigation';
 import { projects } from '@/config';
 import { useSpotlight } from '@/hooks/useSpotlight';
 import { STAGGER_STEP_MS } from '@/lib/motion';
 
 export default function ProjectsGrid() {
   const handleSpotlight = useSpotlight<HTMLDivElement>();
+  const router = useRouter();
 
   if (projects.length === 0) return null;
 
@@ -34,7 +36,7 @@ export default function ProjectsGrid() {
             const statuses = Array.isArray(project.status) ? project.status : [project.status];
             const statusColors = Array.isArray(project.statusColor) ? project.statusColor : [project.statusColor];
 
-            const isClickable = project.visibility === 'public' && !!project.link;
+            const isClickable = project.visibility === 'public';
 
             return (
               <div
@@ -47,11 +49,11 @@ export default function ProjectsGrid() {
                   : 'opacity-75 cursor-not-allowed border-dashed'
                   }`}
                 style={{ animationDelay: `${Math.min(index, 8) * STAGGER_STEP_MS}ms` }}
-                onClick={() => isClickable && window.open(project.link, '_blank')}
+                onClick={() => isClickable && router.push(`/projects/${project.id}`)}
                 onKeyDown={(e) => {
                   if (isClickable && (e.key === 'Enter' || e.key === ' ')) {
                     e.preventDefault();
-                    window.open(project.link, '_blank');
+                    router.push(`/projects/${project.id}`);
                   }
                 }}
               >
@@ -61,9 +63,9 @@ export default function ProjectsGrid() {
                 ></div>
                 <div className="absolute left-0 top-1/4 h-1/2 w-[2px] bg-primary opacity-0 group-hover:opacity-100 transition-opacity duration-300 shadow-[0_0_10px_rgba(var(--terminal-accent-rgb),1)]"></div>
 
-                {project.visibility === 'public' && project.link && (
+                {isClickable && (
                   <div className="absolute top-3 right-3 opacity-0 group-hover:opacity-100 transition-opacity">
-                    <span className="material-symbols-outlined text-primary">arrow_outward</span>
+                    <span className="material-symbols-outlined text-primary">arrow_forward</span>
                   </div>
                 )}
                 {project.visibility === 'private' && (
