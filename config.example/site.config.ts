@@ -15,6 +15,7 @@ export interface SiteConfig {
   };
   location: string;
   phone?: string;
+  email: string;
   role: string;
   status: string;
   profileImage: string;
@@ -60,6 +61,7 @@ export const siteConfig: SiteConfig = {
   },
   location: 'Your Location',
   phone: '+1 234 567 8900',
+  email: 'you@example.com',
   role: 'Your Role',
   status: 'Available for opportunities',
   profileImage: '/assets/profile.jpg',
