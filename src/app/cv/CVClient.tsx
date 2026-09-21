@@ -33,8 +33,10 @@ export default function CVClient({ contributionStats = {} }: CVClientProps) {
               <main id="main-content" tabIndex={-1}>
                 <TabSwitcher activeTab={activeTab} onChange={setActiveTab} />
 
-                {activeTab === 'resume' && <ResumePanel contributionStats={contributionStats} />}
-                {activeTab === 'letter' && <CoverLetterPanel />}
+                <div key={activeTab} className="animate-fade-in-fast print:animate-none">
+                  {activeTab === 'resume' && <ResumePanel contributionStats={contributionStats} />}
+                  {activeTab === 'letter' && <CoverLetterPanel />}
+                </div>
               </main>
 
               <div className="no-print">

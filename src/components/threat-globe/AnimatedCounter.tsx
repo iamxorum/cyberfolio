@@ -1,9 +1,15 @@
 import { useEffect, useState } from 'react';
+import { prefersReducedMotion } from '@/lib/motion';
 
 function useCountUp(end: number, duration: number = 1500) {
   const [count, setCount] = useState(0);
   useEffect(() => {
     if (end === 0) return;
+    if (prefersReducedMotion()) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
+      setCount(end);
+      return;
+    }
     let startTimestamp: number | null = null;
     const step = (timestamp: number) => {
       if (!startTimestamp) startTimestamp = timestamp;

@@ -6,10 +6,8 @@ export default function TrustBadges() {
 
   return (
     <div className="mt-6 z-10">
-      <div className="flex items-center gap-2 text-[var(--terminal-text-dim)] font-mono text-[10px] sm:text-xs mb-2.5">
-        <span>~/security</span>
-        <span>/</span>
-        <span className="text-[var(--terminal-text)]">verified-credentials</span>
+      <div className="text-[var(--terminal-text-dim)] font-mono text-[10px] sm:text-xs mb-2.5">
+        badges
       </div>
       <div className="flex flex-wrap gap-2.5 sm:gap-3">
         {badges.map((badge) => {
@@ -20,7 +18,7 @@ export default function TrustBadges() {
               key={badge.id}
               href={badge.url}
               {...(!isInternal && { target: '_blank', rel: 'noopener noreferrer' })}
-              className={`group/badge relative flex items-center gap-2.5 rounded border border-[var(--terminal-border)] px-3 py-2 overflow-hidden transition-all hover:-translate-y-[2px] active:scale-[0.98] ${badge.containerClasses || 'bg-[var(--terminal-surface)]'}`}
+              className={`group/badge relative flex items-center gap-2.5 rounded border border-[var(--terminal-border)] px-3 py-2 overflow-hidden transition hover:-translate-y-[2px] active:scale-[0.98] ${badge.containerClasses || 'bg-[var(--terminal-surface)]'}`}
               style={{ '--badge-accent': accent } as React.CSSProperties}
             >
               <div

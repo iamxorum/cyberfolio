@@ -14,7 +14,7 @@ export default function QuickNav() {
         <a
           key={item.href}
           href={item.href}
-          className="px-2 py-1 rounded border border-[var(--terminal-border)] text-[var(--terminal-text-muted)] hover:border-primary hover:text-primary active:scale-95 transition-all"
+          className="px-2 py-1 rounded border border-[var(--terminal-border)] text-[var(--terminal-text-muted)] hover:border-primary hover:text-primary active:scale-95 transition"
         >
           {item.label}
         </a>

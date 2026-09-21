@@ -21,7 +21,7 @@ export default function StyleSelectorGrid<T extends SelectableStyle>({ styles, s
           <button
             key={style.id}
             onClick={() => onSelect(style.id)}
-            className={`flex flex-col gap-2 p-4 rounded border transition-all active:scale-[0.98] cursor-pointer text-left ${isSelected
+            className={`flex flex-col gap-2 p-4 rounded border transition active:scale-[0.98] cursor-pointer text-left ${isSelected
               ? 'border-primary bg-primary/10 shadow-[0_0_15px_rgba(var(--terminal-accent-rgb),0.3)]'
               : 'border-[var(--terminal-border)] bg-[var(--terminal-surface-alt)] hover:border-primary/50 hover:bg-[var(--terminal-surface-hover)]'
               }`}

@@ -13,7 +13,7 @@ function SocialLinkGroup({ title, links }: { title: string; links: SocialLink[] 
               href={link.url}
               target={isMailto ? undefined : '_blank'}
               rel={isMailto ? undefined : 'noopener noreferrer'}
-              className="flex items-center gap-2 px-2 py-1.5 rounded border border-[var(--terminal-border)] bg-[var(--terminal-bg)] hover:border-primary hover:bg-primary/10 transition-all group"
+              className="flex items-center gap-2 px-2 py-1.5 rounded border border-[var(--terminal-border)] bg-[var(--terminal-bg)] hover:border-primary hover:bg-primary/10 transition group"
             >
               {link.icon && (
                 <span className="material-symbols-outlined text-[var(--terminal-text-muted)] group-hover:text-primary text-base">{link.icon}</span>

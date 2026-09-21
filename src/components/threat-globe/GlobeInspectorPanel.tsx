@@ -14,6 +14,7 @@ export default function GlobeInspectorPanel({ panelPoint, visible, onClose }: Gl
       style={{
         opacity: visible ? 1 : 0,
         transform: visible ? 'scale(1)' : 'scale(0.95)',
+        transformOrigin: 'top right',
         pointerEvents: visible ? 'auto' : 'none',
         transition: 'opacity 200ms ease-out, transform 200ms ease-out',
       }}
@@ -36,7 +37,7 @@ export default function GlobeInspectorPanel({ panelPoint, visible, onClose }: Gl
         <button
           onClick={onClose}
           aria-label="Close"
-          className="text-[var(--terminal-text-dim)] hover:text-[var(--terminal-text)] active:scale-90 transition-transform leading-none -mt-0.5"
+          className="text-[var(--terminal-text-dim)] hover:text-[var(--terminal-text)] active:scale-95 transition-transform leading-none -mt-0.5"
         >
           ×
         </button>

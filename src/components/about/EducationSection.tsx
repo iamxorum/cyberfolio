@@ -82,7 +82,7 @@ export default function EducationSection() {
                     href={edu.thesisUrl}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded border border-[var(--terminal-border)] hover:border-primary hover:bg-primary/10 text-[var(--terminal-text)] text-[10px] sm:text-xs font-bold font-mono tracking-wider transition-all group/btn w-fit"
+                    className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded border border-[var(--terminal-border)] hover:border-primary hover:bg-primary/10 text-[var(--terminal-text)] text-[10px] sm:text-xs font-bold font-mono tracking-wider transition group/btn w-fit"
                   >
                     <span className="material-symbols-outlined text-sm sm:text-base group-hover/btn:text-primary">
                       description

@@ -2,16 +2,18 @@ export interface Project {
   id: string;
   name: string;
   description: string;
+  cvDescription?: string;
   status: 'DEPLOYED' | 'BETA' | 'ONLINE' | 'AUDITING' | 'DEVELOPMENT' | 'COMPLETED' | Array<'DEPLOYED' | 'BETA' | 'ONLINE' | 'AUDITING' | 'DEVELOPMENT' | 'COMPLETED'>;
   statusColor: 'green' | 'yellow' | 'blue' | 'orange' | 'red' | Array<'green' | 'yellow' | 'blue' | 'orange' | 'red'>;
   type: string;
   tags: string[];
-  icon: string; 
-  visibility: 'public' | 'private'; 
-  category: 'production' | 'thesis' | 'personal' | 'open-source' | 'commercial' | 'academic'; 
+  icon: string;
+  visibility: 'public' | 'private';
+  category: 'production' | 'thesis' | 'personal' | 'open-source' | 'commercial' | 'academic';
   projectType: 'personal' | 'contribution';
   link?: string;
   repository?: string;
+  includeInCV?: boolean;
 }
 
 export const projects: Project[] = [

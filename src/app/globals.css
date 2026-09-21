@@ -81,7 +81,7 @@ input:focus-visible,
 
 ::view-transition-old(.nav-forward) {
   --slide-offset: -60px;
-  animation: 150ms ease-in both view-transition-fade reverse, 400ms ease-in-out both view-transition-slide reverse;
+  animation: 150ms ease-out both view-transition-fade reverse, 400ms ease-in-out both view-transition-slide reverse;
 }
 ::view-transition-new(.nav-forward) {
   --slide-offset: 60px;
@@ -89,7 +89,7 @@ input:focus-visible,
 }
 ::view-transition-old(.nav-back) {
   --slide-offset: 60px;
-  animation: 150ms ease-in both view-transition-fade reverse, 400ms ease-in-out both view-transition-slide reverse;
+  animation: 150ms ease-out both view-transition-fade reverse, 400ms ease-in-out both view-transition-slide reverse;
 }
 ::view-transition-new(.nav-back) {
   --slide-offset: -60px;
@@ -204,11 +204,20 @@ input:focus-visible,
 }
 
 .animate-reveal {
-  animation: reveal-in 0.6s cubic-bezier(0.22, 1, 0.36, 1) both;
+  animation: reveal-in 0.45s var(--ease-out) both;
   animation-play-state: paused;
 }
 html.boot-done .animate-reveal {
   animation-play-state: running;
+}
+
+@keyframes pop-in {
+  0% { opacity: 0; transform: scale(0.7); }
+  100% { opacity: 1; transform: scale(1); }
+}
+
+.animate-pop-in {
+  animation: pop-in 200ms var(--ease-out) both;
 }
 
 @keyframes fade-in {
@@ -226,6 +235,10 @@ html.boot-done .animate-reveal {
   animation: fade-in 0.5s ease-out;
 }
 
+.animate-fade-in-fast {
+  animation: fade-in 250ms var(--ease-out);
+}
+
 @keyframes loading-bar {
   0% {
     transform: translateX(-100%);
@@ -236,7 +249,7 @@ html.boot-done .animate-reveal {
 }
 
 .animate-loading-bar {
-  animation: loading-bar 1.5s ease-in-out infinite;
+  animation: loading-bar 1.5s linear infinite;
 }
 
 @keyframes glitch {
@@ -293,11 +306,11 @@ html.boot-done .animate-reveal {
 }
 .rgb-glitch-out::before {
   color: #ff2d55;
-  animation: rgb-split-r 0.3s ease-in forwards;
+  animation: rgb-split-r 0.3s ease-out forwards;
 }
 .rgb-glitch-out::after {
   color: #00d9ff;
-  animation: rgb-split-b 0.3s ease-in forwards;
+  animation: rgb-split-b 0.3s ease-out forwards;
 }
 
 @keyframes terminal-flicker {

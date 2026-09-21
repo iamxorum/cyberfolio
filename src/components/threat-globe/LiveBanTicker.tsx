@@ -1,5 +1,6 @@
 import { useLogTicker } from '@/hooks/useLogTicker';
 import type { BannedIP } from '@/lib/threat-globe';
+import { STAGGER_STEP_DENSE_MS } from '@/lib/motion';
 
 const BATCH_SIZE = 6;
 const INTERVAL_MS = 2800;
@@ -9,7 +10,7 @@ interface LiveBanTickerProps {
 }
 
 export default function LiveBanTicker({ entries }: LiveBanTickerProps) {
-  const { batch, tick } = useLogTicker(entries, BATCH_SIZE, INTERVAL_MS);
+  const { batch } = useLogTicker(entries, BATCH_SIZE, INTERVAL_MS);
 
   if (batch.length === 0) return null;
 
@@ -19,12 +20,12 @@ export default function LiveBanTicker({ entries }: LiveBanTickerProps) {
         <span className="text-[9px] sm:text-[10px] font-mono tracking-widest text-[var(--terminal-text-dim)]">MITIGATED_HOSTS.log</span>
         <span className="text-[8px] sm:text-[9px] font-mono text-[var(--terminal-text-dim)]">{entries.length} tracked</span>
       </div>
-      <div key={tick} className="flex flex-col font-mono text-[10px] sm:text-[11px]">
+      <div className="flex flex-col font-mono text-[10px] sm:text-[11px]">
         {batch.map((ban, idx) => (
           <div
-            key={`${ban.ip}-${idx}`}
+            key={idx}
             className="animate-reveal flex items-center gap-2 px-3 py-1 border-b border-[var(--terminal-border)]/40 last:border-b-0"
-            style={{ animationDelay: `${idx * 60}ms` }}
+            style={{ animationDelay: `${idx * STAGGER_STEP_DENSE_MS}ms` }}
           >
             <span className={ban.source === 'local' ? 'text-[#ef4444]' : 'text-[#3b82f6]'}>●</span>
             <span className="text-[var(--terminal-text-dim)] uppercase">{ban.source === 'local' ? 'BAN' : 'BLOCK'}</span>

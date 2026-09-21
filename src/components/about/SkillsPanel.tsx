@@ -2,8 +2,10 @@
 
 import { useState } from 'react';
 import SkillsRadar from '@/components/SkillsRadar';
+import RevealContainer from '@/components/cv/RevealContainer';
 import { getCategories, getSkillsByCategory, getSkillsGroupedByCategory, getScoreFromLevel, getTopSkills } from '@/config';
 import { getSkillEvidence } from '@/lib/skill-evidence';
+import { STAGGER_STEP_DENSE_MS } from '@/lib/motion';
 
 function getRadarSkills(selectedCategory: string | null) {
   if (selectedCategory) {
@@ -35,7 +37,7 @@ export default function SkillsPanel() {
       <div className="flex flex-wrap gap-1.5 sm:gap-2 mb-2 sm:mb-3">
         <button
           onClick={() => setSelectedCategory(null)}
-          className={`px-1.5 sm:px-2 py-0.5 sm:py-1 rounded text-[9px] sm:text-[10px] font-mono transition-all active:scale-90 ${selectedCategory === null
+          className={`px-1.5 sm:px-2 py-0.5 sm:py-1 rounded text-[9px] sm:text-[10px] font-mono transition active:scale-95 ${selectedCategory === null
             ? 'bg-primary text-[var(--terminal-on-primary)] border border-primary'
             : 'bg-[var(--terminal-bg)] text-[var(--terminal-text-muted)] border border-[var(--terminal-border)] hover:border-primary hover:text-primary'
             }`}
@@ -46,7 +48,7 @@ export default function SkillsPanel() {
           <button
             key={category}
             onClick={() => setSelectedCategory(category)}
-            className={`px-1.5 sm:px-2 py-0.5 sm:py-1 rounded text-[9px] sm:text-[10px] font-mono transition-all active:scale-90 ${selectedCategory === category
+            className={`px-1.5 sm:px-2 py-0.5 sm:py-1 rounded text-[9px] sm:text-[10px] font-mono transition active:scale-95 ${selectedCategory === category
               ? 'bg-primary text-[var(--terminal-on-primary)] border border-primary'
               : 'bg-[var(--terminal-bg)] text-[var(--terminal-text-muted)] border border-[var(--terminal-border)] hover:border-primary hover:text-primary'
               }`}
@@ -68,7 +70,7 @@ export default function SkillsPanel() {
           const isExpanded = expandedSkill === skill.name;
 
           return (
-            <div key={skill.name} className="animate-reveal" style={{ animationDelay: `${Math.min(index, 10) * 60}ms` }}>
+            <div key={skill.name} className="animate-reveal" style={{ animationDelay: `${Math.min(index, 10) * STAGGER_STEP_DENSE_MS}ms` }}>
               <button
                 type="button"
                 disabled={!hasEvidence}
@@ -97,31 +99,33 @@ export default function SkillsPanel() {
                 </div>
               </button>
 
-              {isExpanded && (
-                <div className="mt-1 mb-1 ml-4 pl-2 border-l border-primary/30 flex flex-col gap-0.5">
-                  {evidence.experience.map((exp) => (
-                    <span key={exp.id} className="text-[9px] text-[var(--terminal-text-dim)] truncate">
-                      → {exp.role} @ {exp.company}
-                    </span>
-                  ))}
-                  {evidence.projects.map((project) =>
-                    project.visibility === 'public' && project.link ? (
-                      <a
-                        key={project.id}
-                        href={project.link}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="text-[9px] text-primary hover:underline truncate"
-                      >
-                        → {project.name}
-                      </a>
-                    ) : (
-                      <span key={project.id} className="text-[9px] text-[var(--terminal-text-dim)] truncate">
-                        → {project.name}{project.visibility === 'private' ? ' (private)' : ''}
+              {hasEvidence && (
+                <RevealContainer visible={isExpanded}>
+                  <div className="mt-1 mb-1 ml-4 pl-2 border-l border-primary/30 flex flex-col gap-0.5">
+                    {evidence.experience.map((exp) => (
+                      <span key={exp.id} className="text-[9px] text-[var(--terminal-text-dim)] truncate">
+                        → {exp.role} @ {exp.company}
                       </span>
-                    )
-                  )}
-                </div>
+                    ))}
+                    {evidence.projects.map((project) =>
+                      project.visibility === 'public' && project.link ? (
+                        <a
+                          key={project.id}
+                          href={project.link}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="text-[9px] text-primary hover:underline truncate"
+                        >
+                          → {project.name}
+                        </a>
+                      ) : (
+                        <span key={project.id} className="text-[9px] text-[var(--terminal-text-dim)] truncate">
+                          → {project.name}{project.visibility === 'private' ? ' (private)' : ''}
+                        </span>
+                      )
+                    )}
+                  </div>
+                </RevealContainer>
               )}
             </div>
           );

@@ -5,7 +5,7 @@ export interface SiteConfig {
   fullName: string;
   title: string;
   description: string;
-  favicon: string;
+  favicon?: string;
 
 
   birthDate: {
@@ -15,6 +15,7 @@ export interface SiteConfig {
   };
   location: string;
   phone?: string;
+  email: string;
   role: string;
   status: string;
   profileImage: string;
@@ -60,6 +61,7 @@ export const siteConfig: SiteConfig = {
   },
   location: 'Your Location',
   phone: '+1 234 567 8900',
+  email: 'you@example.com',
   role: 'Your Role',
   status: 'Available for opportunities',
   profileImage: '/assets/profile.jpg',
@@ -91,7 +93,7 @@ export const siteConfig: SiteConfig = {
     ],
   },
 
-  systemVersion: 'v1.5.7',
+  systemVersion: 'v1.5.8',
 
   favicon: 'path/to/favicon.ico',
 

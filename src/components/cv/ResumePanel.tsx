@@ -17,8 +17,9 @@ interface ResumePanelProps {
 export default function ResumePanel({ contributionStats }: ResumePanelProps) {
   const [selectedStyle, setSelectedStyle] = useState<string>(cvConfig.styles[0].id);
   const [isDownloading, setIsDownloading] = useState(false);
+  const [downloadSucceeded, setDownloadSucceeded] = useState(false);
   const [useColumnLayout, setUseColumnLayout] = useState<boolean>(false);
-  const [showCV, setShowCV] = useState<boolean>(false);
+  const [showCV, setShowCV] = useState<boolean>(true);
 
   const selectedCVStyle = cvConfig.styles.find(s => s.id === selectedStyle) || cvConfig.styles[0];
 
@@ -49,6 +50,10 @@ export default function ResumePanel({ contributionStats }: ResumePanelProps) {
       ).toBlob();
 
       downloadBlob(blob, `${siteConfig.fullName.replace(/\s+/g, '_')}_CV_${selectedStyle}.pdf`);
+      setDownloadSucceeded(true);
+      setTimeout(() => setDownloadSucceeded(false), 1800);
+    } catch (err) {
+      console.error('Failed to generate CV PDF:', err);
     } finally {
       setIsDownloading(false);
     }
@@ -71,7 +76,7 @@ export default function ResumePanel({ contributionStats }: ResumePanelProps) {
             {/* Column Layout Toggle */}
             <button
               onClick={() => setUseColumnLayout(!useColumnLayout)}
-              className={`flex min-w-[120px] cursor-pointer items-center justify-center overflow-hidden rounded h-10 sm:h-12 px-4 sm:px-6 border-2 transition-all active:scale-[0.97] ${useColumnLayout
+              className={`flex min-w-[120px] cursor-pointer items-center justify-center overflow-hidden rounded h-10 sm:h-12 px-4 sm:px-6 border-2 transition active:scale-[0.97] ${useColumnLayout
                 ? 'bg-[var(--terminal-surface-alt)] border-primary text-primary hover:bg-[var(--terminal-surface-hover)]'
                 : 'bg-[var(--terminal-surface-alt)] border-[var(--terminal-border)] text-[var(--terminal-text-muted)] hover:border-primary hover:text-primary'
                 }`}
@@ -87,13 +92,13 @@ export default function ResumePanel({ contributionStats }: ResumePanelProps) {
             <button
               onClick={handleDownloadPDF}
               disabled={isDownloading}
-              className="flex min-w-[140px] cursor-pointer items-center justify-center overflow-hidden rounded h-10 sm:h-12 px-4 sm:px-6 bg-primary text-[var(--terminal-on-primary)] text-sm sm:text-base font-bold leading-normal tracking-[0.015em] hover:bg-primary/80 transition-all active:scale-[0.97] shadow-[0_0_20px_rgba(var(--terminal-accent-rgb),0.3)] border border-transparent hover:border-[var(--terminal-hover-border)] disabled:opacity-50 disabled:cursor-not-allowed disabled:active:scale-100"
+              className="flex min-w-[140px] cursor-pointer items-center justify-center overflow-hidden rounded h-10 sm:h-12 px-4 sm:px-6 bg-primary text-[var(--terminal-on-primary)] text-sm sm:text-base font-bold leading-normal tracking-[0.015em] hover:bg-primary/80 transition active:scale-[0.97] shadow-[0_0_20px_rgba(var(--terminal-accent-rgb),0.3)] border border-transparent hover:border-[var(--terminal-hover-border)] disabled:opacity-50 disabled:cursor-not-allowed disabled:active:scale-100"
             >
-              <span className={`material-symbols-outlined text-base sm:text-lg mr-2 ${isDownloading ? 'animate-spin' : ''}`}>
-                {isDownloading ? 'progress_activity' : 'download'}
+              <span className={`material-symbols-outlined text-base sm:text-lg mr-2 ${isDownloading ? 'animate-spin' : downloadSucceeded ? 'animate-pop-in' : ''}`}>
+                {isDownloading ? 'progress_activity' : downloadSucceeded ? 'check' : 'download'}
               </span>
               <span className="truncate font-mono text-xs sm:text-sm md:text-base">
-                {isDownloading ? 'GENERATING...' : 'DOWNLOAD_PDF'}
+                {isDownloading ? 'GENERATING...' : downloadSucceeded ? 'DOWNLOADED' : 'DOWNLOAD_PDF'}
               </span>
             </button>
           </div>
@@ -105,7 +110,7 @@ export default function ResumePanel({ contributionStats }: ResumePanelProps) {
             opacity: useColumnLayout ? 1 : 0,
             maxHeight: useColumnLayout ? '80px' : '0px',
             marginBottom: useColumnLayout ? '1rem' : '0px',
-            transition: 'opacity 250ms ease-out, max-height 250ms ease-out, margin-bottom 250ms ease-out',
+            transition: 'opacity 300ms ease-out, max-height 300ms ease-out, margin-bottom 300ms ease-out',
           }}
           aria-hidden={!useColumnLayout}
         >
