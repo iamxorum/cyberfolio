@@ -11,11 +11,12 @@ export default function Terminal() {
     <div className="p-4 rounded border border-dashed border-[var(--terminal-border)] bg-[var(--terminal-bg-dark)] font-mono text-sm text-[var(--terminal-text-muted)]">
       <div
         ref={terminalRef}
+        data-lenis-prevent
         className="max-h-64 overflow-y-auto mb-2 space-y-2"
         style={{ scrollbarWidth: 'thin' }}
       >
-        {history.map((item, index) => (
-          <div key={index} className="space-y-1">
+        {history.map((item) => (
+          <div key={item.id} className="space-y-1">
             {item.command && (
               <div className="flex items-center gap-2">
                 <span className="text-primary">user@system:~/projects$</span>
@@ -46,10 +47,11 @@ export default function Terminal() {
           {suggestions.length > 0 && (
             <div className="absolute bottom-full left-0 mb-1 bg-[var(--terminal-surface)] border border-[var(--terminal-border)] rounded p-2 text-xs space-y-1 max-w-md z-10">
               <div className="text-[var(--terminal-text-dim)] text-[10px] uppercase">Suggestions:</div>
-              {suggestions.map((suggestion, idx) => (
-                <div
-                  key={idx}
-                  className="text-[var(--terminal-text-muted)] hover:text-primary cursor-pointer"
+              {suggestions.map((suggestion) => (
+                <button
+                  key={suggestion}
+                  type="button"
+                  className="block w-full text-left text-[var(--terminal-text-muted)] hover:text-primary cursor-pointer"
                   onClick={() => {
                     if (isValidCommand(suggestion)) {
                       setInput(suggestion);
@@ -58,7 +60,7 @@ export default function Terminal() {
                   }}
                 >
                   {suggestion}
-                </div>
+                </button>
               ))}
             </div>
           )}

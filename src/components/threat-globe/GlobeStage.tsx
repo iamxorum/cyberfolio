@@ -4,7 +4,7 @@ import dynamic from 'next/dynamic';
 import type { RefObject } from 'react';
 import GlobeSourceToggle from './GlobeSourceToggle';
 import GlobeInspectorPanel from './GlobeInspectorPanel';
-import { prefersReducedMotion } from '@/lib/motion';
+import { usePrefersReducedMotion } from '@/lib/motion';
 import {
   escapeHtml,
   getArcStroke,
@@ -82,7 +82,7 @@ export default function GlobeStage({
   onToggleSource,
 }: GlobeStageProps) {
   const size = globeSize(windowWidth);
-  const reduceMotion = prefersReducedMotion();
+  const reduceMotion = usePrefersReducedMotion();
 
   return (
     <div className="w-full lg:w-1/2 flex items-center justify-center relative min-h-[300px] sm:min-h-[450px] xl:min-h-[550px] border border-[var(--terminal-border)]/20 rounded bg-[rgba(var(--terminal-bg-rgb),0.20)] overflow-hidden">
@@ -106,7 +106,7 @@ export default function GlobeStage({
           </div>
         )}
 
-        {isRendering && typeof window !== 'undefined' && hasGlobeData && (
+        {isRendering && hasGlobeData && (
           <>
             <Globe
               ref={globeRef}

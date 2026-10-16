@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import { prefersReducedMotion } from '@/lib/motion';
 
 interface InitScreenProps {
@@ -14,6 +14,7 @@ export default function InitScreen({ onInit }: InitScreenProps) {
   const [displayText, setDisplayText] = useState('');
   const [cursorVisible, setCursorVisible] = useState(true);
   const [isExiting, setIsExiting] = useState(false);
+  const [isRevealed, setIsRevealed] = useState(false);
   const textRef = useRef<HTMLDivElement>(null);
   const rgbRef = useRef<HTMLDivElement>(null);
   const doneRef = useRef(false);
@@ -23,39 +24,54 @@ export default function InitScreen({ onInit }: InitScreenProps) {
     onInitRef.current = onInit;
   });
 
+  const finish = useCallback(() => {
+    if (doneRef.current) return;
+    doneRef.current = true;
+
+    localStorage.setItem('iamxorum_initialized', Date.now().toString());
+
+    if (textRef.current) {
+      textRef.current.style.transition = 'opacity 0.35s ease-out, transform 0.35s ease-out, filter 0.35s ease-out';
+      textRef.current.style.opacity = '0';
+      textRef.current.style.transform = 'scale(1.08) translateY(-10px)';
+      textRef.current.style.filter = 'blur(8px)';
+    }
+    rgbRef.current?.classList.add('rgb-glitch-out');
+    setIsExiting(true);
+  }, []);
+
+  // Hand control back to the page once the exit animation has played.
   useEffect(() => {
-    const finish = () => {
-      if (doneRef.current) return;
-      doneRef.current = true;
+    if (!isExiting) return;
+    const exitTimer = setTimeout(() => {
+      document.documentElement.classList.add('boot-skip');
+      onInitRef.current();
+    }, 350);
+    return () => clearTimeout(exitTimer);
+  }, [isExiting]);
 
-      localStorage.setItem('iamxorum_initialized', Date.now().toString());
+  // Brief hold on the fully-revealed text before exiting.
+  useEffect(() => {
+    if (!isRevealed) return;
+    const holdTimer = setTimeout(finish, 200);
+    return () => clearTimeout(holdTimer);
+  }, [isRevealed, finish]);
 
-      if (textRef.current) {
-        textRef.current.style.transition = 'opacity 0.35s ease-out, transform 0.35s ease-out, filter 0.35s ease-out';
-        textRef.current.style.opacity = '0';
-        textRef.current.style.transform = 'scale(1.08) translateY(-10px)';
-        textRef.current.style.filter = 'blur(8px)';
-      }
-      rgbRef.current?.classList.add('rgb-glitch-out');
-      setIsExiting(true);
-      setTimeout(() => {
-        document.documentElement.classList.add('boot-skip');
-        onInitRef.current();
-      }, 350);
-    };
-
+  useEffect(() => {
     let skipEnabled = false;
     const skipGraceTimer = setTimeout(() => { skipEnabled = true; }, 400);
     const skipOnTrustedEvent = (event: Event) => {
       if (skipEnabled && event.isTrusted) finish();
     };
 
+    // Let an impatient visitor skip straight to the site.
+    window.addEventListener('keydown', skipOnTrustedEvent);
+    window.addEventListener('click', skipOnTrustedEvent);
+
     if (prefersReducedMotion()) {
       // eslint-disable-next-line react-hooks/set-state-in-effect
       setDisplayText(fullText);
       const holdTimeout = setTimeout(finish, 300);
-      window.addEventListener('keydown', skipOnTrustedEvent);
-      window.addEventListener('click', skipOnTrustedEvent);
       return () => {
         clearTimeout(holdTimeout);
         clearTimeout(skipGraceTimer);
@@ -66,7 +82,6 @@ export default function InitScreen({ onInit }: InitScreenProps) {
 
     const scrambleDuration = 300;
     const revealSpeed = 35;
-    const holdAfterReveal = 200;
     const startTime = Date.now();
     const charMap: string[] = [];
     let currentIndex = 0;
@@ -107,15 +122,11 @@ export default function InitScreen({ onInit }: InitScreenProps) {
 
       if (currentIndex >= fullText.length) {
         clearInterval(scrambleInterval);
-        setTimeout(finish, holdAfterReveal);
+        setIsRevealed(true);
       }
     };
 
     const scrambleInterval = setInterval(updateText, 40);
-
-    // Let an impatient visitor skip straight to the site.
-    window.addEventListener('keydown', skipOnTrustedEvent);
-    window.addEventListener('click', skipOnTrustedEvent);
 
     return () => {
       clearInterval(scrambleInterval);
@@ -123,7 +134,7 @@ export default function InitScreen({ onInit }: InitScreenProps) {
       window.removeEventListener('keydown', skipOnTrustedEvent);
       window.removeEventListener('click', skipOnTrustedEvent);
     };
-  }, []);
+  }, [finish]);
 
   useEffect(() => {
     const cursorInterval = setInterval(() => setCursorVisible((prev) => !prev), 400);

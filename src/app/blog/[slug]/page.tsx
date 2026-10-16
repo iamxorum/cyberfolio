@@ -4,6 +4,7 @@ import { siteConfig } from '@/config';
 import { getAllPostSlugs, getPostBySlug } from '@/lib/blog';
 import BlogPostClient from './BlogPostClient';
 import MdxContent from './MdxContent';
+import { serializeJsonLd } from '@/lib/json-ld';
 
 interface PageProps {
   params: Promise<{ slug: string }>;
@@ -68,11 +69,11 @@ export default async function BlogPost({ params }: PageProps) {
     <>
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }}
+        dangerouslySetInnerHTML={{ __html: serializeJsonLd(breadcrumbJsonLd) }}
       />
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(postJsonLd) }}
+        dangerouslySetInnerHTML={{ __html: serializeJsonLd(postJsonLd) }}
       />
       <BlogPostClient title={post.title} date={post.date} tags={post.tags}>
         <MdxContent source={post.content} />

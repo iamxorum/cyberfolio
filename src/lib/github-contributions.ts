@@ -97,3 +97,6 @@ export async function getContributionStatsForProjects<T extends ContributionSour
 
   return Object.fromEntries(entries);
 }
+
+/** Stable empty default so memoised components don't see a fresh `{}` prop each render. */
+export const NO_CONTRIBUTION_STATS: Record<string, ContributionStats | null> = {};

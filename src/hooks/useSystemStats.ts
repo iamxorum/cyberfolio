@@ -8,13 +8,19 @@ export function useSystemStats() {
   useEffect(() => {
     if (typeof window === 'undefined') return;
 
+    // Cancels in-flight requests on unmount (and on the dev double-mount) so a late
+    // response can't set state on a gone component.
+    const controller = new AbortController();
+
     // Fetch uptime
     const fetchUptime = async () => {
       try {
-        const response = await fetch('/api/uptime');
+        const response = await fetch('/api/uptime', { signal: controller.signal });
+        if (!response.ok) throw new Error(`Uptime request failed: ${response.status}`);
         const data = await response.json();
         setUptime(data.uptime || '--');
       } catch {
+        if (controller.signal.aborted) return;
         const sessionStart = sessionStorage.getItem('session_start_time');
         if (sessionStart) {
           const diff = Date.now() - parseInt(sessionStart);
@@ -33,12 +39,12 @@ export function useSystemStats() {
     const fetchResponseTime = async () => {
       try {
         const startTime = performance.now();
-        await fetch('/api/response-time', { cache: 'no-store' });
+        await fetch('/api/response-time', { cache: 'no-store', signal: controller.signal });
         const endTime = performance.now();
         const measuredTime = Math.round(endTime - startTime);
         setResponseTime(`${measuredTime}ms`);
       } catch {
-        setResponseTime('--');
+        if (!controller.signal.aborted) setResponseTime('--');
       }
     };
     fetchResponseTime();
@@ -52,7 +58,10 @@ export function useSystemStats() {
     updateViewport();
 
     window.addEventListener('resize', updateViewport);
-    return () => window.removeEventListener('resize', updateViewport);
+    return () => {
+      controller.abort();
+      window.removeEventListener('resize', updateViewport);
+    };
   }, []);
 
   return { uptime, responseTime, viewport };

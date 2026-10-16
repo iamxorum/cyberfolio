@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import { siteConfig, projects } from '@/config';
 import { getContributionStatsForProjects } from '@/lib/github-contributions';
 import ProjectsClient from './ProjectsClient';
+import { serializeJsonLd } from '@/lib/json-ld';
 
 const siteUrl = `https://${siteConfig.domain}`;
 const pageUrl = `${siteUrl}/projects`;
@@ -33,7 +34,7 @@ export default async function Projects() {
     <>
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }}
+        dangerouslySetInnerHTML={{ __html: serializeJsonLd(breadcrumbJsonLd) }}
       />
       <ProjectsClient contributionStats={contributionStats} />
     </>

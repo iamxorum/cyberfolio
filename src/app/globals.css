@@ -3,6 +3,109 @@
 
 html {
   scroll-behavior: smooth;
+  scrollbar-width: thin;
+  scrollbar-color: var(--terminal-border) var(--terminal-bg);
+}
+
+/* Lenis owns smoothing on desktop; native smooth-scroll would fight it. */
+html.lenis,
+html.lenis body {
+  height: auto;
+}
+html.lenis.lenis-smooth {
+  scroll-behavior: auto !important;
+}
+html.lenis.lenis-stopped {
+  overflow: clip;
+}
+
+/* Scroll indicator: replaces the native scrollbar on every device. Click/touch and drag it to
+   jump around the page. */
+html {
+  scrollbar-width: none;
+}
+html::-webkit-scrollbar {
+  display: none;
+}
+.scroll-indicator {
+  display: block;
+  position: fixed;
+  inset: 0 0 0 auto;
+  width: 16px; /* wider than the visible rail so it is easy to grab */
+  z-index: 60;
+  cursor: pointer;
+  touch-action: none;
+  --scroll-indicator-track: var(--terminal-border);
+  --scroll-indicator-fill: var(--terminal-accent);
+}
+.scroll-indicator[data-variant="blue"] {
+  --scroll-indicator-fill: #3b82f6;
+}
+/* Light theme: the dark-theme track (a teal border colour) and the olive fill are too close
+   in tone on a cream background, so use a faint neutral track and a stronger fill. */
+html.light .scroll-indicator {
+  --scroll-indicator-track: color-mix(in srgb, var(--color-text) 14%, var(--color-bg));
+  --scroll-indicator-fill: var(--color-accent);
+}
+html.light .scroll-indicator[data-variant="blue"] {
+  --scroll-indicator-fill: #2563eb;
+}
+.scroll-indicator-rail {
+  position: absolute;
+  inset: 0 0 0 auto;
+  width: 4px;
+  background: var(--scroll-indicator-track);
+  overflow: hidden;
+  transition: width 150ms ease-out;
+}
+.scroll-indicator:hover .scroll-indicator-rail,
+.scroll-indicator[data-dragging] .scroll-indicator-rail {
+  width: 8px;
+}
+.scroll-indicator-fill {
+  width: 100%;
+  height: 100%;
+  background: var(--scroll-indicator-fill);
+  transform: scaleY(0);
+  transform-origin: top;
+}
+/* Phones: a slimmer rail with a roomier touch target, tucked under the sticky header (z-50)
+   so it never covers the header buttons near the right edge. */
+@media (max-width: 767px) {
+  .scroll-indicator {
+    width: 20px;
+    z-index: 40;
+  }
+  .scroll-indicator-rail {
+    width: 3px;
+  }
+  .scroll-indicator:hover .scroll-indicator-rail {
+    width: 3px;
+  }
+  .scroll-indicator[data-dragging] .scroll-indicator-rail {
+    width: 8px;
+  }
+}
+@media print {
+  .scroll-indicator { display: none !important; }
+}
+
+/* Icon font glyph rules (previously supplied by the Google Fonts stylesheet). */
+.material-symbols-outlined {
+  font-family: var(--font-icons), 'Material Symbols Outlined';
+  font-weight: normal;
+  font-style: normal;
+  font-size: 24px;
+  line-height: 1;
+  letter-spacing: normal;
+  text-transform: none;
+  display: inline-block;
+  white-space: nowrap;
+  word-wrap: normal;
+  direction: ltr;
+  -webkit-font-feature-settings: 'liga';
+  font-feature-settings: 'liga';
+  -webkit-font-smoothing: antialiased;
 }
 
 body {
@@ -115,7 +218,7 @@ input:focus-visible,
 }
 
 ::-webkit-scrollbar {
-  width: 8px;
+  width: 10px;
 }
 
 ::-webkit-scrollbar-track {
@@ -124,7 +227,9 @@ input:focus-visible,
 
 ::-webkit-scrollbar-thumb {
   background: var(--terminal-border);
-  border-radius: 2px;
+  border-radius: 6px;
+  border: 2px solid var(--terminal-bg);
+  transition: background 150ms;
 }
 
 ::-webkit-scrollbar-thumb:hover {

@@ -1,5 +1,5 @@
 import Image from 'next/image';
-import { siteConfig, hobbies } from '@/config';
+import { siteConfig, hobbies, isPersonalHobby } from '@/config';
 import { useProfileAge } from '@/hooks/useProfileAge';
 
 interface ProfileCardProps {
@@ -50,7 +50,7 @@ export default function ProfileCard({ userId }: ProfileCardProps) {
           <div className="pt-1">
             <div className="text-[var(--terminal-text-dim)] mb-1.5">INTERESTED:</div>
             <div className="flex flex-wrap gap-1.5">
-              {hobbies.slice(0, 3).map((hobby, index) => (
+              {hobbies.filter((hobby) => !isPersonalHobby(hobby)).slice(0, 3).map((hobby, index) => (
                 <span key={index} className="px-1.5 py-0.5 rounded bg-[var(--terminal-bg)] border border-[var(--terminal-border)] text-[10px] text-[var(--terminal-text-muted)]">
                   {hobby.name}
                 </span>

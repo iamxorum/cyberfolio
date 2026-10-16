@@ -31,7 +31,7 @@ export default function EducationSection() {
   if (education.length === 0) return null;
 
   return (
-    <div id="education" className="bg-[var(--terminal-surface)] border border-[var(--terminal-border)] rounded p-4 sm:p-6 scroll-mt-20">
+    <div id="education" className="bg-[var(--terminal-surface)] border border-[var(--terminal-border)] rounded p-4 sm:p-6 scroll-mt-32">
       <h2 className="text-[var(--terminal-text)] font-mono text-base sm:text-lg font-bold mb-4 sm:mb-6 flex items-center gap-2">
         <span className="material-symbols-outlined text-primary text-lg sm:text-xl">school</span>
         <span className="text-sm sm:text-base">EDUCATION</span>

@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import { siteConfig } from '@/config';
 import AboutClient from './AboutClient';
+import { serializeJsonLd } from '@/lib/json-ld';
 
 const siteUrl = `https://${siteConfig.domain}`;
 const pageUrl = `${siteUrl}/about`;
@@ -30,7 +31,7 @@ export default function About() {
     <>
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }}
+        dangerouslySetInnerHTML={{ __html: serializeJsonLd(breadcrumbJsonLd) }}
       />
       <AboutClient />
     </>

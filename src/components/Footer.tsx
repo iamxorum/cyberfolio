@@ -1,16 +1,10 @@
 'use client';
 
-import { useEffect } from 'react';
-import { siteConfig, canaryConfig } from '@/config';
+import { siteConfig } from '@/config';
 import EmailCTA from './EmailCTA';
 
 export default function Footer() {
   const currentYear = new Date().getFullYear();
-
-  useEffect(() => {
-    (window as unknown as { __backupAWSConfig?: typeof canaryConfig }).__backupAWSConfig = canaryConfig;
-  }, []);
-
 
   const footerLinks = [
     ...(siteConfig.social.professional || []),
@@ -27,9 +21,9 @@ export default function Footer() {
             <EmailCTA className="hover:text-[var(--terminal-text)] transition-colors whitespace-nowrap">
               EMAIL
             </EmailCTA>
-            {footerLinks.map((link, index) => (
+            {footerLinks.map((link) => (
               <a
-                key={index}
+                key={link.url}
                 className="hover:text-[var(--terminal-text)] transition-colors whitespace-nowrap"
                 href={link.url}
                 target="_blank"

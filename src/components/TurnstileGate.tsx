@@ -69,15 +69,15 @@ export default function TurnstileGate({ decryptingLabel }: TurnstileGateProps) {
                     body: JSON.stringify({ token })
                   });
 
-                  const data = await res.json();
+                  const data = res.ok ? await res.json() : null;
 
-                  if (data.success) {
+                  if (data?.success) {
                     setTimeout(() => {
                       markVerified();
                       setIsDecrypting(false);
                     }, 500);
                   } else {
-                    console.error("Access Denied:", data.error);
+                    console.error("Access Denied:", data?.error ?? `HTTP ${res.status}`);
                     setIsDecrypting(false);
                     setError('Verification failed. Please try again.');
                   }

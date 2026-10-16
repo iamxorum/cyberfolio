@@ -1,14 +1,27 @@
 import type { Metadata, Viewport } from "next";
 import { ViewTransition } from "react";
 import { JetBrains_Mono } from "next/font/google";
+import localFont from "next/font/local";
 import { siteConfig, scripts, experience, education, getTopSkills } from "../config";
 import "./globals.css";
 import Script from "next/script";
+import SmoothScroll from "@/components/SmoothScroll";
+import ScrollIndicator from "@/components/ScrollIndicator";
+import { serializeJsonLd } from "@/lib/json-ld";
 
 const jetBrainsMono = JetBrains_Mono({
   variable: "--font-display",
   subsets: ["latin"],
   weight: ["300", "400", "500", "600", "700"],
+});
+
+// Material Symbols isn't in next/font/google, so the icon font is self-hosted from
+// src/app/fonts (static instance: wght 400, FILL 0). Served from our own origin, preloaded.
+const materialSymbols = localFont({
+  src: "./fonts/MaterialSymbolsOutlined.woff2",
+  variable: "--font-icons",
+  display: "block",
+  weight: "400",
 });
 
 const siteUrl = `https://${siteConfig.domain}`;
@@ -95,21 +108,6 @@ export default function RootLayout({
   return (
     <html lang="en" className="dark" data-scroll-behavior="smooth" suppressHydrationWarning>
       <head>
-        <link rel="preconnect" href="https://fonts.googleapis.com" />
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
-        {/* Loaded via preload+swap so the icon font stylesheet doesn't block first paint */}
-        <script
-          dangerouslySetInnerHTML={{
-            __html: `(function(){var h='https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@400,0&display=swap';var p=document.createElement('link');p.rel='preload';p.as='style';p.href=h;document.head.appendChild(p);var l=document.createElement('link');l.rel='stylesheet';l.href=h;l.media='print';l.onload=function(){this.media='all';};document.head.appendChild(l);})();`,
-          }}
-        />
-        <noscript>
-          {/* eslint-disable-next-line @next/next/no-page-custom-font */}
-          <link
-            href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@400,0&display=swap"
-            rel="stylesheet"
-          />
-        </noscript>
         <noscript>
           <style dangerouslySetInnerHTML={{ __html: `.boot-screen-overlay{display:none !important;}` }} />
         </noscript>
@@ -131,12 +129,14 @@ export default function RootLayout({
         />
         <script
           type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: JSON.stringify(personJsonLd) }}
+          dangerouslySetInnerHTML={{ __html: serializeJsonLd(personJsonLd) }}
         />
       </head>
       <body
-        className={`${jetBrainsMono.variable} antialiased font-display`}
+        className={`${jetBrainsMono.variable} ${materialSymbols.variable} antialiased font-display`}
       >
+        <ScrollIndicator />
+        <SmoothScroll />
         <ViewTransition
           enter={{ 'nav-forward': 'nav-forward', 'nav-back': 'nav-back', default: 'none' }}
           exit={{ 'nav-forward': 'nav-forward', 'nav-back': 'nav-back', default: 'none' }}
@@ -144,7 +144,7 @@ export default function RootLayout({
         >
           {children}
         </ViewTransition>
-        {scripts.map((script, index) => {
+        {scripts.map((script) => {
           const dataProps = script.dataAttributes
             ? Object.entries(script.dataAttributes).reduce((acc, [key, value]) => {
               acc[`data-${key}`] = value;
@@ -154,7 +154,7 @@ export default function RootLayout({
 
           return (
             <Script
-              key={script.id || `script-${index}`}
+              key={script.id || script.src}
               id={script.id}
               src={script.src}
               strategy={script.strategy}

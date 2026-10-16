@@ -24,7 +24,7 @@ export default function BioSection() {
   const terminalLabel = titleMatch ? titleMatch[1] : '/var/log/user_bio.txt';
 
   return (
-    <div id="bio" className="bg-[var(--terminal-bg)] border border-[var(--terminal-border)] rounded relative overflow-hidden scroll-mt-20">
+    <div id="bio" className="bg-[var(--terminal-bg)] border border-[var(--terminal-border)] rounded relative overflow-hidden scroll-mt-32">
       <div className="bg-[var(--terminal-surface-alt)] px-3 sm:px-4 py-2 border-b border-[var(--terminal-border)] flex justify-between items-center">
         <span className="text-[10px] sm:text-xs font-mono text-[var(--terminal-text-dim)]">
           {terminalLabel}
@@ -39,7 +39,7 @@ export default function BioSection() {
           <BioPromptLine />
         </p>
         {contentConfig.about.bio.paragraphs.map((paragraph, index) => (
-          <p key={index} className="animate-reveal mb-3 sm:mb-4" style={{ animationDelay: `${150 + Math.min(index, 6) * STAGGER_STEP_MS}ms` }}>
+          <p key={paragraph} className="animate-reveal mb-3 sm:mb-4" style={{ animationDelay: `${150 + Math.min(index, 6) * STAGGER_STEP_MS}ms` }}>
             {paragraph}
           </p>
         ))}

@@ -94,7 +94,7 @@ export const siteConfig: SiteConfig = {
     ],
   },
 
-  systemVersion: 'v1.5.8',
+  systemVersion: 'v1.5.9',
 
   favicon: 'path/to/favicon.ico',
 
@@ -103,7 +103,6 @@ export const siteConfig: SiteConfig = {
       'https://challenges.cloudflare.com',
     ],
     styles: [
-      'https://fonts.googleapis.com',
     ],
     images: [
       'https://flagcdn.com',
@@ -113,7 +112,6 @@ export const siteConfig: SiteConfig = {
       'http://*.googleusercontent.com',
     ],
     fonts: [
-      'https://fonts.gstatic.com',
     ],
     frames: [
       'https://challenges.cloudflare.com',

@@ -24,7 +24,7 @@ export default function AboutClient() {
     <>
       {!initialized && <InitScreen onInit={() => setInitialized(true)} />}
       <TurnstileGate decryptingLabel="VERIFYING..." />
-      <div className="relative flex h-auto min-h-screen w-full flex-col bg-[var(--terminal-bg)] text-[var(--terminal-text)] group/design-root overflow-x-hidden font-display animate-fade-in">
+      <div className="relative flex h-auto min-h-screen w-full flex-col bg-[var(--terminal-bg)] text-[var(--terminal-text)] group/design-root overflow-x-clip font-display animate-fade-in">
         {/* Background Grid Pattern Effect */}
         <div className="fixed inset-0 z-0 opacity-[0.03] pointer-events-none" style={{ backgroundImage: `linear-gradient(var(--terminal-accent-alt) 1px, transparent 1px), linear-gradient(90deg, var(--terminal-accent-alt) 1px, transparent 1px)`, backgroundSize: '40px 40px' }}></div>
         <div className="layout-container flex h-full grow flex-col">
@@ -52,13 +52,13 @@ export default function AboutClient() {
                       <SocialLinks />
                       <SkillsPanel />
                       <LanguagesSection />
+                      <HobbiesSection kind="professional" compact />
                     </div>
-                    {/* Right Column - Experience, Education, Certifications, Hobbies (professional signal first) */}
+                    {/* Right Column - Experience, Education, Certifications (professional signal first) */}
                     <div className="w-full md:w-2/3 flex flex-col gap-4 sm:gap-6">
                       <ExperienceTimeline />
                       <EducationSection />
                       <CertificationsSection />
-                      <HobbiesSection />
                     </div>
                   </div>
                 </div>
