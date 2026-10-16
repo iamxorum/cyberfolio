@@ -1,5 +1,5 @@
 import type { Project } from '@/config';
-import type { ContributionStats } from '@/lib/github-contributions';
+import { NO_CONTRIBUTION_STATS, type ContributionStats } from '@/lib/github-contributions';
 import ProjectRow from './ProjectRow';
 
 interface ProjectsTableProps {
@@ -9,7 +9,7 @@ interface ProjectsTableProps {
   contributionStats?: Record<string, ContributionStats | null>;
 }
 
-export default function ProjectsTable({ title, icon, projects, contributionStats = {} }: ProjectsTableProps) {
+export default function ProjectsTable({ title, icon, projects, contributionStats = NO_CONTRIBUTION_STATS }: ProjectsTableProps) {
   return (
     <div className="flex flex-col gap-4">
       <div className="flex items-center gap-3 border-b border-[var(--terminal-border-alt)] pb-3">

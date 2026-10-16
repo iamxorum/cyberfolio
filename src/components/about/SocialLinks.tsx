@@ -5,11 +5,11 @@ function SocialLinkGroup({ title, links }: { title: string; links: SocialLink[] 
     <div>
       <div className="text-[var(--terminal-text-dim)] text-[9px] mb-1.5 uppercase">{title}</div>
       <div className="flex flex-col gap-2">
-        {links.map((link, index) => {
+        {links.map((link) => {
           const isMailto = link.url.startsWith('mailto:');
           return (
             <a
-              key={index}
+              key={link.url}
               href={link.url}
               target={isMailto ? undefined : '_blank'}
               rel={isMailto ? undefined : 'noopener noreferrer'}

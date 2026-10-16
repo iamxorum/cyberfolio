@@ -14,7 +14,6 @@ That's it. Edit the files below, `npm run dev`, and the site rebuilds around you
 |---|---|
 | `site.config.ts` | Domain, name, role, location, birth date (age calc), socials, favicon, and the CSP/image allowlist domains |
 | `security.config.ts` | Cloudflare Turnstile site key + widget theme (bot gate on `/about` and `/cv`) |
-| `canary.config.ts` | Optional AWS-credential honeypot baked into the client JS bundle — see below |
 | `content.config.ts` | Hero text, about bio paragraphs, projects page copy |
 | `projects.config.ts` | Every project card — name, tags, links, status, visibility, category |
 | `skills.config.ts` | Skills + 0–100 scores for the radar chart (top 6 by score render) |
@@ -41,8 +40,6 @@ That's it. Edit the files below, `npm run dev`, and the site rebuilds around you
 **`site.config.ts`'s `security` block** — not the same thing as `security.config.ts`. This one is CSP/`next/image` allowlist domains (script/style/image/font/frame/connect sources); `security.config.ts` is just the Turnstile widget key. Two files, two very different jobs, easy to mix up.
 
 **`dc.config.ts`** — if you're using ThreatGlobe (see root README), these are the real (or fictional, your call) server locations that banned-IP arcs animate toward. `mapCenter` is just where the globe opens facing.
-
-**`canary.config.ts`** — optional, and genuinely fun if you're into this kind of thing. Generate a free fake-AWS-credential token at [canarytokens.org](https://canarytokens.org), drop the key/secret in here, and it gets baked directly into the client JS bundle (referenced from a component so the minifier can't tree-shake it away). Anyone scraping your site's JS for hardcoded secrets — bots or humans — gets an alert sent to *you* the moment they try to use it. Leave it with placeholder values if you don't want this; nothing breaks either way.
 
 ## Notes
 

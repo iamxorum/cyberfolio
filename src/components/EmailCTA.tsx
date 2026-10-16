@@ -30,15 +30,29 @@ export default function EmailCTA({ className, children, ariaLabel, title, onNavi
   const [error, setError] = useState<string | null>(null);
   const closeButtonRef = useRef<HTMLButtonElement>(null);
   const openMailRef = useRef<HTMLAnchorElement>(null);
+  const dialogRef = useRef<HTMLDialogElement>(null);
 
+  // Native modal dialog: top layer, focus trap and Escape handling come from the browser.
   useEffect(() => {
     if (!isOpen) return;
+    const dialog = dialogRef.current;
+    if (!dialog) return;
+    dialog.showModal();
     closeButtonRef.current?.focus();
-    const handleKey = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') setIsOpen(false);
+    // Clicks on the ::backdrop are dispatched to the <dialog> itself.
+    const dismissOnBackdrop = (e: MouseEvent) => {
+      if (e.target === dialog) {
+        setIsOpen(false);
+        setJustVerified(false);
+        setIsVerifying(false);
+        setError(null);
+      }
     };
-    document.addEventListener('keydown', handleKey);
-    return () => document.removeEventListener('keydown', handleKey);
+    dialog.addEventListener('click', dismissOnBackdrop);
+    return () => {
+      dialog.removeEventListener('click', dismissOnBackdrop);
+      dialog.close();
+    };
   }, [isOpen]);
 
   useEffect(() => {
@@ -67,23 +81,22 @@ export default function EmailCTA({ className, children, ariaLabel, title, onNavi
       </button>
 
       {isOpen && typeof document !== 'undefined' && createPortal(
-        <div
-          className="fixed inset-0 z-[200] flex items-center justify-center bg-[rgba(var(--terminal-bg-rgb),0.75)] backdrop-blur-sm p-4"
-          onClick={closeModal}
+        <dialog
+          ref={dialogRef}
+          aria-label="Verify to reveal contact email"
+          onCancel={(e) => {
+            e.preventDefault();
+            closeModal();
+          }}
+          className="m-auto w-[calc(100%-2rem)] max-w-xs overflow-visible rounded border border-[var(--terminal-border)] bg-[var(--terminal-surface)] p-4 shadow-[0_0_20px_rgba(var(--terminal-accent-rgb),0.2)] text-center font-mono text-[var(--terminal-text)] backdrop:bg-[rgba(var(--terminal-bg-rgb),0.75)] backdrop:backdrop-blur-sm"
         >
-          <div
-            role="dialog"
-            aria-modal="true"
-            aria-label="Verify to reveal contact email"
-            onClick={(e) => e.stopPropagation()}
-            className="relative w-full max-w-xs rounded border border-[var(--terminal-border)] bg-[var(--terminal-surface)] p-4 shadow-[0_0_20px_rgba(var(--terminal-accent-rgb),0.2)] text-center font-mono"
-          >
+          <div>
             <button
               ref={closeButtonRef}
               type="button"
               onClick={closeModal}
               aria-label="Close"
-              className="absolute top-2 right-2 text-[var(--terminal-text-dim)] hover:text-[var(--terminal-text)] active:scale-95 transition-transform leading-none"
+              className="absolute top-0.5 right-0.5 p-2.5 text-[var(--terminal-text-dim)] hover:text-[var(--terminal-text)] active:scale-95 transition-transform leading-none"
             >
               <span className="material-symbols-outlined text-lg">close</span>
             </button>
@@ -139,8 +152,8 @@ export default function EmailCTA({ className, children, ariaLabel, title, onNavi
                             headers: { 'Content-Type': 'application/json' },
                             body: JSON.stringify({ token }),
                           });
-                          const data = await res.json();
-                          if (data.success) {
+                          const data = res.ok ? await res.json() : null;
+                          if (data?.success) {
                             markVerified();
                             setIsVerifying(false);
                             setJustVerified(true);
@@ -164,7 +177,7 @@ export default function EmailCTA({ className, children, ariaLabel, title, onNavi
               </>
             )}
           </div>
-        </div>,
+        </dialog>,
         document.body
       )}
     </>

@@ -5,7 +5,7 @@ import { siteConfig } from '@/config';
 
 export default function NotFound() {
   return (
-    <div className="relative flex h-auto min-h-screen w-full flex-col bg-[var(--terminal-bg)] text-[var(--terminal-text)] overflow-x-hidden font-display">
+    <div className="relative flex h-auto min-h-screen w-full flex-col bg-[var(--terminal-bg)] text-[var(--terminal-text)] overflow-x-clip font-display">
       <div className="fixed inset-0 z-0 opacity-[0.03] pointer-events-none" style={{ backgroundImage: `linear-gradient(var(--terminal-accent-alt) 1px, transparent 1px), linear-gradient(90deg, var(--terminal-accent-alt) 1px, transparent 1px)`, backgroundSize: '40px 40px' }}></div>
       <div className="layout-container flex h-full grow flex-col">
         <Header />

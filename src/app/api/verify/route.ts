@@ -46,6 +46,11 @@ export async function POST(request: Request) {
             }
         );
 
+        if (!verifyResponse.ok) {
+            console.error("[TURNSTILE] siteverify request failed:", verifyResponse.status);
+            return NextResponse.json({ success: false, error: 'Verification service unavailable' }, { status: 502 });
+        }
+
         const data = await verifyResponse.json();
 
         if (data.success) {

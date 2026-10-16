@@ -8,7 +8,7 @@ import {
   filterForCV,
   getPublicProjects,
 } from '@/lib/cv-helpers';
-import type { ContributionStats } from '@/lib/github-contributions';
+import { NO_CONTRIBUTION_STATS, type ContributionStats } from '@/lib/github-contributions';
 import CVTemplateHeader from '@/components/cv-template/CVTemplateHeader';
 import CVSummarySection from '@/components/cv-template/CVSummarySection';
 import CVExperienceSection from '@/components/cv-template/CVExperienceSection';
@@ -46,7 +46,7 @@ export default function CVTemplate({
   summary,
   email,
   useColumnLayout = true,
-  contributionStats = {},
+  contributionStats = NO_CONTRIBUTION_STATS,
 }: CVTemplateProps) {
   const accentColor = style.colorScheme?.primary || '#000000';
   const { technicalSkills, softSkills, hasSoftSkills } = getRelevantSkills(style);

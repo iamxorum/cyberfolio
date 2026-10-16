@@ -7,19 +7,19 @@ import Link from 'next/link';
 import { projects, contentConfig } from '@/config';
 import { useAppInitialization } from '@/hooks/useAppInitialization';
 import ProjectsTable from '@/components/projects/ProjectsTable';
-import type { ContributionStats } from '@/lib/github-contributions';
+import { NO_CONTRIBUTION_STATS, type ContributionStats } from '@/lib/github-contributions';
 
 interface ProjectsClientProps {
   contributionStats?: Record<string, ContributionStats | null>;
 }
 
-export default function ProjectsClient({ contributionStats = {} }: ProjectsClientProps) {
+export default function ProjectsClient({ contributionStats = NO_CONTRIBUTION_STATS }: ProjectsClientProps) {
   const { initialized, setInitialized } = useAppInitialization();
   const personalProjects = projects.filter((p) => p.projectType === 'personal');
   const contributionProjects = projects.filter((p) => p.projectType === 'contribution');
 
   return (
-    <div className="relative flex h-auto min-h-screen w-full flex-col bg-[var(--terminal-bg)] text-[var(--terminal-text)] group/design-root overflow-x-hidden font-display">
+    <div className="relative flex h-auto min-h-screen w-full flex-col bg-[var(--terminal-bg)] text-[var(--terminal-text)] group/design-root overflow-x-clip font-display">
       {!initialized && <InitScreen onInit={() => setInitialized(true)} />}
       {/* Background Grid Pattern Effect */}
       <div className="fixed inset-0 z-0 opacity-[0.03] pointer-events-none" style={{ backgroundImage: `linear-gradient(var(--terminal-accent-alt) 1px, transparent 1px), linear-gradient(90deg, var(--terminal-accent-alt) 1px, transparent 1px)`, backgroundSize: '40px 40px' }}></div>

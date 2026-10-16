@@ -7,19 +7,19 @@ import TurnstileGate from '@/components/TurnstileGate';
 import TabSwitcher, { type CVTab } from '@/components/cv/TabSwitcher';
 import ResumePanel from '@/components/cv/ResumePanel';
 import CoverLetterPanel from '@/components/cv/CoverLetterPanel';
-import type { ContributionStats } from '@/lib/github-contributions';
+import { NO_CONTRIBUTION_STATS, type ContributionStats } from '@/lib/github-contributions';
 
 interface CVClientProps {
   contributionStats?: Record<string, ContributionStats | null>;
 }
 
-export default function CVClient({ contributionStats = {} }: CVClientProps) {
+export default function CVClient({ contributionStats = NO_CONTRIBUTION_STATS }: CVClientProps) {
   const [activeTab, setActiveTab] = useState<CVTab>('resume');
 
   return (
     <>
       <TurnstileGate decryptingLabel="VERIFYING..." />
-      <div className="relative flex h-auto min-h-screen w-full flex-col bg-[var(--terminal-bg)] text-[var(--terminal-text)] group/design-root overflow-x-hidden font-display print:bg-white print:min-h-0">
+      <div className="relative flex h-auto min-h-screen w-full flex-col bg-[var(--terminal-bg)] text-[var(--terminal-text)] group/design-root overflow-x-clip font-display print:bg-white print:min-h-0">
         {/* Background Grid Pattern Effect */}
         <div className="fixed inset-0 z-0 opacity-[0.03] pointer-events-none print:hidden" style={{ backgroundImage: `linear-gradient(var(--terminal-accent-alt) 1px, transparent 1px), linear-gradient(90deg, var(--terminal-accent-alt) 1px, transparent 1px)`, backgroundSize: '40px 40px' }}></div>
 

@@ -14,14 +14,16 @@ interface ResumePanelProps {
   contributionStats: Record<string, ContributionStats | null>;
 }
 
-export default function ResumePanel({ contributionStats }: ResumePanelProps) {
-  const [selectedStyle, setSelectedStyle] = useState<string>(cvConfig.styles[0].id);
+type CVStyle = (typeof cvConfig.styles)[number];
+
+function useCVDownload({ style, styleId, useColumnLayout, contributionStats }: {
+  style: CVStyle;
+  styleId: string;
+  useColumnLayout: boolean;
+  contributionStats: Record<string, ContributionStats | null>;
+}) {
   const [isDownloading, setIsDownloading] = useState(false);
   const [downloadSucceeded, setDownloadSucceeded] = useState(false);
-  const [useColumnLayout, setUseColumnLayout] = useState<boolean>(false);
-  const [showCV, setShowCV] = useState<boolean>(true);
-
-  const selectedCVStyle = cvConfig.styles.find(s => s.id === selectedStyle) || cvConfig.styles[0];
 
   const handleDownloadPDF = async () => {
     setIsDownloading(true);
@@ -34,7 +36,7 @@ export default function ResumePanel({ contributionStats }: ResumePanelProps) {
 
       const blob = await pdf(
         <CVDocument
-          style={selectedCVStyle}
+          style={style}
           siteConfig={siteConfig}
           experience={experience}
           education={education}
@@ -49,7 +51,7 @@ export default function ResumePanel({ contributionStats }: ResumePanelProps) {
         />
       ).toBlob();
 
-      downloadBlob(blob, `${siteConfig.fullName.replace(/\s+/g, '_')}_CV_${selectedStyle}.pdf`);
+      downloadBlob(blob, `${siteConfig.fullName.replace(/\s+/g, '_')}_CV_${styleId}.pdf`);
       setDownloadSucceeded(true);
       setTimeout(() => setDownloadSucceeded(false), 1800);
     } catch (err) {
@@ -58,6 +60,59 @@ export default function ResumePanel({ contributionStats }: ResumePanelProps) {
       setIsDownloading(false);
     }
   };
+
+  return { isDownloading, downloadSucceeded, handleDownloadPDF };
+}
+
+function ColumnLayoutToggle({ active, onToggle }: { active: boolean; onToggle: () => void }) {
+  return (
+    <button
+      onClick={onToggle}
+      className={`flex min-w-[120px] cursor-pointer items-center justify-center overflow-hidden rounded h-10 sm:h-12 px-4 sm:px-6 border-2 transition active:scale-[0.97] ${active
+        ? 'bg-[var(--terminal-surface-alt)] border-primary text-primary hover:bg-[var(--terminal-surface-hover)]'
+        : 'bg-[var(--terminal-surface-alt)] border-[var(--terminal-border)] text-[var(--terminal-text-muted)] hover:border-primary hover:text-primary'
+        }`}
+    >
+      <span className="material-symbols-outlined text-base sm:text-lg mr-2">
+        {active ? 'view_column' : 'view_list'}
+      </span>
+      <span className="truncate font-mono text-xs sm:text-sm">
+        {active ? '2 COL' : '1 COL'}
+      </span>
+    </button>
+  );
+}
+
+function DownloadButton({ isDownloading, succeeded, onClick }: { isDownloading: boolean; succeeded: boolean; onClick: () => void }) {
+  return (
+    <button
+      onClick={onClick}
+      disabled={isDownloading}
+      className="flex min-w-[140px] cursor-pointer items-center justify-center overflow-hidden rounded h-10 sm:h-12 px-4 sm:px-6 bg-primary text-[var(--terminal-on-primary)] text-sm sm:text-base font-bold leading-normal tracking-[0.015em] hover:bg-primary/80 transition active:scale-[0.97] shadow-[0_0_20px_rgba(var(--terminal-accent-rgb),0.3)] border border-transparent hover:border-[var(--terminal-hover-border)] disabled:opacity-50 disabled:cursor-not-allowed disabled:active:scale-100"
+    >
+      <span className={`material-symbols-outlined text-base sm:text-lg mr-2 ${isDownloading ? 'animate-spin' : succeeded ? 'animate-pop-in' : ''}`}>
+        {isDownloading ? 'progress_activity' : succeeded ? 'check' : 'download'}
+      </span>
+      <span className="truncate font-mono text-xs sm:text-sm md:text-base">
+        {isDownloading ? 'GENERATING...' : succeeded ? 'DOWNLOADED' : 'DOWNLOAD_PDF'}
+      </span>
+    </button>
+  );
+}
+
+export default function ResumePanel({ contributionStats }: ResumePanelProps) {
+  const [selectedStyle, setSelectedStyle] = useState<string>(cvConfig.styles[0].id);
+  const [useColumnLayout, setUseColumnLayout] = useState<boolean>(false);
+  const [showCV, setShowCV] = useState<boolean>(true);
+
+  const selectedCVStyle = cvConfig.styles.find(s => s.id === selectedStyle) || cvConfig.styles[0];
+
+  const { isDownloading, downloadSucceeded, handleDownloadPDF } = useCVDownload({
+    style: selectedCVStyle,
+    styleId: selectedStyle,
+    useColumnLayout,
+    contributionStats,
+  });
 
   return (
     <>
@@ -73,34 +128,8 @@ export default function ResumePanel({ contributionStats }: ResumePanelProps) {
             </p>
           </div>
           <div className="flex flex-col sm:flex-row gap-3 items-end">
-            {/* Column Layout Toggle */}
-            <button
-              onClick={() => setUseColumnLayout(!useColumnLayout)}
-              className={`flex min-w-[120px] cursor-pointer items-center justify-center overflow-hidden rounded h-10 sm:h-12 px-4 sm:px-6 border-2 transition active:scale-[0.97] ${useColumnLayout
-                ? 'bg-[var(--terminal-surface-alt)] border-primary text-primary hover:bg-[var(--terminal-surface-hover)]'
-                : 'bg-[var(--terminal-surface-alt)] border-[var(--terminal-border)] text-[var(--terminal-text-muted)] hover:border-primary hover:text-primary'
-                }`}
-            >
-              <span className="material-symbols-outlined text-base sm:text-lg mr-2">
-                {useColumnLayout ? 'view_column' : 'view_list'}
-              </span>
-              <span className="truncate font-mono text-xs sm:text-sm">
-                {useColumnLayout ? '2 COL' : '1 COL'}
-              </span>
-            </button>
-            {/* Download Button */}
-            <button
-              onClick={handleDownloadPDF}
-              disabled={isDownloading}
-              className="flex min-w-[140px] cursor-pointer items-center justify-center overflow-hidden rounded h-10 sm:h-12 px-4 sm:px-6 bg-primary text-[var(--terminal-on-primary)] text-sm sm:text-base font-bold leading-normal tracking-[0.015em] hover:bg-primary/80 transition active:scale-[0.97] shadow-[0_0_20px_rgba(var(--terminal-accent-rgb),0.3)] border border-transparent hover:border-[var(--terminal-hover-border)] disabled:opacity-50 disabled:cursor-not-allowed disabled:active:scale-100"
-            >
-              <span className={`material-symbols-outlined text-base sm:text-lg mr-2 ${isDownloading ? 'animate-spin' : downloadSucceeded ? 'animate-pop-in' : ''}`}>
-                {isDownloading ? 'progress_activity' : downloadSucceeded ? 'check' : 'download'}
-              </span>
-              <span className="truncate font-mono text-xs sm:text-sm md:text-base">
-                {isDownloading ? 'GENERATING...' : downloadSucceeded ? 'DOWNLOADED' : 'DOWNLOAD_PDF'}
-              </span>
-            </button>
+            <ColumnLayoutToggle active={useColumnLayout} onToggle={() => setUseColumnLayout(!useColumnLayout)} />
+            <DownloadButton isDownloading={isDownloading} succeeded={downloadSucceeded} onClick={handleDownloadPDF} />
           </div>
         </div>
 

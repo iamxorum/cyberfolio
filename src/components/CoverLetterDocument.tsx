@@ -2,6 +2,7 @@
 
 import { Document, Page, View, Text, Link, StyleSheet } from '@react-pdf/renderer';
 import { CoverLetterStyle, SiteConfig } from '@/config';
+import { formatLetterDate } from '@/lib/format-time';
 import { getContactInfo, type ContactItem } from '@/lib/cv-helpers';
 
 interface CoverLetterDocumentProps {
@@ -82,7 +83,7 @@ const ContactLine = ({ items }: { items: ContactItem[] }) => items.length > 0 &&
 
 export default function CoverLetterDocument({ siteConfig, style, email }: CoverLetterDocumentProps) {
   const contactInfo = getContactInfo(siteConfig, email, false);
-  const today = new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
+  const today = formatLetterDate();
   const accentColor = style.colorScheme?.primary || '#000000';
   const salutation = style.salutation || 'Dear Hiring Manager,';
 
@@ -105,8 +106,8 @@ export default function CoverLetterDocument({ siteConfig, style, email }: CoverL
         <Text style={styles.date}>{today}</Text>
         <Text style={styles.salutation}>{salutation}</Text>
         <Text style={styles.paragraph}>{style.opening}</Text>
-        {style.body.map((paragraph, idx) => (
-          <Text key={idx} style={styles.paragraph}>{paragraph}</Text>
+        {style.body.map((paragraph) => (
+          <Text key={paragraph} style={styles.paragraph}>{paragraph}</Text>
         ))}
         <Text style={styles.paragraph}>{style.closing}</Text>
 

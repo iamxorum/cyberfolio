@@ -3,6 +3,7 @@ import { notFound } from 'next/navigation';
 import { siteConfig, projects } from '@/config';
 import { getContributionStatsForProjects } from '@/lib/github-contributions';
 import ProjectDetailClient from './ProjectDetailClient';
+import { serializeJsonLd } from '@/lib/json-ld';
 
 interface PageProps {
   params: Promise<{ id: string }>;
@@ -56,7 +57,7 @@ export default async function ProjectDetailPage({ params }: PageProps) {
     <>
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }}
+        dangerouslySetInnerHTML={{ __html: serializeJsonLd(breadcrumbJsonLd) }}
       />
       <ProjectDetailClient project={project} contributionStats={contributionStats[project.id]} />
     </>

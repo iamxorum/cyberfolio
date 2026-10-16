@@ -24,7 +24,7 @@ export default function CountryLeaderboard({ entries, selectedCountry, isGlobeRe
         <div className="col-span-4 pl-4 text-center">THREAT</div>
       </div>
 
-      <div className="p-1 flex flex-col gap-1 max-h-[220px] overflow-y-auto custom-scrollbar">
+      <div data-lenis-prevent className="p-1 flex flex-col gap-1 max-h-[220px] overflow-y-auto custom-scrollbar">
         {entries.map((item, idx) => (
           <button
             key={item.country}

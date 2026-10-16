@@ -1,3 +1,4 @@
+import { Fragment } from 'react';
 import { siteConfig, projects, certifications, contentConfig, education, languages, hobbies } from '@/config';
 
 export const sanitizeInput = (input: string): string => {
@@ -220,23 +221,23 @@ export const commands: Record<string, { output: string | React.ReactNode; descri
       <div className="space-y-2 text-sm">
         <div className="text-primary font-bold mb-2">Contact Information:</div>
         <div className="grid grid-cols-2 gap-x-4 gap-y-2">
-          {siteConfig.social.professional && siteConfig.social.professional.map((link, index) => (
-            <>
-              <div key={`${index}-label`}><span className="text-[var(--terminal-text-muted)]">{link.name}:</span></div>
-              <div key={`${index}-value`} className="text-primary break-all">{link.url}</div>
-            </>
+          {siteConfig.social.professional && siteConfig.social.professional.map((link) => (
+            <Fragment key={link.url}>
+              <div><span className="text-[var(--terminal-text-muted)]">{link.name}:</span></div>
+              <div className="text-primary break-all">{link.url}</div>
+            </Fragment>
           ))}
-          {siteConfig.social.gaming && siteConfig.social.gaming.map((link, index) => (
-            <>
-              <div key={`gaming-${index}-label`}><span className="text-[var(--terminal-text-muted)]">{link.name}:</span></div>
-              <div key={`gaming-${index}-value`} className="text-primary break-all">{link.url}</div>
-            </>
+          {siteConfig.social.gaming && siteConfig.social.gaming.map((link) => (
+            <Fragment key={link.url}>
+              <div><span className="text-[var(--terminal-text-muted)]">{link.name}:</span></div>
+              <div className="text-primary break-all">{link.url}</div>
+            </Fragment>
           ))}
-          {siteConfig.social.other && siteConfig.social.other.map((link, index) => (
-            <>
-              <div key={`other-${index}-label`}><span className="text-[var(--terminal-text-muted)]">{link.name}:</span></div>
-              <div key={`other-${index}-value`} className="text-primary break-all">{link.url}</div>
-            </>
+          {siteConfig.social.other && siteConfig.social.other.map((link) => (
+            <Fragment key={link.url}>
+              <div><span className="text-[var(--terminal-text-muted)]">{link.name}:</span></div>
+              <div className="text-primary break-all">{link.url}</div>
+            </Fragment>
           ))}
         </div>
       </div>

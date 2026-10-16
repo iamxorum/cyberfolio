@@ -20,15 +20,11 @@ export function useBanReveal(isGlobeReady: boolean, banPoints: BannedIP[]) {
     const INTERVAL_MS = 100;
     const TOTAL_STEPS = 40; // ~4s total reveal, regardless of dataset size
     const BATCH_SIZE = Math.max(1, Math.ceil(banPoints.length / TOTAL_STEPS));
+    let revealed = 0;
     const interval = setInterval(() => {
-      setRevealedBanCount((count) => {
-        const next = count + BATCH_SIZE;
-        if (next >= banPoints.length) {
-          clearInterval(interval);
-          return banPoints.length;
-        }
-        return next;
-      });
+      revealed = Math.min(revealed + BATCH_SIZE, banPoints.length);
+      setRevealedBanCount(revealed);
+      if (revealed >= banPoints.length) clearInterval(interval);
     }, INTERVAL_MS);
     return () => clearInterval(interval);
   }, [isGlobeReady, banPoints]);

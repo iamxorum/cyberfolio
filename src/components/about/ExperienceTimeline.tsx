@@ -11,7 +11,7 @@ export default function ExperienceTimeline() {
   if (experience.length === 0) return null;
 
   return (
-    <div id="experience" className="border border-[var(--terminal-border)] rounded bg-[var(--terminal-bg)] p-4 scroll-mt-20">
+    <div id="experience" className="border border-[var(--terminal-border)] rounded bg-[var(--terminal-bg)] p-4 scroll-mt-32">
       <h2 className="text-xs font-mono text-[var(--terminal-text-dim)] mb-3">RECENT_ACTIVITY_LOG</h2>
       <div className="space-y-3 font-mono text-sm">
         {[...experience].reverse().map((exp, index) => {
@@ -49,9 +49,9 @@ export default function ExperienceTimeline() {
                 )}
                 {exp.skills && exp.skills.length > 0 && (
                   <div className="flex flex-wrap gap-1.5 mt-2">
-                    {exp.skills.map((skill, idx) => (
+                    {exp.skills.map((skill) => (
                       <span
-                        key={idx}
+                        key={skill}
                         className="px-2 py-0.5 text-xs bg-[var(--terminal-surface-dark)] border border-[var(--terminal-border)] rounded text-[var(--terminal-text-muted)] hover:border-primary hover:text-primary transition-colors"
                       >
                         {skill}

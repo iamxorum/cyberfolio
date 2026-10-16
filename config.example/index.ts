@@ -13,7 +13,7 @@ export {
   type Skill,
   type SkillLevel
 } from './skills.config';
-export { hobbies, type Hobby } from './hobbies.config';
+export { hobbies, isPersonalHobby, type Hobby } from './hobbies.config';
 export { education, type Education } from './education.config';
 export { certifications, type Certification } from './certifications.config';
 export { languages, type Language } from './languages.config';
@@ -24,4 +24,3 @@ export { scripts, type ScriptConfig } from './scripts.config';
 export { badges, type BadgeConfig } from './badges.config';
 export { dcConfig, type DCConfig } from './dc.config';
 export { securityConfig, type SecurityConfig } from './security.config';
-export { canaryConfig, type CanaryConfig } from './canary.config';

@@ -7,7 +7,6 @@ import InitScreen from '@/components/InitScreen';
 import HeroSection from '@/components/HeroSection';
 import SystemStats from '@/components/SystemStats';
 import ProjectsGrid from '@/components/ProjectsGrid';
-import Discography from "@/components/Discography";
 import LazyMount from '@/components/LazyMount';
 import { useAppInitialization } from '@/hooks/useAppInitialization';
 import { useSystemStats } from '@/hooks/useSystemStats';
@@ -34,25 +33,13 @@ const ThreatGlobe = dynamic(() => import('@/components/ThreatGlobe'), {
   loading: () => <ThreatGlobeSkeleton />
 });
 
-const DiscographySkeleton = () => (
-  <div className="flex flex-col gap-6 px-4 py-6 mb-8 border border-[var(--terminal-border)] rounded bg-[rgba(var(--terminal-bg-rgb),0.80)] min-h-[420px] items-center justify-center relative overflow-hidden">
-    <div className="animate-pulse flex flex-col items-center gap-4 z-10">
-      <span className="material-symbols-outlined text-4xl text-primary animate-spin">
-        graphic_eq
-      </span>
-      <p className="font-mono text-[var(--terminal-text-muted)] tracking-widest text-sm">
-        LOADING_DISCOGRAPHY...
-      </p>
-    </div>
-  </div>
-);
 
 export default function Home() {
   const { initialized, setInitialized, userId } = useAppInitialization();
   const { uptime, responseTime, viewport } = useSystemStats();
 
   return (
-    <div className="relative flex h-auto min-h-screen w-full flex-col bg-[var(--terminal-bg)] text-[var(--terminal-text)] group/design-root overflow-x-hidden font-display">
+    <div className="relative flex h-auto min-h-screen w-full flex-col bg-[var(--terminal-bg)] text-[var(--terminal-text)] group/design-root overflow-x-clip font-display">
       {!initialized && <InitScreen onInit={() => setInitialized(true)} />}
 
       <div className="fixed inset-0 z-0 opacity-[0.03] pointer-events-none" style={{ backgroundImage: `linear-gradient(var(--terminal-accent-alt) 1px, transparent 1px), linear-gradient(90deg, var(--terminal-accent-alt) 1px, transparent 1px)`, backgroundSize: '40px 40px' }}></div>
@@ -73,10 +60,6 @@ export default function Home() {
               />
               <LazyMount fallback={<ThreatGlobeSkeleton />}>
                 <ThreatGlobe />
-              </LazyMount>
-              <br/>
-              <LazyMount fallback={<DiscographySkeleton />}>
-                <Discography />
               </LazyMount>
             </main>
             <Footer />

@@ -83,7 +83,7 @@ export default function Discography() {
                         <p className="text-[10px] font-bold text-[var(--terminal-text)]/40 uppercase tracking-widest">Entry_Point</p>
                     </div>
 
-                    <div className="flex flex-col gap-1 max-h-[360px] overflow-y-auto pr-2 custom-scrollbar overflow-x-hidden">
+                    <div data-lenis-prevent className="flex flex-col gap-1 max-h-[360px] overflow-y-auto pr-2 custom-scrollbar overflow-x-hidden">
                         {discography.map((track) => {
                             const isSelected = activeTrack.id === track.id;
                             return (

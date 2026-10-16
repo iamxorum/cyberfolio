@@ -14,15 +14,84 @@ interface ProjectDetailClientProps {
   contributionStats?: ContributionStats | null;
 }
 
+const isGithubUrl = (url?: string) => !!url && url.includes('github.com');
+
+function StatusBadges({ statuses, statusColors }: { statuses: string[]; statusColors: string[] }) {
+  return (
+    <div className="flex flex-wrap items-center gap-1.5">
+      {statuses.map((status, idx) => {
+        const styles = getStatusColorStyles(statusColors[idx] || statusColors[0]);
+        return (
+          <span key={status} className={`inline-flex items-center gap-1.5 px-2 py-1 rounded ${styles.bg} border ${styles.border} ${styles.text} text-xs font-bold font-mono`}>
+            <span className={`size-1.5 rounded-full ${styles.dot}`}></span>
+            {status}
+          </span>
+        );
+      })}
+    </div>
+  );
+}
+
+function ProjectLinks({ project }: { project: Project }) {
+  const hasRepoLink = !!project.repository && project.repository !== project.link;
+  return (
+    <div className="flex flex-wrap gap-3">
+      {project.link && (
+        <a
+          href={project.link}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="inline-flex items-center gap-2 rounded h-10 px-5 bg-primary text-[var(--terminal-on-primary)] text-sm font-bold font-mono tracking-wide hover:bg-primary/80 active:scale-[0.97] transition shadow-[0_0_15px_rgba(var(--terminal-accent-rgb),0.3)]"
+        >
+          <span className="material-symbols-outlined text-lg">
+            {isGithubUrl(project.link) ? 'code' : 'open_in_new'}
+          </span>
+          {isGithubUrl(project.link) ? 'VIEW_SOURCE' : 'OPEN_LIVE'}
+        </a>
+      )}
+      {hasRepoLink && (
+        <a
+          href={project.repository}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="inline-flex items-center gap-2 rounded h-10 px-5 border border-[var(--terminal-border)] hover:border-primary hover:bg-primary/10 text-[var(--terminal-text)] text-sm font-bold font-mono tracking-wide active:scale-[0.97] transition"
+        >
+          <span className="material-symbols-outlined text-lg">code</span>
+          VIEW_SOURCE
+        </a>
+      )}
+    </div>
+  );
+}
+
+function ContributionLog({ stats }: { stats: ContributionStats }) {
+  return (
+    <section className="flex flex-col gap-2">
+      <h2 className="text-[var(--terminal-text-dim)] text-xs font-mono uppercase tracking-widest">Contribution_Log</h2>
+      <div className="flex flex-wrap items-center gap-3 text-sm font-mono text-[var(--terminal-text-muted)]">
+        <a href={stats.searchUrl} target="_blank" rel="noopener noreferrer" className="hover:text-primary transition-colors">
+          {stats.mergedCount} merged PR{stats.mergedCount !== 1 ? 's' : ''}
+        </a>
+        {stats.reviewCount > 0 && (
+          <>
+            <span aria-hidden="true">·</span>
+            <a href={stats.reviewSearchUrl} target="_blank" rel="noopener noreferrer" className="hover:text-primary transition-colors">
+              {stats.reviewCount} review{stats.reviewCount !== 1 ? 's' : ''}
+            </a>
+          </>
+        )}
+      </div>
+    </section>
+  );
+}
+
 export default function ProjectDetailClient({ project, contributionStats }: ProjectDetailClientProps) {
   const { initialized, setInitialized } = useAppInitialization();
   const statuses = Array.isArray(project.status) ? project.status : [project.status];
   const statusColors = Array.isArray(project.statusColor) ? project.statusColor : [project.statusColor];
-  const isGithubUrl = (url?: string) => !!url && url.includes('github.com');
-  const hasRepoLink = !!project.repository && project.repository !== project.link;
 
   return (
-    <div className="relative flex h-auto min-h-screen w-full flex-col bg-[var(--terminal-bg)] text-[var(--terminal-text)] group/design-root overflow-x-hidden font-display">
+    <div className="relative flex h-auto min-h-screen w-full flex-col bg-[var(--terminal-bg)] text-[var(--terminal-text)] group/design-root overflow-x-clip font-display">
       {!initialized && <InitScreen onInit={() => setInitialized(true)} />}
       <div className="fixed inset-0 z-0 opacity-[0.03] pointer-events-none" style={{ backgroundImage: `linear-gradient(var(--terminal-accent-alt) 1px, transparent 1px), linear-gradient(90deg, var(--terminal-accent-alt) 1px, transparent 1px)`, backgroundSize: '40px 40px' }}></div>
       <div className="layout-container flex h-full grow flex-col">
@@ -71,44 +140,9 @@ export default function ProjectDetailClient({ project, contributionStats }: Proj
                     </div>
                   </div>
 
-                  <div className="flex flex-wrap items-center gap-1.5">
-                    {statuses.map((status, idx) => {
-                      const styles = getStatusColorStyles(statusColors[idx] || statusColors[0]);
-                      return (
-                        <span key={idx} className={`inline-flex items-center gap-1.5 px-2 py-1 rounded ${styles.bg} border ${styles.border} ${styles.text} text-xs font-bold font-mono`}>
-                          <span className={`size-1.5 rounded-full ${styles.dot}`}></span>
-                          {status}
-                        </span>
-                      );
-                    })}
-                  </div>
+                  <StatusBadges statuses={statuses} statusColors={statusColors} />
 
-                  <div className="flex flex-wrap gap-3">
-                    {project.link && (
-                      <a
-                        href={project.link}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="inline-flex items-center gap-2 rounded h-10 px-5 bg-primary text-[var(--terminal-on-primary)] text-sm font-bold font-mono tracking-wide hover:bg-primary/80 active:scale-[0.97] transition shadow-[0_0_15px_rgba(var(--terminal-accent-rgb),0.3)]"
-                      >
-                        <span className="material-symbols-outlined text-lg">
-                          {isGithubUrl(project.link) ? 'code' : 'open_in_new'}
-                        </span>
-                        {isGithubUrl(project.link) ? 'VIEW_SOURCE' : 'OPEN_LIVE'}
-                      </a>
-                    )}
-                    {hasRepoLink && (
-                      <a
-                        href={project.repository}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="inline-flex items-center gap-2 rounded h-10 px-5 border border-[var(--terminal-border)] hover:border-primary hover:bg-primary/10 text-[var(--terminal-text)] text-sm font-bold font-mono tracking-wide active:scale-[0.97] transition"
-                      >
-                        <span className="material-symbols-outlined text-lg">code</span>
-                        VIEW_SOURCE
-                      </a>
-                    )}
-                  </div>
+                  <ProjectLinks project={project} />
                 </div>
 
                 {/* Description */}
@@ -134,24 +168,7 @@ export default function ProjectDetailClient({ project, contributionStats }: Proj
                 )}
 
                 {/* Contribution stats */}
-                {contributionStats && contributionStats.mergedCount > 0 && (
-                  <section className="flex flex-col gap-2">
-                    <h2 className="text-[var(--terminal-text-dim)] text-xs font-mono uppercase tracking-widest">Contribution_Log</h2>
-                    <div className="flex flex-wrap items-center gap-3 text-sm font-mono text-[var(--terminal-text-muted)]">
-                      <a href={contributionStats.searchUrl} target="_blank" rel="noopener noreferrer" className="hover:text-primary transition-colors">
-                        {contributionStats.mergedCount} merged PR{contributionStats.mergedCount !== 1 ? 's' : ''}
-                      </a>
-                      {contributionStats.reviewCount > 0 && (
-                        <>
-                          <span aria-hidden="true">·</span>
-                          <a href={contributionStats.reviewSearchUrl} target="_blank" rel="noopener noreferrer" className="hover:text-primary transition-colors">
-                            {contributionStats.reviewCount} review{contributionStats.reviewCount !== 1 ? 's' : ''}
-                          </a>
-                        </>
-                      )}
-                    </div>
-                  </section>
-                )}
+                {contributionStats && contributionStats.mergedCount > 0 && <ContributionLog stats={contributionStats} />}
 
                 <Link
                   href="/projects"

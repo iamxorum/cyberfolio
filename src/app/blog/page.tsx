@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import { siteConfig } from '@/config';
 import { getAllPosts } from '@/lib/blog';
 import BlogClient from './BlogClient';
+import { serializeJsonLd } from '@/lib/json-ld';
 
 const siteUrl = `https://${siteConfig.domain}`;
 const pageUrl = `${siteUrl}/blog`;
@@ -33,7 +34,7 @@ export default function Blog() {
     <>
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }}
+        dangerouslySetInnerHTML={{ __html: serializeJsonLd(breadcrumbJsonLd) }}
       />
       <BlogClient posts={posts} />
     </>

@@ -1,7 +1,12 @@
 'use client';
 
+import { useSyncExternalStore } from 'react';
+import { formatLetterDate } from '@/lib/format-time';
 import { CoverLetterStyle, SiteConfig } from '@/config';
 import { getContactInfo } from '@/lib/cv-helpers';
+
+// The date only exists client-side; the empty server snapshot avoids a hydration mismatch.
+const noopSubscribe = () => () => {};
 
 interface CoverLetterPreviewProps {
   siteConfig: SiteConfig;
@@ -11,7 +16,7 @@ interface CoverLetterPreviewProps {
 
 export default function CoverLetterPreview({ siteConfig, style, email }: CoverLetterPreviewProps) {
   const contactInfo = getContactInfo(siteConfig, email, false);
-  const today = new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
+  const today = useSyncExternalStore(noopSubscribe, () => formatLetterDate(), () => '');
   const accentColor = style.colorScheme?.primary || '#000000';
   const salutation = style.salutation || 'Dear Hiring Manager,';
 
@@ -41,8 +46,8 @@ export default function CoverLetterPreview({ siteConfig, style, email }: CoverLe
       <p style={{ marginBottom: '16pt' }}>{today}</p>
       <p style={{ marginBottom: '12pt' }}>{salutation}</p>
       <p style={{ marginBottom: '12pt', textAlign: 'justify' }}>{style.opening}</p>
-      {style.body.map((paragraph, idx) => (
-        <p key={idx} style={{ marginBottom: '12pt', textAlign: 'justify' }}>{paragraph}</p>
+      {style.body.map((paragraph) => (
+        <p key={paragraph} style={{ marginBottom: '12pt', textAlign: 'justify' }}>{paragraph}</p>
       ))}
       <p style={{ marginBottom: '12pt', textAlign: 'justify' }}>{style.closing}</p>
 

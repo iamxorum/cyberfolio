@@ -23,7 +23,7 @@ export default function LiveBanTicker({ entries }: LiveBanTickerProps) {
       <div className="flex flex-col font-mono text-[10px] sm:text-[11px]">
         {batch.map((ban, idx) => (
           <div
-            key={idx}
+            key={ban.ip}
             className="animate-reveal flex items-center gap-2 px-3 py-1 border-b border-[var(--terminal-border)]/40 last:border-b-0"
             style={{ animationDelay: `${idx * STAGGER_STEP_DENSE_MS}ms` }}
           >

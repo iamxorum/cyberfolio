@@ -401,8 +401,8 @@ export default function CVDocument({
                 </Text>
                 {descriptionPoints.length > 0 && (
                   <View style={styles.bulletList}>
-                    {descriptionPoints.map((point, idx) => (
-                      <Text key={idx} style={styles.bulletItem}>{'• '}{point}</Text>
+                    {descriptionPoints.map((point) => (
+                      <Text key={point} style={styles.bulletItem}>{'• '}{point}</Text>
                     ))}
                   </View>
                 )}

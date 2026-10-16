@@ -10,21 +10,16 @@ import {
   type Command,
 } from '@/lib/terminal-commands';
 
+type HistoryItem = Command & { id: number };
+
 export function useTerminalSession() {
-  const [history, setHistory] = useState<Command[]>([]);
+  const nextIdRef = useRef(1);
+  const [history, setHistory] = useState<HistoryItem[]>([{ id: 0, command: '', output: '' }]);
   const [input, setInput] = useState('');
   const [commandHistory, setCommandHistory] = useState<string[]>([]);
   const [historyIndex, setHistoryIndex] = useState(-1);
   const inputRef = useRef<HTMLInputElement>(null);
   const terminalRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    // eslint-disable-next-line react-hooks/set-state-in-effect
-    setHistory([{
-      command: '',
-      output: ''
-    }]);
-  }, []);
 
   useEffect(() => {
     if (terminalRef.current) {
@@ -40,7 +35,7 @@ export function useTerminalSession() {
       ) : (
         <div className="text-sm space-y-0.5">
           {commandHistory.map((cmd, idx) => (
-            <div key={idx}>
+            <div key={`${cmd}#${commandHistory.slice(0, idx).filter((c) => c === cmd).length}`}>
               <span className="text-[var(--terminal-text-dim)]">{String(idx + 1).padStart(3, ' ')}</span>{'  '}
               <span className="text-[var(--terminal-text)]">{escapeHtml(cmd)}</span>
             </div>
@@ -96,8 +91,8 @@ export function useTerminalSession() {
               <>
                 <div><span className="text-[var(--terminal-text-muted)]">Tags:</span></div>
                 <div className="flex flex-wrap gap-1 col-span-2">
-                  {project.tags.map((tag, idx) => (
-                    <span key={idx} className="px-1.5 py-0.5 rounded bg-[var(--terminal-bg)] border border-[var(--terminal-border)] text-[10px] text-[var(--terminal-text-muted)]">
+                  {project.tags.map((tag) => (
+                    <span key={tag} className="px-1.5 py-0.5 rounded bg-[var(--terminal-bg)] border border-[var(--terminal-border)] text-[10px] text-[var(--terminal-text-muted)]">
                       {tag}
                     </span>
                   ))}
@@ -134,7 +129,9 @@ export function useTerminalSession() {
     if (!sanitizedCmd) return;
 
     if (!isValidCommand(sanitizedCmd)) {
+      const id = nextIdRef.current++;
       setHistory(prev => [...prev, {
+        id,
         command: sanitizedCmd,
         output: (
           <div className="text-red-400 text-sm">
@@ -167,7 +164,9 @@ export function useTerminalSession() {
       };
     }
 
+    const id = nextIdRef.current++;
     setHistory(prev => [...prev, {
+      id,
       command: sanitizedCmd,
       output: commandOutput.output
     }]);
@@ -205,7 +204,9 @@ export function useTerminalSession() {
     if (matches.length === 1) {
       setInput(matches[0] + ' ');
     } else if (matches.length > 1) {
+      const id = nextIdRef.current++;
       setHistory(prev => [...prev, {
+        id,
         command: sanitizedInput,
         output: (
           <div className="text-[var(--terminal-text-muted)] text-sm">

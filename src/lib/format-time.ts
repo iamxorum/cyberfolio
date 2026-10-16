@@ -12,3 +12,7 @@ export function formatRelativeTime(isoString: string): string {
   const days = Math.floor(hours / 24);
   return `${days}d ago`;
 }
+
+export function formatLetterDate(date: Date = new Date()): string {
+  return date.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
+}

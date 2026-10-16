@@ -83,7 +83,7 @@ export default function ProjectsGrid() {
                       {statuses.map((status, idx) => {
                         const color = statusColors[idx] || statusColors[0] || 'green';
                         return (
-                          <span key={idx} className={`text-xs ${statusColorMap[color]} font-mono`}>
+                          <span key={status} className={`text-xs ${statusColorMap[color]} font-mono`}>
                             {status}
                             {idx < statuses.length - 1 && <span className="text-[var(--terminal-text-dim)] mx-1">•</span>}
                           </span>
@@ -96,8 +96,8 @@ export default function ProjectsGrid() {
                   {project.description}
                 </p>
                 <div className="flex flex-wrap gap-2 mt-2">
-                  {project.tags.map((tag, index) => (
-                    <span key={index} className="px-2 py-1 rounded bg-[var(--terminal-bg)] border border-[var(--terminal-border)] text-[10px] text-[var(--terminal-text-dim)] font-mono whitespace-nowrap">
+                  {project.tags.map((tag) => (
+                    <span key={tag} className="px-2 py-1 rounded bg-[var(--terminal-bg)] border border-[var(--terminal-border)] text-[10px] text-[var(--terminal-text-dim)] font-mono whitespace-nowrap">
                       {tag}
                     </span>
                   ))}
