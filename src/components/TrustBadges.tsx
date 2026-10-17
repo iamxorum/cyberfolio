@@ -1,5 +1,59 @@
-import Image from 'next/image';
-import { badges } from '@/config';
+'use client';
+
+import { useCallback, useState, type CSSProperties } from 'react';
+import { badges, type BadgeConfig } from '@/config';
+
+const IMAGE_HEIGHT_PX = 24;
+
+// Static badge drawn locally (same flat look as the shields.io ones), so it never depends on a remote service.
+function BadgePill({ pill, accent }: { pill: NonNullable<BadgeConfig['pill']>; accent: string }) {
+  return (
+    <div className="flex overflow-hidden rounded-[4px] ring-1 ring-black/15 font-mono text-[11px] font-bold leading-none text-white" style={{ height: IMAGE_HEIGHT_PX }}>
+      <span className="flex items-center px-2 bg-[#161b22]">{pill.label}</span>
+      <span className="flex items-center px-2" style={{ backgroundColor: `color-mix(in srgb, ${accent} 78%, black)` }}>{pill.value}</span>
+    </div>
+  );
+}
+
+// Badge art comes from third-party hosts, so it can be slow or fail. The slot is reserved up front
+// (fixed height, width from `aspect`) so the card never jumps, with a static skeleton behind the image
+// and a quiet fallback on error. The image itself is never hidden or faded: it simply paints when ready.
+function BadgeImage({ badge }: { badge: BadgeConfig }) {
+  const [failed, setFailed] = useState(false);
+
+  // An image served from cache can fail before React attaches onError, so check on mount too.
+  const imgRef = useCallback((img: HTMLImageElement | null) => {
+    if (img?.complete && img.naturalWidth === 0) setFailed(true);
+  }, []);
+
+  const slotStyle: CSSProperties = {
+    height: IMAGE_HEIGHT_PX,
+    // Some SVGs (AbuseIPDB) have no intrinsic width and would stretch to the default 300px, so a known
+    // aspect pins the slot to exactly the image's shape; without one the slot follows the image.
+    ...(badge.aspect ? { width: Math.round(IMAGE_HEIGHT_PX * badge.aspect) } : { minWidth: 48 }),
+  };
+
+  return (
+    <div className="relative overflow-hidden rounded-[4px] ring-1 ring-black/15 bg-[var(--terminal-surface-dark)]" style={slotStyle}>
+      {failed ? (
+        <div className="flex h-full items-center px-2 font-mono text-[9px] text-[var(--terminal-text-dim)]">
+          badge unavailable
+        </div>
+      ) : (
+        // eslint-disable-next-line @next/next/no-img-element -- remote SVG badges; next/image can't size or optimise them
+        <img
+          ref={imgRef}
+          src={badge.imageUrl}
+          alt={badge.name}
+          fetchPriority="high"
+          onError={() => setFailed(true)}
+          className={`relative block h-full ${badge.aspect ? 'w-full' : 'w-auto'} max-w-none`}
+          style={badge.imageStyle}
+        />
+      )}
+    </div>
+  );
+}
 
 export default function TrustBadges() {
   if (badges.length === 0) return null;
@@ -18,8 +72,13 @@ export default function TrustBadges() {
               key={badge.id}
               href={badge.url}
               {...(!isInternal && { target: '_blank', rel: 'noopener noreferrer' })}
-              className={`group/badge relative flex items-center gap-2.5 rounded border border-[var(--terminal-border)] px-3 py-2 overflow-hidden transition hover:-translate-y-[2px] active:scale-[0.98] ${badge.containerClasses || 'bg-[var(--terminal-surface)]'}`}
-              style={{ '--badge-accent': accent } as React.CSSProperties}
+              className="group/badge relative flex items-center gap-2.5 rounded border px-3 py-2 overflow-hidden transition hover:-translate-y-[2px] active:scale-[0.98]"
+              // Tinted from theme tokens (not fixed dark colours) so the card reads correctly in light and dark.
+              style={{
+                '--badge-accent': accent,
+                background: 'linear-gradient(135deg, color-mix(in srgb, var(--badge-accent) 14%, var(--terminal-surface)), var(--terminal-bg))',
+                borderColor: 'color-mix(in srgb, var(--badge-accent) 30%, var(--terminal-border))',
+              } as CSSProperties}
             >
               <div
                 className="absolute inset-0 opacity-0 group-hover/badge:opacity-100 transition-opacity pointer-events-none"
@@ -29,7 +88,7 @@ export default function TrustBadges() {
               {badge.icon && (
                 <span
                   className="material-symbols-outlined text-lg flex-shrink-0 relative z-10"
-                  style={{ color: accent }}
+                  style={{ color: 'color-mix(in srgb, var(--badge-accent) 65%, var(--terminal-text))' }}
                 >
                   {badge.icon}
                 </span>
@@ -39,23 +98,8 @@ export default function TrustBadges() {
                 <span className="text-[8px] sm:text-[9px] font-mono uppercase tracking-widest text-[var(--terminal-text-dim)] truncate">
                   {badge.name}
                 </span>
-                <Image
-                  src={badge.imageUrl}
-                  alt={badge.name}
-                  width={140}
-                  height={20}
-                  className="w-[120px] sm:w-[140px] block"
-                  style={{ height: 'auto', ...badge.imageStyle }}
-                  unoptimized
-                />
+                {badge.pill ? <BadgePill pill={badge.pill} accent={accent} /> : <BadgeImage badge={badge} />}
               </div>
-
-              <span
-                className="w-1.5 h-1.5 rounded-full flex-shrink-0 animate-pulse relative z-10"
-                style={{ backgroundColor: accent, boxShadow: `0 0 6px ${accent}` }}
-                title="Live"
-                aria-hidden="true"
-              ></span>
             </a>
           );
         })}
