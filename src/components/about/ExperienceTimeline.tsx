@@ -1,5 +1,6 @@
 import { experience } from '@/config';
 import { STAGGER_STEP_MS } from '@/lib/motion';
+import Reveal from '@/components/Reveal';
 
 function getDateRange(exp: (typeof experience)[number]): string {
   const isOngoing = !exp.endDate || exp.endDate.toLowerCase() === 'ongoing';
@@ -19,7 +20,7 @@ export default function ExperienceTimeline() {
           const dateRange = getDateRange(exp);
 
           return (
-            <div key={exp.id} className="animate-reveal flex gap-3 items-start group" style={{ animationDelay: `${Math.min(index, 6) * STAGGER_STEP_MS}ms` }}>
+            <Reveal key={exp.id} className="flex gap-3 items-start group" delay={Math.min(index, 2) * STAGGER_STEP_MS}>
               <div className="text-[var(--terminal-text-dim)] text-xs w-36 flex-shrink-0">
                 <div>{dateRange}</div>
                 {exp.type && (
@@ -60,7 +61,7 @@ export default function ExperienceTimeline() {
                   </div>
                 )}
               </div>
-            </div>
+            </Reveal>
           );
         })}
       </div>

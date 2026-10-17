@@ -1,4 +1,7 @@
 import { education } from '@/config';
+import Reveal from '@/components/Reveal';
+import TypedText from '@/components/TypedText';
+import { STAGGER_STEP_DENSE_MS, revealDelay } from '@/lib/motion';
 
 type Education = (typeof education)[number];
 
@@ -31,14 +34,14 @@ export default function EducationSection() {
   if (education.length === 0) return null;
 
   return (
-    <div id="education" className="bg-[var(--terminal-surface)] border border-[var(--terminal-border)] rounded p-4 sm:p-6 scroll-mt-32">
+    <Reveal id="education" draw className="bg-[var(--terminal-surface)] border border-[var(--terminal-border)] rounded p-4 sm:p-6 scroll-mt-32">
       <h2 className="text-[var(--terminal-text)] font-mono text-base sm:text-lg font-bold mb-4 sm:mb-6 flex items-center gap-2">
         <span className="material-symbols-outlined text-primary text-lg sm:text-xl">school</span>
-        <span className="text-sm sm:text-base">EDUCATION</span>
+        <span className="text-sm sm:text-base"><TypedText text="EDUCATION" /></span>
       </h2>
       <div className="space-y-4">
-        {education.map((edu) => (
-          <div key={edu.id} className="flex items-start gap-3 sm:gap-4 p-3 sm:p-4 rounded border border-[var(--terminal-border)] bg-[var(--terminal-bg)] hover:border-primary/50 transition-colors group">
+        {education.map((edu, index) => (
+          <div key={edu.id} data-reveal style={revealDelay(Math.min(index, 4) * STAGGER_STEP_DENSE_MS)} className="scroll-reveal flex items-start gap-3 sm:gap-4 p-3 sm:p-4 rounded border border-[var(--terminal-border)] bg-[var(--terminal-bg)] hover:border-primary/50 transition-colors group">
             {edu.icon && (
               <span className="material-symbols-outlined text-primary text-xl sm:text-2xl group-hover:scale-110 transition-transform flex-shrink-0">
                 {edu.icon}
@@ -95,6 +98,6 @@ export default function EducationSection() {
           </div>
         ))}
       </div>
-    </div>
+    </Reveal>
   );
 }

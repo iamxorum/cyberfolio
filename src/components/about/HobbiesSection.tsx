@@ -1,4 +1,7 @@
 import { hobbies, isPersonalHobby } from '@/config';
+import Reveal from '@/components/Reveal';
+import TypedText from '@/components/TypedText';
+import { STAGGER_STEP_DENSE_MS, revealDelay } from '@/lib/motion';
 
 const VARIANTS = {
   professional: { id: 'interests', title: 'INTERESTS', icon: 'psychology' },
@@ -48,14 +51,14 @@ export default function HobbiesSection({ kind, compact = false }: HobbiesSection
   }
 
   return (
-    <div id={id} className="bg-[var(--terminal-surface)] border border-[var(--terminal-border)] rounded p-4 sm:p-6 matrix-bg scroll-mt-32">
+    <Reveal id={id} draw className="bg-[var(--terminal-surface)] border border-[var(--terminal-border)] rounded p-4 sm:p-6 matrix-bg scroll-mt-32">
       <h2 className="text-[var(--terminal-text)] font-mono text-base sm:text-lg font-bold mb-4 sm:mb-6 flex items-center gap-2">
         <span className="material-symbols-outlined text-primary text-lg sm:text-xl">{icon}</span>
-        <span className="text-sm sm:text-base">{title}</span>
+        <span className="text-sm sm:text-base"><TypedText text={title} /></span>
       </h2>
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
-        {items.map((hobby) => (
-          <div key={hobby.name} className="flex items-start gap-2 sm:gap-3 p-2.5 sm:p-3 rounded border border-[var(--terminal-border)] bg-[var(--terminal-bg)] hover:border-primary/50 transition-colors group">
+        {items.map((hobby, index) => (
+          <div key={hobby.name} data-reveal style={revealDelay(Math.min(index, 5) * STAGGER_STEP_DENSE_MS)} className="scroll-reveal flex items-start gap-2 sm:gap-3 p-2.5 sm:p-3 rounded border border-[var(--terminal-border)] bg-[var(--terminal-bg)] hover:border-primary/50 transition-colors group">
             {hobby.icon && (
               <span className="material-symbols-outlined text-primary text-lg sm:text-xl group-hover:scale-110 transition-transform flex-shrink-0">
                 {hobby.icon}
@@ -74,6 +77,6 @@ export default function HobbiesSection({ kind, compact = false }: HobbiesSection
           </div>
         ))}
       </div>
-    </div>
+    </Reveal>
   );
 }

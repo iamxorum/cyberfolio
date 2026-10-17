@@ -9,6 +9,8 @@ import RevealContainer from '@/components/cv/RevealContainer';
 import { downloadBlob } from '@/lib/download-blob';
 import { cvConfig, siteConfig, experience, education, languages, certifications, hobbies, projects } from '@/config';
 import type { ContributionStats } from '@/lib/github-contributions';
+import Reveal from '@/components/Reveal';
+import TypedText from '@/components/TypedText';
 
 interface ResumePanelProps {
   contributionStats: Record<string, ContributionStats | null>;
@@ -117,11 +119,11 @@ export default function ResumePanel({ contributionStats }: ResumePanelProps) {
   return (
     <>
       {/* CV Style Selector */}
-      <div className="mb-6 p-4 sm:p-6 rounded border border-[var(--terminal-border)] bg-[var(--terminal-surface)] no-print">
+      <Reveal draw className="mb-6 p-4 sm:p-6 rounded border border-[var(--terminal-border)] bg-[var(--terminal-surface)] no-print">
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-4">
           <div>
             <h1 className="text-[var(--terminal-text)] text-2xl sm:text-3xl font-bold leading-tight tracking-[-0.015em] font-mono mb-2">
-              <span className="text-primary">&gt;</span> CV_DOWNLOAD.sh
+              <span className="text-primary">&gt;</span> <TypedText text="CV_DOWNLOAD.sh" />
             </h1>
             <p className="text-[var(--terminal-text-dim)] text-sm font-mono">
               Select a CV style for your target job domain
@@ -154,9 +156,10 @@ export default function ResumePanel({ contributionStats }: ResumePanelProps) {
         <StyleSelectorGrid styles={cvConfig.styles} selectedId={selectedStyle} onSelect={setSelectedStyle} />
 
         <ViewToggleButton visible={showCV} onToggle={() => setShowCV(!showCV)} label="CV" />
-      </div>
+      </Reveal>
 
       {/* CV Template */}
+      <Reveal>
       <RevealContainer visible={showCV}>
         <ScaleToFit>
           <CVTemplate
@@ -175,6 +178,7 @@ export default function ResumePanel({ contributionStats }: ResumePanelProps) {
           />
         </ScaleToFit>
       </RevealContainer>
+      </Reveal>
     </>
   );
 }

@@ -1,5 +1,6 @@
 import { contentConfig } from '@/config';
 import { STAGGER_STEP_MS } from '@/lib/motion';
+import Reveal from '@/components/Reveal';
 
 function BioPromptLine() {
   const title = contentConfig.about.bio.title;
@@ -35,13 +36,13 @@ export default function BioSection() {
         </div>
       </div>
       <div className="p-4 sm:p-6 font-mono text-xs sm:text-sm leading-relaxed text-[var(--terminal-text-light)]">
-        <p className="animate-reveal mb-3 sm:mb-4">
+        <Reveal as="p" className="mb-3 sm:mb-4">
           <BioPromptLine />
-        </p>
+        </Reveal>
         {contentConfig.about.bio.paragraphs.map((paragraph, index) => (
-          <p key={paragraph} className="animate-reveal mb-3 sm:mb-4" style={{ animationDelay: `${150 + Math.min(index, 6) * STAGGER_STEP_MS}ms` }}>
+          <Reveal as="p" key={paragraph} className="mb-3 sm:mb-4" delay={Math.min(index, 3) * STAGGER_STEP_MS}>
             {paragraph}
-          </p>
+          </Reveal>
         ))}
       </div>
     </div>

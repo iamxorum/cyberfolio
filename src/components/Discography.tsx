@@ -3,6 +3,8 @@ import React, { useState, useMemo } from 'react';
 import { SiSpotify, SiSoundcloud, SiYoutube } from 'react-icons/si';
 import { MdContentCopy, MdCheck } from 'react-icons/md'; // Added copy icons
 import { discography, Track, Platform } from '../config/music.config';
+import Reveal from './Reveal';
+import TypedText from './TypedText';
 
 const PlatformIcon = ({ platform, className, style }: { platform: Platform; className?: string; style?: React.CSSProperties }) => {
     switch (platform) {
@@ -57,7 +59,7 @@ export default function Discography() {
     if (!activeTrack) return null;
 
     return (
-        <div className="flex flex-col gap-6 px-4 py-6 border border-[var(--terminal-border)] rounded bg-[rgba(var(--terminal-bg-rgb),0.80)] font-mono relative overflow-hidden">
+        <Reveal draw className="flex flex-col gap-6 px-4 py-6 border border-[var(--terminal-border)] rounded bg-[rgba(var(--terminal-bg-rgb),0.80)] font-mono relative overflow-hidden">
             {/* Ambient Glow */}
             <div
                 className="absolute top-0 right-0 w-[400px] h-[400px] opacity-10 blur-[120px] pointer-events-none transition-colors duration-300"
@@ -67,7 +69,7 @@ export default function Discography() {
             {/* HEADER */}
             <div className="flex justify-between items-center border-b border-[var(--terminal-border)] pb-4 mb-2 relative z-10">
                 <h2 className="text-xl font-bold tracking-tighter text-[var(--terminal-text)] flex items-center gap-2">
-                    DISCOGRAPHY
+                    <TypedText text="DISCOGRAPHY" />
                 </h2>
                 <div className="hidden sm:block text-[10px] text-[var(--terminal-text-muted)] uppercase tracking-[0.2em]">
                     Active: <span style={{ color: activeColor }}>{activeTrack.platform}</span>
@@ -174,6 +176,6 @@ export default function Discography() {
                 .custom-scrollbar::-webkit-scrollbar-thumb { background: ${activeColor}44; border-radius: 10px; }
                 .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: ${activeColor}aa; }
             `}</style>
-        </div>
+        </Reveal>
     );
 }

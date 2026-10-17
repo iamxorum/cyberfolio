@@ -1,17 +1,20 @@
 import { certifications } from '@/config';
+import Reveal from '@/components/Reveal';
+import TypedText from '@/components/TypedText';
+import { STAGGER_STEP_DENSE_MS, revealDelay } from '@/lib/motion';
 
 export default function CertificationsSection() {
   if (certifications.length === 0) return null;
 
   return (
-    <div id="certifications" className="bg-[var(--terminal-surface)] border border-[var(--terminal-border)] rounded p-4 sm:p-6 scroll-mt-32">
+    <Reveal id="certifications" draw className="bg-[var(--terminal-surface)] border border-[var(--terminal-border)] rounded p-4 sm:p-6 scroll-mt-32">
       <h2 className="text-[var(--terminal-text)] font-mono text-base sm:text-lg font-bold mb-4 sm:mb-6 flex items-center gap-2">
         <span className="material-symbols-outlined text-primary text-lg sm:text-xl">verified</span>
-        <span className="text-sm sm:text-base">CERTIFICATIONS</span>
+        <span className="text-sm sm:text-base"><TypedText text="CERTIFICATIONS" /></span>
       </h2>
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
-        {certifications.map((cert) => (
-          <div key={cert.id} className="flex items-start gap-2 sm:gap-3 p-3 rounded border border-[var(--terminal-border)] bg-[var(--terminal-bg)] hover:border-primary/50 transition-colors group">
+        {certifications.map((cert, index) => (
+          <div key={cert.id} data-reveal style={revealDelay(Math.min(index, 5) * STAGGER_STEP_DENSE_MS)} className="scroll-reveal flex items-start gap-2 sm:gap-3 p-3 rounded border border-[var(--terminal-border)] bg-[var(--terminal-bg)] hover:border-primary/50 transition-colors group">
             {cert.icon && (
               <span className="material-symbols-outlined text-primary text-lg sm:text-xl group-hover:scale-110 transition-transform flex-shrink-0">
                 {cert.icon}
@@ -56,6 +59,6 @@ export default function CertificationsSection() {
           </div>
         ))}
       </div>
-    </div>
+    </Reveal>
   );
 }

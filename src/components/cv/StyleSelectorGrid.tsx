@@ -1,3 +1,5 @@
+import Reveal from '@/components/Reveal';
+
 interface SelectableStyle {
   id: string;
   name: string;
@@ -15,13 +17,14 @@ interface StyleSelectorGridProps<T extends SelectableStyle> {
 export default function StyleSelectorGrid<T extends SelectableStyle>({ styles, selectedId, onSelect }: StyleSelectorGridProps<T>) {
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
-      {styles.map((style) => {
+      {styles.map((style, index) => {
         const isSelected = selectedId === style.id;
         return (
+          // The wrapper carries the reveal: the button's classes change on selection, which would wipe it.
+          <Reveal key={style.id} className="h-full" delay={Math.min(index, 7) * 60}>
           <button
-            key={style.id}
             onClick={() => onSelect(style.id)}
-            className={`flex flex-col gap-2 p-4 rounded border transition active:scale-[0.98] cursor-pointer text-left ${isSelected
+            className={`flex h-full w-full flex-col gap-2 p-4 rounded border transition active:scale-[0.98] cursor-pointer text-left ${isSelected
               ? 'border-primary bg-primary/10 shadow-[0_0_15px_rgba(var(--terminal-accent-rgb),0.3)]'
               : 'border-[var(--terminal-border)] bg-[var(--terminal-surface-alt)] hover:border-primary/50 hover:bg-[var(--terminal-surface-hover)]'
               }`}
@@ -45,6 +48,7 @@ export default function StyleSelectorGrid<T extends SelectableStyle>({ styles, s
               {style.description}
             </p>
           </button>
+          </Reveal>
         );
       })}
     </div>

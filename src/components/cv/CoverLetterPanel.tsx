@@ -8,6 +8,8 @@ import ViewToggleButton from '@/components/cv/ViewToggleButton';
 import RevealContainer from '@/components/cv/RevealContainer';
 import { downloadBlob } from '@/lib/download-blob';
 import { coverLetterConfig, siteConfig } from '@/config';
+import Reveal from '@/components/Reveal';
+import TypedText from '@/components/TypedText';
 
 export default function CoverLetterPanel() {
   const [selectedLetterStyle, setSelectedLetterStyle] = useState<string>(coverLetterConfig.styles[0].id);
@@ -47,11 +49,11 @@ export default function CoverLetterPanel() {
   return (
     <>
       {/* Cover Letter Style Selector | independent from CV styles */}
-      <div className="mb-6 p-4 sm:p-6 rounded border border-[var(--terminal-border)] bg-[var(--terminal-surface)] no-print">
+      <Reveal draw className="mb-6 p-4 sm:p-6 rounded border border-[var(--terminal-border)] bg-[var(--terminal-surface)] no-print">
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-4">
           <div>
             <h1 className="text-[var(--terminal-text)] text-2xl sm:text-3xl font-bold leading-tight tracking-[-0.015em] font-mono mb-2">
-              <span className="text-primary">&gt;</span> LETTER_DOWNLOAD.sh
+              <span className="text-primary">&gt;</span> <TypedText text="LETTER_DOWNLOAD.sh" />
             </h1>
             <p className="text-[var(--terminal-text-dim)] text-sm font-mono">
               Select a cover letter style for your target job domain
@@ -76,9 +78,10 @@ export default function CoverLetterPanel() {
         <StyleSelectorGrid styles={coverLetterConfig.styles} selectedId={selectedLetterStyle} onSelect={setSelectedLetterStyle} />
 
         <ViewToggleButton visible={showLetter} onToggle={() => setShowLetter(!showLetter)} label="LETTER" />
-      </div>
+      </Reveal>
 
       {/* Cover Letter Preview */}
+      <Reveal>
       <RevealContainer visible={showLetter}>
         <ScaleToFit>
           <CoverLetterPreview
@@ -88,6 +91,7 @@ export default function CoverLetterPanel() {
           />
         </ScaleToFit>
       </RevealContainer>
+      </Reveal>
     </>
   );
 }

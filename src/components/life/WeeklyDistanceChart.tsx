@@ -57,10 +57,10 @@ export default function WeeklyDistanceChart({ weeks }: { weeks: WeeklyDistance[]
                     onMouseEnter={() => setActive(i)}
                   >
                     <div
-                      className={`w-full rounded-t-[4px] transition-[background-color,opacity] duration-150 ${
+                      className={`chart-bar w-full rounded-t-[4px] transition-[background-color,opacity] duration-150 ${
                         isActive ? 'bg-primary' : active === null ? 'bg-primary/80' : 'bg-primary/40'
                       }`}
-                      style={{ height: w.distanceKm > 0 ? `max(${heightPct}%, 2px)` : 0 }}
+                      style={{ height: w.distanceKm > 0 ? `max(${heightPct}%, 2px)` : 0, animationDelay: `${300 + i * 35}ms` }}
                     />
                     {i === peakIndex && w.distanceKm > 0 && active === null && (
                       <span

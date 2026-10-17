@@ -2,10 +2,16 @@
 import Link from 'next/link';
 import { siteConfig, contentConfig } from '@/config';
 import TrustBadges from './TrustBadges';
+import ScrambleText from './ScrambleText';
 import { useSpotlight } from '@/hooks/useSpotlight';
+import { useParallax } from '@/hooks/useParallax';
+import { useMagnetic } from '@/hooks/useMagnetic';
 
 export default function HeroSection() {
   const handleSpotlight = useSpotlight<HTMLDivElement>();
+  const gridLayerRef = useParallax<HTMLDivElement>();
+  const primaryCtaRef = useMagnetic<HTMLAnchorElement>();
+  const secondaryCtaRef = useMagnetic<HTMLAnchorElement>();
 
   return (
     <div className="@container mb-8">
@@ -16,7 +22,7 @@ export default function HeroSection() {
           style={{ backgroundImage: `linear-gradient(rgba(var(--terminal-bg-rgb), 0.8) 0%, rgba(var(--terminal-bg-rgb), 0.95) 100%)` }}
         >
           <div className="absolute inset-0 bg-noise-texture opacity-15 pointer-events-none z-0 mix-blend-overlay"></div>
-          <div className="absolute inset-0 matrix-bg opacity-30 pointer-events-none z-0"></div>
+          <div ref={gridLayerRef} className="absolute inset-x-0 -inset-y-20 matrix-bg opacity-30 pointer-events-none z-0"></div>
           <div
             className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none z-0"
             style={{ background: 'radial-gradient(500px circle at var(--spot-x, 50%) var(--spot-y, 50%), rgba(var(--terminal-accent-rgb), 0.15), transparent 70%)' }}
@@ -30,26 +36,22 @@ export default function HeroSection() {
           </div>
           {siteConfig.status && (
             <div className="animate-reveal inline-flex items-center gap-2 self-start rounded border border-green-500/30 bg-green-500/10 px-3 py-1 text-[10px] sm:text-xs font-mono font-bold uppercase tracking-widest text-green-400 z-10">
-              <span className="relative flex size-1.5">
-                <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-green-400 opacity-75"></span>
-                <span className="relative inline-flex size-1.5 rounded-full bg-green-400"></span>
-              </span>
               {siteConfig.status}
             </div>
           )}
           <div className="flex flex-col gap-2 text-left z-10">
             <h1 className="animate-reveal text-[var(--terminal-text)] text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-black leading-tight tracking-[-0.033em] font-mono glow-text">
-              {contentConfig.home.hero.title}<span className="blinking-cursor text-primary">_</span>
+              <ScrambleText text={contentConfig.home.hero.title} /><span className="blinking-cursor text-primary">_</span>
             </h1>
             <h2 className="animate-reveal text-[var(--terminal-text-dim)] text-xs sm:text-sm md:text-base lg:text-lg font-mono leading-normal max-w-full md:max-w-[600px] mt-2 whitespace-pre-line" style={{ animationDelay: '140ms' }}>
               <span className="text-primary font-bold">{siteConfig.domain}</span> {contentConfig.home.hero.subtitle}
             </h2>
           </div>
           <div className="flex flex-wrap gap-3 sm:gap-4 z-10">
-            <Link href={contentConfig.home.hero.ctaPrimary.link} className="flex min-w-[120px] sm:min-w-[140px] cursor-pointer items-center justify-center overflow-hidden rounded h-10 sm:h-12 px-4 sm:px-6 bg-primary text-[var(--terminal-on-primary)] sm:text-base font-bold leading-normal tracking-[0.015em] hover:bg-white hover:-translate-y-[2px] hover:shadow-[0_0_20px_rgba(var(--terminal-accent-rgb),0.6)] active:scale-[0.97] active:translate-y-0 transition shadow-[0_0_10px_rgba(var(--terminal-accent-rgb),0.3)] border border-transparent">
+            <Link ref={primaryCtaRef} href={contentConfig.home.hero.ctaPrimary.link} className="flex min-w-[120px] sm:min-w-[140px] cursor-pointer items-center justify-center overflow-hidden rounded h-10 sm:h-12 px-4 sm:px-6 bg-primary text-[var(--terminal-on-primary)] sm:text-base font-bold leading-normal tracking-[0.015em] hover:bg-white hover:-translate-y-[2px] hover:shadow-[0_0_20px_rgba(var(--terminal-accent-rgb),0.6)] active:scale-[0.97] active:translate-y-0 transition shadow-[0_0_10px_rgba(var(--terminal-accent-rgb),0.3)] border border-transparent">
               <span className="truncate font-mono text-xs sm:text-sm md:text-base drop-shadow-[0_0_2px_rgba(0,0,0,0.5)]">{contentConfig.home.hero.ctaPrimary.text}</span>
             </Link>
-            <Link href={contentConfig.home.hero.ctaSecondary.link || '#'} className="flex min-w-[100px] sm:min-w-[120px] cursor-pointer items-center justify-center overflow-hidden rounded h-10 sm:h-12 px-4 sm:px-6 bg-[var(--terminal-surface-alt)] border-2 border-[var(--terminal-accent-alt)] text-[var(--terminal-text-muted)] text-sm sm:text-base font-bold leading-normal tracking-[0.015em] hover:border-primary hover:text-primary hover:bg-[var(--terminal-surface-hover)] hover:shadow-[0_0_20px_rgba(var(--terminal-accent-alt-rgb),0.5)] hover:-translate-y-[2px] active:scale-[0.97] active:translate-y-0 transition group/cta">
+            <Link ref={secondaryCtaRef} href={contentConfig.home.hero.ctaSecondary.link || '#'} className="flex min-w-[100px] sm:min-w-[120px] cursor-pointer items-center justify-center overflow-hidden rounded h-10 sm:h-12 px-4 sm:px-6 bg-[var(--terminal-surface-alt)] border-2 border-[var(--terminal-accent-alt)] text-[var(--terminal-text-muted)] text-sm sm:text-base font-bold leading-normal tracking-[0.015em] hover:border-primary hover:text-primary hover:bg-[var(--terminal-surface-hover)] hover:shadow-[0_0_20px_rgba(var(--terminal-accent-alt-rgb),0.5)] hover:-translate-y-[2px] active:scale-[0.97] active:translate-y-0 transition group/cta">
               <span className="truncate font-mono text-xs sm:text-sm md:text-base group-hover/cta:translate-x-0.5 transition-transform">{contentConfig.home.hero.ctaSecondary.text}</span>
             </Link>
           </div>

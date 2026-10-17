@@ -4,6 +4,8 @@ import { useMemo, useState } from 'react';
 import { formatRelativeTime } from '@/lib/format-time';
 import { computeThreatGeometry } from '@/lib/threat-globe';
 import { useThreatFeed } from '@/hooks/useThreatFeed';
+import { useScrollReveal } from '@/hooks/useScrollReveal';
+import TypedText from '@/components/TypedText';
 import { useWindowWidth } from '@/hooks/useWindowWidth';
 import { useThemeSync } from '@/hooks/useThemeSync';
 import { useGlobePanel } from '@/hooks/useGlobePanel';
@@ -17,6 +19,7 @@ import LiveBanTicker from '@/components/threat-globe/LiveBanTicker';
 
 const MAX_ANIMATED_ARCS = 40;
 const MAX_ANIMATED_RINGS = 50;
+  const revealRef = useScrollReveal<HTMLDivElement>();
 
 export default function ThreatGlobe() {
   const { threatData, hasError, isRendering } = useThreatFeed();
@@ -65,7 +68,7 @@ export default function ThreatGlobe() {
   }
 
   return (
-    <div id="threat-feed" className="scroll-mt-20 flex flex-col gap-6 px-3 sm:px-5 py-6 sm:py-8 mb-8 border border-[var(--terminal-border)] rounded bg-[rgba(var(--terminal-bg-rgb),0.60)] relative overflow-hidden group">
+    <div ref={revealRef} data-reveal id="threat-feed" className="scroll-reveal panel-draw scroll-mt-20 flex flex-col gap-6 px-3 sm:px-5 py-6 sm:py-8 mb-8 border border-[var(--terminal-border)] rounded bg-[rgba(var(--terminal-bg-rgb),0.60)] relative overflow-hidden group">
       <div className="absolute inset-0 bg-noise-texture opacity-10 mix-blend-overlay pointer-events-none"></div>
 
       {/* --- HEADER --- */}
@@ -73,7 +76,7 @@ export default function ThreatGlobe() {
         <div>
           <h2 className="text-lg sm:text-2xl font-bold font-mono tracking-widest text-[#ef4444] glow-text flex items-center gap-2">
             <span className="material-symbols-outlined">radar</span>
-            THREAT_FEED
+            <TypedText text="THREAT_FEED" />
           </h2>
           <p className="text-xs text-[var(--terminal-text-muted)] mt-1">
             <span className="text-[#ef4444] font-bold">Local</span> Fail2Ban & <span className="text-[#3b82f6] font-bold">Public</span> CrowdSec CAPI

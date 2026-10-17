@@ -1,11 +1,12 @@
 import { useEffect, useState } from 'react';
 import { usePrefersReducedMotion } from '@/lib/motion';
+import { useInViewOnce } from '@/hooks/useInViewOnce';
 
-function useCountUp(end: number, duration: number = 1500) {
+function useCountUp(end: number, active: boolean, duration: number = 1500) {
   const [count, setCount] = useState(0);
   const reduceMotion = usePrefersReducedMotion();
   useEffect(() => {
-    if (end === 0 || reduceMotion) return;
+    if (!active || end === 0 || reduceMotion) return;
     let startTimestamp: number | null = null;
     let frame = 0;
     const step = (timestamp: number) => {
@@ -17,11 +18,12 @@ function useCountUp(end: number, duration: number = 1500) {
     };
     frame = window.requestAnimationFrame(step);
     return () => window.cancelAnimationFrame(frame);
-  }, [end, duration, reduceMotion]);
+  }, [end, active, duration, reduceMotion]);
   return reduceMotion ? end : count;
 }
 
 export default function AnimatedCounter({ value }: { value: number }) {
-  const animatedValue = useCountUp(value);
-  return <span>{animatedValue > 0 ? animatedValue.toLocaleString() : '-----'}</span>;
+  const [ref, inView] = useInViewOnce<HTMLSpanElement>();
+  const animatedValue = useCountUp(value, inView);
+  return <span ref={ref}>{animatedValue > 0 ? animatedValue.toLocaleString() : '-----'}</span>;
 }
