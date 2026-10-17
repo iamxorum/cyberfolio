@@ -15,7 +15,7 @@ const cspHeader = `
   base-uri 'self';
   form-action 'self';
   frame-src 'self' ${security.frames.join(' ')};
-  connect-src 'self' ws: wss: iamxorum.ro *.iamxorum.ro ${security.connects.join(' ')};
+  connect-src 'self' ${isDev ? 'ws: wss:' : ''} iamxorum.ro *.iamxorum.ro ${security.connects.join(' ')};
   worker-src 'self' blob:;
   ${isDev ? '' : 'upgrade-insecure-requests;'}
 `.replace(/\n/g, '').replace(/\s{2,}/g, ' ').trim();
@@ -35,9 +35,7 @@ const nextConfig: NextConfig = {
   output: 'standalone',
   poweredByHeader: false,
 
-  experimental: {
-    viewTransition: true,
-  },
+  // View transitions need no flag since Next 16.4: <ViewTransition> works in the App Router out of the box.
 
   async headers() {
     if (isDev) return [];
