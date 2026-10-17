@@ -13,7 +13,7 @@ const description = `Notes and write-ups from ${siteConfig.fullName}.`;
 export const metadata: Metadata = {
   title,
   description,
-  alternates: { canonical: pageUrl },
+  alternates: { canonical: pageUrl, types: { 'application/rss+xml': `${siteUrl}/blog/rss.xml` } },
   openGraph: { title, description, url: pageUrl, images: [ogImage] },
   twitter: { title, description, images: [ogImage] },
 };

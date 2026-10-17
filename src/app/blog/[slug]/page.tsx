@@ -1,10 +1,13 @@
 import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import { siteConfig } from '@/config';
-import { getAllPostSlugs, getPostBySlug } from '@/lib/blog';
+import { extractHeadings, getAdjacentPosts, getAllPostSlugs, getPostBySlug } from '@/lib/blog';
 import BlogPostClient from './BlogPostClient';
 import MdxContent from './MdxContent';
 import { serializeJsonLd } from '@/lib/json-ld';
+
+// Only the slugs listed by generateStaticParams exist; anything else is a 404, never rendered on demand.
+export const dynamicParams = false;
 
 interface PageProps {
   params: Promise<{ slug: string }>;
@@ -21,15 +24,15 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 
   const siteUrl = `https://${siteConfig.domain}`;
   const pageUrl = `${siteUrl}/blog/${slug}`;
-  const ogImage = `${siteUrl}/opengraph-image`;
   const title = `${post.title} | ${siteConfig.fullName}`;
 
   return {
     title,
     description: post.excerpt,
     alternates: { canonical: pageUrl },
-    openGraph: { title, description: post.excerpt, url: pageUrl, images: [ogImage], type: 'article', publishedTime: post.date },
-    twitter: { title, description: post.excerpt, images: [ogImage] },
+    // The image comes from this segment's opengraph-image.tsx (a card with the post's own title and tags).
+    openGraph: { title, description: post.excerpt, url: pageUrl, type: 'article', publishedTime: post.date, tags: post.tags },
+    twitter: { card: 'summary_large_image', title, description: post.excerpt },
   };
 }
 
@@ -40,7 +43,8 @@ export default async function BlogPost({ params }: PageProps) {
 
   const siteUrl = `https://${siteConfig.domain}`;
   const pageUrl = `${siteUrl}/blog/${slug}`;
-  const ogImage = `${siteUrl}/opengraph-image`;
+  const ogImage = `${pageUrl}/opengraph-image`;
+  const { previous, next } = getAdjacentPosts(slug);
 
   const breadcrumbJsonLd = {
     '@context': 'https://schema.org',
@@ -75,7 +79,7 @@ export default async function BlogPost({ params }: PageProps) {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: serializeJsonLd(postJsonLd) }}
       />
-      <BlogPostClient title={post.title} date={post.date} tags={post.tags}>
+      <BlogPostClient title={post.title} date={post.date} tags={post.tags} readingMinutes={post.readingMinutes} headings={extractHeadings(post.content)} previous={previous} next={next}>
         <MdxContent source={post.content} />
       </BlogPostClient>
     </>

@@ -6,16 +6,25 @@ import Footer from '@/components/Footer';
 import InitScreen from '@/components/InitScreen';
 import Link from 'next/link';
 import { useAppInitialization } from '@/hooks/useAppInitialization';
+import { useScrollReveal } from '@/hooks/useScrollReveal';
+import TableOfContents from '@/components/TableOfContents';
+import Reveal from '@/components/Reveal';
+import type { AdjacentPost, PostHeading } from '@/lib/blog';
 
 interface BlogPostClientProps {
   title: string;
   date: string;
   tags?: string[];
+  readingMinutes: number;
+  headings: PostHeading[];
+  previous: AdjacentPost | null;
+  next: AdjacentPost | null;
   children: ReactNode;
 }
 
-export default function BlogPostClient({ title, date, tags, children }: BlogPostClientProps) {
+export default function BlogPostClient({ title, date, tags, readingMinutes, headings, previous, next, children }: BlogPostClientProps) {
   const { initialized, setInitialized } = useAppInitialization();
+  const articleRef = useScrollReveal<HTMLElement>();
 
   return (
     <div className="relative flex h-auto min-h-screen w-full flex-col bg-[var(--terminal-bg)] text-[var(--terminal-text)] group/design-root overflow-x-clip font-display">
@@ -38,11 +47,12 @@ export default function BlogPostClient({ title, date, tags, children }: BlogPost
 
                 {/* Post header */}
                 <div className="flex flex-col gap-2 border-b border-[var(--terminal-border-alt)] pb-5">
-                  <h1 className="text-[var(--terminal-text)] text-2xl sm:text-3xl md:text-4xl font-black leading-tight tracking-tight font-mono">
+                  <h1 className="animate-reveal text-[var(--terminal-text)] text-2xl sm:text-3xl md:text-4xl font-black leading-tight tracking-tight font-mono">
                     {title}
                   </h1>
-                  <div className="flex flex-wrap items-center gap-3 text-xs font-mono text-[var(--terminal-text-dim)]">
+                  <div className="animate-reveal flex flex-wrap items-center gap-3 text-xs font-mono text-[var(--terminal-text-dim)]" style={{ animationDelay: '130ms' }}>
                     {date && <span>{date}</span>}
+                    <span>{readingMinutes} min read</span>
                     {tags && tags.length > 0 && (
                       <div className="flex flex-wrap gap-1.5">
                         {tags.map((tag) => (
@@ -55,8 +65,40 @@ export default function BlogPostClient({ title, date, tags, children }: BlogPost
                   </div>
                 </div>
 
-                {/* Post content */}
-                <article>{children}</article>
+                <TableOfContents headings={headings} variant="inline" />
+
+                {/* Post content. The relative wrapper anchors the desktop outline in the right margin. */}
+                <div className="relative">
+                  <TableOfContents headings={headings} variant="sidebar" />
+                  <article ref={articleRef}>{children}</article>
+                </div>
+
+                {(previous || next) && (
+                  <nav aria-label="More posts" className="grid grid-cols-1 sm:grid-cols-2 gap-3 border-t border-[var(--terminal-border-alt)] pt-6">
+                    {previous ? (
+                      <Reveal draw className="rounded border border-[var(--terminal-border)] bg-[var(--terminal-surface-alt)] hover:border-primary transition-colors">
+                        <Link href={`/blog/${previous.slug}`} className="flex flex-col gap-1 p-4 font-mono h-full">
+                          <span className="flex items-center gap-1 text-[10px] tracking-widest text-[var(--terminal-text-dim)]">
+                            <span className="material-symbols-outlined text-sm" aria-hidden="true">arrow_back</span>
+                            PREVIOUS
+                          </span>
+                          <span className="text-sm font-bold text-[var(--terminal-text)]">{previous.title}</span>
+                        </Link>
+                      </Reveal>
+                    ) : <div className="hidden sm:block" />}
+                    {next && (
+                      <Reveal draw delay={80} className="rounded border border-[var(--terminal-border)] bg-[var(--terminal-surface-alt)] hover:border-primary transition-colors">
+                        <Link href={`/blog/${next.slug}`} className="flex flex-col gap-1 p-4 font-mono h-full sm:text-right sm:items-end">
+                          <span className="flex items-center gap-1 text-[10px] tracking-widest text-[var(--terminal-text-dim)]">
+                            NEXT
+                            <span className="material-symbols-outlined text-sm" aria-hidden="true">arrow_forward</span>
+                          </span>
+                          <span className="text-sm font-bold text-[var(--terminal-text)]">{next.title}</span>
+                        </Link>
+                      </Reveal>
+                    )}
+                  </nav>
+                )}
               </div>
             </main>
             <Footer />
