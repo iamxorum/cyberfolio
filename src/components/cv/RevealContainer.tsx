@@ -16,6 +16,8 @@ export default function RevealContainer({ visible, children }: RevealContainerPr
         transition: 'opacity 300ms ease-out, max-height 300ms ease-out',
       }}
       aria-hidden={!visible}
+      // Collapsed content must also leave the tab order, not just the accessibility tree.
+      inert={!visible}
     >
       {children}
     </div>

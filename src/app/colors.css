@@ -7,7 +7,7 @@
   --color-border: #337b73;
   --color-text: #ffffff;
   --color-text-muted: #c7cb90;
-  --color-text-dim: #919256;
+  --color-text-dim: #999a5d;
   --color-accent: #f2df0d;
   --color-accent-alt: #dbcb4f;
   --color-success: #0bda68;
@@ -96,6 +96,10 @@ html.dark {
 }
 
 html.light {
+  /* The "dark" surface variants are meant as a subtle step down. At 70% black they dropped light-theme
+     text (muted/primary) below WCAG AA contrast, so the step is much gentler here. */
+  --terminal-surface-dark: color-mix(in srgb, var(--color-surface) 92%, black);
+  --terminal-bg-dark: color-mix(in srgb, var(--color-bg) 94%, black);
   --color-primary: #645407;
   --color-bg: #f2efe4;
   --color-surface: #e8e4d4;

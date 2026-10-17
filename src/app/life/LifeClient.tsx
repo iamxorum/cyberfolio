@@ -30,6 +30,7 @@ export default function LifeClient({ running }: { running: RunningData | null })
             <div className="layout-content-container flex flex-col max-w-[960px] w-full flex-1">
               <main id="main-content" tabIndex={-1}>
                 <div className="flex flex-col gap-6 sm:gap-8">
+                  <h1 className="sr-only">Life: running, hobbies and music</h1>
                   <div className="flex items-center gap-2 text-sm font-mono tracking-wide">
                     <span className="material-symbols-outlined text-[var(--terminal-text-dim)] text-lg">folder_open</span>
                     <Link href="/" className="text-[var(--terminal-text-muted)] hover:text-[var(--terminal-text)] transition-colors">~/root</Link>
