@@ -5,22 +5,26 @@ import { getContributionStatsForProjects } from '@/lib/github-contributions';
 import ProjectDetailClient from './ProjectDetailClient';
 import { serializeJsonLd } from '@/lib/json-ld';
 
+// Private projects are listed but deliberately not linked, so they get no page; unknown ids 404 too.
+export const dynamicParams = false;
+
+const publicProjects = projects.filter((p) => p.visibility === 'public');
+
 interface PageProps {
   params: Promise<{ id: string }>;
 }
 
 export function generateStaticParams() {
-  return projects.map((p) => ({ id: p.id }));
+  return publicProjects.map((p) => ({ id: p.id }));
 }
 
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
   const { id } = await params;
-  const project = projects.find((p) => p.id === id);
+  const project = publicProjects.find((p) => p.id === id);
   if (!project) return {};
 
   const siteUrl = `https://${siteConfig.domain}`;
   const pageUrl = `${siteUrl}/projects/${project.id}`;
-  const ogImage = `${siteUrl}/opengraph-image`;
   const title = `${project.name} | ${siteConfig.fullName}`;
   const description = project.cvDescription || project.description;
 
@@ -28,14 +32,15 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
     title,
     description,
     alternates: { canonical: pageUrl },
-    openGraph: { title, description, url: pageUrl, images: [ogImage] },
-    twitter: { title, description, images: [ogImage] },
+    // The image comes from this segment's opengraph-image.tsx (a card with the project's name, status and stack).
+    openGraph: { title, description, url: pageUrl },
+    twitter: { card: 'summary_large_image', title, description },
   };
 }
 
 export default async function ProjectDetailPage({ params }: PageProps) {
   const { id } = await params;
-  const project = projects.find((p) => p.id === id);
+  const project = publicProjects.find((p) => p.id === id);
   if (!project) notFound();
 
   const contributionStats = await getContributionStatsForProjects(projects, siteConfig.username);

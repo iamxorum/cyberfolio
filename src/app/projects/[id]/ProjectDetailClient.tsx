@@ -5,6 +5,9 @@ import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import InitScreen from '@/components/InitScreen';
 import { useAppInitialization } from '@/hooks/useAppInitialization';
+import Reveal from '@/components/Reveal';
+import TypedText from '@/components/TypedText';
+import { STAGGER_STEP_DENSE_MS, revealDelay } from '@/lib/motion';
 import { getProjectHashId, getStatusColorStyles } from '@/lib/project-status';
 import type { Project } from '@/config';
 import type { ContributionStats } from '@/lib/github-contributions';
@@ -66,8 +69,8 @@ function ProjectLinks({ project }: { project: Project }) {
 
 function ContributionLog({ stats }: { stats: ContributionStats }) {
   return (
-    <section className="flex flex-col gap-2">
-      <h2 className="text-[var(--terminal-text-dim)] text-xs font-mono uppercase tracking-widest">Contribution_Log</h2>
+    <Reveal as="section" className="flex flex-col gap-2">
+      <h2 className="text-[var(--terminal-text-dim)] text-xs font-mono uppercase tracking-widest"><TypedText text="Contribution_Log" /></h2>
       <div className="flex flex-wrap items-center gap-3 text-sm font-mono text-[var(--terminal-text-muted)]">
         <a href={stats.searchUrl} target="_blank" rel="noopener noreferrer" className="hover:text-primary transition-colors">
           {stats.mergedCount} merged PR{stats.mergedCount !== 1 ? 's' : ''}
@@ -81,7 +84,7 @@ function ContributionLog({ stats }: { stats: ContributionStats }) {
           </>
         )}
       </div>
-    </section>
+    </Reveal>
   );
 }
 
@@ -140,31 +143,35 @@ export default function ProjectDetailClient({ project, contributionStats }: Proj
                     </div>
                   </div>
 
-                  <StatusBadges statuses={statuses} statusColors={statusColors} />
+                  <div className="animate-reveal" style={{ animationDelay: '140ms' }}>
+                    <StatusBadges statuses={statuses} statusColors={statusColors} />
+                  </div>
 
-                  <ProjectLinks project={project} />
+                  <div className="animate-reveal" style={{ animationDelay: '220ms' }}>
+                    <ProjectLinks project={project} />
+                  </div>
                 </div>
 
                 {/* Description */}
-                <section className="flex flex-col gap-2">
-                  <h2 className="text-[var(--terminal-text-dim)] text-xs font-mono uppercase tracking-widest">README.md</h2>
+                <Reveal as="section" className="flex flex-col gap-2">
+                  <h2 className="text-[var(--terminal-text-dim)] text-xs font-mono uppercase tracking-widest"><TypedText text="README.md" /></h2>
                   <p className="text-[var(--terminal-text)] text-sm sm:text-base leading-relaxed whitespace-pre-line">
                     {project.description}
                   </p>
-                </section>
+                </Reveal>
 
                 {/* Tech stack */}
                 {project.tags.length > 0 && (
-                  <section className="flex flex-col gap-2">
-                    <h2 className="text-[var(--terminal-text-dim)] text-xs font-mono uppercase tracking-widest">Tech_Stack</h2>
+                  <Reveal as="section" className="flex flex-col gap-2">
+                    <h2 className="text-[var(--terminal-text-dim)] text-xs font-mono uppercase tracking-widest"><TypedText text="Tech_Stack" /></h2>
                     <div className="flex flex-wrap gap-2">
-                      {project.tags.map((tag) => (
-                        <span key={tag} className="px-2.5 py-1 rounded bg-[var(--terminal-bg)] border border-[var(--terminal-border)] text-xs text-[var(--terminal-text-dim)] font-mono whitespace-nowrap">
+                      {project.tags.map((tag, index) => (
+                        <span key={tag} data-reveal style={revealDelay(150 + Math.min(index, 12) * STAGGER_STEP_DENSE_MS)} className="scroll-reveal px-2.5 py-1 rounded bg-[var(--terminal-bg)] border border-[var(--terminal-border)] text-xs text-[var(--terminal-text-dim)] font-mono whitespace-nowrap">
                           {tag}
                         </span>
                       ))}
                     </div>
-                  </section>
+                  </Reveal>
                 )}
 
                 {/* Contribution stats */}

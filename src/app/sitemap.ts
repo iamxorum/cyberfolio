@@ -25,7 +25,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
       changeFrequency: 'monthly',
       priority: 0.8,
     },
-    ...projects.map((project) => ({
+    ...projects.filter((project) => project.visibility === 'public').map((project) => ({
       url: `${siteUrl}/projects/${project.id}`,
       lastModified: new Date(),
       changeFrequency: 'monthly' as const,
