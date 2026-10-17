@@ -1,16 +1,24 @@
 'use client';
 
 import dynamic from 'next/dynamic';
-import type { RefObject } from 'react';
+import { useCallback, useEffect, useMemo, useRef, type RefObject } from 'react';
 import GlobeSourceToggle from './GlobeSourceToggle';
 import GlobeInspectorPanel from './GlobeInspectorPanel';
 import { usePrefersReducedMotion } from '@/lib/motion';
 import {
   escapeHtml,
+  GLOBE_TEXTURE_DARK,
+  GLOBE_TEXTURE_LIGHT,
+  getArcColor,
+  getArcDashAnimateTime,
+  getArcDashInitialGap,
   getArcStroke,
+  globeBudget,
   getPointColor,
   getPointRadius,
   getRingColor,
+  getRingMaxRadius,
+  getRingRepeatPeriod,
   type GlobeArcDatum,
   type GlobePointDatum,
   type GlobeRingDatum,
@@ -82,13 +90,46 @@ export default function GlobeStage({
   onToggleSource,
 }: GlobeStageProps) {
   const size = globeSize(windowWidth);
+  const budget = globeBudget(windowWidth);
+  const rendererConfig = useMemo(() => ({ antialias: budget.antialias, alpha: true, powerPreference: 'high-performance' as const }), [budget.antialias]);
   const reduceMotion = usePrefersReducedMotion();
+  const containerRef = useRef<HTMLDivElement>(null);
+
+  // Stop the WebGL render loop while the globe is scrolled out of view; it otherwise
+  // redraws every frame (auto-rotate, arc dashes, rings) for nobody.
+  useEffect(() => {
+    const el = containerRef.current;
+    if (!el || !isGlobeReady) return;
+    const observer = new IntersectionObserver(([entry]) => {
+      const globe = globeRef.current;
+      if (!globe) return;
+      if (entry.isIntersecting) globe.resumeAnimation();
+      else globe.pauseAnimation();
+    });
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, [globeRef, isGlobeReady]);
+
+  // Cap render resolution; the canvas is small, so high-DPI phones pay for pixels nobody can see.
+  useEffect(() => {
+    if (!isGlobeReady) return;
+    globeRef.current?.renderer().setPixelRatio(Math.min(window.devicePixelRatio, budget.maxPixelRatio));
+  }, [globeRef, isGlobeReady, budget.maxPixelRatio]);
+
+  const handlePointClick = useCallback((point: object) => {
+    const p = point as GlobePointDatum;
+    if (!p.isServer) {
+      onPointerDownContainer();
+      onSelectPoint(p);
+    }
+  }, [onPointerDownContainer, onSelectPoint]);
 
   return (
     <div className="w-full lg:w-1/2 flex items-center justify-center relative min-h-[300px] sm:min-h-[450px] xl:min-h-[550px] border border-[var(--terminal-border)]/20 rounded bg-[rgba(var(--terminal-bg-rgb),0.20)] overflow-hidden">
       <div className="absolute inset-x-0 top-0 h-1/4 bg-gradient-to-b from-transparent via-[rgba(var(--terminal-accent-rgb),0.10)] to-transparent pointer-events-none animate-panel-scan z-10"></div>
 
       <div
+        ref={containerRef}
         className="w-full aspect-square relative max-w-[450px] xl:max-w-[550px] flex items-center justify-center"
         onPointerDown={onPointerDownContainer}
       >
@@ -113,36 +154,32 @@ export default function GlobeStage({
               onGlobeReady={onGlobeReady}
               width={size}
               height={size}
-              globeImageUrl={isLight ? 'https://unpkg.com/three-globe/example/img/earth-blue-marble.jpg' : 'https://unpkg.com/three-globe/example/img/earth-dark.jpg'}
+              globeImageUrl={isLight ? GLOBE_TEXTURE_LIGHT : GLOBE_TEXTURE_DARK}
               backgroundColor="rgba(0,0,0,0)"
+              rendererConfig={rendererConfig}
 
               pointsData={visiblePointsData}
               pointAltitude={0.01}
+              pointResolution={budget.pointResolution}
               pointRadius={getPointRadius}
               pointsTransitionDuration={reduceMotion ? 0 : 600}
               pointColor={getPointColor}
               pointLabel={pointTooltip}
-              onPointClick={(point: object) => {
-                const p = point as GlobePointDatum;
-                if (!p.isServer) {
-                  onPointerDownContainer();
-                  onSelectPoint(p);
-                }
-              }}
+              onPointClick={handlePointClick}
 
               ringsData={reduceMotion ? [] : visibleRingsData}
               ringColor={getRingColor}
-              ringMaxRadius={(obj: object) => (obj as GlobeRingDatum).maxRadius}
-              ringRepeatPeriod={(obj: object) => (obj as GlobeRingDatum).repeatPeriod}
+              ringMaxRadius={getRingMaxRadius}
+              ringRepeatPeriod={getRingRepeatPeriod}
               ringPropagationSpeed={0.8}
 
               arcsData={reduceMotion ? [] : visibleArcsData}
-              arcColor={(obj: object) => (obj as GlobeArcDatum).color}
+              arcColor={getArcColor}
               arcStroke={getArcStroke}
               arcDashLength={0.4}
               arcDashGap={0.5}
-              arcDashInitialGap={(obj: object) => (obj as GlobeArcDatum).dashInitialGap}
-              arcDashAnimateTime={(obj: object) => (obj as GlobeArcDatum).dashAnimateTime}
+              arcDashInitialGap={getArcDashInitialGap}
+              arcDashAnimateTime={getArcDashAnimateTime}
               arcAltitudeAutoScale={0.5}
 
               atmosphereColor={atmosphereColor}

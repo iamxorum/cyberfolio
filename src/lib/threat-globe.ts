@@ -55,6 +55,30 @@ export interface CountryLeaderboardEntry {
   lng: number;
 }
 
+export interface GlobeBudget {
+  arcs: number;
+  rings: number;
+  points: number;
+  pointResolution: number;
+  maxPixelRatio: number;
+  antialias: boolean;
+}
+
+const DESKTOP_BUDGET: GlobeBudget = { arcs: 40, rings: 50, points: 400, pointResolution: 12, maxPixelRatio: 2, antialias: true };
+const MOBILE_BUDGET: GlobeBudget = { arcs: 15, rings: 20, points: 200, pointResolution: 6, maxPixelRatio: 1.5, antialias: false };
+
+/** Phones get a lighter scene: fewer animated arcs/rings/dots, coarser dots, capped pixel density. */
+export const globeBudget = (windowWidth: number): GlobeBudget => (windowWidth < 640 ? MOBILE_BUDGET : DESKTOP_BUDGET);
+
+export const GLOBE_TEXTURE_DARK = '/textures/earth-dark.jpg';
+export const GLOBE_TEXTURE_LIGHT = '/textures/earth-blue-marble.jpg';
+
+/** Warms the browser cache for the active theme's texture so it is ready when the globe mounts. */
+export function preloadGlobeTexture(isLight: boolean) {
+  const img = new Image();
+  img.src = isLight ? GLOBE_TEXTURE_LIGHT : GLOBE_TEXTURE_DARK;
+}
+
 export const getPointRadius = (obj: object) => {
   const d = obj as GlobePointDatum;
   if (d.isServer) return 0.8;
@@ -73,6 +97,14 @@ export const getRingColor = (obj: object) => {
 };
 
 export const getArcStroke = (obj: object) => (obj as GlobeArcDatum).source === 'local' ? 0.5 : 0.3;
+
+// Accessors live at module level on purpose: react-globe.gl treats a new function identity as a
+// changed prop and rebuilds every arc/ring mesh, which inline arrows did on each reveal tick.
+export const getArcColor = (obj: object) => (obj as GlobeArcDatum).color;
+export const getArcDashInitialGap = (obj: object) => (obj as GlobeArcDatum).dashInitialGap;
+export const getArcDashAnimateTime = (obj: object) => (obj as GlobeArcDatum).dashAnimateTime;
+export const getRingMaxRadius = (obj: object) => (obj as GlobeRingDatum).maxRadius;
+export const getRingRepeatPeriod = (obj: object) => (obj as GlobeRingDatum).repeatPeriod;
 
 export const nearestNode = (lat: number, lng: number) => {
   return dcConfig.nodes.reduce((nearest, node) => {

@@ -1,8 +1,8 @@
 'use client';
 
-import { useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { formatRelativeTime } from '@/lib/format-time';
-import { computeThreatGeometry } from '@/lib/threat-globe';
+import { computeThreatGeometry, globeBudget, preloadGlobeTexture } from '@/lib/threat-globe';
 import { useThreatFeed } from '@/hooks/useThreatFeed';
 import { useScrollReveal } from '@/hooks/useScrollReveal';
 import TypedText from '@/components/TypedText';
@@ -17,22 +17,25 @@ import TotalMitigatedCard from '@/components/threat-globe/TotalMitigatedCard';
 import CountryLeaderboard from '@/components/threat-globe/CountryLeaderboard';
 import LiveBanTicker from '@/components/threat-globe/LiveBanTicker';
 
-const MAX_ANIMATED_ARCS = 40;
-const MAX_ANIMATED_RINGS = 50;
-  const revealRef = useScrollReveal<HTMLDivElement>();
-
 export default function ThreatGlobe() {
   const { threatData, hasError, isRendering } = useThreatFeed();
+  const revealRef = useScrollReveal<HTMLDivElement>();
   const windowWidth = useWindowWidth();
   const { atmosphereColor, isLight } = useThemeSync();
   const { selectedPoint, setSelectedPoint, panelPoint } = useGlobePanel();
   const [isGlobeReady, setIsGlobeReady] = useState(false);
+
+  // Fetch the texture while the feed JSON and the 400ms mount delay are still pending.
+  useEffect(() => preloadGlobeTexture(isLight), [isLight]);
   const [visibleSources, setVisibleSources] = useState({ local: true, public: true });
 
-  const { banPoints, serverNodes, arcsData, countryLeaderboard, ringsData } = useMemo(
+  const budget = globeBudget(windowWidth);
+
+  const { banPoints: allBanPoints, serverNodes, arcsData, countryLeaderboard, ringsData } = useMemo(
     () => computeThreatGeometry(threatData),
     [threatData]
   );
+  const banPoints = useMemo(() => allBanPoints.slice(0, budget.points), [allBanPoints, budget.points]);
 
   const { globeRef, selectedCountry, flyToCountry, lastInteractionRef } = useGlobeCamera({
     isGlobeReady,
@@ -49,17 +52,18 @@ export default function ThreatGlobe() {
   const visibleArcsData = useMemo(
     () => arcsData
       .filter((a) => visibleSources[a.source] && revealedKeySet.has(`${a.startLat},${a.startLng},${a.source}`))
-      .slice(0, MAX_ANIMATED_ARCS),
-    [arcsData, visibleSources, revealedKeySet]
+      .slice(0, budget.arcs),
+    [arcsData, visibleSources, revealedKeySet, budget.arcs]
   );
   const visibleRingsData = useMemo(
     () => ringsData
       .filter((r) => visibleSources[r.source] && revealedKeySet.has(`${r.lat},${r.lng},${r.source}`))
-      .slice(0, MAX_ANIMATED_RINGS),
-    [ringsData, visibleSources, revealedKeySet]
+      .slice(0, budget.rings),
+    [ringsData, visibleSources, revealedKeySet, budget.rings]
   );
 
-  const markInteraction = () => { lastInteractionRef.current = Date.now(); };
+  const markInteraction = useCallback(() => { lastInteractionRef.current = Date.now(); }, [lastInteractionRef]);
+  const handleGlobeReady = useCallback(() => setIsGlobeReady(true), []);
   const toggleSource = (source: 'local' | 'public') =>
     setVisibleSources((v) => ({ ...v, [source]: !v[source] }));
 
@@ -97,7 +101,7 @@ export default function ThreatGlobe() {
           isLight={isLight}
           isRendering={isRendering}
           isGlobeReady={isGlobeReady}
-          onGlobeReady={() => setIsGlobeReady(true)}
+          onGlobeReady={handleGlobeReady}
           hasGlobeData={banPoints.length > 0 || serverNodes.length > 0}
           visiblePointsData={visiblePointsData}
           visibleRingsData={visibleRingsData}

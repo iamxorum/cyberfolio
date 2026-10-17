@@ -58,7 +58,7 @@ export default function Home() {
                 viewport={viewport}
                 responseTime={responseTime}
               />
-              <LazyMount fallback={<ThreatGlobeSkeleton />}>
+              <LazyMount fallback={<ThreatGlobeSkeleton />} rootMargin="500px">
                 <ThreatGlobe />
               </LazyMount>
             </main>
