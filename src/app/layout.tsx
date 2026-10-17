@@ -7,6 +7,8 @@ import "./globals.css";
 import Script from "next/script";
 import SmoothScroll from "@/components/SmoothScroll";
 import ScrollIndicator from "@/components/ScrollIndicator";
+import CommandPalette from "@/components/CommandPalette";
+import { getSearchIndex } from "@/lib/blog";
 import { serializeJsonLd } from "@/lib/json-ld";
 
 const jetBrainsMono = JetBrains_Mono({
@@ -137,6 +139,7 @@ export default function RootLayout({
       >
         <ScrollIndicator />
         <SmoothScroll />
+        <CommandPalette posts={getSearchIndex()} />
         <ViewTransition
           enter={{ 'nav-forward': 'nav-forward', 'nav-back': 'nav-back', default: 'none' }}
           exit={{ 'nav-forward': 'nav-forward', 'nav-back': 'nav-back', default: 'none' }}

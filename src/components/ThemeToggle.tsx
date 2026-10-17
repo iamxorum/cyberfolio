@@ -1,6 +1,7 @@
 'use client';
 
 import { useSyncExternalStore } from 'react';
+import { isLightTheme, setLightTheme } from '@/lib/theme';
 
 // The theme lives on <html>'s class list (set pre-hydration by the layout script), so
 // read it from there. The server snapshot is `false`, which keeps hydration consistent.
@@ -13,15 +14,12 @@ function subscribeToTheme(onChange: () => void) {
 export default function ThemeToggle() {
   const isLight = useSyncExternalStore(
     subscribeToTheme,
-    () => document.documentElement.classList.contains('light'),
+    isLightTheme,
     () => false,
   );
 
   const toggleTheme = () => {
-    const next = !isLight;
-    document.documentElement.classList.toggle('light', next);
-    document.documentElement.classList.toggle('dark', !next);
-    localStorage.setItem('theme', next ? 'light' : 'dark');
+    setLightTheme(!isLight);
   };
 
   return (

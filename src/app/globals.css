@@ -120,6 +120,13 @@ body {
   }
 }
 
+/* Set by setLightTheme() for the duration of a theme swap so nothing fades on its own schedule. */
+html.theme-switching *,
+html.theme-switching *::before,
+html.theme-switching *::after {
+  transition: none !important;
+}
+
 html.boot-skip .boot-screen-overlay {
   display: none;
 }
@@ -646,6 +653,22 @@ html.boot-done .animate-reveal {
   0% { opacity: 1; transform: scaleX(0); }
   65% { opacity: 1; transform: scaleX(1); }
   100% { opacity: 0; transform: scaleX(1); }
+}
+
+/* Command palette entrance: backdrop fades, panel drops in from slightly above. */
+.palette-backdrop {
+  animation: palette-fade 0.15s ease-out both;
+}
+@keyframes palette-fade {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+.palette-panel {
+  animation: palette-drop 0.2s var(--ease-out) both;
+}
+@keyframes palette-drop {
+  from { opacity: 0; transform: translateY(-8px) scale(0.98); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
 }
 
 /* Fade-only variant for elements that can't take a transform reliably (table rows). */

@@ -6,6 +6,7 @@ import { usePathname } from 'next/navigation';
 import { siteConfig } from '@/config';
 import ThemeToggle from './ThemeToggle';
 import EmailCTA from './EmailCTA';
+import CommandPaletteButton from './CommandPaletteButton';
 import { STAGGER_STEP_DENSE_MS } from '@/lib/motion';
 
 // Stagger only opacity/transform/filter (the first three transitioned properties); the
@@ -115,6 +116,7 @@ export default function Header() {
             >
               <span className="material-symbols-outlined text-base sm:text-lg">mail</span>
             </EmailCTA>
+            <CommandPaletteButton />
             <ThemeToggle />
             <Link
               href="/cv"
