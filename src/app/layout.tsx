@@ -103,8 +103,7 @@ const personJsonLd = {
   knowsAbout: getTopSkills(15).map((skill) => skill.name),
 };
 
-// First-party Umami tracker: the script and its collector are both served from this site under /stats, so no
-// third-party host is involved and the CSP needs no changes. It only reports for the real domains (not localhost).
+// Umami tracker, served from this site under /stats. Skips localhost.
 const analyticsScripts: ScriptConfig[] =
   features.analytics && analyticsConfig.websiteId
     ? [{

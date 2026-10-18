@@ -1,22 +1,33 @@
 import { features } from '@/config';
 
-/** Same-origin path the tracker script and collector are served under (matches the app/stats routes). */
 export const ANALYTICS_PATH = '/stats';
 
-/**
- * Internal address of the Umami server, e.g. http://10.80.0.30:3000. Read from the environment at request
- * time and used only on the server, so the internal address never reaches the browser. Null when analytics is
- * off or the variable is missing or not an http(s) URL.
- */
+let warned = false;
+const warnOnce = (message: string) => {
+  if (warned) return;
+  warned = true;
+  console.error(`[ANALYTICS] ${message}`);
+};
+
+// Umami address. Server-side only, never sent to the browser.
+// Returns null when analytics is off or misconfigured (logged once).
+// "host:port" without http:// is accepted.
 export function analyticsUpstream(): string | null {
   if (!features.analytics) return null;
+
   const raw = process.env.ANALYTICS_UPSTREAM?.trim();
-  if (!raw) return null;
+  if (!raw) {
+    warnOnce('ANALYTICS_UPSTREAM is not set. /stats/* returns 404.');
+    return null;
+  }
+
+  const candidate = /^[a-z][a-z0-9+.-]*:\/\//i.test(raw) ? raw : `http://${raw}`;
   try {
-    const url = new URL(raw);
-    if (url.protocol !== 'http:' && url.protocol !== 'https:') return null;
+    const url = new URL(candidate);
+    if (url.protocol !== 'http:' && url.protocol !== 'https:') throw new Error('not http(s)');
     return url.origin;
   } catch {
+    warnOnce(`ANALYTICS_UPSTREAM "${raw}" is not usable. Example: http://umami:3000`);
     return null;
   }
 }
