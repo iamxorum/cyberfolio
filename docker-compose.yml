@@ -16,3 +16,50 @@ services:
       - ./private:/app/private:ro
       - ./content:/app/content:ro
 
+  # Analytics: only starts when COMPOSE_PROFILES=analytics is set in .env. See docs/analytics.md
+  umami:
+    profiles: [analytics]
+    image: ghcr.io/umami-software/umami:postgresql-latest
+    container_name: umami
+    restart: unless-stopped
+    env_file:
+      - path: .env.analytics
+        required: false
+    environment:
+      DISABLE_TELEMETRY: "1"
+    ports:
+      # Dashboard. Keep UMAMI_BIND on an internal address.
+      - "${UMAMI_BIND:-127.0.0.1}:${UMAMI_PORT:-3020}:3000"
+    networks: [default, analytics-db]
+    depends_on:
+      umami-db:
+        condition: service_healthy
+
+  umami-db:
+    profiles: [analytics]
+    image: postgres:16-alpine
+    container_name: umami-db
+    restart: unless-stopped
+    env_file:
+      - path: .env.analytics
+        required: false
+    environment:
+      POSTGRES_DB: umami
+      POSTGRES_USER: umami
+    volumes:
+      - umami-db:/var/lib/postgresql/data
+    networks: [analytics-db]
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U umami -d umami"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+networks:
+  # Only umami and its database. The portfolio can't reach the database.
+  analytics-db:
+    internal: true
+
+volumes:
+  umami-db:
+    name: analytics_umami-db

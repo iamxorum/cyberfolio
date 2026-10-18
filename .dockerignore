@@ -19,6 +19,7 @@ coverage
 *.pem
 .env*.local
 .env
+.env.analytics
 
 # Git
 .git
@@ -44,6 +45,3 @@ next-env.d.ts
 README.md
 *.md
 
-
-# Deployment files for other hosts (not part of the app image)
-deploy
