@@ -34,6 +34,11 @@ export interface FeaturesConfig {
   smoothScroll: boolean;
   /** The custom scroll-progress rail on the right edge. Off = the browser's normal scrollbar comes back. */
   scrollIndicator: boolean;
+  /**
+   * Self-hosted Umami analytics, served first-party under /stats. Needs analytics.config.ts (websiteId) and the
+   * ANALYTICS_UPSTREAM variable in .env; see deploy/analytics/README.md. Off = no tracker, /stats/* returns 404.
+   */
+  analytics: boolean;
   /** The typed one-liner in the footer. */
   footerTagline: boolean;
   /**
@@ -64,6 +69,7 @@ export const features: FeaturesConfig = {
   turnstile: false,
   smoothScroll: true,
   scrollIndicator: true,
+  analytics: false,
   footerTagline: true,
   calmMode: false,
   githubContributions: true,

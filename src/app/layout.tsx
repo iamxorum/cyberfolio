@@ -2,13 +2,14 @@ import type { Metadata, Viewport } from "next";
 import { ViewTransition } from "react";
 import { JetBrains_Mono } from "next/font/google";
 import localFont from "next/font/local";
-import { siteConfig, scripts, experience, education, getTopSkills, features } from "../config";
+import { siteConfig, scripts, experience, education, getTopSkills, features, analyticsConfig, type ScriptConfig } from "../config";
 import "./globals.css";
 import Script from "next/script";
 import SmoothScroll from "@/components/SmoothScroll";
 import ScrollIndicator from "@/components/ScrollIndicator";
 import CommandPalette from "@/components/CommandPalette";
 import { getSearchIndex } from "@/lib/blog";
+import { ANALYTICS_PATH } from "@/lib/analytics";
 import { serializeJsonLd } from "@/lib/json-ld";
 
 const jetBrainsMono = JetBrains_Mono({
@@ -102,6 +103,21 @@ const personJsonLd = {
   knowsAbout: getTopSkills(15).map((skill) => skill.name),
 };
 
+// First-party Umami tracker: the script and its collector are both served from this site under /stats, so no
+// third-party host is involved and the CSP needs no changes. It only reports for the real domains (not localhost).
+const analyticsScripts: ScriptConfig[] =
+  features.analytics && analyticsConfig.websiteId
+    ? [{
+        src: `${ANALYTICS_PATH}/script.js`,
+        strategy: 'afterInteractive',
+        dataAttributes: {
+          'website-id': analyticsConfig.websiteId,
+          domains: [siteConfig.domain, ...(siteConfig.alternateDomains ?? [])].flatMap((d) => [d, `www.${d}`]).join(','),
+          'do-not-track': 'true',
+        },
+      }]
+    : [];
+
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -153,7 +169,7 @@ export default function RootLayout({
         >
           {children}
         </ViewTransition>
-        {scripts.map((script) => {
+        {[...scripts, ...analyticsScripts].map((script) => {
           const dataProps = script.dataAttributes
             ? Object.entries(script.dataAttributes).reduce((acc, [key, value]) => {
               acc[`data-${key}`] = value;

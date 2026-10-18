@@ -23,5 +23,6 @@ export { coverLetterConfig, getCoverLetterStyleById, type CoverLetterStyle, type
 export { scripts, type ScriptConfig } from './scripts.config';
 export { badges, type BadgeConfig } from './badges.config';
 export { features, type FeaturesConfig } from './features.config';
+export { analyticsConfig, type AnalyticsConfig } from './analytics.config';
 export { dcConfig, type DCConfig } from './dc.config';
 export { securityConfig, type SecurityConfig } from './security.config';

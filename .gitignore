@@ -58,3 +58,6 @@ scripts
 
 # claude (pointer to Obsidian vault, machine-local)
 CLAUDE.md
+
+# self-hosted analytics secrets
+deploy/analytics/.env
