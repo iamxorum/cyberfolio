@@ -7,13 +7,15 @@ import InitScreen from '@/components/InitScreen';
 import Discography from '@/components/Discography';
 import RunningSection from '@/components/life/RunningSection';
 import HobbiesSection from '@/components/about/HobbiesSection';
+import { features } from '@/config';
+import { lifeTopics } from '@/lib/life-topics';
 import { useAppInitialization } from '@/hooks/useAppInitialization';
 import type { RunningData } from '@/lib/strava';
 
 const SECTIONS = [
-  { href: '#running', label: 'RUNNING' },
+  ...(features.strava ? [{ href: '#running', label: 'RUNNING' }] : []),
   { href: '#off-duty', label: 'OFF_DUTY' },
-  { href: '#music', label: 'MUSIC' },
+  ...(features.discography ? [{ href: '#music', label: 'MUSIC' }] : []),
 ];
 
 export default function LifeClient({ running }: { running: RunningData | null }) {
@@ -30,7 +32,7 @@ export default function LifeClient({ running }: { running: RunningData | null })
             <div className="layout-content-container flex flex-col max-w-[960px] w-full flex-1">
               <main id="main-content" tabIndex={-1}>
                 <div className="flex flex-col gap-6 sm:gap-8">
-                  <h1 className="sr-only">Life: running, hobbies and music</h1>
+                  <h1 className="sr-only">Life: {lifeTopics()}</h1>
                   <div className="flex items-center gap-2 text-sm font-mono tracking-wide">
                     <span className="material-symbols-outlined text-[var(--terminal-text-dim)] text-lg">folder_open</span>
                     <Link href="/" className="text-[var(--terminal-text-muted)] hover:text-[var(--terminal-text)] transition-colors">~/root</Link>
@@ -51,13 +53,15 @@ export default function LifeClient({ running }: { running: RunningData | null })
                     ))}
                   </nav>
 
-                  <RunningSection data={running} />
+                  {features.strava && <RunningSection data={running} />}
 
                   <HobbiesSection kind="personal" />
 
-                  <section id="music" className="scroll-mt-20">
-                    <Discography />
-                  </section>
+                  {features.discography && (
+                    <section id="music" className="scroll-mt-20">
+                      <Discography />
+                    </section>
+                  )}
                 </div>
               </main>
               <Footer />

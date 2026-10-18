@@ -1,3 +1,5 @@
+import { features } from '@/config';
+
 interface ContributionSourceProject {
   id: string;
   projectType: 'personal' | 'contribution';
@@ -87,6 +89,9 @@ export async function getContributionStatsForProjects<T extends ContributionSour
   projects: T[],
   username: string
 ): Promise<Record<string, ContributionStats | null>> {
+  // Switched off: no GitHub API requests at all.
+  if (!features.githubContributions) return {};
+
   const contributionProjects = projects.filter(
     p => p.projectType === 'contribution' && p.visibility === 'public' && p.repository
   );

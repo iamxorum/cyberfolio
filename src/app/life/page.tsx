@@ -1,6 +1,8 @@
 import type { Metadata } from 'next';
-import { siteConfig } from '@/config';
+import { notFound } from 'next/navigation';
+import { features, siteConfig } from '@/config';
 import { getRunningData } from '@/lib/strava';
+import { lifeTopics } from '@/lib/life-topics';
 import LifeClient from './LifeClient';
 import { serializeJsonLd } from '@/lib/json-ld';
 
@@ -11,7 +13,7 @@ const siteUrl = `https://${siteConfig.domain}`;
 const pageUrl = `${siteUrl}/life`;
 const ogImage = `${siteUrl}/opengraph-image`;
 const title = `Life | ${siteConfig.fullName}`;
-const description = `Off the clock: running log and music by ${siteConfig.fullName}.`;
+const description = `Off the clock: ${lifeTopics()} by ${siteConfig.fullName}.`;
 
 export const metadata: Metadata = {
   title,
@@ -31,7 +33,9 @@ const breadcrumbJsonLd = {
 };
 
 export default async function Life() {
-  const running = await getRunningData();
+  if (!features.life) notFound();
+  // Skipped entirely when the feature is off, so no Strava credentials or network access are needed.
+  const running = features.strava ? await getRunningData() : null;
 
   return (
     <>

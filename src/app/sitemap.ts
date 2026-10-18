@@ -1,5 +1,5 @@
 import type { MetadataRoute } from 'next';
-import { siteConfig, projects } from '@/config';
+import { features, siteConfig, projects } from '@/config';
 import { getAllPosts } from '@/lib/blog';
 
 export default function sitemap(): MetadataRoute.Sitemap {
@@ -10,19 +10,19 @@ export default function sitemap(): MetadataRoute.Sitemap {
     {
       url: siteUrl,
       lastModified: new Date(),
-      changeFrequency: 'weekly',
+      changeFrequency: 'weekly' as const,
       priority: 1,
     },
     {
       url: `${siteUrl}/about`,
       lastModified: new Date(),
-      changeFrequency: 'monthly',
+      changeFrequency: 'monthly' as const,
       priority: 0.8,
     },
     {
       url: `${siteUrl}/projects`,
       lastModified: new Date(),
-      changeFrequency: 'monthly',
+      changeFrequency: 'monthly' as const,
       priority: 0.8,
     },
     ...projects.filter((project) => project.visibility === 'public').map((project) => ({
@@ -31,18 +31,26 @@ export default function sitemap(): MetadataRoute.Sitemap {
       changeFrequency: 'monthly' as const,
       priority: 0.6,
     })),
-    {
-      url: `${siteUrl}/blog`,
-      lastModified: new Date(),
-      changeFrequency: 'weekly',
-      priority: 0.6,
-    },
-    {
-      url: `${siteUrl}/life`,
-      lastModified: new Date(),
-      changeFrequency: 'weekly',
-      priority: 0.5,
-    },
+    ...(features.blog
+      ? [
+        {
+          url: `${siteUrl}/blog`,
+          lastModified: new Date(),
+          changeFrequency: 'weekly' as const,
+          priority: 0.6,
+        },
+        ]
+      : []),
+    ...(features.life
+      ? [
+        {
+          url: `${siteUrl}/life`,
+          lastModified: new Date(),
+          changeFrequency: 'weekly' as const,
+          priority: 0.5,
+        },
+        ]
+      : []),
     ...posts.map((post) => ({
       url: `${siteUrl}/blog/${post.slug}`,
       lastModified: post.date ? new Date(post.date) : new Date(),

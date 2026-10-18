@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { projects, siteConfig } from '@/config';
+import { features, projects, siteConfig } from '@/config';
 import { isLightTheme, setLightTheme } from '@/lib/theme';
 
 export const OPEN_PALETTE_EVENT = 'open-command-palette';
@@ -64,9 +64,9 @@ export default function CommandPalette({ posts }: { posts: PaletteBlogPost[] }) 
       { id: 'nav-home', group: 'NAVIGATE', label: './home', icon: 'home', keywords: 'index main start', run: go('/') },
       { id: 'nav-about', group: 'NAVIGATE', label: './profile', icon: 'person', keywords: 'about bio experience skills education', run: go('/about') },
       { id: 'nav-projects', group: 'NAVIGATE', label: './projects', icon: 'folder_open', keywords: 'work portfolio', run: go('/projects') },
-      { id: 'nav-blog', group: 'NAVIGATE', label: './blog', icon: 'article', keywords: 'posts writing articles', run: go('/blog') },
-      { id: 'nav-life', group: 'NAVIGATE', label: './life', icon: 'directions_run', keywords: 'running strava hobbies', run: go('/life') },
-      { id: 'nav-cv', group: 'NAVIGATE', label: './cv', icon: 'download', keywords: 'resume cover letter pdf download', run: go('/cv') },
+      ...(features.blog ? [{ id: 'nav-blog', group: 'NAVIGATE' as const, label: './blog', icon: 'article', keywords: 'posts writing articles', run: go('/blog') }] : []),
+      ...(features.life ? [{ id: 'nav-life', group: 'NAVIGATE' as const, label: './life', icon: 'directions_run', keywords: features.strava ? 'running strava hobbies' : 'hobbies music', run: go('/life') }] : []),
+      ...(features.cv ? [{ id: 'nav-cv', group: 'NAVIGATE' as const, label: './cv', icon: 'download', keywords: 'resume cover letter pdf download', run: go('/cv') }] : []),
       ...posts.map<PaletteCommand>((post) => ({
         id: `post-${post.slug}`,
         group: 'BLOG',

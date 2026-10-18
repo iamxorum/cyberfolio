@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
-import { siteConfig, projects } from '@/config';
+import { notFound } from 'next/navigation';
+import { features, siteConfig, projects } from '@/config';
 import { getContributionStatsForProjects } from '@/lib/github-contributions';
 import CVClient from './CVClient';
 
@@ -19,6 +20,7 @@ export const metadata: Metadata = {
 };
 
 export default async function CVPage() {
+  if (!features.cv) notFound();
   const contributionStats = await getContributionStatsForProjects(projects, siteConfig.username);
   return <CVClient contributionStats={contributionStats} />;
 }

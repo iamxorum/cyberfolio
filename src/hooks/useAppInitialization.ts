@@ -1,7 +1,9 @@
 import { useState, useEffect, useRef } from 'react';
+import { features } from '@/config';
 
 export function useAppInitialization() {
-  const [initialized, setInitialized] = useState(false);
+  // With the boot screen switched off the app starts initialised, so InitScreen never renders.
+  const [initialized, setInitialized] = useState(!features.bootScreen);
   const [userId, setUserId] = useState<string>('');
   const initializedRef = useRef(false);
 
@@ -12,7 +14,7 @@ export function useAppInitialization() {
       const initTimestamp = localStorage.getItem('iamxorum_initialized');
       const storedUserId = localStorage.getItem('iamxorum_user_id');
 
-      const isInitialized = initTimestamp && (Date.now() - parseInt(initTimestamp)) < 24 * 60 * 60 * 1000;
+      const isInitialized = !features.bootScreen || (initTimestamp && (Date.now() - parseInt(initTimestamp)) < 24 * 60 * 60 * 1000);
 
       if (isInitialized && storedUserId) {
         // eslint-disable-next-line react-hooks/set-state-in-effect

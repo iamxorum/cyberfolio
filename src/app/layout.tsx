@@ -2,7 +2,7 @@ import type { Metadata, Viewport } from "next";
 import { ViewTransition } from "react";
 import { JetBrains_Mono } from "next/font/google";
 import localFont from "next/font/local";
-import { siteConfig, scripts, experience, education, getTopSkills } from "../config";
+import { siteConfig, scripts, experience, education, getTopSkills, features } from "../config";
 import "./globals.css";
 import Script from "next/script";
 import SmoothScroll from "@/components/SmoothScroll";
@@ -108,7 +108,13 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className="dark" data-scroll-behavior="smooth" suppressHydrationWarning>
+    <html
+      lang="en"
+      // Switched-off features that normally add a class client-side get it here instead, so there is no flash.
+      className={['dark', !features.turnstile && 'turnstile-skip', !features.bootScreen && 'boot-skip', !features.scrollIndicator && 'native-scrollbar'].filter(Boolean).join(' ')}
+      data-scroll-behavior="smooth"
+      suppressHydrationWarning
+    >
       <head>
         <noscript>
           <style dangerouslySetInnerHTML={{ __html: `.boot-screen-overlay{display:none !important;}` }} />
@@ -137,9 +143,9 @@ export default function RootLayout({
       <body
         className={`${jetBrainsMono.variable} ${materialSymbols.variable} antialiased font-display`}
       >
-        <ScrollIndicator />
-        <SmoothScroll />
-        <CommandPalette posts={getSearchIndex()} />
+        {features.scrollIndicator && <ScrollIndicator />}
+        {features.smoothScroll && <SmoothScroll />}
+        {features.commandPalette && <CommandPalette posts={getSearchIndex()} />}
         <ViewTransition
           enter={{ 'nav-forward': 'nav-forward', 'nav-back': 'nav-back', default: 'none' }}
           exit={{ 'nav-forward': 'nav-forward', 'nav-back': 'nav-back', default: 'none' }}

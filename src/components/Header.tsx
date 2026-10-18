@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { siteConfig } from '@/config';
+import { features, siteConfig } from '@/config';
 import ThemeToggle from './ThemeToggle';
 import EmailCTA from './EmailCTA';
 import CommandPaletteButton from './CommandPaletteButton';
@@ -26,8 +26,8 @@ export default function Header() {
     { href: '/', label: './home' },
     { href: '/about', label: './profile' },
     { href: '/projects', label: './projects' },
-    { href: '/blog', label: './blog' },
-    { href: '/life', label: './life' },
+    ...(features.blog ? [{ href: '/blog', label: './blog' }] : []),
+    ...(features.life ? [{ href: '/life', label: './life' }] : []),
   ];
 
   const currentIndex = navItems.findIndex((item) => item.href === pathname);
@@ -116,19 +116,21 @@ export default function Header() {
             >
               <span className="material-symbols-outlined text-base sm:text-lg">mail</span>
             </EmailCTA>
-            <CommandPaletteButton />
+            {features.commandPalette && <CommandPaletteButton />}
             <ThemeToggle />
-            <Link
-              href="/cv"
-              prefetch={false}
-              className={`flex min-w-[50px] sm:min-w-[60px] md:min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded bg-primary hover:bg-primary/80 active:scale-[0.96] transition h-11 sm:h-9 px-3 sm:px-4 text-[var(--terminal-on-primary)] text-[10px] sm:text-xs md:text-sm font-bold leading-normal tracking-[0.015em] shadow-[0_0_15px_rgba(var(--terminal-accent-rgb),0.4)] border border-primary/30 ${
-                pathname === '/cv' ? 'ring-2 ring-primary/50' : ''
-              }`}
-              >
-                <span className="material-symbols-outlined text-sm sm:text-base md:text-[18px] sm:mr-1 md:mr-2">download</span>
-                <span className="hidden sm:inline truncate font-mono">GET_CV.sh</span>
-                <span className="sm:hidden font-mono">CV</span>
-            </Link>
+            {features.cv && (
+              <Link
+                href="/cv"
+                prefetch={false}
+                className={`flex min-w-[50px] sm:min-w-[60px] md:min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded bg-primary hover:bg-primary/80 active:scale-[0.96] transition h-11 sm:h-9 px-3 sm:px-4 text-[var(--terminal-on-primary)] text-[10px] sm:text-xs md:text-sm font-bold leading-normal tracking-[0.015em] shadow-[0_0_15px_rgba(var(--terminal-accent-rgb),0.4)] border border-primary/30 ${
+                  pathname === '/cv' ? 'ring-2 ring-primary/50' : ''
+                }`}
+                >
+                  <span className="material-symbols-outlined text-sm sm:text-base md:text-[18px] sm:mr-1 md:mr-2">download</span>
+                  <span className="hidden sm:inline truncate font-mono">GET_CV.sh</span>
+                  <span className="sm:hidden font-mono">CV</span>
+              </Link>
+            )}
             <button
               ref={menuButtonRef}
               type="button"

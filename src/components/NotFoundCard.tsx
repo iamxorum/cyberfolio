@@ -3,15 +3,15 @@
 import { useEffect, useSyncExternalStore } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { projects, siteConfig } from '@/config';
+import { features, projects, siteConfig } from '@/config';
 import { OPEN_PALETTE_EVENT } from './CommandPalette';
 
 const PAGES = [
   { href: '/about', label: './profile', icon: 'person' },
   { href: '/projects', label: './projects', icon: 'folder_open' },
-  { href: '/blog', label: './blog', icon: 'article' },
-  { href: '/life', label: './life', icon: 'directions_run' },
-  { href: '/cv', label: './cv', icon: 'download' },
+  ...(features.blog ? [{ href: '/blog', label: './blog', icon: 'article' }] : []),
+  ...(features.life ? [{ href: '/life', label: './life', icon: 'directions_run' }] : []),
+  ...(features.cv ? [{ href: '/cv', label: './cv', icon: 'download' }] : []),
 ];
 
 const KNOWN_PATHS = ['/', ...PAGES.map((p) => p.href), ...projects.filter((p) => p.visibility === 'public').map((p) => `/projects/${p.id}`)];
@@ -98,15 +98,17 @@ export default function NotFoundCard() {
           <span className="material-symbols-outlined text-lg" aria-hidden="true">home</span>
           <span className="font-mono">CD ~/</span>
         </Link>
-        <button
-          type="button"
-          onClick={() => window.dispatchEvent(new Event(OPEN_PALETTE_EVENT))}
-          className="inline-flex items-center justify-center gap-2 rounded h-11 px-6 border border-[var(--terminal-border)] text-[var(--terminal-text-muted)] text-sm font-mono hover:border-primary hover:text-primary active:scale-[0.97] transition"
-        >
-          <span className="material-symbols-outlined text-lg" aria-hidden="true">search</span>
-          SEARCH_SITE
-          <kbd className="text-[10px] px-1.5 py-0.5 rounded border border-[var(--terminal-border)] text-[var(--terminal-text-dim)]">⌘K / Ctrl K</kbd>
-        </button>
+        {features.commandPalette && (
+          <button
+            type="button"
+            onClick={() => window.dispatchEvent(new Event(OPEN_PALETTE_EVENT))}
+            className="inline-flex items-center justify-center gap-2 rounded h-11 px-6 border border-[var(--terminal-border)] text-[var(--terminal-text-muted)] text-sm font-mono hover:border-primary hover:text-primary active:scale-[0.97] transition"
+          >
+            <span className="material-symbols-outlined text-lg" aria-hidden="true">search</span>
+            SEARCH_SITE
+            <kbd className="text-[10px] px-1.5 py-0.5 rounded border border-[var(--terminal-border)] text-[var(--terminal-text-dim)]">⌘K / Ctrl K</kbd>
+          </button>
+        )}
       </div>
 
       <nav aria-label="Main pages" className="animate-reveal flex flex-wrap justify-center gap-2 font-mono text-xs" style={{ animationDelay: '420ms' }}>

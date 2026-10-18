@@ -1,6 +1,7 @@
 import fs from 'fs';
 import path from 'path';
 import matter from 'gray-matter';
+import { features } from '@/config';
 
 const BLOG_DIR = path.join(process.cwd(), 'content', 'blog');
 
@@ -28,7 +29,8 @@ function readingMinutes(content: string): number {
 }
 
 function listMdxFiles(): string[] {
-  if (!fs.existsSync(BLOG_DIR)) return [];
+  // With the blog switched off there are no posts anywhere: search, sitemap, RSS and static params all see none.
+  if (!features.blog || !fs.existsSync(BLOG_DIR)) return [];
   return fs.readdirSync(BLOG_DIR).filter((file) => file.endsWith('.mdx') || file.endsWith('.md'));
 }
 
@@ -91,7 +93,7 @@ export function getAllPostSlugs(): string[] {
 const SLUG_PATTERN = /^[A-Za-z0-9][A-Za-z0-9_-]*$/;
 
 export function getPostBySlug(slug: string): Post | null {
-  if (!SLUG_PATTERN.test(slug)) return null;
+  if (!features.blog || !SLUG_PATTERN.test(slug)) return null;
   const mdxPath = path.join(BLOG_DIR, `${slug}.mdx`);
   const mdPath = path.join(BLOG_DIR, `${slug}.md`);
   const filePath = fs.existsSync(mdxPath) ? mdxPath : fs.existsSync(mdPath) ? mdPath : null;

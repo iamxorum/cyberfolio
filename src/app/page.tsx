@@ -10,6 +10,7 @@ import ProjectsGrid from '@/components/ProjectsGrid';
 import LazyMount from '@/components/LazyMount';
 import { useAppInitialization } from '@/hooks/useAppInitialization';
 import { useSystemStats } from '@/hooks/useSystemStats';
+import { features } from '@/config';
 
 const ThreatGlobeSkeleton = () => (
   <div className="flex flex-col gap-6 px-4 py-8 mb-8 border border-[var(--terminal-border)] rounded bg-[rgba(var(--terminal-bg-rgb),0.40)] min-h-[450px] sm:min-h-[550px] items-center justify-center relative overflow-hidden">
@@ -36,7 +37,7 @@ const ThreatGlobe = dynamic(() => import('@/components/ThreatGlobe'), {
 
 export default function Home() {
   const { initialized, setInitialized, userId } = useAppInitialization();
-  const { uptime, responseTime, viewport } = useSystemStats();
+  const { uptime, responseTime, viewport } = useSystemStats(features.systemStats);
 
   return (
     <div className="relative flex h-auto min-h-screen w-full flex-col bg-[var(--terminal-bg)] text-[var(--terminal-text)] group/design-root overflow-x-clip font-display">
@@ -52,15 +53,19 @@ export default function Home() {
             <main id="main-content" tabIndex={-1}>
               <HeroSection />
               <ProjectsGrid />
-              <SystemStats
-                uptime={uptime}
-                userId={userId}
-                viewport={viewport}
-                responseTime={responseTime}
-              />
-              <LazyMount fallback={<ThreatGlobeSkeleton />} rootMargin="500px">
-                <ThreatGlobe />
-              </LazyMount>
+              {features.systemStats && (
+                <SystemStats
+                  uptime={uptime}
+                  userId={userId}
+                  viewport={viewport}
+                  responseTime={responseTime}
+                />
+              )}
+              {features.threatGlobe && (
+                <LazyMount fallback={<ThreatGlobeSkeleton />} rootMargin="500px">
+                  <ThreatGlobe />
+                </LazyMount>
+              )}
             </main>
             <Footer />
           </div>

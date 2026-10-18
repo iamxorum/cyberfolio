@@ -1,8 +1,11 @@
 import { NextResponse } from 'next/server';
-import { siteConfig } from '@/config';
+import { features, siteConfig } from '@/config';
 import { isAllowedOrigin } from '@/lib/origin';
 
 export async function GET(request: Request) {
+  // The stat cards are switched off, so this endpoint does not exist.
+  if (!features.systemStats) return new NextResponse('Not found', { status: 404 });
+
   const isDevelopment = process.env.NODE_ENV === 'development';
 
   const isAllowed = isDevelopment || isAllowedOrigin(request, siteConfig.domain);

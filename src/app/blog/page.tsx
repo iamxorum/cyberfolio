@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
-import { siteConfig } from '@/config';
+import { notFound } from 'next/navigation';
+import { features, siteConfig } from '@/config';
 import { getAllPosts } from '@/lib/blog';
 import BlogClient from './BlogClient';
 import { serializeJsonLd } from '@/lib/json-ld';
@@ -28,6 +29,7 @@ const breadcrumbJsonLd = {
 };
 
 export default function Blog() {
+  if (!features.blog) notFound();
   const posts = getAllPosts();
 
   return (

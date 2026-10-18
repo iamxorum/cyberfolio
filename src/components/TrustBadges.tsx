@@ -1,7 +1,7 @@
 'use client';
 
 import { useCallback, useState, type CSSProperties } from 'react';
-import { badges, type BadgeConfig } from '@/config';
+import { badges, features, type BadgeConfig } from '@/config';
 
 const IMAGE_HEIGHT_PX = 24;
 
@@ -56,7 +56,7 @@ function BadgeImage({ badge }: { badge: BadgeConfig }) {
 }
 
 export default function TrustBadges() {
-  if (badges.length === 0) return null;
+  if (!features.badges || badges.length === 0) return null;
 
   return (
     <div className="mt-6 z-10">

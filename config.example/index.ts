@@ -22,5 +22,6 @@ export { cvConfig, getCVStyleById, getCVStylesByDomain, type CVStyle, type CVCon
 export { coverLetterConfig, getCoverLetterStyleById, type CoverLetterStyle, type CoverLetterConfig } from './cover-letter.config';
 export { scripts, type ScriptConfig } from './scripts.config';
 export { badges, type BadgeConfig } from './badges.config';
+export { features, type FeaturesConfig } from './features.config';
 export { dcConfig, type DCConfig } from './dc.config';
 export { securityConfig, type SecurityConfig } from './security.config';

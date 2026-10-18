@@ -27,6 +27,13 @@ html {
 html::-webkit-scrollbar {
   display: none;
 }
+/* features.scrollIndicator = false: the rail is not rendered, so the browser's own scrollbar returns. */
+html.native-scrollbar {
+  scrollbar-width: thin;
+}
+html.native-scrollbar::-webkit-scrollbar {
+  display: block;
+}
 .scroll-indicator {
   display: block;
   position: fixed;

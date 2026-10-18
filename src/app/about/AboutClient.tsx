@@ -16,6 +16,7 @@ import EducationSection from '@/components/about/EducationSection';
 import CertificationsSection from '@/components/about/CertificationsSection';
 import HobbiesSection from '@/components/about/HobbiesSection';
 import { useAppInitialization } from '@/hooks/useAppInitialization';
+import { features } from '@/config';
 
 export default function AboutClient() {
   const { initialized, setInitialized, userId } = useAppInitialization();
@@ -23,7 +24,7 @@ export default function AboutClient() {
   return (
     <>
       {!initialized && <InitScreen onInit={() => setInitialized(true)} />}
-      <TurnstileGate decryptingLabel="VERIFYING..." />
+      {features.turnstile && <TurnstileGate decryptingLabel="VERIFYING..." />}
       <div className="relative flex h-auto min-h-screen w-full flex-col bg-[var(--terminal-bg)] text-[var(--terminal-text)] group/design-root overflow-x-clip font-display animate-fade-in">
         {/* Background Grid Pattern Effect */}
         <div className="fixed inset-0 z-0 opacity-[0.03] pointer-events-none" style={{ backgroundImage: `linear-gradient(var(--terminal-accent-alt) 1px, transparent 1px), linear-gradient(90deg, var(--terminal-accent-alt) 1px, transparent 1px)`, backgroundSize: '40px 40px' }}></div>
