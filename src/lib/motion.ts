@@ -1,4 +1,5 @@
 import { useSyncExternalStore, type CSSProperties } from 'react';
+import { features } from '@/config';
 
 const REDUCED_MOTION_QUERY = '(prefers-reduced-motion: reduce)';
 
@@ -8,18 +9,24 @@ function subscribeReducedMotion(onChange: () => void) {
   return () => mql.removeEventListener('change', onChange);
 }
 
-/** Render-safe variant: the server snapshot is `false`, so hydration matches, then it syncs. */
+/**
+ * Render-safe variant: the server snapshot is `false`, so hydration matches, then it syncs.
+ * Calm mode (features.calmMode) counts as reduced motion for everyone; it is a build-time constant,
+ * so server and client always agree.
+ */
 export function usePrefersReducedMotion(): boolean {
-  return useSyncExternalStore(
+  const system = useSyncExternalStore(
     subscribeReducedMotion,
     () => window.matchMedia(REDUCED_MOTION_QUERY).matches,
     () => false,
   );
+  return features.calmMode || system;
 }
 
 export function prefersReducedMotion(): boolean {
+  if (features.calmMode) return true;
   if (typeof window === 'undefined') return false;
-  return window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  return window.matchMedia(REDUCED_MOTION_QUERY).matches;
 }
 
 /** Per-item delay step for staggered list/grid entrances (cards, timeline rows). */

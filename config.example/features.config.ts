@@ -36,6 +36,12 @@ export interface FeaturesConfig {
   scrollIndicator: boolean;
   /** The typed one-liner in the footer. */
   footerTagline: boolean;
+  /**
+   * Calm mode: treats every visitor as asking for reduced motion. No scroll reveals, typing, count-ups,
+   * decrypt or parallax effects, no globe arcs/rings, no smooth scrolling, no boot screen, and CSS
+   * animations/transitions collapse to instant. Content simply appears. Independent of the OS setting.
+   */
+  calmMode: boolean;
   /** Merged-PR and review counts on contribution projects, fetched from the GitHub API. Off = no GitHub requests. */
   githubContributions: boolean;
 }
@@ -59,5 +65,6 @@ export const features: FeaturesConfig = {
   smoothScroll: true,
   scrollIndicator: true,
   footerTagline: true,
+  calmMode: false,
   githubContributions: true,
 };

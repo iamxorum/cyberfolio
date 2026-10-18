@@ -1,3 +1,5 @@
+import { prefersReducedMotion } from '@/lib/motion';
+
 export function isLightTheme(): boolean {
   return document.documentElement.classList.contains('light');
 }
@@ -24,7 +26,7 @@ export function setLightTheme(light: boolean) {
   root.classList.add('theme-switching');
   const finish = () => requestAnimationFrame(() => root.classList.remove('theme-switching'));
 
-  const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const reduceMotion = prefersReducedMotion();
   if (reduceMotion || typeof document.startViewTransition !== 'function') {
     applyTheme(light);
     finish();

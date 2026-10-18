@@ -111,7 +111,7 @@ export default function RootLayout({
     <html
       lang="en"
       // Switched-off features that normally add a class client-side get it here instead, so there is no flash.
-      className={['dark', !features.turnstile && 'turnstile-skip', !features.bootScreen && 'boot-skip', !features.scrollIndicator && 'native-scrollbar'].filter(Boolean).join(' ')}
+      className={['dark', !features.turnstile && 'turnstile-skip', (!features.bootScreen || features.calmMode) && 'boot-skip', !features.scrollIndicator && 'native-scrollbar', features.calmMode && 'calm'].filter(Boolean).join(' ')}
       data-scroll-behavior="smooth"
       suppressHydrationWarning
     >

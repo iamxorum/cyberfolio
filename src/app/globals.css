@@ -183,6 +183,16 @@ input:focus-visible,
   }
 }
 
+/* features.calmMode: the same instant-collapse as above, for every visitor regardless of OS setting. */
+html.calm *,
+html.calm *::before,
+html.calm *::after {
+  animation-duration: 0.01ms !important;
+  animation-iteration-count: 1 !important;
+  transition-duration: 0.01ms !important;
+  scroll-behavior: auto !important;
+}
+
 /* Directional page transitions between the main nav routes (View Transitions API).
    The header carries a stable name so it never slides with the content. */
 ::view-transition-group(site-header) {
@@ -229,6 +239,12 @@ input:focus-visible,
     animation-duration: 0s !important;
     animation-delay: 0s !important;
   }
+}
+html.calm::view-transition-old(*),
+html.calm::view-transition-new(*),
+html.calm::view-transition-group(*) {
+  animation-duration: 0s !important;
+  animation-delay: 0s !important;
 }
 
 ::-webkit-scrollbar {

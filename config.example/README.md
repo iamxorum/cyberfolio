@@ -22,7 +22,7 @@ That's it. Edit the files below, `npm run dev`, and the site rebuilds around you
 | `languages.config.ts` | Spoken languages + CEFR-style proficiency |
 | `experience.config.ts` | Work history for the About page and CV |
 | `hobbies.config.ts` | Interests shown on the About page |
-| `features.config.ts` | On/off switches for every optional feature: the blog, /life, /cv, the world globe, stat cards, badges, Strava, discography, ⌘K palette, boot screen, Turnstile, smooth scroll, scroll rail, footer tagline and GitHub stats. Strava and Turnstile are off by default here because they need credentials |
+| `features.config.ts` | On/off switches for every optional feature: the blog, /life, /cv, the world globe, stat cards, badges, Strava, discography, ⌘K palette, boot screen, Turnstile, smooth scroll, scroll rail, footer tagline, calm mode (no animations) and GitHub stats. Strava and Turnstile are off by default here because they need credentials |
 | `badges.config.ts` | External contributor/verification badges (optional, empty by default) |
 | `music.config.ts` | Discography tracks (Spotify/SoundCloud/YouTube embeds) |
 | `cv.config.ts` | CV styles — each is a domain-targeted résumé variant with its own skill filter and accent color |

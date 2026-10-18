@@ -1,9 +1,12 @@
 import { useState, useEffect, useRef } from 'react';
 import { features } from '@/config';
 
+// The boot sequence is a switched-off feature, and also an animation that calm mode removes.
+const skipBoot = !features.bootScreen || features.calmMode;
+
 export function useAppInitialization() {
   // With the boot screen switched off the app starts initialised, so InitScreen never renders.
-  const [initialized, setInitialized] = useState(!features.bootScreen);
+  const [initialized, setInitialized] = useState(skipBoot);
   const [userId, setUserId] = useState<string>('');
   const initializedRef = useRef(false);
 
@@ -14,7 +17,7 @@ export function useAppInitialization() {
       const initTimestamp = localStorage.getItem('iamxorum_initialized');
       const storedUserId = localStorage.getItem('iamxorum_user_id');
 
-      const isInitialized = !features.bootScreen || (initTimestamp && (Date.now() - parseInt(initTimestamp)) < 24 * 60 * 60 * 1000);
+      const isInitialized = skipBoot || (initTimestamp && (Date.now() - parseInt(initTimestamp)) < 24 * 60 * 60 * 1000);
 
       if (isInitialized && storedUserId) {
         // eslint-disable-next-line react-hooks/set-state-in-effect
