@@ -78,6 +78,8 @@ export default function UltrawideRail({ children, className = '' }: { children: 
 
     const onWheel = (e: WheelEvent) => {
       if (!mq.matches || e.ctrlKey || Math.abs(e.deltaX) > Math.abs(e.deltaY)) return;
+      // Elements that use the wheel themselves (the globe zooms with it) keep it.
+      if ((e.target as HTMLElement).closest('[data-wheel-capture]')) return;
       if (canScrollInside(e.target as HTMLElement, rail, e.deltaY)) return;
       e.preventDefault();
       if (!frame) target = rail.scrollLeft;
