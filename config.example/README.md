@@ -30,7 +30,6 @@ That's it. Edit the files below, `npm run dev`, and the site rebuilds around you
 | `cv.config.ts` | CV styles — each is a role-targeted résumé variant with its own skill filter, summary and accent color |
 | `cover-letter.config.ts` | Cover letter styles. A letter can be paired with a CV style (see below) |
 | `dc.config.ts` | The infrastructure nodes ThreatGlobe arcs attacks toward |
-| `scripts.config.ts` | Third-party `<script>` tags (analytics, etc.) — empty by default |
 
 ## The fields worth explaining
 

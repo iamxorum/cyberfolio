@@ -20,7 +20,6 @@ export { languages, type Language } from './languages.config';
 export { experience, type Experience } from './experience.config';
 export { cvConfig, getCVStyleById, getCVStylesByDomain, type CVStyle, type CVConfig } from './cv.config';
 export { coverLetterConfig, getCoverLetterForCV, getCoverLetterStyleById, type CoverLetterStyle, type CoverLetterConfig } from './cover-letter.config';
-export { scripts, type ScriptConfig } from './scripts.config';
 export { badges, type BadgeConfig } from './badges.config';
 export { features, type FeaturesConfig } from './features.config';
 export { analyticsConfig, type AnalyticsConfig } from './analytics.config';

@@ -2,7 +2,7 @@ import type { Metadata, Viewport } from "next";
 import { ViewTransition } from "react";
 import { JetBrains_Mono } from "next/font/google";
 import localFont from "next/font/local";
-import { siteConfig, scripts, features, analyticsConfig, type ScriptConfig } from "../config";
+import { siteConfig, features, analyticsConfig } from "../config";
 import "./globals.css";
 import Script from "next/script";
 import SmoothScroll from "@/components/SmoothScroll";
@@ -74,18 +74,8 @@ export const viewport: Viewport = {
 };
 
 // Umami tracker, served from this site under /stats. Skips localhost.
-const analyticsScripts: ScriptConfig[] =
-  features.analytics && analyticsConfig.websiteId
-    ? [{
-        src: `${ANALYTICS_PATH}/script.js`,
-        strategy: 'afterInteractive',
-        dataAttributes: {
-          'website-id': analyticsConfig.websiteId,
-          domains: [siteConfig.domain, ...(siteConfig.alternateDomains ?? [])].flatMap((d) => [d, `www.${d}`]).join(','),
-          'do-not-track': 'true',
-        },
-      }]
-    : [];
+const analyticsEnabled = features.analytics && Boolean(analyticsConfig.websiteId);
+const analyticsDomains = [siteConfig.domain, ...(siteConfig.alternateDomains ?? [])].flatMap((d) => [d, `www.${d}`]).join(',');
 
 export default function RootLayout({
   children,
@@ -133,24 +123,15 @@ export default function RootLayout({
         >
           {children}
         </ViewTransition>
-        {[...scripts, ...analyticsScripts].map((script) => {
-          const dataProps = script.dataAttributes
-            ? Object.entries(script.dataAttributes).reduce((acc, [key, value]) => {
-              acc[`data-${key}`] = value;
-              return acc;
-            }, {} as Record<string, string>)
-            : {};
-
-          return (
-            <Script
-              key={script.id || script.src}
-              id={script.id}
-              src={script.src}
-              strategy={script.strategy}
-              {...dataProps}
-            />
-          );
-        })}
+        {analyticsEnabled && (
+          <Script
+            src={`${ANALYTICS_PATH}/script.js`}
+            strategy="afterInteractive"
+            data-website-id={analyticsConfig.websiteId}
+            data-domains={analyticsDomains}
+            data-do-not-track="true"
+          />
+        )}
       </body>
     </html>
   );
