@@ -20,8 +20,8 @@ export default function ExperienceTimeline() {
           const dateRange = getDateRange(exp);
 
           return (
-            <Reveal key={exp.id} className="flex gap-3 items-start group" delay={Math.min(index, 2) * STAGGER_STEP_MS}>
-              <div className="text-[var(--terminal-text-dim)] text-xs w-36 flex-shrink-0">
+            <Reveal key={exp.id} className="flex flex-col sm:flex-row gap-1.5 sm:gap-3 items-start group" delay={Math.min(index, 2) * STAGGER_STEP_MS}>
+              <div className="text-[var(--terminal-text-dim)] text-xs sm:w-36 sm:flex-shrink-0">
                 <div>{dateRange}</div>
                 {exp.type && (
                   <div className="mt-1 text-[var(--terminal-text-muted)]">
@@ -30,10 +30,10 @@ export default function ExperienceTimeline() {
                   </div>
                 )}
               </div>
-              <div className={`w-px self-stretch relative transition-colors ${isOngoing ? 'bg-primary' : 'bg-[var(--terminal-border)] group-hover:bg-primary'}`}>
+              <div className={`hidden sm:block w-px self-stretch relative transition-colors ${isOngoing ? 'bg-primary' : 'bg-[var(--terminal-border)] group-hover:bg-primary'}`}>
                 <div className={`absolute top-1.5 left-1/2 -translate-x-1/2 w-2 h-2 rounded-full transition-colors ${isOngoing ? 'bg-primary shadow-[0_0_4px_rgba(var(--terminal-accent-rgb),0.6)]' : 'bg-[var(--terminal-bg)] border border-[var(--terminal-border)] group-hover:border-primary group-hover:bg-primary'}`}></div>
               </div>
-              <div className="flex-1 pb-2 min-w-0">
+              <div className="w-full sm:flex-1 pb-2 min-w-0">
                 <div className="flex items-start justify-between gap-2 mb-1">
                   <div className="text-[var(--terminal-text)] font-bold group-hover:text-primary transition-colors flex-1 min-w-0 flex items-center gap-2 flex-wrap">
                     {exp.role}, {exp.company}
