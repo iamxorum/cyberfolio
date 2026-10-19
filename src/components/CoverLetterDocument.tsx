@@ -1,9 +1,10 @@
 'use client';
 
-import { Document, Page, View, Text, Link, StyleSheet } from '@react-pdf/renderer';
+import { Document, Page, View, Text, StyleSheet } from '@react-pdf/renderer';
 import { CoverLetterStyle, SiteConfig } from '@/config';
 import { formatLetterDate } from '@/lib/format-time';
-import { getContactInfo, type ContactItem } from '@/lib/cv-helpers';
+import DocumentHeader from '@/components/pdf/DocumentHeader';
+import { getContactInfo } from '@/lib/cv-helpers';
 import { coverLetterMetadata } from '@/lib/pdf-metadata';
 
 interface CoverLetterDocumentProps {
@@ -13,36 +14,18 @@ interface CoverLetterDocumentProps {
 }
 
 const styles = StyleSheet.create({
+  // Same page, font and margins as the CV, so the two read as one set.
   page: {
-    padding: '0.75in',
+    padding: '0.4in',
     fontFamily: 'Times-Roman',
     fontSize: 11,
-    lineHeight: 1.5,
+    lineHeight: 1.3,
     color: '#000000',
   },
-  header: {
-    marginBottom: 18,
-    paddingBottom: 10,
-    borderBottomWidth: 2.5,
-    borderBottomColor: '#000000',
-  },
-  name: {
-    fontFamily: 'Times-Bold',
-    fontSize: 20,
-    letterSpacing: 0.8,
-    marginBottom: 3,
-  },
-  roleTagline: {
-    fontFamily: 'Courier-Bold',
-    fontSize: 11,
-    letterSpacing: 0.2,
-    marginBottom: 6,
-  },
-  contactLine: {
-    fontSize: 10.5,
-    color: '#4a4a4a',
-    letterSpacing: 0.1,
-    lineHeight: 1.3,
+  // The letter body is inset a little: full-width lines are tiring to read in prose.
+  body: {
+    paddingHorizontal: '0.35in',
+    paddingTop: 14,
   },
   date: {
     fontSize: 11,
@@ -69,19 +52,6 @@ const styles = StyleSheet.create({
   },
 });
 
-const ContactLine = ({ items }: { items: ContactItem[] }) => items.length > 0 && (
-  <Text style={styles.contactLine}>
-    {items.map((item, idx) => (
-      <Text key={item.text}>
-        {item.href ? (
-          <Link src={item.href} style={{ color: '#4a4a4a', textDecoration: 'none' }}>{item.text}</Link>
-        ) : item.text}
-        {idx < items.length - 1 ? ' | ' : ''}
-      </Text>
-    ))}
-  </Text>
-);
-
 export function CoverLetterPage({ siteConfig, style, email }: CoverLetterDocumentProps) {
   const contactInfo = getContactInfo(siteConfig, email);
   const today = formatLetterDate();
@@ -90,23 +60,20 @@ export function CoverLetterPage({ siteConfig, style, email }: CoverLetterDocumen
 
   return (
     <Page size="A4" style={styles.page} wrap>
-      <View style={[styles.header, { borderBottomColor: accentColor }]}>
-        <Text style={[styles.name, { color: accentColor }]}>{siteConfig.fullName}</Text>
-        <Text style={[styles.roleTagline, { color: accentColor }]}>{style.name}</Text>
-        <ContactLine items={contactInfo.personal} />
-        <ContactLine items={contactInfo.links} />
+      <DocumentHeader name={siteConfig.fullName} role={style.name} accentColor={accentColor} contactInfo={contactInfo} />
+
+      <View style={styles.body}>
+        <Text style={styles.date}>{today}</Text>
+        <Text style={styles.salutation}>{salutation}</Text>
+        <Text style={styles.paragraph}>{style.opening}</Text>
+        {style.body.map((paragraph) => (
+          <Text key={paragraph} style={styles.paragraph}>{paragraph}</Text>
+        ))}
+        <Text style={styles.paragraph}>{style.closing}</Text>
+
+        <Text style={styles.signOff}>Sincerely,</Text>
+        <Text style={[styles.signName, { color: accentColor }]}>{siteConfig.fullName}</Text>
       </View>
-
-      <Text style={styles.date}>{today}</Text>
-      <Text style={styles.salutation}>{salutation}</Text>
-      <Text style={styles.paragraph}>{style.opening}</Text>
-      {style.body.map((paragraph) => (
-        <Text key={paragraph} style={styles.paragraph}>{paragraph}</Text>
-      ))}
-      <Text style={styles.paragraph}>{style.closing}</Text>
-
-      <Text style={styles.signOff}>Sincerely,</Text>
-      <Text style={[styles.signName, { color: accentColor }]}>{siteConfig.fullName}</Text>
     </Page>
   );
 }

@@ -91,7 +91,7 @@ export default function CVTemplate({
 
   return (
     <div className="cv-template ats-friendly bg-white text-black" style={{ fontFamily: 'Times New Roman, serif', fontSize: '11pt', lineHeight: '1.4' }}>
-      <CVTemplateHeader siteConfig={siteConfig} style={style} accentColor={accentColor} contactInfo={contactInfo} />
+      <CVTemplateHeader siteConfig={siteConfig} role={style.name} accentColor={accentColor} contactInfo={contactInfo} />
 
       {(style.summary || summary) && (
         <CVSummarySection text={(style.summary || summary)!} accentColor={accentColor} />

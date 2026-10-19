@@ -1,14 +1,15 @@
-import type { CVStyle, SiteConfig } from '@/config';
-import type { getContactInfo } from '@/lib/cv-helpers';
+import type { SiteConfig } from '@/config';
+import type { ContactGroups } from '@/lib/cv-helpers';
 
 interface CVTemplateHeaderProps {
   siteConfig: SiteConfig;
-  style: CVStyle;
+  /** The role line under the name. */
+  role: string;
   accentColor: string;
-  contactInfo: ReturnType<typeof getContactInfo>;
+  contactInfo: ContactGroups;
 }
 
-export default function CVTemplateHeader({ siteConfig, style, accentColor, contactInfo }: CVTemplateHeaderProps) {
+export default function CVTemplateHeader({ siteConfig, role, accentColor, contactInfo }: CVTemplateHeaderProps) {
   return (
     <div className="flex justify-between items-start mb-6" style={{ marginBottom: '14pt', paddingBottom: '10pt', borderBottom: `2.5pt solid ${accentColor}`, position: 'relative' }}>
       <div className="flex-1 text-left">
@@ -16,7 +17,7 @@ export default function CVTemplateHeader({ siteConfig, style, accentColor, conta
           {siteConfig.fullName}
         </h1>
         <div style={{ fontFamily: 'JetBrains Mono, monospace', fontWeight: 700, fontSize: '11.5pt', letterSpacing: '0.2pt', marginBottom: '6pt', color: accentColor }}>
-          {style.name}
+          {role}
         </div>
         {[contactInfo.personal, contactInfo.links].map((group, groupIdx) => group.length > 0 && (
           <div key={groupIdx} style={{ fontSize: '10.5pt', lineHeight: '1.5', color: '#4a4a4a', letterSpacing: '0.1pt', marginTop: groupIdx > 0 ? '2pt' : 0 }}>

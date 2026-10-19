@@ -12,10 +12,10 @@ import {
   filterForCV,
   getPublicProjects,
   formatDateRange,
-  type ContactItem,
 } from '@/lib/cv-helpers';
 import type { ContributionStats } from '@/lib/github-contributions';
 import { cvMetadata } from '@/lib/pdf-metadata';
+import DocumentHeader from '@/components/pdf/DocumentHeader';
 
 interface CVDocumentProps {
   style: CVStyle;
@@ -40,30 +40,6 @@ const styles = StyleSheet.create({
     fontSize: 11,
     lineHeight: 1.3,
     color: '#000000',
-  },
-  header: {
-    marginBottom: 10,
-    paddingBottom: 7,
-    borderBottomWidth: 2.5,
-    borderBottomColor: '#000000',
-  },
-  name: {
-    fontFamily: 'Times-Bold',
-    fontSize: 21,
-    letterSpacing: 0.8,
-    marginBottom: 3,
-  },
-  roleTagline: {
-    fontFamily: 'Courier-Bold',
-    fontSize: 11.5,
-    letterSpacing: 0.2,
-    marginBottom: 6,
-  },
-  contactLine: {
-    fontSize: 10.5,
-    color: '#4a4a4a',
-    letterSpacing: 0.1,
-    lineHeight: 1.3,
   },
   section: {
     marginBottom: 7,
@@ -175,19 +151,6 @@ const styles = StyleSheet.create({
 
 const SectionHeader = ({ children, accentColor }: { children: string; accentColor: string }) => (
   <Text style={[styles.sectionHeader, { color: accentColor, borderBottomColor: accentColor }]}>{children}</Text>
-);
-
-const ContactLine = ({ items, marginTop = 0 }: { items: ContactItem[]; marginTop?: number }) => items.length > 0 && (
-  <Text style={[styles.contactLine, { marginTop }]}>
-    {items.map((item, idx) => (
-      <Text key={item.text}>
-        {item.href ? (
-          <Link src={item.href} style={{ color: '#4a4a4a', textDecoration: 'none' }}>{item.text}</Link>
-        ) : item.text}
-        {idx < items.length - 1 ? ' | ' : ''}
-      </Text>
-    ))}
-  </Text>
 );
 
 const SkillsList = ({ skills }: { skills: Record<string, Skill[]> }) => (
@@ -359,12 +322,7 @@ export function CVPage({
 
   return (
     <Page size="A4" style={styles.page} wrap>
-      <View style={[styles.header, { borderBottomColor: accentColor }]}>
-        <Text style={[styles.name, { color: accentColor }]}>{siteConfig.fullName}</Text>
-        <Text style={[styles.roleTagline, { color: accentColor }]}>{style.name}</Text>
-        <ContactLine items={contactInfo.personal} />
-        <ContactLine items={contactInfo.links} marginTop={2} />
-      </View>
+      <DocumentHeader name={siteConfig.fullName} role={style.name} accentColor={accentColor} contactInfo={contactInfo} />
 
       {(style.summary || summary) && (
         <View style={styles.section} wrap={false}>

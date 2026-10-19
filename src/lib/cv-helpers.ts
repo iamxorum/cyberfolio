@@ -96,7 +96,7 @@ export interface ContactItem {
   href?: string;
 }
 
-interface ContactGroups {
+export interface ContactGroups {
   personal: ContactItem[];
   links: ContactItem[];
 }
