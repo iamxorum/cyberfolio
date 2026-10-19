@@ -1,6 +1,7 @@
 'use client';
 
 import { features, siteConfig } from '@/config';
+import { eventProps } from '@/lib/track';
 import EmailCTA from './EmailCTA';
 import FooterTagline from './FooterTagline';
 
@@ -20,7 +21,7 @@ export default function Footer() {
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 sm:gap-4">
           <div className="break-all sm:break-normal">© {currentYear} {siteConfig.domain} | {siteConfig.systemVersion}</div>
           <div className="flex flex-wrap gap-3 sm:gap-4">
-            <EmailCTA className="hover:text-[var(--terminal-text)] transition-colors whitespace-nowrap">
+            <EmailCTA source="footer" className="hover:text-[var(--terminal-text)] transition-colors whitespace-nowrap">
               EMAIL
             </EmailCTA>
             {footerLinks.map((link) => (
@@ -28,6 +29,7 @@ export default function Footer() {
                 key={link.url}
                 className="hover:text-[var(--terminal-text)] transition-colors whitespace-nowrap"
                 href={link.url}
+                {...eventProps('footer_link_click', { link: link.name })}
                 target="_blank"
                 rel="noopener noreferrer"
               >

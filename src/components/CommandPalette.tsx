@@ -168,6 +168,7 @@ export default function CommandPalette({ posts }: { posts: PaletteBlogPost[] }) 
   const runCommand = (command: PaletteCommand | undefined) => {
     if (!command) return;
     close();
+    track('palette_command', { command: command.id });
     command.run();
   };
 

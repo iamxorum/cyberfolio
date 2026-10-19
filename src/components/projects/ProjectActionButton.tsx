@@ -1,10 +1,12 @@
 import type { Project } from '@/config';
+import { eventProps } from '@/lib/track';
 
 export default function ProjectActionButton({ project }: { project: Project }) {
   if (project.repository && project.visibility === 'public') {
     return (
       <a
         href={project.repository}
+        {...eventProps('project_link_click', { project: project.id, kind: 'source' })}
         target="_blank"
         rel="noopener noreferrer"
         className="h-7 sm:h-8 px-2 sm:px-3 rounded border border-[var(--terminal-border)] hover:border-primary hover:bg-primary/20 text-[var(--terminal-text)] text-[10px] sm:text-xs font-bold font-mono tracking-wider transition active:scale-[0.97] flex items-center gap-1 sm:gap-2"

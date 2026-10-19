@@ -6,7 +6,7 @@ import { Turnstile } from '@marsidev/react-turnstile';
 import { securityConfig } from '@/config';
 import { getTurnstileSiteKey } from '@/lib/turnstile';
 import { copyText } from '@/lib/copy-text';
-import { track } from '@/lib/track';
+import { eventProps, track } from '@/lib/track';
 
 interface EmailCTAProps {
   className?: string;
@@ -15,6 +15,8 @@ interface EmailCTAProps {
   title?: string;
   /** Called when the mailto link is actually triggered (e.g. to close a mobile menu). */
   onNavigate?: () => void;
+  /** Where the button lives, sent with the open event ('header', 'footer'). */
+  source?: string;
 }
 
 /**
@@ -75,6 +77,7 @@ function ContactDetails({ email, phone, copied, error, openMailRef, onCopy, onNa
           <a
             ref={openMailRef}
             href={`mailto:${email}`}
+            {...eventProps('contact_mail_click')}
             onClick={onNavigate}
             className={`${actionButton} bg-primary text-[var(--terminal-on-primary)] hover:bg-primary/80`}
           >
@@ -85,6 +88,7 @@ function ContactDetails({ email, phone, copied, error, openMailRef, onCopy, onNa
         {phone && (
           <a
             href={`tel:${phone.replace(/[^+\d]/g, '')}`}
+            {...eventProps('contact_call_click')}
             onClick={onNavigate}
             className={`${actionButton} border border-[var(--terminal-border)] text-[var(--terminal-text-muted)] hover:border-primary hover:text-primary`}
           >
@@ -135,7 +139,7 @@ function VerifyPrompt({ error, isVerifying, onToken }: { error: string | null; i
 
 type Status = 'loading' | 'locked' | 'ready' | 'error';
 
-export default function EmailCTA({ className, children, ariaLabel, title, onNavigate }: EmailCTAProps) {
+export default function EmailCTA({ className, children, ariaLabel, title, onNavigate, source = 'unknown' }: EmailCTAProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [status, setStatus] = useState<Status>('loading');
   const [email, setEmail] = useState('');
@@ -171,6 +175,7 @@ export default function EmailCTA({ className, children, ariaLabel, title, onNavi
   }, []);
 
   const open = () => {
+    track('contact_modal_open', { source });
     setIsOpen(true);
     void loadEmail();
   };
@@ -201,6 +206,7 @@ export default function EmailCTA({ className, children, ariaLabel, title, onNavi
   // Not every device has a mail app or can place calls, so each detail can also be copied.
   const copy = async (field: 'email' | 'phone') => {
     if (await copyText(field === 'email' ? email : phone)) {
+      track('contact_copy', { field });
       setCopied(field);
       setTimeout(() => setCopied(null), 1800);
     } else {
@@ -267,7 +273,6 @@ export default function EmailCTA({ className, children, ariaLabel, title, onNavi
                 openMailRef={openMailRef}
                 onCopy={copy}
                 onNavigate={() => {
-                  track('contact_open');
                   closeModal();
                   onNavigate?.();
                 }}

@@ -7,6 +7,7 @@ import TypedText from '@/components/TypedText';
 import { STAGGER_STEP_DENSE_MS, revealDelay } from '@/lib/motion';
 import { getProjectHashId, getStatusColorStyles } from '@/lib/project-status';
 import type { Project } from '@/config';
+import { eventProps } from '@/lib/track';
 import type { ContributionStats } from '@/lib/github-contributions';
 
 interface ProjectDetailClientProps {
@@ -38,6 +39,7 @@ function ProjectLinks({ project }: { project: Project }) {
       {project.link && (
         <a
           href={project.link}
+          {...eventProps('project_link_click', { project: project.id, kind: isGithubUrl(project.link) ? 'source' : 'live' })}
           target="_blank"
           rel="noopener noreferrer"
           className="inline-flex items-center gap-2 rounded h-10 px-5 bg-primary text-[var(--terminal-on-primary)] text-sm font-bold font-mono tracking-wide hover:bg-primary/80 active:scale-[0.97] transition shadow-[0_0_15px_rgba(var(--terminal-accent-rgb),0.3)]"
@@ -51,6 +53,7 @@ function ProjectLinks({ project }: { project: Project }) {
       {hasRepoLink && (
         <a
           href={project.repository}
+          {...eventProps('project_link_click', { project: project.id, kind: 'source' })}
           target="_blank"
           rel="noopener noreferrer"
           className="inline-flex items-center gap-2 rounded h-10 px-5 border border-[var(--terminal-border)] hover:border-primary hover:bg-primary/10 text-[var(--terminal-text)] text-sm font-bold font-mono tracking-wide active:scale-[0.97] transition"

@@ -6,6 +6,7 @@ import { discography, Track, Platform } from '../config/music.config';
 import Reveal from './Reveal';
 import TypedText from './TypedText';
 import { copyText } from '@/lib/copy-text';
+import { eventProps, track } from '@/lib/track';
 
 const PlatformIcon = ({ platform, className, style }: { platform: Platform; className?: string; style?: React.CSSProperties }) => {
     switch (platform) {
@@ -31,6 +32,7 @@ export default function Discography() {
     const handleCopy = async () => {
         if (!activeTrack) return;
         if (await copyText(activeTrack.url)) {
+            track('track_link_copy', { track: activeTrack.id });
             setCopied(true);
             setTimeout(() => setCopied(false), 2000);
         } else {
@@ -89,6 +91,7 @@ export default function Discography() {
                                 <button
                                     key={track.id}
                                     onClick={() => { setActiveTrack(track); setCopied(false); }}
+                                    {...eventProps('track_select', { track: track.id, platform: track.platform })}
                                     className={`flex items-center justify-between p-3 border transition active:scale-[0.98] text-left group rounded w-full
                                         ${isSelected
                                         ? 'bg-[rgba(var(--terminal-text-rgb),0.10)] border-[rgba(var(--terminal-text-rgb),0.20)]'

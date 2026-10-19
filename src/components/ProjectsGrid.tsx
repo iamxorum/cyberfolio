@@ -56,13 +56,13 @@ export default function ProjectsGrid() {
                 style={revealDelay((index % 3) * STAGGER_STEP_MS)}
                 onClick={() => {
                   if (!isClickable) return;
-                  track('project_open', { project: project.id });
+                  track('project_open', { project: project.id, from: 'home' });
                   router.push(`/projects/${project.id}`);
                 }}
                 onKeyDown={(e) => {
                   if (isClickable && (e.key === 'Enter' || e.key === ' ')) {
                     e.preventDefault();
-                    track('project_open', { project: project.id });
+                    track('project_open', { project: project.id, from: 'home' });
                     router.push(`/projects/${project.id}`);
                   }
                 }}

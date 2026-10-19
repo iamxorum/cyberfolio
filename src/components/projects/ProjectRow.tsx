@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import type { Project } from '@/config';
+import { eventProps } from '@/lib/track';
 import type { ContributionStats } from '@/lib/github-contributions';
 import { getProjectHashId } from '@/lib/project-status';
 import { STAGGER_STEP_DENSE_MS } from '@/lib/motion';
@@ -47,6 +48,7 @@ export default function ProjectRow({ project, index, contributionStats = {}, onS
         <div className="flex flex-col min-w-0">
           <Link
             href={`/projects/${project.id}`}
+            {...(project.visibility === 'public' ? eventProps('project_open', { project: project.id, from: 'list' }) : {})}
             aria-current={selected ? 'true' : undefined}
             onClick={(e) => {
               if (!onSelect || project.visibility !== 'public' || e.metaKey || e.ctrlKey || e.shiftKey || e.button !== 0) return;

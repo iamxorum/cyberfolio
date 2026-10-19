@@ -13,6 +13,7 @@ import { usePdfDownload } from '@/hooks/usePdfDownload';
 import { cvConfig, features, getCoverLetterForCV, siteConfig, experience, education, languages, certifications, hobbies, projects } from '@/config';
 import type { ContributionStats } from '@/lib/github-contributions';
 import Reveal from '@/components/Reveal';
+import { eventProps } from '@/lib/track';
 import TypedText from '@/components/TypedText';
 
 interface ResumePanelProps {
@@ -77,6 +78,7 @@ function ColumnLayoutToggle({ active, onToggle }: { active: boolean; onToggle: (
   return (
     <button
       onClick={onToggle}
+      {...eventProps('cv_column_toggle', { to: active ? '1-col' : '2-col' })}
       className={`flex min-w-[120px] cursor-pointer items-center justify-center overflow-hidden rounded h-10 sm:h-12 px-4 sm:px-6 border-2 transition active:scale-[0.97] ${active
         ? 'bg-[var(--terminal-surface-alt)] border-primary text-primary hover:bg-[var(--terminal-surface-hover)]'
         : 'bg-[var(--terminal-surface-alt)] border-[var(--terminal-border)] text-[var(--terminal-text-muted)] hover:border-primary hover:text-primary'

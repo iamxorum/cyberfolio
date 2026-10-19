@@ -2,6 +2,7 @@
 
 import { useCallback, useState, type CSSProperties } from 'react';
 import { badges, features, type BadgeConfig } from '@/config';
+import { eventProps } from '@/lib/track';
 
 const IMAGE_HEIGHT_PX = 24;
 
@@ -71,6 +72,7 @@ export default function TrustBadges() {
             <a
               key={badge.id}
               href={badge.url}
+              {...eventProps('badge_click', { badge: badge.id })}
               {...(!isInternal && { target: '_blank', rel: 'noopener noreferrer' })}
               className="group/badge relative flex items-center gap-2.5 rounded border px-3 py-2 overflow-hidden transition hover:-translate-y-[2px] active:scale-[0.98]"
               // Tinted from theme tokens (not fixed dark colours) so the card reads correctly in light and dark.

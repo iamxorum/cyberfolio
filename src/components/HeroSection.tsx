@@ -1,6 +1,7 @@
 'use client';
 import Link from 'next/link';
 import { siteConfig, contentConfig } from '@/config';
+import { eventProps } from '@/lib/track';
 import TrustBadges from './TrustBadges';
 import ScrambleText from './ScrambleText';
 import { useSpotlight } from '@/hooks/useSpotlight';
@@ -48,10 +49,10 @@ export default function HeroSection() {
             </h2>
           </div>
           <div className="flex flex-wrap gap-3 sm:gap-4 z-10">
-            <Link ref={primaryCtaRef} href={contentConfig.home.hero.ctaPrimary.link} className="flex min-w-[120px] sm:min-w-[140px] cursor-pointer items-center justify-center overflow-hidden rounded h-10 sm:h-12 px-4 sm:px-6 bg-primary text-[var(--terminal-on-primary)] sm:text-base font-bold leading-normal tracking-[0.015em] hover:bg-white hover:-translate-y-[2px] hover:shadow-[0_0_20px_rgba(var(--terminal-accent-rgb),0.6)] active:scale-[0.97] active:translate-y-0 transition shadow-[0_0_10px_rgba(var(--terminal-accent-rgb),0.3)] border border-transparent">
+            <Link ref={primaryCtaRef} href={contentConfig.home.hero.ctaPrimary.link} {...eventProps('hero_cta_click', { cta: 'primary' })} className="flex min-w-[120px] sm:min-w-[140px] cursor-pointer items-center justify-center overflow-hidden rounded h-10 sm:h-12 px-4 sm:px-6 bg-primary text-[var(--terminal-on-primary)] sm:text-base font-bold leading-normal tracking-[0.015em] hover:bg-white hover:-translate-y-[2px] hover:shadow-[0_0_20px_rgba(var(--terminal-accent-rgb),0.6)] active:scale-[0.97] active:translate-y-0 transition shadow-[0_0_10px_rgba(var(--terminal-accent-rgb),0.3)] border border-transparent">
               <span className="truncate font-mono text-xs sm:text-sm md:text-base drop-shadow-[0_0_2px_rgba(0,0,0,0.5)]">{contentConfig.home.hero.ctaPrimary.text}</span>
             </Link>
-            <Link ref={secondaryCtaRef} href={contentConfig.home.hero.ctaSecondary.link || '#'} className="flex min-w-[100px] sm:min-w-[120px] cursor-pointer items-center justify-center overflow-hidden rounded h-10 sm:h-12 px-4 sm:px-6 bg-[var(--terminal-surface-alt)] border-2 border-[var(--terminal-accent-alt)] text-[var(--terminal-text-muted)] text-sm sm:text-base font-bold leading-normal tracking-[0.015em] hover:border-primary hover:text-primary hover:bg-[var(--terminal-surface-hover)] hover:shadow-[0_0_20px_rgba(var(--terminal-accent-alt-rgb),0.5)] hover:-translate-y-[2px] active:scale-[0.97] active:translate-y-0 transition group/cta">
+            <Link ref={secondaryCtaRef} href={contentConfig.home.hero.ctaSecondary.link || '#'} {...eventProps('hero_cta_click', { cta: 'secondary' })} className="flex min-w-[100px] sm:min-w-[120px] cursor-pointer items-center justify-center overflow-hidden rounded h-10 sm:h-12 px-4 sm:px-6 bg-[var(--terminal-surface-alt)] border-2 border-[var(--terminal-accent-alt)] text-[var(--terminal-text-muted)] text-sm sm:text-base font-bold leading-normal tracking-[0.015em] hover:border-primary hover:text-primary hover:bg-[var(--terminal-surface-hover)] hover:shadow-[0_0_20px_rgba(var(--terminal-accent-alt-rgb),0.5)] hover:-translate-y-[2px] active:scale-[0.97] active:translate-y-0 transition group/cta">
               <span className="truncate font-mono text-xs sm:text-sm md:text-base group-hover/cta:translate-x-0.5 transition-transform">{contentConfig.home.hero.ctaSecondary.text}</span>
             </Link>
           </div>

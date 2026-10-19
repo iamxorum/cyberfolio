@@ -9,7 +9,8 @@ const OPT_OUT_KEY = 'umami.disabled';
 /**
  * Page-wide analytics behaviour that belongs to no single component:
  * - visit `?notrack=1` once in a browser to stop counting your own visits (`?notrack=0` turns it back on);
- * - outbound link clicks, as one delegated listener instead of a handler per link.
+ * - clicks, as one delegated listener instead of a handler per element: anything tagged with eventProps(),
+ *   mail and phone links, and links to other sites.
  */
 export default function AnalyticsEvents() {
   useEffect(() => {
@@ -22,13 +23,32 @@ export default function AnalyticsEvents() {
     }
 
     const onClick = (event: MouseEvent) => {
-      const link = event.target instanceof Element ? event.target.closest('a[href]') : null;
+      if (!(event.target instanceof Element)) return;
+
+      // Elements tagged with eventProps(): the name plus every data-track-* attribute.
+      const tagged = event.target.closest<HTMLElement>('[data-track]');
+      if (tagged) {
+        const data: Record<string, string> = {};
+        for (const [key, value] of Object.entries(tagged.dataset)) {
+          if (key.startsWith('track') && key !== 'track' && value !== undefined) {
+            data[key.charAt(5).toLowerCase() + key.slice(6)] = value;
+          }
+        }
+        track(tagged.dataset.track!, data);
+      }
+
+      const link = event.target.closest<HTMLAnchorElement>('a[href]');
       if (!link) return;
       try {
-        const url = new URL((link as HTMLAnchorElement).href, window.location.href);
+        const url = new URL(link.href, window.location.href);
+        // Mail and phone links anywhere on the site; links tagged with their own event are already counted.
+        if (url.protocol === 'mailto:' || url.protocol === 'tel:') {
+          if (!link.hasAttribute('data-track')) track(url.protocol === 'mailto:' ? 'mailto_click' : 'tel_click', { from: window.location.pathname });
+          return;
+        }
         if (url.protocol !== 'http:' && url.protocol !== 'https:') return;
         if (url.host === window.location.host) return;
-        track('outbound_click', { host: url.host });
+        track('outbound_click', { host: url.host, from: window.location.pathname });
       } catch {
         // Not a parseable URL; nothing to report.
       }

@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState, type ComponentProps } from 'react';
 import { copyText } from '@/lib/copy-text';
+import { track } from '@/lib/track';
 
 const COPIED_MS = 1800;
 
@@ -19,7 +20,10 @@ export default function CodeBlock({ children, ...props }: ComponentProps<'pre'>)
   const copy = async () => {
     const text = preRef.current?.textContent ?? '';
     // Leaves the label unchanged if the clipboard is blocked.
-    if (await copyText(text)) setCopied(true);
+    if (await copyText(text)) {
+      setCopied(true);
+      track('code_copy', { from: window.location.pathname });
+    }
   };
 
   return (

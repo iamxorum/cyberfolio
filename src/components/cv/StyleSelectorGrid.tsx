@@ -1,4 +1,5 @@
 import Reveal from '@/components/Reveal';
+import { eventProps } from '@/lib/track';
 
 interface SelectableStyle {
   id: string;
@@ -24,6 +25,7 @@ export default function StyleSelectorGrid<T extends SelectableStyle>({ styles, s
           <Reveal key={style.id} className="h-full" delay={Math.min(index, 7) * 60}>
           <button
             onClick={() => onSelect(style.id)}
+            {...eventProps('cv_style_select', { style: style.id })}
             className={`flex h-full w-full flex-col gap-2 p-4 rounded border transition active:scale-[0.98] cursor-pointer text-left ${isSelected
               ? 'border-primary bg-primary/10 shadow-[0_0_15px_rgba(var(--terminal-accent-rgb),0.3)]'
               : 'border-[var(--terminal-border)] bg-[var(--terminal-surface-alt)] hover:border-primary/50 hover:bg-[var(--terminal-surface-hover)]'

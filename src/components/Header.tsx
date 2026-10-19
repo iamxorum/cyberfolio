@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { features, siteConfig } from '@/config';
+import { eventProps } from '@/lib/track';
 import ThemeToggle from './ThemeToggle';
 import EmailCTA from './EmailCTA';
 import CommandPaletteButton from './CommandPaletteButton';
@@ -99,6 +100,7 @@ export default function Header() {
                   key={item.href}
                   href={item.href}
                   transitionTypes={getTransitionTypes(item.href)}
+                  {...eventProps('nav_click', { to: item.href, area: 'header' })}
                   className={`transition-colors active:scale-[0.97] inline-block text-xs lg:text-sm font-medium leading-normal font-mono whitespace-nowrap ${
                     pathname === item.href
                       ? 'text-primary glow-text'
@@ -110,6 +112,7 @@ export default function Header() {
               ))}
             </nav>
             <EmailCTA
+              source="header"
               className="flex items-center justify-center w-11 h-11 sm:w-9 sm:h-9 rounded border border-[var(--terminal-border)] text-[var(--terminal-text-dim)] hover:text-primary hover:border-primary active:scale-95 transition flex-shrink-0"
               ariaLabel={`Email ${siteConfig.fullName}`}
               title={`Email ${siteConfig.fullName}`}
@@ -122,6 +125,7 @@ export default function Header() {
               <Link
                 href="/cv"
                 prefetch={false}
+                {...eventProps('cv_cta_click', { from: 'header' })}
                 className={`flex min-w-[50px] sm:min-w-[60px] lg:min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded bg-primary hover:bg-primary/80 active:scale-[0.96] transition h-11 sm:h-9 px-3 sm:px-4 text-[var(--terminal-on-primary)] text-[10px] sm:text-xs lg:text-sm font-bold leading-normal tracking-[0.015em] shadow-[0_0_15px_rgba(var(--terminal-accent-rgb),0.4)] border border-primary/30 ${
                   pathname === '/cv' ? 'ring-2 ring-primary/50' : ''
                 }`}
@@ -162,6 +166,7 @@ export default function Header() {
                 key={item.href}
                 href={item.href}
                 transitionTypes={getTransitionTypes(item.href)}
+                {...eventProps('nav_click', { to: item.href, area: 'mobile-menu' })}
                 style={{ transitionDelay: isMenuOpen ? staggerDelay(index) : '0ms' }}
                 className={`flex items-center min-h-11 rounded px-3 py-2 text-sm font-medium font-mono transition-[opacity,transform,filter,color] duration-300 ease-[var(--ease-out)] ${
                   isMenuOpen ? 'opacity-100 translate-y-0 blur-0' : 'opacity-0 -translate-y-2 blur-[3px]'

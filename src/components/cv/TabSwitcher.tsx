@@ -1,3 +1,5 @@
+import { eventProps } from '@/lib/track';
+
 export type CVTab = 'resume' | 'letter';
 
 interface TabSwitcherProps {
@@ -10,6 +12,7 @@ export default function TabSwitcher({ activeTab, onChange }: TabSwitcherProps) {
     <div className="mb-6 flex gap-2 no-print">
       <button
         onClick={() => onChange('resume')}
+        {...eventProps('cv_tab', { tab: 'resume' })}
         className={`flex-1 sm:flex-none flex items-center justify-center gap-2 rounded h-11 px-5 border font-mono text-sm font-bold transition active:scale-[0.97] cursor-pointer ${activeTab === 'resume'
           ? 'border-primary bg-primary/10 text-primary shadow-[0_0_15px_rgba(var(--terminal-accent-rgb),0.3)]'
           : 'border-[var(--terminal-border)] bg-[var(--terminal-surface-alt)] text-[var(--terminal-text-muted)] hover:border-primary/50'
@@ -20,6 +23,7 @@ export default function TabSwitcher({ activeTab, onChange }: TabSwitcherProps) {
       </button>
       <button
         onClick={() => onChange('letter')}
+        {...eventProps('cv_tab', { tab: 'letter' })}
         className={`flex-1 sm:flex-none flex items-center justify-center gap-2 rounded h-11 px-5 border font-mono text-sm font-bold transition active:scale-[0.97] cursor-pointer ${activeTab === 'letter'
           ? 'border-primary bg-primary/10 text-primary shadow-[0_0_15px_rgba(var(--terminal-accent-rgb),0.3)]'
           : 'border-[var(--terminal-border)] bg-[var(--terminal-surface-alt)] text-[var(--terminal-text-muted)] hover:border-primary/50'

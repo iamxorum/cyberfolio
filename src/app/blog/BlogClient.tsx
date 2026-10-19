@@ -5,6 +5,7 @@ import { useState, type MouseEvent, type ReactNode } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { contentConfig } from '@/config';
+import { eventProps, track } from '@/lib/track';
 import UltrawideDetail from '@/components/UltrawideDetail';
 import { useUltrawide } from '@/hooks/useUltrawide';
 import { useScrollReveal } from '@/hooks/useScrollReveal';
@@ -50,6 +51,7 @@ export default function BlogClient({ posts, views, openSlug, openBody }: BlogCli
         <Link
           href="/blog/rss.xml"
           prefetch={false}
+          {...eventProps('blog_rss_click')}
           className="animate-reveal mt-1 inline-flex w-fit items-center gap-1.5 text-xs font-mono text-[var(--terminal-text-dim)] hover:text-primary transition-colors"
           style={{ animationDelay: '200ms' }}
         >
@@ -63,7 +65,7 @@ export default function BlogClient({ posts, views, openSlug, openBody }: BlogCli
           <button
             type="button"
             aria-pressed={activeTag === null}
-            onClick={() => setActiveTag(null)}
+            onClick={() => { track('blog_tag_filter', { tag: 'all' }); setActiveTag(null); }}
             className={`px-2.5 py-1 rounded border transition active:scale-95 ${activeTag === null ? 'border-primary text-primary bg-primary/10' : 'border-[var(--terminal-border)] text-[var(--terminal-text-muted)] hover:border-primary hover:text-primary'}`}
           >
             all ({posts.length})
@@ -73,7 +75,7 @@ export default function BlogClient({ posts, views, openSlug, openBody }: BlogCli
               key={tag}
               type="button"
               aria-pressed={activeTag === tag}
-              onClick={() => setActiveTag(activeTag === tag ? null : tag)}
+              onClick={() => { track('blog_tag_filter', { tag: activeTag === tag ? 'all' : tag }); setActiveTag(activeTag === tag ? null : tag); }}
               className={`px-2.5 py-1 rounded border transition active:scale-95 ${activeTag === tag ? 'border-primary text-primary bg-primary/10' : 'border-[var(--terminal-border)] text-[var(--terminal-text-muted)] hover:border-primary hover:text-primary'}`}
             >
               #{tag} ({count})
@@ -93,6 +95,7 @@ export default function BlogClient({ posts, views, openSlug, openBody }: BlogCli
             <Link
               key={post.slug}
               href={`/blog/${post.slug}`}
+              {...eventProps('blog_post_open', { post: post.slug })}
               onClick={(e) => openPost(e, post.slug)}
               aria-current={post.slug === selectedSlug ? 'true' : undefined}
               data-reveal

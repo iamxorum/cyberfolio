@@ -12,10 +12,14 @@ export function track(event: string, data?: EventData) {
   (window as unknown as { umami?: UmamiTracker }).umami?.track(event, data);
 }
 
-/** Props for a plain element or link: Umami's tracker fires the event on click, so no handler (or client component) is needed. */
+/**
+ * Props for any element or link: the page-wide listener in AnalyticsEvents fires the event on click, so no handler
+ * (or client component) is needed. Deliberately not Umami's `data-umami-event`, which cancels a link's navigation
+ * and reloads the page, breaking client-side routing.
+ */
 export function eventProps(event: string, data: EventData = {}): Record<string, string> {
   if (!analyticsConfig.events) return {};
-  const props: Record<string, string> = { 'data-umami-event': event };
-  for (const [key, value] of Object.entries(data)) props[`data-umami-event-${key}`] = String(value);
+  const props: Record<string, string> = { 'data-track': event };
+  for (const [key, value] of Object.entries(data)) props[`data-track-${key}`] = String(value);
   return props;
 }

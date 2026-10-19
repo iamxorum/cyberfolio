@@ -7,6 +7,7 @@ import { getCategories, getSkillsByCategory, getSkillsGroupedByCategory, getScor
 import { getSkillEvidence } from '@/lib/skill-evidence';
 import { STAGGER_STEP_DENSE_MS } from '@/lib/motion';
 import Reveal from '@/components/Reveal';
+import { eventProps } from '@/lib/track';
 
 function getRadarSkills(selectedCategory: string | null) {
   if (selectedCategory) {
@@ -37,6 +38,7 @@ export default function SkillsPanel() {
       <div className="flex flex-wrap gap-1.5 sm:gap-2 mb-2 sm:mb-3">
         <button
           onClick={() => setSelectedCategory(null)}
+          {...eventProps('skills_filter', { category: 'all' })}
           className={`px-1.5 sm:px-2 py-0.5 sm:py-1 rounded text-[9px] sm:text-[10px] font-mono transition active:scale-95 ${selectedCategory === null
             ? 'bg-primary text-[var(--terminal-on-primary)] border border-primary'
             : 'bg-[var(--terminal-bg)] text-[var(--terminal-text-muted)] border border-[var(--terminal-border)] hover:border-primary hover:text-primary'
@@ -48,6 +50,7 @@ export default function SkillsPanel() {
           <button
             key={category}
             onClick={() => setSelectedCategory(category)}
+            {...eventProps('skills_filter', { category })}
             className={`px-1.5 sm:px-2 py-0.5 sm:py-1 rounded text-[9px] sm:text-[10px] font-mono transition active:scale-95 ${selectedCategory === category
               ? 'bg-primary text-[var(--terminal-on-primary)] border border-primary'
               : 'bg-[var(--terminal-bg)] text-[var(--terminal-text-muted)] border border-[var(--terminal-border)] hover:border-primary hover:text-primary'
