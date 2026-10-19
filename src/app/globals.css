@@ -718,6 +718,31 @@ html.boot-done .animate-reveal {
   to { transform: scaleY(1); }
 }
 
+/* Skills matrix: once the panel is revealed, the radar fades in, rows ease in (again on every filter
+   change, since new rows mount under an already-visible panel) and the score bars grow from the left. */
+.scroll-reveal:not(.is-visible) :is(.skills-radar, .skill-row) {
+  opacity: 0;
+}
+.scroll-reveal.is-visible .skills-radar {
+  animation: scroll-reveal-fade-in 0.6s var(--ease-out) var(--reveal-delay, 0ms) backwards;
+}
+.scroll-reveal.is-visible .skill-row {
+  animation: scroll-reveal-in 0.6s var(--ease-out) calc(var(--reveal-delay, 0ms) + var(--row-delay, 0ms)) backwards;
+}
+.skill-bar {
+  transform-origin: left;
+}
+.scroll-reveal:not(.is-visible) .skill-bar {
+  transform: scaleX(0);
+}
+.scroll-reveal.is-visible .skill-bar {
+  animation: skill-bar-grow 0.7s var(--ease-out) calc(var(--reveal-delay, 0ms) + var(--row-delay, 0ms)) backwards;
+}
+@keyframes skill-bar-grow {
+  from { transform: scaleX(0); }
+  to { transform: scaleX(1); }
+}
+
 /* Printing (the CV page): never leave content hidden waiting for a scroll that won't happen. */
 @media print {
   .scroll-reveal,

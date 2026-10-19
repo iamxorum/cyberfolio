@@ -1,4 +1,5 @@
 import Image from 'next/image';
+import Reveal from '@/components/Reveal';
 import { siteConfig, hobbies, isPersonalHobby } from '@/config';
 import { useProfileAge } from '@/hooks/useProfileAge';
 
@@ -10,7 +11,7 @@ export default function ProfileCard({ userId }: ProfileCardProps) {
   const age = useProfileAge();
 
   return (
-    <div className="animate-reveal bg-[var(--terminal-surface)] border border-[var(--terminal-border)] rounded p-1 relative overflow-hidden group">
+    <Reveal draw className="bg-[var(--terminal-surface)] border border-[var(--terminal-border)] rounded p-1 overflow-hidden group">
       <div className="absolute inset-0 bg-gradient-to-b from-transparent via-primary/10 to-transparent h-[20%] w-full animate-scan pointer-events-none z-10 opacity-30"></div>
       <div className="relative bg-[var(--terminal-bg-dark)] aspect-square flex items-center justify-center overflow-hidden mb-0">
         <div className="absolute inset-0 bg-noise-texture opacity-20"></div>
@@ -59,6 +60,6 @@ export default function ProfileCard({ userId }: ProfileCardProps) {
           </div>
         </div>
       </div>
-    </div>
+    </Reveal>
   );
 }

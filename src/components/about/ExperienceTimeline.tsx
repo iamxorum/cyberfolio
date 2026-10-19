@@ -12,7 +12,7 @@ export default function ExperienceTimeline() {
   if (experience.length === 0) return null;
 
   return (
-    <div id="experience" className="border border-[var(--terminal-border)] rounded bg-[var(--terminal-bg)] p-4 scroll-mt-32">
+    <Reveal id="experience" draw className="border border-[var(--terminal-border)] rounded bg-[var(--terminal-bg)] p-4 scroll-mt-32">
       <h2 className="text-xs font-mono text-[var(--terminal-text-dim)] mb-3">RECENT_ACTIVITY_LOG</h2>
       <div className="space-y-3 font-mono text-sm">
         {[...experience].reverse().map((exp, index) => {
@@ -65,6 +65,6 @@ export default function ExperienceTimeline() {
           );
         })}
       </div>
-    </div>
+    </Reveal>
   );
 }

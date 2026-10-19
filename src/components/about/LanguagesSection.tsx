@@ -1,11 +1,12 @@
 import Image from 'next/image';
 import { languages } from '@/config';
+import Reveal from '@/components/Reveal';
 
 export default function LanguagesSection() {
   if (languages.length === 0) return null;
 
   return (
-    <div className="bg-[var(--terminal-surface)] border border-[var(--terminal-border)] rounded p-3 sm:p-4 font-mono text-xs">
+    <Reveal draw className="bg-[var(--terminal-surface)] border border-[var(--terminal-border)] rounded p-3 sm:p-4 font-mono text-xs">
       <div className="flex justify-between items-center mb-2 sm:mb-3 border-b border-[var(--terminal-border)] pb-2">
         <span className="text-[var(--terminal-text-dim)] text-[10px] sm:text-xs">LANGUAGES</span>
       </div>
@@ -51,6 +52,6 @@ export default function LanguagesSection() {
           </div>
         ))}
       </div>
-    </div>
+    </Reveal>
   );
 }

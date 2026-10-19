@@ -21,7 +21,7 @@ export default function HobbiesSection({ kind, compact = false }: HobbiesSection
 
   if (compact) {
     return (
-      <div id={id} className="bg-[var(--terminal-surface)] border border-[var(--terminal-border)] rounded p-3 sm:p-4 font-mono text-xs scroll-mt-32">
+      <Reveal id={id} draw className="bg-[var(--terminal-surface)] border border-[var(--terminal-border)] rounded p-3 sm:p-4 font-mono text-xs scroll-mt-32">
         <div className="flex justify-between items-center mb-2 sm:mb-3 border-b border-[var(--terminal-border)] pb-2">
           <span className="text-[var(--terminal-text-dim)] text-[10px] sm:text-xs">{title}</span>
         </div>
@@ -46,7 +46,7 @@ export default function HobbiesSection({ kind, compact = false }: HobbiesSection
             </li>
           ))}
         </ul>
-      </div>
+      </Reveal>
     );
   }
 

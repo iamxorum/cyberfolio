@@ -1,11 +1,12 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, type CSSProperties } from 'react';
 import SkillsRadar from '@/components/SkillsRadar';
 import RevealContainer from '@/components/cv/RevealContainer';
 import { getCategories, getSkillsByCategory, getSkillsGroupedByCategory, getScoreFromLevel, getTopSkills } from '@/config';
 import { getSkillEvidence } from '@/lib/skill-evidence';
 import { STAGGER_STEP_DENSE_MS } from '@/lib/motion';
+import Reveal from '@/components/Reveal';
 
 function getRadarSkills(selectedCategory: string | null) {
   if (selectedCategory) {
@@ -27,7 +28,7 @@ export default function SkillsPanel() {
     .sort((a, b) => getScoreFromLevel(b.level) - getScoreFromLevel(a.level));
 
   return (
-    <div id="skills" className="bg-[var(--terminal-surface)] border border-[var(--terminal-border)] rounded p-3 sm:p-4 font-mono text-xs scroll-mt-32">
+    <Reveal id="skills" draw className="bg-[var(--terminal-surface)] border border-[var(--terminal-border)] rounded p-3 sm:p-4 font-mono text-xs scroll-mt-32">
       <div className="flex justify-between items-center mb-2 sm:mb-3 border-b border-[var(--terminal-border)] pb-2">
         <span className="text-[var(--terminal-text-dim)] text-[10px] sm:text-xs">SKILLS_MATRIX</span>
         <span className="text-primary font-bold text-[10px] sm:text-xs">{selectedCategory ? selectedCategory.toUpperCase() : 'ALL'}</span>
@@ -57,7 +58,7 @@ export default function SkillsPanel() {
         ))}
       </div>
 
-      <SkillsRadar skills={radarSkills} />
+      <div className="skills-radar"><SkillsRadar skills={radarSkills} /></div>
 
       <div data-lenis-prevent tabIndex={0} role="region" aria-label="Skills list" className="mt-3 sm:mt-4 space-y-1.5 sm:space-y-2 max-h-40 sm:max-h-48 overflow-y-auto pr-2 sm:pr-3">
         {listedSkills.map((skill, index) => {
@@ -67,7 +68,7 @@ export default function SkillsPanel() {
           const isExpanded = expandedSkill === skill.name;
 
           return (
-            <div key={skill.name} className="animate-reveal" style={{ animationDelay: `${Math.min(index, 10) * STAGGER_STEP_DENSE_MS}ms` }}>
+            <div key={skill.name} className="skill-row" style={{ '--row-delay': `${Math.min(index, 10) * STAGGER_STEP_DENSE_MS}ms` } as CSSProperties}>
               <button
                 type="button"
                 disabled={!hasEvidence}
@@ -88,7 +89,7 @@ export default function SkillsPanel() {
                 <div className="flex items-center gap-1.5 sm:gap-2 flex-shrink-0">
                   <div className="w-16 sm:w-20 h-1 sm:h-1.5 bg-[var(--terminal-bg)] border border-[var(--terminal-border)] rounded-sm overflow-hidden">
                     <div
-                      className="h-full bg-gradient-to-r from-primary to-blue-500"
+                      className="skill-bar h-full bg-gradient-to-r from-primary to-blue-500"
                       style={{ width: `${score}%` }}
                     ></div>
                   </div>
@@ -128,6 +129,6 @@ export default function SkillsPanel() {
           );
         })}
       </div>
-    </div>
+    </Reveal>
   );
 }
