@@ -3,8 +3,9 @@ import { features, siteConfig } from '@/config';
 import { isRateLimited, getClientKey } from '@/lib/rate-limit';
 import { getTurnstileSecretKey } from '@/lib/turnstile';
 import { isAllowedOrigin } from '@/lib/origin';
-
-const isDevelopment = process.env.NODE_ENV === 'development';
+import { grantAccess } from '@/lib/access';
+import { isDevelopment } from '@/lib/env';
+import { notFoundResponse } from '@/lib/http';
 
 // Turnstile tokens are at most 2048 characters (Cloudflare's documented limit).
 const MAX_TOKEN_LENGTH = 2048;
@@ -15,12 +16,11 @@ const allowedHostnames = new Set(
     [siteConfig.domain, ...(siteConfig.alternateDomains ?? [])].flatMap((domain) => [domain, `www.${domain}`])
 );
 
-const notFound = () => new NextResponse('Not found', { status: 404 });
 const fail = (error: string, status: number) => NextResponse.json({ success: false, error }, { status });
 
 export async function POST(request: Request) {
     // Turnstile switched off: there is nothing to verify, so the endpoint does not exist.
-    if (!features.turnstile) return notFound();
+    if (!features.turnstile) return notFoundResponse();
 
     const isAllowed = isAllowedOrigin(request, siteConfig.domain, isDevelopment ? ['http://localhost:3000'] : []);
 
@@ -85,11 +85,18 @@ export async function POST(request: Request) {
             return fail('Verification failed', 403);
         }
 
-        return NextResponse.json({ success: true });
+        const response = NextResponse.json({ success: true });
+        if (!grantAccess(response)) return fail('Server misconfiguration', 500);
+        return response;
     } catch (error) {
         if (error instanceof DOMException && error.name === 'TimeoutError') {
             console.error('[TURNSTILE] siteverify timed out');
             return fail('Verification service unavailable', 504);
+        }
+        // reports any failed connection (timeout, no route, DNS) as "fetch failed".
+        if (error instanceof TypeError && error.message === 'fetch failed') {
+            console.error('[TURNSTILE] cannot reach siteverify:', (error.cause as { code?: string } | undefined)?.code);
+            return fail('Verification service unreachable', 502);
         }
         console.error('[API VERIFY] Internal error:', error);
         return fail('Internal server error', 500);
@@ -97,6 +104,6 @@ export async function POST(request: Request) {
 }
 
 export async function GET() {
-    if (!features.turnstile) return notFound();
+    if (!features.turnstile) return notFoundResponse();
     return NextResponse.redirect(`https://${siteConfig.domain}/`);
 }
