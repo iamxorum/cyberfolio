@@ -5,11 +5,13 @@ import { features } from '@/config';
 
 const BLOG_DIR = path.join(process.cwd(), 'content', 'blog');
 
-export interface PostFrontmatter {
+interface PostFrontmatter {
   title: string;
   date: string;
   excerpt: string;
   tags?: string[];
+  /** Set when a post is revised after publishing. */
+  updated?: string;
 }
 
 export interface PostMeta extends PostFrontmatter {
@@ -17,7 +19,7 @@ export interface PostMeta extends PostFrontmatter {
   readingMinutes: number;
 }
 
-export interface Post extends PostMeta {
+interface Post extends PostMeta {
   content: string;
 }
 
@@ -36,7 +38,7 @@ function listMdxFiles(): string[] {
 
 export const slugify = (text: string) => text.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
 
-export interface PostSearchEntry {
+interface PostSearchEntry {
   slug: string;
   title: string;
   excerpt: string;
@@ -108,6 +110,7 @@ export function getPostBySlug(slug: string): Post | null {
     date: data.date ?? '',
     excerpt: data.excerpt ?? '',
     tags: data.tags ?? [],
+    updated: data.updated,
     readingMinutes: readingMinutes(content),
     content,
   };
@@ -131,7 +134,21 @@ export function getAllPosts(): PostMeta[] {
   const posts: PostMeta[] = [];
   for (const slug of getAllPostSlugs()) {
     const post = getPostBySlug(slug);
-    if (post) posts.push({ slug: post.slug, title: post.title, date: post.date, excerpt: post.excerpt, tags: post.tags, readingMinutes: post.readingMinutes });
+    if (post) posts.push({ slug: post.slug, title: post.title, date: post.date, excerpt: post.excerpt, tags: post.tags, updated: post.updated, readingMinutes: post.readingMinutes });
   }
   return posts.sort((a, b) => (a.date < b.date ? 1 : -1));
+}
+
+/** Posts sharing the most tags with `slug` (at least one), newest first among equals. */
+export function getRelatedPosts(slug: string, limit = 2): PostMeta[] {
+  const posts = getAllPosts();
+  const current = posts.find((post) => post.slug === slug);
+  if (!current?.tags?.length) return [];
+
+  const currentTags = new Set(current.tags);
+  const shared = (post: PostMeta) => post.tags?.filter((tag) => currentTags.has(tag)).length ?? 0;
+  return posts
+    .filter((post) => post.slug !== slug && shared(post) > 0)
+    .sort((a, b) => shared(b) - shared(a))
+    .slice(0, limit);
 }

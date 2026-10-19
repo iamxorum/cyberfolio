@@ -1,10 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import Header from '@/components/Header';
-import Footer from '@/components/Footer';
-import InitScreen from '@/components/InitScreen';
-import { useAppInitialization } from '@/hooks/useAppInitialization';
+import PageShell from '@/components/PageShell';
 import Reveal from '@/components/Reveal';
 import TypedText from '@/components/TypedText';
 import { STAGGER_STEP_DENSE_MS, revealDelay } from '@/lib/motion';
@@ -89,107 +86,77 @@ function ContributionLog({ stats }: { stats: ContributionStats }) {
 }
 
 export default function ProjectDetailClient({ project, contributionStats }: ProjectDetailClientProps) {
-  const { initialized, setInitialized } = useAppInitialization();
   const statuses = Array.isArray(project.status) ? project.status : [project.status];
   const statusColors = Array.isArray(project.statusColor) ? project.statusColor : [project.statusColor];
 
   return (
-    <div className="relative flex h-auto min-h-screen w-full flex-col bg-[var(--terminal-bg)] text-[var(--terminal-text)] group/design-root overflow-x-clip font-display">
-      {!initialized && <InitScreen onInit={() => setInitialized(true)} />}
-      <div className="fixed inset-0 z-0 opacity-[0.03] pointer-events-none" style={{ backgroundImage: `linear-gradient(var(--terminal-accent-alt) 1px, transparent 1px), linear-gradient(90deg, var(--terminal-accent-alt) 1px, transparent 1px)`, backgroundSize: '40px 40px' }}></div>
-      <div className="layout-container flex h-full grow flex-col">
-        <Header />
-        <div className="px-4 sm:px-6 md:px-10 lg:px-20 xl:px-40 flex flex-1 justify-center py-5 relative z-10">
-          <div className="layout-content-container flex flex-col max-w-[820px] w-full flex-1">
-            <main id="main-content" tabIndex={-1}>
-              <div className="flex flex-col gap-4 sm:gap-6 md:gap-8">
-                {/* Breadcrumbs */}
-                <div className="flex items-center gap-2 text-sm font-mono tracking-wide flex-wrap">
-                  <span className="material-symbols-outlined text-[var(--terminal-text-dim)] text-lg">folder_open</span>
-                  <Link href="/" className="text-[var(--terminal-text-muted)] hover:text-[var(--terminal-text)] transition-colors">~/root</Link>
-                  <span className="text-[var(--terminal-text-dim)]">/</span>
-                  <Link href="/projects" className="text-[var(--terminal-text-muted)] hover:text-[var(--terminal-text)] transition-colors">projects.yaml</Link>
-                  <span className="text-[var(--terminal-text-dim)]">/</span>
-                  <span className="text-[var(--terminal-text)]">{project.id}</span>
-                  <span className="inline-block w-2 h-4 bg-primary ml-1 animate-pulse"></span>
-                </div>
-
-                {/* Header */}
-                <div className="flex flex-col gap-4 border-b border-[var(--terminal-border-alt)] pb-6">
-                  <div className="flex items-start gap-4">
-                    <div className="p-3 rounded bg-primary/20 text-primary border border-primary/20 flex-shrink-0">
-                      <span className="material-symbols-outlined text-3xl">{project.icon}</span>
-                    </div>
-                    <div className="flex flex-col gap-2 min-w-0">
-                      <h1 className="animate-reveal text-[var(--terminal-text)] text-2xl sm:text-3xl md:text-4xl font-black leading-tight tracking-tight font-mono break-words">
-                        {project.name}
-                      </h1>
-                      <div className="flex flex-wrap items-center gap-2 text-xs font-mono text-[var(--terminal-text-dim)]">
-                        <span>{getProjectHashId(project.id)}</span>
-                        <span
-                          className={`inline-flex items-center gap-1 ${project.visibility === 'public' ? 'text-green-400' : 'text-red-400'}`}
-                          title={project.visibility === 'public' ? 'Public' : 'Private'}
-                        >
-                          <span className="material-symbols-outlined text-sm">
-                            {project.visibility === 'public' ? 'public' : 'lock'}
-                          </span>
-                          {project.visibility}
-                        </span>
-                        <span>·</span>
-                        <span className="uppercase">{project.category}</span>
-                        <span>·</span>
-                        <span className="uppercase">{project.type.replace(/_/g, ' ')}</span>
-                      </div>
-                    </div>
-                  </div>
-
-                  <div className="animate-reveal" style={{ animationDelay: '140ms' }}>
-                    <StatusBadges statuses={statuses} statusColors={statusColors} />
-                  </div>
-
-                  <div className="animate-reveal" style={{ animationDelay: '220ms' }}>
-                    <ProjectLinks project={project} />
-                  </div>
-                </div>
-
-                {/* Description */}
-                <Reveal as="section" className="flex flex-col gap-2">
-                  <h2 className="text-[var(--terminal-text-dim)] text-xs font-mono uppercase tracking-widest"><TypedText text="README.md" /></h2>
-                  <p className="text-[var(--terminal-text)] text-sm sm:text-base leading-relaxed whitespace-pre-line">
-                    {project.description}
-                  </p>
-                </Reveal>
-
-                {/* Tech stack */}
-                {project.tags.length > 0 && (
-                  <Reveal as="section" className="flex flex-col gap-2">
-                    <h2 className="text-[var(--terminal-text-dim)] text-xs font-mono uppercase tracking-widest"><TypedText text="Tech_Stack" /></h2>
-                    <div className="flex flex-wrap gap-2">
-                      {project.tags.map((tag, index) => (
-                        <span key={tag} data-reveal style={revealDelay(150 + Math.min(index, 12) * STAGGER_STEP_DENSE_MS)} className="scroll-reveal px-2.5 py-1 rounded bg-[var(--terminal-bg)] border border-[var(--terminal-border)] text-xs text-[var(--terminal-text-dim)] font-mono whitespace-nowrap">
-                          {tag}
-                        </span>
-                      ))}
-                    </div>
-                  </Reveal>
-                )}
-
-                {/* Contribution stats */}
-                {contributionStats && contributionStats.mergedCount > 0 && <ContributionLog stats={contributionStats} />}
-
-                <Link
-                  href="/projects"
-                  className="group inline-flex items-center gap-2 self-start text-sm font-mono text-[var(--terminal-text-dim)] hover:text-primary transition-colors mt-2"
-                >
-                  <span className="material-symbols-outlined text-base group-hover:-translate-x-1 transition-transform">arrow_back</span>
-                  CD .. [ ALL_PROJECTS ]
-                </Link>
-              </div>
-            </main>
-            <Footer />
+    <PageShell crumbs={[{ label: 'projects.yaml', href: '/projects' }, { label: project.id }]} width="medium">
+      <div className="flex flex-col gap-4 border-b border-[var(--terminal-border-alt)] pb-6">
+        <div className="flex items-start gap-4">
+          <div className="p-3 rounded bg-primary/20 text-primary border border-primary/20 flex-shrink-0">
+            <span className="material-symbols-outlined text-3xl">{project.icon}</span>
+          </div>
+          <div className="flex flex-col gap-2 min-w-0">
+            <h1 className="animate-reveal text-[var(--terminal-text)] text-2xl sm:text-3xl md:text-4xl font-black leading-tight tracking-tight font-mono break-words">
+              {project.name}
+            </h1>
+            <div className="flex flex-wrap items-center gap-2 text-xs font-mono text-[var(--terminal-text-dim)]">
+              <span>{getProjectHashId(project.id)}</span>
+              <span
+                className={`inline-flex items-center gap-1 ${project.visibility === 'public' ? 'text-green-400' : 'text-red-400'}`}
+                title={project.visibility === 'public' ? 'Public' : 'Private'}
+              >
+                <span className="material-symbols-outlined text-sm">
+                  {project.visibility === 'public' ? 'public' : 'lock'}
+                </span>
+                {project.visibility}
+              </span>
+              <span>·</span>
+              <span className="uppercase">{project.category}</span>
+              <span>·</span>
+              <span className="uppercase">{project.type.replace(/_/g, ' ')}</span>
+            </div>
           </div>
         </div>
+
+        <div className="animate-reveal" style={{ animationDelay: '140ms' }}>
+          <StatusBadges statuses={statuses} statusColors={statusColors} />
+        </div>
+
+        <div className="animate-reveal" style={{ animationDelay: '220ms' }}>
+          <ProjectLinks project={project} />
+        </div>
       </div>
-    </div>
+
+      <Reveal as="section" className="flex flex-col gap-2">
+        <h2 className="text-[var(--terminal-text-dim)] text-xs font-mono uppercase tracking-widest"><TypedText text="README.md" /></h2>
+        <p className="text-[var(--terminal-text)] text-sm sm:text-base leading-relaxed whitespace-pre-line">
+          {project.description}
+        </p>
+      </Reveal>
+
+      {project.tags.length > 0 && (
+        <Reveal as="section" className="flex flex-col gap-2">
+          <h2 className="text-[var(--terminal-text-dim)] text-xs font-mono uppercase tracking-widest"><TypedText text="Tech_Stack" /></h2>
+          <div className="flex flex-wrap gap-2">
+            {project.tags.map((tag, index) => (
+              <span key={tag} data-reveal style={revealDelay(150 + Math.min(index, 12) * STAGGER_STEP_DENSE_MS)} className="scroll-reveal px-2.5 py-1 rounded bg-[var(--terminal-bg)] border border-[var(--terminal-border)] text-xs text-[var(--terminal-text-dim)] font-mono whitespace-nowrap">
+                {tag}
+              </span>
+            ))}
+          </div>
+        </Reveal>
+      )}
+
+      {contributionStats && contributionStats.mergedCount > 0 && <ContributionLog stats={contributionStats} />}
+
+      <Link
+        href="/projects"
+        className="group inline-flex items-center gap-2 self-start text-sm font-mono text-[var(--terminal-text-dim)] hover:text-primary transition-colors mt-2"
+      >
+        <span className="material-symbols-outlined text-base group-hover:-translate-x-1 transition-transform">arrow_back</span>
+        CD .. [ ALL_PROJECTS ]
+      </Link>
+    </PageShell>
   );
 }

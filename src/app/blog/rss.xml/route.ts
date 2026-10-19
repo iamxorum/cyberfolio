@@ -1,5 +1,6 @@
 import { features, siteConfig } from '@/config';
 import { getAllPosts } from '@/lib/blog';
+import { siteUrl } from '@/lib/seo';
 
 export const dynamic = 'force-static';
 
@@ -14,7 +15,6 @@ const toRfc822 = (date: string) => {
 
 export function GET() {
   if (!features.blog) return new Response('Not found', { status: 404 });
-  const siteUrl = `https://${siteConfig.domain}`;
   const posts = getAllPosts();
   const lastBuild = posts.map((p) => toRfc822(p.date)).find(Boolean) ?? new Date().toUTCString();
 

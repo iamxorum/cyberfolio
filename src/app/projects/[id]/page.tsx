@@ -3,7 +3,8 @@ import { notFound } from 'next/navigation';
 import { siteConfig, projects } from '@/config';
 import { getContributionStatsForProjects } from '@/lib/github-contributions';
 import ProjectDetailClient from './ProjectDetailClient';
-import { serializeJsonLd } from '@/lib/json-ld';
+import JsonLd from '@/components/JsonLd';
+import { breadcrumbJsonLd, siteUrl } from '@/lib/seo';
 
 // Private projects are listed but deliberately not linked, so they get no page; unknown ids 404 too.
 export const dynamicParams = false;
@@ -23,7 +24,6 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   const project = publicProjects.find((p) => p.id === id);
   if (!project) return {};
 
-  const siteUrl = `https://${siteConfig.domain}`;
   const pageUrl = `${siteUrl}/projects/${project.id}`;
   const title = `${project.name} | ${siteConfig.fullName}`;
   const description = project.cvDescription || project.description;
@@ -45,25 +45,14 @@ export default async function ProjectDetailPage({ params }: PageProps) {
 
   const contributionStats = await getContributionStatsForProjects(projects, siteConfig.username);
 
-  const siteUrl = `https://${siteConfig.domain}`;
-  const pageUrl = `${siteUrl}/projects/${project.id}`;
-
-  const breadcrumbJsonLd = {
-    '@context': 'https://schema.org',
-    '@type': 'BreadcrumbList',
-    itemListElement: [
-      { '@type': 'ListItem', position: 1, name: 'Home', item: siteUrl },
-      { '@type': 'ListItem', position: 2, name: 'Projects', item: `${siteUrl}/projects` },
-      { '@type': 'ListItem', position: 3, name: project.name, item: pageUrl },
-    ],
-  };
+  const breadcrumbs = breadcrumbJsonLd([
+    { name: 'Projects', path: '/projects' },
+    { name: project.name, path: `/projects/${project.id}` },
+  ]);
 
   return (
     <>
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: serializeJsonLd(breadcrumbJsonLd) }}
-      />
+      <JsonLd data={breadcrumbs} />
       <ProjectDetailClient project={project} contributionStats={contributionStats[project.id]} />
     </>
   );

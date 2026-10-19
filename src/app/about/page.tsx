@@ -1,38 +1,30 @@
-import type { Metadata } from 'next';
 import { siteConfig } from '@/config';
 import AboutClient from './AboutClient';
-import { serializeJsonLd } from '@/lib/json-ld';
+import JsonLd from '@/components/JsonLd';
+import { breadcrumbJsonLd, pageMetadata, personId, siteUrl } from '@/lib/seo';
 
-const siteUrl = `https://${siteConfig.domain}`;
-const pageUrl = `${siteUrl}/about`;
-const ogImage = `${siteUrl}/opengraph-image`;
-const title = `About | ${siteConfig.fullName}`;
-const description = `${siteConfig.role} | background, projects, skills, education, and certifications.`;
+export const metadata = pageMetadata({
+  path: '/about',
+  title: `About | ${siteConfig.fullName}`,
+  description: `${siteConfig.role} | background, projects, skills, education, and certifications.`,
+});
 
-export const metadata: Metadata = {
-  title,
-  description,
-  alternates: { canonical: pageUrl },
-  openGraph: { title, description, url: pageUrl, images: [ogImage] },
-  twitter: { title, description, images: [ogImage] },
-};
+const breadcrumbs = breadcrumbJsonLd([{ name: 'About', path: '/about' }]);
 
-const breadcrumbJsonLd = {
+// The Person itself is declared site-wide in the root layout; this page says it is that person's profile.
+const profilePage = {
   '@context': 'https://schema.org',
-  '@type': 'BreadcrumbList',
-  itemListElement: [
-    { '@type': 'ListItem', position: 1, name: 'Home', item: siteUrl },
-    { '@type': 'ListItem', position: 2, name: 'About', item: pageUrl },
-  ],
+  '@type': 'ProfilePage',
+  url: `${siteUrl}/about`,
+  name: `About ${siteConfig.fullName}`,
+  mainEntity: { '@id': personId },
 };
 
 export default function About() {
   return (
     <>
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: serializeJsonLd(breadcrumbJsonLd) }}
-      />
+      <JsonLd data={breadcrumbs} />
+      <JsonLd data={profilePage} />
       <AboutClient />
     </>
   );
