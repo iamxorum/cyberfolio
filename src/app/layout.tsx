@@ -136,6 +136,7 @@ export default function RootLayout({
             data-do-not-track="true"
             data-exclude-search="true"
             data-exclude-hash="true"
+            data-performance={analyticsConfig.performance ? "true" : "false"}
           />
         )}
       </body>
