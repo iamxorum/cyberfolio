@@ -1,4 +1,4 @@
-import { features } from '@/config';
+import { features, analyticsConfig } from '@/config';
 
 export const ANALYTICS_PATH = '/stats';
 
@@ -30,4 +30,13 @@ export function analyticsUpstream(): string | null {
     warnOnce(`ANALYTICS_UPSTREAM "${raw}" is not usable. Example: http://umami:3000`);
     return null;
   }
+}
+
+// Crawlers, headless browsers, scripted clients and uptime monitors. Umami drops the obvious bots itself;
+// this keeps the rest from ever being relayed. An empty user agent is treated as a bot too.
+const BOT_PATTERN = /bot|crawl|spider|slurp|headless|phantom|puppeteer|playwright|lighthouse|pagespeed|gtmetrix|uptime|monitor|pingdom|curl|wget|python-requests|httpclient|go-http|axios|node-fetch|java\//i;
+
+export function isBotUserAgent(userAgent: string | null): boolean {
+  if (!analyticsConfig.blockBots) return false;
+  return !userAgent || BOT_PATTERN.test(userAgent);
 }

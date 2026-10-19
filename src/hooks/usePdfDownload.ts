@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { downloadBlob } from '@/lib/download-blob';
+import { track } from '@/lib/track';
 
 /** Runs a PDF build and saves the result, tracking the busy and "just downloaded" states for the button. */
 export function usePdfDownload() {
@@ -11,6 +12,7 @@ export function usePdfDownload() {
     try {
       const { blob, filename } = await build();
       downloadBlob(blob, filename);
+      track('pdf_download', { file: filename });
       setSucceeded(true);
       setTimeout(() => setSucceeded(false), 1800);
     } catch (err) {

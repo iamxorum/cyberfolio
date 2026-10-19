@@ -2,6 +2,7 @@
 
 import { useSyncExternalStore } from 'react';
 import { isLightTheme, setLightTheme } from '@/lib/theme';
+import { track } from '@/lib/track';
 
 // The theme lives on <html>'s class list (set pre-hydration by the layout script), so
 // read it from there. The server snapshot is `false`, which keeps hydration consistent.
@@ -20,6 +21,7 @@ export default function ThemeToggle() {
 
   const toggleTheme = () => {
     setLightTheme(!isLight);
+    track('theme_toggle', { to: isLight ? 'dark' : 'light' });
   };
 
   return (

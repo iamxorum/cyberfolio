@@ -4,6 +4,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { features, projects, siteConfig } from '@/config';
 import { isLightTheme, setLightTheme } from '@/lib/theme';
+import { track } from '@/lib/track';
 
 export const OPEN_PALETTE_EVENT = 'open-command-palette';
 
@@ -116,6 +117,7 @@ export default function CommandPalette({ posts }: { posts: PaletteBlogPost[] }) 
     setQuery('');
     setActive(0);
     setOpen(true);
+    track('palette_open');
   }, []);
 
   // Global shortcut (⌘K / Ctrl+K) and the header button's custom event.

@@ -1,5 +1,6 @@
 import { siteConfig, type SocialLink } from '@/config';
 import Reveal from '@/components/Reveal';
+import { eventProps } from '@/lib/track';
 import { STAGGER_STEP_DENSE_MS, revealDelay } from '@/lib/motion';
 
 const MAX_STAGGERED = 8;
@@ -16,6 +17,7 @@ function SocialLinkGroup({ title, links, offset }: { title: string; links: Socia
             <a
               key={link.url}
               data-reveal
+              {...eventProps('social_click', { link: link.name })}
               style={revealDelay(Math.min(offset + index, MAX_STAGGERED) * STAGGER_STEP_DENSE_MS)}
               href={link.url}
               target={isMailto ? undefined : '_blank'}

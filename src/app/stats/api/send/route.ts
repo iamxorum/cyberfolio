@@ -1,5 +1,5 @@
 import { siteConfig } from '@/config';
-import { analyticsUpstream } from '@/lib/analytics';
+import { analyticsUpstream, isBotUserAgent } from '@/lib/analytics';
 import { isAllowedOrigin } from '@/lib/origin';
 import { devOrigins } from '@/lib/env';
 import { getClientKey, isRateLimited } from '@/lib/rate-limit';
@@ -19,6 +19,9 @@ const reply = (status: number, error?: string) =>
 export async function POST(request: Request) {
   const upstream = analyticsUpstream();
   if (!upstream) return reply(404);
+
+  // Answered like a success so a bot has nothing to retry against.
+  if (isBotUserAgent(request.headers.get('user-agent'))) return reply(204);
 
   if (!isAllowedOrigin(request, siteConfig.domain, devOrigins)) return reply(403, 'Invalid origin');
 

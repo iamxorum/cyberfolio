@@ -8,6 +8,7 @@ import Script from "next/script";
 import SmoothScroll from "@/components/SmoothScroll";
 import ScrollIndicator from "@/components/ScrollIndicator";
 import CommandPalette from "@/components/CommandPalette";
+import AnalyticsEvents from "@/components/AnalyticsEvents";
 import { getSearchIndex } from "@/lib/blog";
 import { ANALYTICS_PATH } from "@/lib/analytics";
 import { serializeJsonLd } from "@/lib/json-ld";
@@ -125,6 +126,7 @@ export default function RootLayout({
         >
           {children}
         </ViewTransition>
+        {analyticsEnabled && <AnalyticsEvents />}
         {analyticsEnabled && (
           <Script
             src={`${ANALYTICS_PATH}/script.js`}
@@ -132,6 +134,8 @@ export default function RootLayout({
             data-website-id={analyticsConfig.websiteId}
             data-domains={analyticsDomains}
             data-do-not-track="true"
+            data-exclude-search="true"
+            data-exclude-hash="true"
           />
         )}
       </body>

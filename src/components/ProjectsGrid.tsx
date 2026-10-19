@@ -4,6 +4,7 @@ import { projects } from '@/config';
 import { useSpotlight } from '@/hooks/useSpotlight';
 import { STAGGER_STEP_MS, revealDelay } from '@/lib/motion';
 import { useScrollReveal } from '@/hooks/useScrollReveal';
+import { track } from '@/lib/track';
 import TypedText from './TypedText';
 
 export default function ProjectsGrid() {
@@ -53,10 +54,15 @@ export default function ProjectsGrid() {
                   : 'opacity-75 cursor-not-allowed border-dashed'
                   }`}
                 style={revealDelay((index % 3) * STAGGER_STEP_MS)}
-                onClick={() => isClickable && router.push(`/projects/${project.id}`)}
+                onClick={() => {
+                  if (!isClickable) return;
+                  track('project_open', { project: project.id });
+                  router.push(`/projects/${project.id}`);
+                }}
                 onKeyDown={(e) => {
                   if (isClickable && (e.key === 'Enter' || e.key === ' ')) {
                     e.preventDefault();
+                    track('project_open', { project: project.id });
                     router.push(`/projects/${project.id}`);
                   }
                 }}

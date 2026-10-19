@@ -4,6 +4,7 @@ import { useEffect, useSyncExternalStore } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { features, projects, siteConfig } from '@/config';
+import { track } from '@/lib/track';
 import { OPEN_PALETTE_EVENT } from './CommandPalette';
 
 const PAGES = [
@@ -54,6 +55,10 @@ export default function NotFoundCard() {
   const hydrated = useSyncExternalStore(() => () => {}, () => true, () => false);
   const livePathname = usePathname() || '/';
   const pathname = hydrated ? livePathname : '';
+
+  useEffect(() => {
+    if (hydrated) track('not_found', { path: livePathname });
+  }, [hydrated, livePathname]);
   const shown = pathname.length > MAX_SHOWN_PATH ? `${pathname.slice(0, MAX_SHOWN_PATH)}…` : pathname;
   const lastSegment = pathname.split('/').filter(Boolean).pop() ?? 'page';
   const suggestion = closestPath(pathname);

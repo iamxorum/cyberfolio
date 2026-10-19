@@ -6,6 +6,7 @@ import { Turnstile } from '@marsidev/react-turnstile';
 import { securityConfig } from '@/config';
 import { getTurnstileSiteKey } from '@/lib/turnstile';
 import { copyText } from '@/lib/copy-text';
+import { track } from '@/lib/track';
 
 interface EmailCTAProps {
   className?: string;
@@ -218,7 +219,10 @@ export default function EmailCTA({ className, children, ariaLabel, title, onNavi
       });
       if (!res.ok) throw new Error(`HTTP ${res.status}`);
       const data = await res.json();
-      if (data.success) await loadEmail();
+      if (data.success) {
+        track('contact_verified');
+        await loadEmail();
+      }
       else setError('Verification failed. Try again.');
     } catch {
       setError('Network error. Try again.');
@@ -263,6 +267,7 @@ export default function EmailCTA({ className, children, ariaLabel, title, onNavi
                 openMailRef={openMailRef}
                 onCopy={copy}
                 onNavigate={() => {
+                  track('contact_open');
                   closeModal();
                   onNavigate?.();
                 }}
