@@ -2,6 +2,7 @@ export interface Hobby {
   name: string;
   description?: string;
   icon?: string;
+  /** `personal` shows on /life, `professional` on /about. Default `professional`. */
   kind?: 'professional' | 'personal';
 }
 

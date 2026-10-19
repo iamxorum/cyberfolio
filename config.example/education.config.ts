@@ -3,15 +3,19 @@ export interface Education {
   institution: string;
   degree: string;
   field?: string;
-  startDate: string; 
-  endDate?: string; 
+  /** Free text, shown as written. */
+  startDate: string;
+  endDate?: string;
   description?: string;
   grade?: string;
   location?: string;
-  icon?: string; 
+  icon?: string;
+  /** Public link to the thesis, also printed on the CV. */
   thesisUrl?: string;
   thesisLabel?: string;
+  /** PDF in the `private/` folder, streamed through `/api/docs/[id]`. */
   thesisFileName?: string;
+  /** Default true. */
   includeInCV?: boolean;
 }
 

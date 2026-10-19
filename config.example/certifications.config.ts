@@ -2,12 +2,14 @@ export interface Certification {
   id: string;
   name: string;
   issuer: string;
-  issueDate: string; 
-  expiryDate?: string; 
-  credentialId?: string; 
-  credentialUrl?: string; 
+  /** Free text, shown as written. */
+  issueDate: string;
+  /** Omit for a certificate that does not expire. */
+  expiryDate?: string;
+  credentialId?: string;
+  credentialUrl?: string;
   description?: string;
-  icon?: string; 
+  icon?: string;
 }
 
 export const certifications: Certification[] = [
