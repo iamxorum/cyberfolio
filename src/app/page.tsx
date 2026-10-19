@@ -12,8 +12,17 @@ import UltrawideRail from '@/components/UltrawideRail';
 import { useAppInitialization } from '@/hooks/useAppInitialization';
 import { useSystemStats } from '@/hooks/useSystemStats';
 import { features } from '@/config';
+import { preloadGlobeTexture } from '@/lib/threat-globe';
 
-const ThreatGlobe = dynamic(() => import('@/components/ThreatGlobe'), { ssr: false });
+const loadThreatGlobe = () => import('@/components/ThreatGlobe');
+const ThreatGlobe = dynamic(loadThreatGlobe, { ssr: false });
+
+// Module-level so its identity is stable for LazyMount's effect.
+function prefetchThreatGlobe() {
+  void loadThreatGlobe();
+  void import('react-globe.gl');
+  preloadGlobeTexture(document.documentElement.classList.contains('light'));
+}
 
 
 export default function Home() {
@@ -46,7 +55,7 @@ export default function Home() {
               )}
               {features.threatGlobe && (
                 <section className="uw-panel uw-panel-globe mt-2 pt-6 border-t border-[var(--terminal-border)]">
-                  <LazyMount fallback={null} rootMargin="500px">
+                  <LazyMount fallback={null} rootMargin="500px" prefetch={prefetchThreatGlobe}>
                     <ThreatGlobe />
                   </LazyMount>
                 </section>
