@@ -7,6 +7,7 @@ import GlobeSourceToggle from './GlobeSourceToggle';
 import GlobeSpinToggle from './GlobeSpinToggle';
 import GlobeInspectorPanel from './GlobeInspectorPanel';
 import { usePrefersReducedMotion } from '@/lib/motion';
+import { track } from '@/lib/track';
 import {
   escapeHtml,
   GLOBE_TEXTURE_DARK,
@@ -125,6 +126,7 @@ export default function GlobeStage({
     const p = point as GlobePointDatum;
     if (!p.isServer) {
       onPointerDownContainer();
+      track('globe_point_select', { source: p.source ?? 'unknown' });
       onSelectPoint(p);
     }
   }, [onPointerDownContainer, onSelectPoint]);

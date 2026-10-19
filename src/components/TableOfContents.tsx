@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo, useState } from 'react';
 import type { PostHeading } from '@/lib/blog';
+import { eventProps } from '@/lib/track';
 
 const MIN_HEADINGS = 3;
 // A section becomes current as soon as its heading rises this far above the bottom edge of the screen.
@@ -58,6 +59,7 @@ function OutlineLinks({ headings, activeId }: { headings: PostHeading[]; activeI
           <li key={heading.id}>
             <a
               href={`#${heading.id}`}
+              {...eventProps('toc_click', { heading: heading.id })}
               aria-current={isActive ? 'location' : undefined}
               className={`block border-l-2 py-1 pr-2 leading-snug transition-colors ${heading.level === 3 ? 'pl-6' : 'pl-3'} ${
                 isActive

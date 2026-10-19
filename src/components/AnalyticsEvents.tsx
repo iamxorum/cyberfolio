@@ -5,12 +5,14 @@ import { track } from '@/lib/track';
 
 // Umami's own switch: with this key set the tracker sends nothing from this browser.
 const OPT_OUT_KEY = 'umami.disabled';
+const MAX_ERRORS_PER_LOAD = 5;
 
 /**
  * Page-wide analytics behaviour that belongs to no single component:
  * - visit `?notrack=1` once in a browser to stop counting your own visits (`?notrack=0` turns it back on);
  * - clicks, as one delegated listener instead of a handler per element: anything tagged with eventProps(),
- *   mail and phone links, and links to other sites.
+ *   mail and phone links, and links to other sites;
+ * - uncaught JavaScript errors (`js_error`), a few per page load.
  */
 export default function AnalyticsEvents() {
   useEffect(() => {
@@ -53,8 +55,26 @@ export default function AnalyticsEvents() {
         // Not a parseable URL; nothing to report.
       }
     };
+    // Uncaught errors, deduplicated and capped per page load so a render loop can't flood the proxy's rate limit.
+    const seenErrors = new Set<string>();
+    const reportError = (kind: string, message: string) => {
+      const key = `${kind}:${message}`;
+      if (seenErrors.has(key) || seenErrors.size >= MAX_ERRORS_PER_LOAD) return;
+      seenErrors.add(key);
+      track('js_error', { kind, message: message.slice(0, 120), page: window.location.pathname });
+    };
+    const onError = (event: ErrorEvent) => reportError('error', event.message || 'unknown');
+    const onRejection = (event: PromiseRejectionEvent) =>
+      reportError('rejection', event.reason instanceof Error ? event.reason.message : String(event.reason ?? 'unknown'));
+
     document.addEventListener('click', onClick);
-    return () => document.removeEventListener('click', onClick);
+    window.addEventListener('error', onError);
+    window.addEventListener('unhandledrejection', onRejection);
+    return () => {
+      document.removeEventListener('click', onClick);
+      window.removeEventListener('error', onError);
+      window.removeEventListener('unhandledrejection', onRejection);
+    };
   }, []);
 
   return null;

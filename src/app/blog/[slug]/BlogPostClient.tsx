@@ -8,6 +8,7 @@ import TableOfContents from '@/components/TableOfContents';
 import Reveal from '@/components/Reveal';
 import ReadingProgress from '@/components/ReadingProgress';
 import type { AdjacentPost, PostHeading, PostMeta } from '@/lib/blog';
+import { eventProps } from '@/lib/track';
 
 interface BlogPostClientProps {
   title: string;
@@ -63,7 +64,7 @@ export default function BlogPostClient({ title, date, tags, readingMinutes, head
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             {related.map((post) => (
               <Reveal key={post.slug} draw className="rounded border border-[var(--terminal-border)] bg-[var(--terminal-surface-alt)] hover:border-primary transition-colors">
-                <Link href={`/blog/${post.slug}`} className="flex h-full flex-col gap-1 p-4">
+                <Link href={`/blog/${post.slug}`} {...eventProps('blog_post_link_click', { kind: 'related', post: post.slug })} className="flex h-full flex-col gap-1 p-4">
                   <span className="text-sm font-bold text-[var(--terminal-text)]">{post.title}</span>
                   <span className="text-[10px] text-[var(--terminal-text-dim)]">{post.readingMinutes} min read</span>
                 </Link>
@@ -77,7 +78,7 @@ export default function BlogPostClient({ title, date, tags, readingMinutes, head
         <nav aria-label="More posts" className="grid grid-cols-1 sm:grid-cols-2 gap-3 border-t border-[var(--terminal-border-alt)] pt-6">
           {previous ? (
             <Reveal draw className="rounded border border-[var(--terminal-border)] bg-[var(--terminal-surface-alt)] hover:border-primary transition-colors">
-              <Link href={`/blog/${previous.slug}`} className="flex flex-col gap-1 p-4 font-mono h-full">
+              <Link href={`/blog/${previous.slug}`} {...eventProps('blog_post_link_click', { kind: 'previous', post: previous.slug })} className="flex flex-col gap-1 p-4 font-mono h-full">
                 <span className="flex items-center gap-1 text-[10px] tracking-widest text-[var(--terminal-text-dim)]">
                   <span className="material-symbols-outlined text-sm" aria-hidden="true">arrow_back</span>
                   PREVIOUS
@@ -88,7 +89,7 @@ export default function BlogPostClient({ title, date, tags, readingMinutes, head
           ) : <div className="hidden sm:block" />}
           {next && (
             <Reveal draw delay={80} className="rounded border border-[var(--terminal-border)] bg-[var(--terminal-surface-alt)] hover:border-primary transition-colors">
-              <Link href={`/blog/${next.slug}`} className="flex flex-col gap-1 p-4 font-mono h-full sm:text-right sm:items-end">
+              <Link href={`/blog/${next.slug}`} {...eventProps('blog_post_link_click', { kind: 'next', post: next.slug })} className="flex flex-col gap-1 p-4 font-mono h-full sm:text-right sm:items-end">
                 <span className="flex items-center gap-1 text-[10px] tracking-widest text-[var(--terminal-text-dim)]">
                   NEXT
                   <span className="material-symbols-outlined text-sm" aria-hidden="true">arrow_forward</span>
