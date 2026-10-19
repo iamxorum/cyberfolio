@@ -27,7 +27,7 @@ function namesMatch(skillName: string, candidate: string): boolean {
   return aliases.some((alias) => normalize(alias) === normalize(candidate));
 }
 
-export interface SkillEvidence {
+interface SkillEvidence {
   experience: Experience[];
   projects: Project[];
 }

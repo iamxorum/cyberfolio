@@ -6,7 +6,7 @@ const STATUS_COLOR_MAP = {
   red: { bg: 'bg-red-500/10', border: 'border-red-500/20', text: 'text-red-400', dot: 'bg-red-400' },
 } as const;
 
-export type ProjectStatusColor = keyof typeof STATUS_COLOR_MAP;
+type ProjectStatusColor = keyof typeof STATUS_COLOR_MAP;
 
 export function getStatusColorStyles(color?: string) {
   return STATUS_COLOR_MAP[color as ProjectStatusColor] || STATUS_COLOR_MAP.green;

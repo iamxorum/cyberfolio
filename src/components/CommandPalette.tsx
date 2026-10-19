@@ -7,7 +7,7 @@ import { isLightTheme, setLightTheme } from '@/lib/theme';
 
 export const OPEN_PALETTE_EVENT = 'open-command-palette';
 
-export interface PaletteBlogPost {
+interface PaletteBlogPost {
   slug: string;
   title: string;
   excerpt: string;

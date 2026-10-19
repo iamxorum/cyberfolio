@@ -213,6 +213,7 @@ async function fetchBests(): Promise<PersonalBest[]> {
     if (batch.length < 200) break;
   }
 
+  // Sequential on purpose: each result decides whether the next call is needed, and Strava rate-limits requests.
   const found = new Map<string, PersonalBest>();
   let detailCalls = 0;
   for (const run of runs) {
