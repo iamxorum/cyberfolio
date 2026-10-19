@@ -6,6 +6,7 @@ const { security } = siteConfig;
 
 const isDev = process.env.NODE_ENV === 'development';
 
+// connect-src allows data: because yoga-layout (inside @react-pdf, used for the CV PDFs) fetches its inlined WASM from a data: URL.
 const cspHeader = `
   default-src 'self';
   script-src 'self' 'unsafe-inline' 'wasm-unsafe-eval' ${security.scripts.join(' ')};
@@ -16,7 +17,7 @@ const cspHeader = `
   base-uri 'self';
   form-action 'self';
   frame-src 'self' ${security.frames.join(' ')};
-  connect-src 'self' ${isDev ? 'ws: wss:' : ''} iamxorum.ro *.iamxorum.ro ${security.connects.join(' ')};
+  connect-src 'self' data: ${isDev ? 'ws: wss:' : ''} iamxorum.ro *.iamxorum.ro ${security.connects.join(' ')};
   worker-src 'self' blob:;
   ${isDev ? '' : 'upgrade-insecure-requests;'}
 `.replace(/\n/g, '').replace(/\s{2,}/g, ' ').trim();
