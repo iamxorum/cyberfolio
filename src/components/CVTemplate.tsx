@@ -29,7 +29,6 @@ interface CVTemplateProps {
   hobbies: Hobby[];
   projects?: Project[];
   summary?: string;
-  email?: string;
   useColumnLayout?: boolean;
   contributionStats?: Record<string, ContributionStats | null>;
 }
@@ -44,7 +43,6 @@ export default function CVTemplate({
   hobbies,
   projects = [],
   summary,
-  email,
   useColumnLayout = true,
   contributionStats = NO_CONTRIBUTION_STATS,
 }: CVTemplateProps) {
@@ -55,7 +53,7 @@ export default function CVTemplate({
   const sortedExperience = sortExperienceByDate(experience);
   const cvEducation = filterForCV(education);
   const cvLanguages = filterForCV(languages);
-  const contactInfo = getContactInfo(siteConfig, email);
+  const contactInfo = getContactInfo(siteConfig);
   const showHobbies = style.showHobbies !== false && hobbies.length > 0;
   const sectionMarginBottom = useColumnLayout ? '10pt' : '9pt';
 

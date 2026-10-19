@@ -12,11 +12,10 @@ const noopSubscribe = () => () => {};
 interface CoverLetterPreviewProps {
   siteConfig: SiteConfig;
   style: CoverLetterStyle;
-  email?: string;
 }
 
-export default function CoverLetterPreview({ siteConfig, style, email }: CoverLetterPreviewProps) {
-  const contactInfo = getContactInfo(siteConfig, email);
+export default function CoverLetterPreview({ siteConfig, style }: CoverLetterPreviewProps) {
+  const contactInfo = getContactInfo(siteConfig);
   const today = useSyncExternalStore(noopSubscribe, () => formatLetterDate(), () => '');
   const accentColor = style.colorScheme?.primary || '#000000';
   const salutation = style.salutation || 'Dear Hiring Manager,';

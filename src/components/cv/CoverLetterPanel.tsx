@@ -58,7 +58,6 @@ export default function CoverLetterPanel({ email, phone }: { email?: string; pho
           <CoverLetterPreview
             siteConfig={siteConfig}
             style={selectedCoverLetterStyle}
-            email={email}
           />
         </ScaleToFit>
       </RevealContainer>

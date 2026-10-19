@@ -169,7 +169,6 @@ export default function ResumePanel({ contributionStats, email, phone }: ResumeP
             hobbies={hobbies}
             projects={projects}
             summary={cvConfig.summary}
-            email={email}
             useColumnLayout={useColumnLayout}
             contributionStats={contributionStats}
           />
