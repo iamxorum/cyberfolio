@@ -6,64 +6,69 @@ import ScaleToFit from '@/components/ScaleToFit';
 import StyleSelectorGrid from '@/components/cv/StyleSelectorGrid';
 import ViewToggleButton from '@/components/cv/ViewToggleButton';
 import RevealContainer from '@/components/cv/RevealContainer';
-import { downloadBlob } from '@/lib/download-blob';
-import { cvConfig, siteConfig, experience, education, languages, certifications, hobbies, projects } from '@/config';
+import DownloadButton from '@/components/cv/DownloadButton';
+import { usePdfDownload } from '@/hooks/usePdfDownload';
+import { cvConfig, features, getCoverLetterForCV, siteConfig, experience, education, languages, certifications, hobbies, projects } from '@/config';
 import type { ContributionStats } from '@/lib/github-contributions';
 import Reveal from '@/components/Reveal';
 import TypedText from '@/components/TypedText';
 
 interface ResumePanelProps {
   contributionStats: Record<string, ContributionStats | null>;
+  email?: string;
+  phone?: string;
 }
 
 type CVStyle = (typeof cvConfig.styles)[number];
 
-function useCVDownload({ style, styleId, useColumnLayout, contributionStats }: {
+const fileName = (kind: string, styleId: string) => `${siteConfig.fullName.replace(/\s+/g, '_')}_${kind}_${styleId}.pdf`;
+
+function useCVDownloads({ style, styleId, useColumnLayout, contributionStats, email, phone }: {
   style: CVStyle;
   styleId: string;
   useColumnLayout: boolean;
   contributionStats: Record<string, ContributionStats | null>;
+  email?: string;
+  phone?: string;
 }) {
-  const [isDownloading, setIsDownloading] = useState(false);
-  const [downloadSucceeded, setDownloadSucceeded] = useState(false);
+  const cv = usePdfDownload();
+  const application = usePdfDownload();
 
-  const handleDownloadPDF = async () => {
-    setIsDownloading(true);
-
-    try {
-      const [{ pdf }, { default: CVDocument }] = await Promise.all([
-        import('@react-pdf/renderer'),
-        import('@/components/CVDocument'),
-      ]);
-
-      const blob = await pdf(
-        <CVDocument
-          style={style}
-          siteConfig={siteConfig}
-          experience={experience}
-          education={education}
-          languages={languages}
-          certifications={certifications}
-          hobbies={hobbies}
-          projects={projects}
-          summary={cvConfig.summary}
-          email={cvConfig.email}
-          useColumnLayout={useColumnLayout}
-          contributionStats={contributionStats}
-        />
-      ).toBlob();
-
-      downloadBlob(blob, `${siteConfig.fullName.replace(/\s+/g, '_')}_CV_${styleId}.pdf`);
-      setDownloadSucceeded(true);
-      setTimeout(() => setDownloadSucceeded(false), 1800);
-    } catch (err) {
-      console.error('Failed to generate CV PDF:', err);
-    } finally {
-      setIsDownloading(false);
-    }
+  const cvProps = {
+    style,
+    siteConfig,
+    experience,
+    education,
+    languages,
+    certifications,
+    hobbies,
+    projects,
+    summary: cvConfig.summary,
+    email,
+    phone,
+    useColumnLayout,
+    contributionStats,
   };
 
-  return { isDownloading, downloadSucceeded, handleDownloadPDF };
+  const letterStyle = features.coverLetter ? getCoverLetterForCV(styleId) : undefined;
+
+  const downloadCV = () => cv.download(async () => {
+    const [{ pdf }, { default: CVDocument }] = await Promise.all([
+      import('@react-pdf/renderer'),
+      import('@/components/CVDocument'),
+    ]);
+    return { blob: await pdf(<CVDocument {...cvProps} />).toBlob(), filename: fileName('CV', styleId) };
+  });
+
+  const downloadApplication = () => letterStyle && application.download(async () => {
+    const [{ pdf }, { default: ApplicationDocument }] = await Promise.all([
+      import('@react-pdf/renderer'),
+      import('@/components/ApplicationDocument'),
+    ]);
+    return { blob: await pdf(<ApplicationDocument cv={cvProps} letterStyle={letterStyle} />).toBlob(), filename: fileName('Application', styleId) };
+  });
+
+  return { cv, downloadCV, application, downloadApplication, letterStyle };
 }
 
 function ColumnLayoutToggle({ active, onToggle }: { active: boolean; onToggle: () => void }) {
@@ -85,40 +90,24 @@ function ColumnLayoutToggle({ active, onToggle }: { active: boolean; onToggle: (
   );
 }
 
-function DownloadButton({ isDownloading, succeeded, onClick }: { isDownloading: boolean; succeeded: boolean; onClick: () => void }) {
-  return (
-    <button
-      onClick={onClick}
-      disabled={isDownloading}
-      className="flex min-w-[140px] cursor-pointer items-center justify-center overflow-hidden rounded h-10 sm:h-12 px-4 sm:px-6 bg-primary text-[var(--terminal-on-primary)] text-sm sm:text-base font-bold leading-normal tracking-[0.015em] hover:bg-primary/80 transition active:scale-[0.97] shadow-[0_0_20px_rgba(var(--terminal-accent-rgb),0.3)] border border-transparent hover:border-[var(--terminal-hover-border)] disabled:opacity-50 disabled:cursor-not-allowed disabled:active:scale-100"
-    >
-      <span className={`material-symbols-outlined text-base sm:text-lg mr-2 ${isDownloading ? 'animate-spin' : succeeded ? 'animate-pop-in' : ''}`}>
-        {isDownloading ? 'progress_activity' : succeeded ? 'check' : 'download'}
-      </span>
-      <span className="truncate font-mono text-xs sm:text-sm md:text-base">
-        {isDownloading ? 'GENERATING...' : succeeded ? 'DOWNLOADED' : 'DOWNLOAD_PDF'}
-      </span>
-    </button>
-  );
-}
-
-export default function ResumePanel({ contributionStats }: ResumePanelProps) {
+export default function ResumePanel({ contributionStats, email, phone }: ResumePanelProps) {
   const [selectedStyle, setSelectedStyle] = useState<string>(cvConfig.styles[0].id);
   const [useColumnLayout, setUseColumnLayout] = useState<boolean>(false);
   const [showCV, setShowCV] = useState<boolean>(true);
 
   const selectedCVStyle = cvConfig.styles.find(s => s.id === selectedStyle) || cvConfig.styles[0];
 
-  const { isDownloading, downloadSucceeded, handleDownloadPDF } = useCVDownload({
+  const { cv, downloadCV, application, downloadApplication, letterStyle } = useCVDownloads({
     style: selectedCVStyle,
     styleId: selectedStyle,
     useColumnLayout,
     contributionStats,
+    email,
+    phone,
   });
 
   return (
     <>
-      {/* CV Style Selector */}
       <Reveal draw className="mb-6 p-4 sm:p-6 rounded border border-[var(--terminal-border)] bg-[var(--terminal-surface)] no-print">
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-4">
           <div>
@@ -131,7 +120,16 @@ export default function ResumePanel({ contributionStats }: ResumePanelProps) {
           </div>
           <div className="flex flex-col sm:flex-row gap-3 items-end">
             <ColumnLayoutToggle active={useColumnLayout} onToggle={() => setUseColumnLayout(!useColumnLayout)} />
-            <DownloadButton isDownloading={isDownloading} succeeded={downloadSucceeded} onClick={handleDownloadPDF} />
+            {letterStyle && (
+              <DownloadButton
+                isDownloading={application.isDownloading}
+                succeeded={application.succeeded}
+                onClick={downloadApplication}
+                label="CV + LETTER"
+                variant="secondary"
+              />
+            )}
+            <DownloadButton isDownloading={cv.isDownloading} succeeded={cv.succeeded} onClick={downloadCV} />
           </div>
         </div>
 
@@ -158,7 +156,6 @@ export default function ResumePanel({ contributionStats }: ResumePanelProps) {
         <ViewToggleButton visible={showCV} onToggle={() => setShowCV(!showCV)} label="CV" />
       </Reveal>
 
-      {/* CV Template */}
       <Reveal>
       <RevealContainer visible={showCV}>
         <ScaleToFit>
@@ -172,7 +169,7 @@ export default function ResumePanel({ contributionStats }: ResumePanelProps) {
             hobbies={hobbies}
             projects={projects}
             summary={cvConfig.summary}
-            email={cvConfig.email}
+            email={email}
             useColumnLayout={useColumnLayout}
             contributionStats={contributionStats}
           />

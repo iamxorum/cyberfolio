@@ -6,6 +6,7 @@ interface ScaleToFitProps {
   children: ReactNode;
 }
 
+/** Shows a fixed-width page at its true layout, scaled down to fit narrow screens. */
 export default function ScaleToFit({ children }: ScaleToFitProps) {
   const outerRef = useRef<HTMLDivElement>(null);
   const innerRef = useRef<HTMLDivElement>(null);
@@ -20,11 +21,10 @@ export default function ScaleToFit({ children }: ScaleToFitProps) {
     const recalc = () => {
       const containerWidth = outer.clientWidth;
       const contentWidth = inner.scrollWidth;
-      const contentHeight = inner.scrollHeight;
       if (containerWidth === 0 || contentWidth === 0) return;
 
-      setScale(contentWidth > containerWidth ? containerWidth / contentWidth : 1);
-      setNaturalHeight(contentHeight);
+      setScale(Math.min(1, containerWidth / contentWidth));
+      setNaturalHeight(inner.scrollHeight);
     };
 
     recalc();
@@ -36,7 +36,7 @@ export default function ScaleToFit({ children }: ScaleToFitProps) {
 
   return (
     <div ref={outerRef} className="scale-to-fit" style={{ height: naturalHeight ? naturalHeight * scale : undefined, overflow: 'hidden' }}>
-      <div ref={innerRef} style={{ transform: `scale(${scale})`, transformOrigin: 'top left', width: 'fit-content' }}>
+      <div ref={innerRef} style={{ transform: `scale(${scale})`, transformOrigin: 'top left', width: 'fit-content', margin: '0 auto' }}>
         {children}
       </div>
     </div>

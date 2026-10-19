@@ -6,49 +6,32 @@ import ScaleToFit from '@/components/ScaleToFit';
 import StyleSelectorGrid from '@/components/cv/StyleSelectorGrid';
 import ViewToggleButton from '@/components/cv/ViewToggleButton';
 import RevealContainer from '@/components/cv/RevealContainer';
-import { downloadBlob } from '@/lib/download-blob';
+import DownloadButton from '@/components/cv/DownloadButton';
+import { usePdfDownload } from '@/hooks/usePdfDownload';
 import { coverLetterConfig, siteConfig } from '@/config';
 import Reveal from '@/components/Reveal';
 import TypedText from '@/components/TypedText';
 
-export default function CoverLetterPanel() {
+export default function CoverLetterPanel({ email }: { email?: string }) {
   const [selectedLetterStyle, setSelectedLetterStyle] = useState<string>(coverLetterConfig.styles[0].id);
-  const [isDownloadingLetter, setIsDownloadingLetter] = useState(false);
-  const [downloadSucceeded, setDownloadSucceeded] = useState(false);
   const [showLetter, setShowLetter] = useState<boolean>(true);
+  const { isDownloading, succeeded, download } = usePdfDownload();
 
   const selectedCoverLetterStyle = coverLetterConfig.styles.find(s => s.id === selectedLetterStyle) || coverLetterConfig.styles[0];
 
-  const handleDownloadLetter = async () => {
-    setIsDownloadingLetter(true);
-
-    try {
-      const [{ pdf }, { default: CoverLetterDocument }] = await Promise.all([
-        import('@react-pdf/renderer'),
-        import('@/components/CoverLetterDocument'),
-      ]);
-
-      const blob = await pdf(
-        <CoverLetterDocument
-          siteConfig={siteConfig}
-          style={selectedCoverLetterStyle}
-          email={coverLetterConfig.email}
-        />
-      ).toBlob();
-
-      downloadBlob(blob, `${siteConfig.fullName.replace(/\s+/g, '_')}_Cover_Letter_${selectedLetterStyle}.pdf`);
-      setDownloadSucceeded(true);
-      setTimeout(() => setDownloadSucceeded(false), 1800);
-    } catch (err) {
-      console.error('Failed to generate cover letter PDF:', err);
-    } finally {
-      setIsDownloadingLetter(false);
-    }
-  };
+  const handleDownloadLetter = () => download(async () => {
+    const [{ pdf }, { default: CoverLetterDocument }] = await Promise.all([
+      import('@react-pdf/renderer'),
+      import('@/components/CoverLetterDocument'),
+    ]);
+    const blob = await pdf(
+      <CoverLetterDocument siteConfig={siteConfig} style={selectedCoverLetterStyle} email={email} />
+    ).toBlob();
+    return { blob, filename: `${siteConfig.fullName.replace(/\s+/g, '_')}_Cover_Letter_${selectedLetterStyle}.pdf` };
+  });
 
   return (
     <>
-      {/* Cover Letter Style Selector | independent from CV styles */}
       <Reveal draw className="mb-6 p-4 sm:p-6 rounded border border-[var(--terminal-border)] bg-[var(--terminal-surface)] no-print">
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-4">
           <div>
@@ -60,18 +43,7 @@ export default function CoverLetterPanel() {
             </p>
           </div>
           <div className="flex flex-col sm:flex-row gap-3 items-end">
-            <button
-              onClick={handleDownloadLetter}
-              disabled={isDownloadingLetter}
-              className="flex min-w-[140px] cursor-pointer items-center justify-center overflow-hidden rounded h-10 sm:h-12 px-4 sm:px-6 bg-primary text-[var(--terminal-on-primary)] text-sm sm:text-base font-bold leading-normal tracking-[0.015em] hover:bg-primary/80 transition active:scale-[0.97] shadow-[0_0_20px_rgba(var(--terminal-accent-rgb),0.3)] border border-transparent hover:border-[var(--terminal-hover-border)] disabled:opacity-50 disabled:cursor-not-allowed disabled:active:scale-100"
-            >
-              <span className={`material-symbols-outlined text-base sm:text-lg mr-2 ${isDownloadingLetter ? 'animate-spin' : downloadSucceeded ? 'animate-pop-in' : ''}`}>
-                {isDownloadingLetter ? 'progress_activity' : downloadSucceeded ? 'check' : 'download'}
-              </span>
-              <span className="truncate font-mono text-xs sm:text-sm md:text-base">
-                {isDownloadingLetter ? 'GENERATING...' : downloadSucceeded ? 'DOWNLOADED' : 'DOWNLOAD_PDF'}
-              </span>
-            </button>
+            <DownloadButton isDownloading={isDownloading} succeeded={succeeded} onClick={handleDownloadLetter} />
           </div>
         </div>
 
@@ -80,14 +52,13 @@ export default function CoverLetterPanel() {
         <ViewToggleButton visible={showLetter} onToggle={() => setShowLetter(!showLetter)} label="LETTER" />
       </Reveal>
 
-      {/* Cover Letter Preview */}
       <Reveal>
       <RevealContainer visible={showLetter}>
         <ScaleToFit>
           <CoverLetterPreview
             siteConfig={siteConfig}
             style={selectedCoverLetterStyle}
-            email={coverLetterConfig.email}
+            email={email}
           />
         </ScaleToFit>
       </RevealContainer>

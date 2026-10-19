@@ -15,6 +15,7 @@ import {
   type ContactItem,
 } from '@/lib/cv-helpers';
 import type { ContributionStats } from '@/lib/github-contributions';
+import { cvMetadata } from '@/lib/pdf-metadata';
 
 interface CVDocumentProps {
   style: CVStyle;
@@ -27,6 +28,7 @@ interface CVDocumentProps {
   projects?: Project[];
   summary?: string;
   email?: string;
+  phone?: string;
   useColumnLayout?: boolean;
   contributionStats?: Record<string, ContributionStats | null>;
 }
@@ -332,7 +334,7 @@ const AdditionalInfoBlock = ({ hobbies, accentColor, showHobbies }: { hobbies: H
   </View>
 );
 
-export default function CVDocument({
+export function CVPage({
   style,
   siteConfig,
   experience,
@@ -343,6 +345,7 @@ export default function CVDocument({
   projects = [],
   summary,
   email,
+  phone,
   useColumnLayout = false,
   contributionStats = {},
 }: CVDocumentProps) {
@@ -352,96 +355,85 @@ export default function CVDocument({
   const sortedExperience = sortExperienceByDate(experience);
   const cvEducation = filterForCV(education);
   const cvLanguages = filterForCV(languages);
-  const contactInfo = getContactInfo(siteConfig, email);
-
-  const keywords = Array.from(new Set([
-    style.domain,
-    style.name,
-    ...Object.values(technicalSkills).flat().map(s => s.name),
-  ])).join(', ');
+  const contactInfo = getContactInfo(siteConfig, email, phone);
 
   return (
-    <Document
-      title={`CV | ${siteConfig.fullName}`}
-      author={siteConfig.fullName}
-      subject={`${style.name} | CV`}
-      keywords={keywords}
-      creator={siteConfig.fullName}
-      producer={siteConfig.fullName}
-    >
-      <Page size="A4" style={styles.page} wrap>
-        {/* Header */}
-        <View style={[styles.header, { borderBottomColor: accentColor }]}>
-          <Text style={[styles.name, { color: accentColor }]}>{siteConfig.fullName}</Text>
-          <Text style={[styles.roleTagline, { color: accentColor }]}>{style.name}</Text>
-          <ContactLine items={contactInfo.personal} />
-          <ContactLine items={contactInfo.links} marginTop={2} />
+    <Page size="A4" style={styles.page} wrap>
+      <View style={[styles.header, { borderBottomColor: accentColor }]}>
+        <Text style={[styles.name, { color: accentColor }]}>{siteConfig.fullName}</Text>
+        <Text style={[styles.roleTagline, { color: accentColor }]}>{style.name}</Text>
+        <ContactLine items={contactInfo.personal} />
+        <ContactLine items={contactInfo.links} marginTop={2} />
+      </View>
+
+      {(style.summary || summary) && (
+        <View style={styles.section} wrap={false}>
+          <SectionHeader accentColor={accentColor}>Summary</SectionHeader>
+          <Text style={styles.bodyText}>{style.summary || summary}</Text>
         </View>
+      )}
 
-        {/* Summary */}
-        {(style.summary || summary) && (
-          <View style={styles.section} wrap={false}>
-            <SectionHeader accentColor={accentColor}>Summary</SectionHeader>
-            <Text style={styles.bodyText}>{style.summary || summary}</Text>
-          </View>
-        )}
-
-        {/* Experience */}
-        <View style={styles.section}>
-          <SectionHeader accentColor={accentColor}>Experience</SectionHeader>
-          {sortedExperience.map((exp) => {
-            const descriptionPoints = parseDescription(exp.description);
-            return (
-              <View key={exp.id} style={[styles.entry, { marginBottom: 5 }]} wrap={false}>
-                <Text style={styles.entryTitle}>
-                  {exp.role}, <Text style={{ color: accentColor }}>{exp.company}</Text>{exp.location && `, ${exp.location}`}
+      <View style={styles.section}>
+        <SectionHeader accentColor={accentColor}>Experience</SectionHeader>
+        {sortedExperience.map((exp) => {
+          const descriptionPoints = parseDescription(exp.description);
+          return (
+            <View key={exp.id} style={[styles.entry, { marginBottom: 5 }]} wrap={false}>
+              <Text style={styles.entryTitle}>
+                {exp.role}, <Text style={{ color: accentColor }}>{exp.company}</Text>{exp.location && `, ${exp.location}`}
+              </Text>
+              <Text style={styles.entryDate}>
+                {formatDateRange(exp.startDate, exp.endDate)}
+              </Text>
+              {descriptionPoints.length > 0 && (
+                <View style={styles.bulletList}>
+                  {descriptionPoints.map((point) => (
+                    <Text key={point} style={styles.bulletItem}>{'• '}{point}</Text>
+                  ))}
+                </View>
+              )}
+              {exp.skills && exp.skills.length > 0 && (
+                <Text style={styles.techLine}>
+                  <Text style={styles.techLineLabel}>Technologies: </Text>
+                  {exp.skills.join(', ')}
                 </Text>
-                <Text style={styles.entryDate}>
-                  {formatDateRange(exp.startDate, exp.endDate)}
-                </Text>
-                {descriptionPoints.length > 0 && (
-                  <View style={styles.bulletList}>
-                    {descriptionPoints.map((point) => (
-                      <Text key={point} style={styles.bulletItem}>{'• '}{point}</Text>
-                    ))}
-                  </View>
-                )}
-                {exp.skills && exp.skills.length > 0 && (
-                  <Text style={styles.techLine}>
-                    <Text style={styles.techLineLabel}>Technologies: </Text>
-                    {exp.skills.join(', ')}
-                  </Text>
-                )}
-              </View>
-            );
-          })}
-        </View>
+              )}
+            </View>
+          );
+        })}
+      </View>
 
-        {/* Remaining sections */}
-        {useColumnLayout ? (
-          <View style={styles.twoColumnRow}>
-            <View style={styles.column}>
-              <EducationBlock education={cvEducation} accentColor={accentColor} siteDomain={siteConfig.domain} />
-              <CertificationsBlock certifications={certifications} accentColor={accentColor} />
-            </View>
-            <View style={styles.column}>
-              <SkillsBlock technicalSkills={technicalSkills} softSkills={softSkills} hasSoftSkills={hasSoftSkills} accentColor={accentColor} />
-              <LanguagesBlock languages={cvLanguages} accentColor={accentColor} />
-              <ProjectsBlock projects={publicProjects} accentColor={accentColor} contributionStats={contributionStats} />
-              <AdditionalInfoBlock hobbies={hobbies} accentColor={accentColor} showHobbies={style.showHobbies !== false} />
-            </View>
-          </View>
-        ) : (
-          <>
-            <SkillsBlock technicalSkills={technicalSkills} softSkills={softSkills} hasSoftSkills={hasSoftSkills} accentColor={accentColor} />
+      {useColumnLayout ? (
+        <View style={styles.twoColumnRow}>
+          <View style={styles.column}>
             <EducationBlock education={cvEducation} accentColor={accentColor} siteDomain={siteConfig.domain} />
             <CertificationsBlock certifications={certifications} accentColor={accentColor} />
+          </View>
+          <View style={styles.column}>
+            <SkillsBlock technicalSkills={technicalSkills} softSkills={softSkills} hasSoftSkills={hasSoftSkills} accentColor={accentColor} />
             <LanguagesBlock languages={cvLanguages} accentColor={accentColor} />
             <ProjectsBlock projects={publicProjects} accentColor={accentColor} contributionStats={contributionStats} />
             <AdditionalInfoBlock hobbies={hobbies} accentColor={accentColor} showHobbies={style.showHobbies !== false} />
-          </>
-        )}
-      </Page>
+          </View>
+        </View>
+      ) : (
+        <>
+          <SkillsBlock technicalSkills={technicalSkills} softSkills={softSkills} hasSoftSkills={hasSoftSkills} accentColor={accentColor} />
+          <EducationBlock education={cvEducation} accentColor={accentColor} siteDomain={siteConfig.domain} />
+          <CertificationsBlock certifications={certifications} accentColor={accentColor} />
+          <LanguagesBlock languages={cvLanguages} accentColor={accentColor} />
+          <ProjectsBlock projects={publicProjects} accentColor={accentColor} contributionStats={contributionStats} />
+          <AdditionalInfoBlock hobbies={hobbies} accentColor={accentColor} showHobbies={style.showHobbies !== false} />
+        </>
+      )}
+    </Page>
+  );
+}
+
+export default function CVDocument(props: CVDocumentProps) {
+  return (
+    <Document {...cvMetadata(props.style, props.siteConfig)}>
+      <CVPage {...props} />
     </Document>
   );
 }

@@ -55,7 +55,7 @@ export default function CVTemplate({
   const sortedExperience = sortExperienceByDate(experience);
   const cvEducation = filterForCV(education);
   const cvLanguages = filterForCV(languages);
-  const contactInfo = getContactInfo(siteConfig, email, false);
+  const contactInfo = getContactInfo(siteConfig, email);
   const showHobbies = style.showHobbies !== false && hobbies.length > 0;
   const sectionMarginBottom = useColumnLayout ? '10pt' : '9pt';
 
