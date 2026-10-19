@@ -9,9 +9,11 @@ interface ProjectsTableProps {
   icon: string;
   projects: Project[];
   contributionStats?: Record<string, ContributionStats | null>;
+  onSelect?: (id: string) => void;
+  selectedId?: string | null;
 }
 
-export default function ProjectsTable({ title, icon, projects, contributionStats = NO_CONTRIBUTION_STATS }: ProjectsTableProps) {
+export default function ProjectsTable({ title, icon, projects, contributionStats = NO_CONTRIBUTION_STATS, onSelect, selectedId }: ProjectsTableProps) {
   return (
     <div className="flex flex-col gap-4">
       <Reveal className="flex items-center gap-3 border-b border-[var(--terminal-border-alt)] pb-3">
@@ -32,7 +34,7 @@ export default function ProjectsTable({ title, icon, projects, contributionStats
           <div className="col-span-2 text-right">ACTION</div>
         </div>
         {projects.map((project, index) => (
-          <ProjectRow key={project.id} project={project} index={index} contributionStats={contributionStats} />
+          <ProjectRow key={project.id} project={project} index={index} contributionStats={contributionStats} onSelect={onSelect} selected={project.id === selectedId} />
         ))}
       </Reveal>
     </div>

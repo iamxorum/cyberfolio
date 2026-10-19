@@ -1,8 +1,9 @@
 import { notFound } from 'next/navigation';
 import { features, siteConfig } from '@/config';
-import { getAllPosts } from '@/lib/blog';
+import { getAllPosts, getPostBySlug } from '@/lib/blog';
 import { getPostViews } from '@/lib/umami';
 import BlogClient from './BlogClient';
+import MdxContent from './[slug]/MdxContent';
 import JsonLd from '@/components/JsonLd';
 import { breadcrumbJsonLd, pageMetadata, siteUrl } from '@/lib/seo';
 
@@ -15,18 +16,18 @@ export const metadata = pageMetadata({
 
 const breadcrumbs = breadcrumbJsonLd([{ name: 'Blog', path: '/blog' }]);
 
-// Rebuilt in the background at most this often so the view counts stay fresh.
-export const revalidate = 600;
-
-export default async function Blog() {
+export default async function Blog({ searchParams }: { searchParams: Promise<{ post?: string }> }) {
   if (!features.blog) notFound();
   const posts = getAllPosts();
   const views = await getPostViews();
+  // `?post=<slug>` opens a post beside the list on ultrawide screens; it is rendered here, on the server.
+  const { post: slug } = await searchParams;
+  const open = slug ? getPostBySlug(slug) : null;
 
   return (
     <>
       <JsonLd data={breadcrumbs} />
-      <BlogClient posts={posts} views={views} />
+      <BlogClient posts={posts} views={views} openSlug={open?.slug} openBody={open && <MdxContent source={open.content} />} />
     </>
   );
 }

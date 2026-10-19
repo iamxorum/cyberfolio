@@ -5,6 +5,7 @@ import { MdContentCopy, MdCheck } from 'react-icons/md';
 import { discography, Track, Platform } from '../config/music.config';
 import Reveal from './Reveal';
 import TypedText from './TypedText';
+import { copyText } from '@/lib/copy-text';
 
 const PlatformIcon = ({ platform, className, style }: { platform: Platform; className?: string; style?: React.CSSProperties }) => {
     switch (platform) {
@@ -29,12 +30,11 @@ export default function Discography() {
 
     const handleCopy = async () => {
         if (!activeTrack) return;
-        try {
-            await navigator.clipboard.writeText(activeTrack.url);
+        if (await copyText(activeTrack.url)) {
             setCopied(true);
             setTimeout(() => setCopied(false), 2000);
-        } catch (err) {
-            console.error('Failed to copy: ', err);
+        } else {
+            console.error('Failed to copy the track link');
         }
     };
 

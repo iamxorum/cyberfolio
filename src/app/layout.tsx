@@ -112,6 +112,8 @@ export default function RootLayout({
       </head>
       <body
         className={`${jetBrainsMono.variable} ${materialSymbols.variable} antialiased font-display`}
+        // Browser extensions (e.g. ColorZilla) add attributes to <body> before React hydrates.
+        suppressHydrationWarning
       >
         {features.scrollIndicator && <ScrollIndicator />}
         {features.smoothScroll && <SmoothScroll />}

@@ -17,9 +17,9 @@ const SECTIONS = [
 export default function LifeClient({ running }: { running: RunningData | null }) {
 
   return (
-    <PageShell crumbs={[{ label: 'life.log', href: '/life' }]} fadeIn gap="gap-6 sm:gap-8">
+    <PageShell crumbs={[{ label: 'life.log', href: '/life' }]} rail gap="gap-6 sm:gap-8">
       <h1 className="sr-only">Life: {lifeTopics()}</h1>
-      <nav aria-label="Section jump links" className="flex flex-wrap gap-2 text-[10px] sm:text-xs font-mono">
+      <nav aria-label="Section jump links" className="uw-hide flex flex-wrap gap-2 text-[10px] sm:text-xs font-mono">
         {SECTIONS.map((item) => (
           <a
             key={item.href}
@@ -31,12 +31,14 @@ export default function LifeClient({ running }: { running: RunningData | null })
         ))}
       </nav>
 
-      {features.strava && <RunningSection data={running} />}
+      {features.strava && <div className="uw-panel uw-panel-wide"><RunningSection data={running} /></div>}
 
-      <HobbiesSection kind="personal" />
+      <div className="uw-panel uw-panel-wide">
+        <HobbiesSection kind="personal" />
+      </div>
 
       {features.discography && (
-        <section id="music" className="scroll-mt-20">
+        <section id="music" className="uw-panel uw-panel-wide scroll-mt-20">
           <Discography />
         </section>
       )}

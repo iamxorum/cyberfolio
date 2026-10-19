@@ -18,7 +18,7 @@ export default function GlobeSourceToggle({ visibleSources, onToggle }: GlobeSou
         title={visibleSources.local ? 'Hide local attacks' : 'Show local attacks'}
         className={`flex items-center gap-2 -m-0.5 p-0.5 rounded transition-[opacity,background-color] duration-150 ease-out active:scale-[0.97] hover:bg-[rgba(var(--terminal-text-rgb),0.08)] ${visibleSources.local ? 'opacity-100' : 'opacity-35'}`}
       >
-        <div className="w-2 h-2 rounded-full bg-[#ef4444] animate-pulse shadow-[0_0_5px_#ef4444]"></div>
+        <div className="w-3.5 h-1 rounded-sm bg-[#ef4444] shadow-[0_0_5px_#ef4444]"></div>
         <span className="text-[var(--terminal-text)]/70 uppercase">Local_Attack (Fail2Ban)</span>
       </button>
       <button
@@ -28,7 +28,7 @@ export default function GlobeSourceToggle({ visibleSources, onToggle }: GlobeSou
         title={visibleSources.public ? 'Hide community blacklist' : 'Show community blacklist'}
         className={`flex items-center gap-2 -m-0.5 p-0.5 rounded transition-[opacity,background-color] duration-150 ease-out active:scale-[0.97] hover:bg-[rgba(var(--terminal-text-rgb),0.08)] ${visibleSources.public ? 'opacity-100' : 'opacity-35'}`}
       >
-        <div className="w-2 h-2 rounded-full bg-[#3b82f6] shadow-[0_0_5px_#3b82f6]"></div>
+        <div className="w-3.5 h-1 rounded-sm bg-[#3b82f6] shadow-[0_0_5px_#3b82f6]"></div>
         <span className="text-[var(--terminal-text)]/70 uppercase">Community_Blacklist (CAPI)</span>
       </button>
     </div>

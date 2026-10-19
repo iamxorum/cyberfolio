@@ -357,10 +357,6 @@ html.boot-done .animate-reveal {
   }
 }
 
-.animate-fade-in {
-  animation: fade-in 0.5s ease-out;
-}
-
 .animate-fade-in-fast {
   animation: fade-in 250ms var(--ease-out);
 }
@@ -742,3 +738,201 @@ html.light .text-yellow-400 { color: #854d0e; }
 html.light .text-blue-400 { color: #1d4ed8; }
 html.light .text-orange-400 { color: #9a3412; }
 html.light .text-red-400 { color: #b91c1c; }
+
+/* Ultrawide (21:9 and wider): the home page flows sideways as a horizontal rail of panels.
+   Keep the query in sync with ULTRAWIDE_QUERY in useUltrawide.ts. Outside it these classes do nothing. */
+.uw-progress {
+  display: none;
+}
+@media screen and (min-aspect-ratio: 21/10) and (min-width: 1900px) {
+  /* Scoped so the other routes keep their normal vertical scroll. */
+  html:has(.uw-shell),
+  html:has(.uw-shell) body {
+    overflow: hidden;
+  }
+  .uw-shell {
+    height: 100dvh;
+    min-height: 0;
+    overflow: hidden;
+  }
+  .uw-layout {
+    min-height: 0;
+  }
+  .uw-content {
+    min-height: 0;
+    padding: 0;
+    justify-content: stretch;
+  }
+  .uw-column {
+    max-width: none;
+    min-height: 0;
+  }
+  .uw-stack > :first-child,
+  .uw-column > footer {
+    padding-inline: 6vw;
+  }
+  .uw-stack {
+    flex: 1;
+    min-height: 0;
+  }
+  .uw-rail {
+    display: flex;
+    flex-direction: row;
+    flex: 1;
+    min-height: 0;
+    gap: 2.5rem;
+    padding: 1.25rem 6vw;
+    overflow-x: auto;
+    overflow-y: hidden;
+    scrollbar-width: none;
+    outline: none;
+  }
+  .uw-rail::-webkit-scrollbar {
+    display: none;
+  }
+  .uw-panel {
+    flex: none;
+    min-height: 0;
+    overflow-y: auto;
+    scrollbar-width: none;
+    /* Room on every side so hover lifts and glows are not clipped by the scroll container. */
+    padding: 1rem 2.5rem 1rem 1rem;
+    border-right: 1px dashed var(--terminal-border);
+  }
+  .uw-panel::-webkit-scrollbar {
+    display: none;
+  }
+  /* The panel has a fixed height, so without this its flex children shrink (an aspect-ratio photo collapses to nothing). */
+  .uw-panel > * {
+    flex-shrink: 0;
+  }
+  /* /cv: controls on the left, the document previewed one A4 page at a time on the right. */
+  .uw-cv-main {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    min-height: 0;
+    padding: 1.25rem 6vw 0;
+  }
+  .uw-cv {
+    display: grid;
+    flex: 1;
+    min-height: 0;
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: 3rem;
+  }
+  .uw-cv-controls {
+    min-height: 0;
+    overflow-y: auto;
+    scrollbar-width: none;
+  }
+  .uw-cv-controls::-webkit-scrollbar {
+    display: none;
+  }
+  .uw-cv-preview {
+    min-height: 0;
+    width: min(calc((100dvh - 14rem) * 794 / 1123), 760px);
+    min-width: 420px;
+  }
+  .uw-contents {
+    display: contents;
+  }
+  .uw-hide {
+    display: none !important;
+  }
+  .uw-panel-intro {
+    width: min(34vw, 700px);
+  }
+  /* A shorter photo keeps the bio under it on screen. */
+  .uw-panel-intro .aspect-square {
+    aspect-ratio: 16 / 10;
+  }
+  .uw-panel-side {
+    width: min(30vw, 620px);
+  }
+  .uw-panel-wide {
+    width: min(44vw, 900px);
+  }
+  .uw-panel-list {
+    width: min(42vw, 1000px);
+  }
+  /* The detail pane takes whatever width the list leaves, so there is no empty strip beside it. */
+  .uw-panel-detail {
+    flex: 1 1 0;
+    width: auto;
+    min-width: 520px;
+    border-right: 0;
+  }
+  .uw-detail {
+    overflow-x: hidden;
+    overflow-wrap: anywhere;
+  }
+  /* Long-form text keeps a readable line length; everything else uses the full pane. */
+  .uw-detail > article {
+    max-width: 110ch;
+  }
+  /* Detail panels swap content often: show it at once instead of replaying scroll entrances. */
+  .uw-detail .scroll-reveal:not(.is-visible) {
+    opacity: 1;
+  }
+  .uw-detail .scroll-reveal.is-visible {
+    animation: none;
+  }
+  .uw-panel-xl {
+    width: min(62vw, 1300px);
+  }
+  .uw-cols-2 {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    align-content: start;
+  }
+  .uw-panel-hero {
+    width: min(48vw, 1000px);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+  }
+  .uw-panel-projects {
+    width: min(62vw, 1500px);
+  }
+  .uw-panel-stats {
+    width: min(26vw, 560px);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+  }
+  .uw-panel-globe {
+    width: min(48vw, 1000px);
+    margin-top: 0;
+    border-top: 0;
+    border-right: 0;
+  }
+  .uw-progress[data-idle="true"] {
+    display: none;
+  }
+  .uw-progress {
+    display: block;
+    position: relative;
+    height: 3px;
+    margin: 0 6vw;
+    background: var(--terminal-border);
+    --rail-progress: 0;
+  }
+  .uw-progress-fill {
+    height: 100%;
+    background: var(--terminal-accent);
+    box-shadow: 0 0 8px rgba(var(--terminal-accent-rgb), 0.6);
+    transform: scaleX(var(--rail-progress));
+    transform-origin: left;
+  }
+  .uw-progress-hint {
+    position: absolute;
+    right: 0;
+    bottom: 8px;
+    font-size: 10px;
+    letter-spacing: 0.2em;
+    color: var(--terminal-text-dim);
+    opacity: calc(1 - var(--rail-progress) * 8);
+    pointer-events: none;
+  }
+}

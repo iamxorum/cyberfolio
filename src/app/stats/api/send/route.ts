@@ -1,7 +1,7 @@
 import { siteConfig } from '@/config';
 import { analyticsUpstream } from '@/lib/analytics';
 import { isAllowedOrigin } from '@/lib/origin';
-import { isDevelopment } from '@/lib/env';
+import { devOrigins } from '@/lib/env';
 import { getClientKey, isRateLimited } from '@/lib/rate-limit';
 
 export const dynamic = 'force-dynamic';
@@ -20,7 +20,6 @@ export async function POST(request: Request) {
   const upstream = analyticsUpstream();
   if (!upstream) return reply(404);
 
-  const devOrigins = isDevelopment ? ['http://localhost:3000', 'http://localhost:3001'] : [];
   if (!isAllowedOrigin(request, siteConfig.domain, devOrigins)) return reply(403, 'Invalid origin');
 
   const clientIp = getClientKey(request);

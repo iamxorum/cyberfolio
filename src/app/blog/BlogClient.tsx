@@ -1,9 +1,12 @@
 'use client';
 
 import PageShell, { PageHeading } from '@/components/PageShell';
-import { useState } from 'react';
+import { useState, type MouseEvent, type ReactNode } from 'react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { contentConfig } from '@/config';
+import UltrawideDetail from '@/components/UltrawideDetail';
+import { useUltrawide } from '@/hooks/useUltrawide';
 import { useScrollReveal } from '@/hooks/useScrollReveal';
 import { STAGGER_STEP_MS, revealDelay } from '@/lib/motion';
 import type { PostMeta } from '@/lib/blog';
@@ -12,11 +15,27 @@ interface BlogClientProps {
   posts: PostMeta[];
   /** Page views by slug; posts without enough views are absent. */
   views: Record<string, number>;
+  /** The post named by `?post=`, and its server-rendered body (shown beside the list on ultrawide). */
+  openSlug?: string;
+  openBody?: ReactNode;
 }
 
-export default function BlogClient({ posts, views }: BlogClientProps) {
+export default function BlogClient({ posts, views, openSlug, openBody }: BlogClientProps) {
+  const router = useRouter();
   const listRef = useScrollReveal<HTMLDivElement>();
   const [activeTag, setActiveTag] = useState<string | null>(null);
+  const ultrawide = useUltrawide();
+  const [selectedSlug, setSelectedSlug] = useState<string | null>(openSlug ?? null);
+  const selectedPost = posts.find((p) => p.slug === selectedSlug);
+
+  // Ultrawide: a plain click opens the post beside the list. The body is rendered by the page on the
+  // server for `?post=<slug>` (a server action cannot return the client components an MDX post uses).
+  const openPost = (e: MouseEvent, slug: string) => {
+    if (!ultrawide || e.metaKey || e.ctrlKey || e.shiftKey || e.button !== 0) return;
+    e.preventDefault();
+    setSelectedSlug(slug);
+    router.replace(`/blog?post=${slug}`, { scroll: false });
+  };
 
   const tagCounts = new Map<string, number>();
   for (const post of posts) for (const tag of post.tags ?? []) tagCounts.set(tag, (tagCounts.get(tag) ?? 0) + 1);
@@ -24,7 +43,8 @@ export default function BlogClient({ posts, views }: BlogClientProps) {
   const visiblePosts = activeTag ? posts.filter((p) => p.tags?.includes(activeTag)) : posts;
 
   return (
-    <PageShell crumbs={[{ label: 'blog.log', href: '/blog' }]}>
+    <PageShell crumbs={[{ label: 'blog.log', href: '/blog' }]} rail>
+      <div className="uw-panel uw-panel-list flex flex-col gap-4 sm:gap-6 md:gap-8">
       <PageHeading title={contentConfig.blog.title} subtitle={contentConfig.blog.subtitle}>
         {/* The feed is an XML document, not a page: prefetching it is pointless, so Link only handles the click. */}
         <Link
@@ -73,9 +93,11 @@ export default function BlogClient({ posts, views }: BlogClientProps) {
             <Link
               key={post.slug}
               href={`/blog/${post.slug}`}
+              onClick={(e) => openPost(e, post.slug)}
+              aria-current={post.slug === selectedSlug ? 'true' : undefined}
               data-reveal
               style={revealDelay(Math.min(index, 4) * STAGGER_STEP_MS)}
-              className="scroll-reveal panel-draw relative group flex flex-col gap-2 rounded border-2 border-[var(--terminal-border)] bg-[var(--terminal-surface-alt)] p-4 sm:p-5 transition-[transform,background-color,border-color,box-shadow] duration-300 hover:bg-[var(--terminal-surface-hover)] hover:border-primary hover:-translate-y-1 hover:shadow-[0_0_25px_rgba(var(--terminal-accent-rgb),0.3)] active:scale-[0.98]"
+              className="scroll-reveal panel-draw relative group flex flex-col gap-2 rounded border-2 border-[var(--terminal-border)] bg-[var(--terminal-surface-alt)] p-4 sm:p-5 transition-[transform,background-color,border-color,box-shadow] duration-300 hover:bg-[var(--terminal-surface-hover)] hover:border-primary hover:-translate-y-1 hover:shadow-[0_0_25px_rgba(var(--terminal-accent-rgb),0.3)] active:scale-[0.98] aria-[current=true]:border-primary aria-[current=true]:bg-[var(--terminal-surface-hover)]"
             >
               <div className="flex items-center justify-between gap-3">
                 <h2 className="text-[var(--terminal-text)] text-lg font-bold font-mono group-hover:text-primary transition-colors">
@@ -102,6 +124,27 @@ export default function BlogClient({ posts, views }: BlogClientProps) {
             </Link>
           ))}
         </div>
+      )}
+      </div>
+      {ultrawide && (
+        <UltrawideDetail label="POST">
+          {selectedPost && (
+            <article key={selectedPost.slug} className="flex flex-col gap-5">
+              <div className="flex flex-col gap-2 border-b border-[var(--terminal-border-alt)] pb-5">
+                <h2 className="text-[var(--terminal-text)] text-2xl md:text-3xl font-black leading-tight tracking-tight font-mono">{selectedPost.title}</h2>
+                <div className="flex flex-wrap items-center gap-3 text-xs font-mono text-[var(--terminal-text-dim)]">
+                  {selectedPost.date && <span>{selectedPost.date}</span>}
+                  <span>{selectedPost.readingMinutes} min read</span>
+                  {views[selectedPost.slug] && <span>{views[selectedPost.slug].toLocaleString('en-US')} views</span>}
+                  <Link href={`/blog/${selectedPost.slug}`} className="ml-auto hover:text-primary transition-colors">OPEN_FULL_PAGE →</Link>
+                </div>
+              </div>
+              {(openSlug === selectedPost.slug && openBody) || (
+                <p className="font-mono text-sm text-[var(--terminal-text-dim)] animate-pulse">LOADING_POST...</p>
+              )}
+            </article>
+          )}
+        </UltrawideDetail>
       )}
     </PageShell>
   );

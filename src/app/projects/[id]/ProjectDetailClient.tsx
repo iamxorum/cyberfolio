@@ -23,7 +23,6 @@ function StatusBadges({ statuses, statusColors }: { statuses: string[]; statusCo
         const styles = getStatusColorStyles(statusColors[idx] || statusColors[0]);
         return (
           <span key={status} className={`inline-flex items-center gap-1.5 px-2 py-1 rounded ${styles.bg} border ${styles.border} ${styles.text} text-xs font-bold font-mono`}>
-            <span className={`size-1.5 rounded-full ${styles.dot}`}></span>
             {status}
           </span>
         );
@@ -85,21 +84,27 @@ function ContributionLog({ stats }: { stats: ContributionStats }) {
   );
 }
 
-export default function ProjectDetailClient({ project, contributionStats }: ProjectDetailClientProps) {
+interface ProjectDetailContentProps extends ProjectDetailClientProps {
+  /** Shown beside the projects list (ultrawide) rather than as its own page. */
+  embedded?: boolean;
+}
+
+export function ProjectDetailContent({ project, contributionStats, embedded = false }: ProjectDetailContentProps) {
+  const Title = embedded ? 'h2' : 'h1';
   const statuses = Array.isArray(project.status) ? project.status : [project.status];
   const statusColors = Array.isArray(project.statusColor) ? project.statusColor : [project.statusColor];
 
   return (
-    <PageShell crumbs={[{ label: 'projects.yaml', href: '/projects' }, { label: project.id }]} width="medium">
+    <>
       <div className="flex flex-col gap-4 border-b border-[var(--terminal-border-alt)] pb-6">
         <div className="flex items-start gap-4">
           <div className="p-3 rounded bg-primary/20 text-primary border border-primary/20 flex-shrink-0">
             <span className="material-symbols-outlined text-3xl">{project.icon}</span>
           </div>
           <div className="flex flex-col gap-2 min-w-0">
-            <h1 className="animate-reveal text-[var(--terminal-text)] text-2xl sm:text-3xl md:text-4xl font-black leading-tight tracking-tight font-mono break-words">
+            <Title className="animate-reveal text-[var(--terminal-text)] text-2xl sm:text-3xl md:text-4xl font-black leading-tight tracking-tight font-mono break-words">
               {project.name}
-            </h1>
+            </Title>
             <div className="flex flex-wrap items-center gap-2 text-xs font-mono text-[var(--terminal-text-dim)]">
               <span>{getProjectHashId(project.id)}</span>
               <span
@@ -150,13 +155,31 @@ export default function ProjectDetailClient({ project, contributionStats }: Proj
 
       {contributionStats && contributionStats.mergedCount > 0 && <ContributionLog stats={contributionStats} />}
 
-      <Link
-        href="/projects"
-        className="group inline-flex items-center gap-2 self-start text-sm font-mono text-[var(--terminal-text-dim)] hover:text-primary transition-colors mt-2"
-      >
-        <span className="material-symbols-outlined text-base group-hover:-translate-x-1 transition-transform">arrow_back</span>
-        CD .. [ ALL_PROJECTS ]
-      </Link>
+      {embedded ? (
+        <Link
+          href={`/projects/${project.id}`}
+          className="group inline-flex items-center gap-2 self-start text-sm font-mono text-[var(--terminal-text-dim)] hover:text-primary transition-colors mt-2"
+        >
+          OPEN_FULL_PAGE
+          <span className="material-symbols-outlined text-base group-hover:translate-x-1 transition-transform">arrow_forward</span>
+        </Link>
+      ) : (
+        <Link
+          href="/projects"
+          className="group inline-flex items-center gap-2 self-start text-sm font-mono text-[var(--terminal-text-dim)] hover:text-primary transition-colors mt-2"
+        >
+          <span className="material-symbols-outlined text-base group-hover:-translate-x-1 transition-transform">arrow_back</span>
+          CD .. [ ALL_PROJECTS ]
+        </Link>
+      )}
+    </>
+  );
+}
+
+export default function ProjectDetailClient({ project, contributionStats }: ProjectDetailClientProps) {
+  return (
+    <PageShell crumbs={[{ label: 'projects.yaml', href: '/projects' }, { label: project.id }]} width="medium">
+      <ProjectDetailContent project={project} contributionStats={contributionStats} />
     </PageShell>
   );
 }

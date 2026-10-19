@@ -4,7 +4,7 @@ import { isRateLimited, getClientKey } from '@/lib/rate-limit';
 import { getTurnstileSecretKey } from '@/lib/turnstile';
 import { isAllowedOrigin } from '@/lib/origin';
 import { grantAccess } from '@/lib/access';
-import { isDevelopment } from '@/lib/env';
+import { devOrigins, isDevelopment } from '@/lib/env';
 import { notFoundResponse } from '@/lib/http';
 
 // Turnstile tokens are at most 2048 characters (Cloudflare's documented limit).
@@ -22,7 +22,7 @@ export async function POST(request: Request) {
     // Turnstile switched off: there is nothing to verify, so the endpoint does not exist.
     if (!features.turnstile) return notFoundResponse();
 
-    const isAllowed = isAllowedOrigin(request, siteConfig.domain, isDevelopment ? ['http://localhost:3000'] : []);
+    const isAllowed = isAllowedOrigin(request, siteConfig.domain, devOrigins);
 
     if (!isAllowed) {
         const origin = request.headers.get('origin') || '';

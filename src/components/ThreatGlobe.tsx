@@ -67,9 +67,10 @@ export default function ThreatGlobe() {
   const toggleSource = (source: 'local' | 'public') =>
     setVisibleSources((v) => ({ ...v, [source]: !v[source] }));
 
-  if (hasError || !threatData) {
-    return <ThreatFeedUnavailable />;
-  }
+  // Nothing is shown while the feed is in flight, so the panel can ease in like the other cards once it lands.
+  // "Unavailable" is only for a failed fetch.
+  if (hasError) return <ThreatFeedUnavailable />;
+  if (!threatData) return null;
 
   return (
     <div ref={revealRef} data-reveal id="threat-feed" className="scroll-reveal panel-draw scroll-mt-20 flex flex-col gap-6 px-3 sm:px-5 py-6 sm:py-8 mb-8 border border-[var(--terminal-border)] rounded bg-[rgba(var(--terminal-bg-rgb),0.60)] relative overflow-hidden group">

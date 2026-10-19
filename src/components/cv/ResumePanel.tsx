@@ -3,6 +3,8 @@
 import { useState } from 'react';
 import CVTemplate from '@/components/CVTemplate';
 import ScaleToFit from '@/components/ScaleToFit';
+import PagedPreview from '@/components/cv/PagedPreview';
+import { useUltrawide } from '@/hooks/useUltrawide';
 import StyleSelectorGrid from '@/components/cv/StyleSelectorGrid';
 import ViewToggleButton from '@/components/cv/ViewToggleButton';
 import RevealContainer from '@/components/cv/RevealContainer';
@@ -94,6 +96,7 @@ export default function ResumePanel({ contributionStats, email, phone }: ResumeP
   const [selectedStyle, setSelectedStyle] = useState<string>(cvConfig.styles[0].id);
   const [useColumnLayout, setUseColumnLayout] = useState<boolean>(false);
   const [showCV, setShowCV] = useState<boolean>(true);
+  const ultrawide = useUltrawide();
 
   const selectedCVStyle = cvConfig.styles.find(s => s.id === selectedStyle) || cvConfig.styles[0];
 
@@ -108,7 +111,7 @@ export default function ResumePanel({ contributionStats, email, phone }: ResumeP
 
   return (
     <>
-      <Reveal draw className="mb-6 p-4 sm:p-6 rounded border border-[var(--terminal-border)] bg-[var(--terminal-surface)] no-print">
+      <Reveal draw className="uw-cv-controls mb-6 p-4 sm:p-6 rounded border border-[var(--terminal-border)] bg-[var(--terminal-surface)] no-print">
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-4">
           <div>
             <h1 className="text-[var(--terminal-text)] text-2xl sm:text-3xl font-bold leading-tight tracking-[-0.015em] font-mono mb-2">
@@ -153,9 +156,28 @@ export default function ResumePanel({ contributionStats, email, phone }: ResumeP
 
         <StyleSelectorGrid styles={cvConfig.styles} selectedId={selectedStyle} onSelect={setSelectedStyle} />
 
-        <ViewToggleButton visible={showCV} onToggle={() => setShowCV(!showCV)} label="CV" />
+        {!ultrawide && <ViewToggleButton visible={showCV} onToggle={() => setShowCV(!showCV)} label="CV" />}
       </Reveal>
 
+      {ultrawide ? (
+        <div className="uw-cv-preview">
+          <PagedPreview label="CV">
+            <CVTemplate
+              style={selectedCVStyle}
+              siteConfig={siteConfig}
+              experience={experience}
+              education={education}
+              languages={languages}
+              certifications={certifications}
+              hobbies={hobbies}
+              projects={projects}
+              summary={cvConfig.summary}
+              useColumnLayout={useColumnLayout}
+              contributionStats={contributionStats}
+            />
+          </PagedPreview>
+        </div>
+      ) : (
       <Reveal>
       <RevealContainer visible={showCV}>
         <ScaleToFit>
@@ -175,6 +197,7 @@ export default function ResumePanel({ contributionStats, email, phone }: ResumeP
         </ScaleToFit>
       </RevealContainer>
       </Reveal>
+      )}
     </>
   );
 }

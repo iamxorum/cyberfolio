@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useRef, useState, type ComponentProps } from 'react';
+import { copyText } from '@/lib/copy-text';
 
 const COPIED_MS = 1800;
 
@@ -17,12 +18,8 @@ export default function CodeBlock({ children, ...props }: ComponentProps<'pre'>)
 
   const copy = async () => {
     const text = preRef.current?.textContent ?? '';
-    try {
-      await navigator.clipboard.writeText(text);
-      setCopied(true);
-    } catch {
-      // Clipboard can be blocked (insecure context, permissions); leave the label unchanged.
-    }
+    // Leaves the label unchanged if the clipboard is blocked.
+    if (await copyText(text)) setCopied(true);
   };
 
   return (

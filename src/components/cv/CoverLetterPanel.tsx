@@ -3,6 +3,8 @@
 import { useState } from 'react';
 import CoverLetterPreview from '@/components/CoverLetterPreview';
 import ScaleToFit from '@/components/ScaleToFit';
+import PagedPreview from '@/components/cv/PagedPreview';
+import { useUltrawide } from '@/hooks/useUltrawide';
 import StyleSelectorGrid from '@/components/cv/StyleSelectorGrid';
 import ViewToggleButton from '@/components/cv/ViewToggleButton';
 import RevealContainer from '@/components/cv/RevealContainer';
@@ -15,6 +17,7 @@ import TypedText from '@/components/TypedText';
 export default function CoverLetterPanel({ email, phone }: { email?: string; phone?: string }) {
   const [selectedLetterStyle, setSelectedLetterStyle] = useState<string>(coverLetterConfig.styles[0].id);
   const [showLetter, setShowLetter] = useState<boolean>(true);
+  const ultrawide = useUltrawide();
   const { isDownloading, succeeded, download } = usePdfDownload();
 
   const selectedCoverLetterStyle = coverLetterConfig.styles.find(s => s.id === selectedLetterStyle) || coverLetterConfig.styles[0];
@@ -32,7 +35,7 @@ export default function CoverLetterPanel({ email, phone }: { email?: string; pho
 
   return (
     <>
-      <Reveal draw className="mb-6 p-4 sm:p-6 rounded border border-[var(--terminal-border)] bg-[var(--terminal-surface)] no-print">
+      <Reveal draw className="uw-cv-controls mb-6 p-4 sm:p-6 rounded border border-[var(--terminal-border)] bg-[var(--terminal-surface)] no-print">
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-4">
           <div>
             <h1 className="text-[var(--terminal-text)] text-2xl sm:text-3xl font-bold leading-tight tracking-[-0.015em] font-mono mb-2">
@@ -49,9 +52,16 @@ export default function CoverLetterPanel({ email, phone }: { email?: string; pho
 
         <StyleSelectorGrid styles={coverLetterConfig.styles} selectedId={selectedLetterStyle} onSelect={setSelectedLetterStyle} />
 
-        <ViewToggleButton visible={showLetter} onToggle={() => setShowLetter(!showLetter)} label="LETTER" />
+        {!ultrawide && <ViewToggleButton visible={showLetter} onToggle={() => setShowLetter(!showLetter)} label="LETTER" />}
       </Reveal>
 
+      {ultrawide ? (
+        <div className="uw-cv-preview">
+          <PagedPreview label="LETTER">
+            <CoverLetterPreview siteConfig={siteConfig} style={selectedCoverLetterStyle} />
+          </PagedPreview>
+        </div>
+      ) : (
       <Reveal>
       <RevealContainer visible={showLetter}>
         <ScaleToFit>
@@ -62,6 +72,7 @@ export default function CoverLetterPanel({ email, phone }: { email?: string; pho
         </ScaleToFit>
       </RevealContainer>
       </Reveal>
+      )}
     </>
   );
 }

@@ -1,5 +1,6 @@
 import type { NextConfig } from "next";
 import { siteConfig } from "./src/config";
+import { DEV_LAN_HOSTS } from "./src/lib/env";
 
 const { security } = siteConfig;
 
@@ -31,7 +32,7 @@ const dynamicRemotePatterns = security.images.map((domain) => {
 });
 
 const nextConfig: NextConfig = {
-  allowedDevOrigins: ['10.8.0.108'],
+  allowedDevOrigins: DEV_LAN_HOSTS,
   output: 'standalone',
   poweredByHeader: false,
 

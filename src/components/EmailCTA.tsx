@@ -5,6 +5,7 @@ import { createPortal } from 'react-dom';
 import { Turnstile } from '@marsidev/react-turnstile';
 import { securityConfig } from '@/config';
 import { getTurnstileSiteKey } from '@/lib/turnstile';
+import { copyText } from '@/lib/copy-text';
 
 interface EmailCTAProps {
   className?: string;
@@ -198,11 +199,10 @@ export default function EmailCTA({ className, children, ariaLabel, title, onNavi
 
   // Not every device has a mail app or can place calls, so each detail can also be copied.
   const copy = async (field: 'email' | 'phone') => {
-    try {
-      await navigator.clipboard.writeText(field === 'email' ? email : phone);
+    if (await copyText(field === 'email' ? email : phone)) {
       setCopied(field);
       setTimeout(() => setCopied(null), 1800);
-    } catch {
+    } else {
       setError('Copy blocked. Press and hold the text to copy it.');
     }
   };
