@@ -33,7 +33,6 @@ export default function SkillsPanel() {
         <span className="text-primary font-bold text-[10px] sm:text-xs">{selectedCategory ? selectedCategory.toUpperCase() : 'ALL'}</span>
       </div>
 
-      {/* Category Filters */}
       <div className="flex flex-wrap gap-1.5 sm:gap-2 mb-2 sm:mb-3">
         <button
           onClick={() => setSelectedCategory(null)}
@@ -58,10 +57,8 @@ export default function SkillsPanel() {
         ))}
       </div>
 
-      {/* Radar Chart */}
       <SkillsRadar skills={radarSkills} />
 
-      {/* Skills List */}
       <div data-lenis-prevent tabIndex={0} role="region" aria-label="Skills list" className="mt-3 sm:mt-4 space-y-1.5 sm:space-y-2 max-h-40 sm:max-h-48 overflow-y-auto pr-2 sm:pr-3">
         {listedSkills.map((skill, index) => {
           const score = getScoreFromLevel(skill.level);

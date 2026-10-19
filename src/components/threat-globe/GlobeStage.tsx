@@ -1,6 +1,7 @@
 'use client';
 
 import dynamic from 'next/dynamic';
+import type { GlobeMethods } from 'react-globe.gl';
 import { useCallback, useEffect, useMemo, useRef, type RefObject } from 'react';
 import GlobeSourceToggle from './GlobeSourceToggle';
 import GlobeInspectorPanel from './GlobeInspectorPanel';
@@ -50,8 +51,7 @@ interface VisibleSources {
 }
 
 interface GlobeStageProps {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  globeRef: RefObject<any>;
+  globeRef: RefObject<GlobeMethods | undefined>;
   windowWidth: number;
   isLight: boolean;
   isRendering: boolean;
@@ -132,6 +132,8 @@ export default function GlobeStage({
         ref={containerRef}
         className="w-full aspect-square relative max-w-[450px] xl:max-w-[550px] flex items-center justify-center"
         onPointerDown={onPointerDownContainer}
+        // Lenis would turn the wheel into page scroll; here it zooms the globe.
+        data-lenis-prevent-wheel
       >
         {isRendering && (
           <div

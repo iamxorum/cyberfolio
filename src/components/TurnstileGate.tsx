@@ -1,26 +1,24 @@
 'use client';
 
 import { useState } from 'react';
+import Link from 'next/link';
 import { Turnstile } from '@marsidev/react-turnstile';
 import { securityConfig } from '@/config';
 import { getTurnstileSiteKey } from '@/lib/turnstile';
-import { useTurnstileVerification } from '@/hooks/useTurnstileVerification';
 
 interface TurnstileGateProps {
   decryptingLabel: string;
+  /** Called once the server has accepted the token and set the access cookie. */
+  onVerified: () => void;
 }
 
-export default function TurnstileGate({ decryptingLabel }: TurnstileGateProps) {
-  const { isVerified, markVerified } = useTurnstileVerification();
+export default function TurnstileGate({ decryptingLabel, onVerified }: TurnstileGateProps) {
   const [isDecrypting, setIsDecrypting] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  if (isVerified) return null;
-
   return (
-    <div className="turnstile-gate-overlay fixed inset-0 z-[9998] flex items-center justify-center bg-[rgba(var(--terminal-bg-rgb),0.85)] backdrop-blur-md font-mono p-4">
+    <div className="fixed inset-0 z-[9998] flex items-center justify-center bg-[rgba(var(--terminal-bg-rgb),0.85)] backdrop-blur-md font-mono p-4">
       <div className="max-w-md w-full border border-[var(--terminal-border)] bg-[var(--terminal-surface)] p-8 rounded shadow-[0_0_20px_rgba(var(--terminal-accent-rgb),0.2)] text-center relative overflow-hidden">
-        {/* Decorative Scanline */}
         <div className="absolute inset-0 bg-gradient-to-b from-transparent via-primary/5 to-transparent h-[10%] w-full animate-scan pointer-events-none"></div>
 
         <svg
@@ -69,15 +67,20 @@ export default function TurnstileGate({ decryptingLabel }: TurnstileGateProps) {
                     body: JSON.stringify({ token })
                   });
 
-                  const data = res.ok ? await res.json() : null;
+                  if (!res.ok) {
+                    const body = await res.json().catch(() => null);
+                    console.error("Access Denied:", body?.error ?? `HTTP ${res.status}`);
+                    setIsDecrypting(false);
+                    setError('Verification failed. Please try again.');
+                    return;
+                  }
 
-                  if (data?.success) {
-                    setTimeout(() => {
-                      markVerified();
-                      setIsDecrypting(false);
-                    }, 500);
+                  const data = await res.json();
+
+                  if (data.success) {
+                    setTimeout(onVerified, 500);
                   } else {
-                    console.error("Access Denied:", data?.error ?? `HTTP ${res.status}`);
+                    console.error("Access Denied:", data.error);
                     setIsDecrypting(false);
                     setError('Verification failed. Please try again.');
                   }
@@ -97,6 +100,12 @@ export default function TurnstileGate({ decryptingLabel }: TurnstileGateProps) {
         <div className="text-[10px] text-[var(--terminal-text-muted)] animate-pulse font-mono uppercase tracking-tighter">
           {isDecrypting ? '>> VERIFIED' : 'Awaiting_Challenge_Response...'}
         </div>
+
+        {!isDecrypting && (
+          <Link href="/" className="mt-4 inline-block text-xs text-[var(--terminal-text-dim)] hover:text-primary transition-colors">
+            &lt; Back to home
+          </Link>
+        )}
       </div>
     </div>
   );

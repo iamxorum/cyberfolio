@@ -75,7 +75,6 @@ export default function ThreatGlobe() {
     <div ref={revealRef} data-reveal id="threat-feed" className="scroll-reveal panel-draw scroll-mt-20 flex flex-col gap-6 px-3 sm:px-5 py-6 sm:py-8 mb-8 border border-[var(--terminal-border)] rounded bg-[rgba(var(--terminal-bg-rgb),0.60)] relative overflow-hidden group">
       <div className="absolute inset-0 bg-noise-texture opacity-10 mix-blend-overlay pointer-events-none"></div>
 
-      {/* --- HEADER --- */}
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center z-10 border-b border-[var(--terminal-border)] pb-4 gap-3 relative">
         <div>
           <h2 className="text-lg sm:text-2xl font-bold font-mono tracking-widest text-[#ef4444] glow-text flex items-center gap-2">
@@ -93,7 +92,6 @@ export default function ThreatGlobe() {
         </div>
       </div>
 
-      {/* --- CONTENT (2 COLUMNS) --- */}
       <div className="flex flex-col lg:flex-row gap-6 items-center relative z-10">
         <GlobeStage
           globeRef={globeRef}
@@ -115,7 +113,6 @@ export default function ThreatGlobe() {
           onToggleSource={toggleSource}
         />
 
-        {/* RIGHT COLUMN: STATS */}
         <div className="w-full lg:w-1/2 font-mono flex flex-col gap-4 flex-1">
           <TotalMitigatedCard totalBanned={threatData?.total_banned || 0} />
           <CountryLeaderboard

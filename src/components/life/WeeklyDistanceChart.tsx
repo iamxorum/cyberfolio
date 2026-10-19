@@ -27,7 +27,6 @@ export default function WeeklyDistanceChart({ weeks }: { weeks: WeeklyDistance[]
       </figcaption>
 
       <div className="flex gap-2">
-        {/* Y axis */}
         <div className="flex flex-col justify-between text-[10px] text-[var(--terminal-text-dim)] text-right w-6 flex-shrink-0" style={{ height: CHART_HEIGHT }} aria-hidden="true">
           {ticks.map((t) => (
             <span key={t} className="leading-none -translate-y-1/2 first:translate-y-0 last:translate-y-0">{t}</span>
@@ -36,7 +35,6 @@ export default function WeeklyDistanceChart({ weeks }: { weeks: WeeklyDistance[]
 
         <div className="flex-1 min-w-0 flex flex-col gap-1">
           <div className="relative" style={{ height: CHART_HEIGHT }} onMouseLeave={() => setActive(null)}>
-            {/* Recessive grid */}
             {ticks.map((t) => (
               <div
                 key={t}

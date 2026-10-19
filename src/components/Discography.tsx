@@ -1,7 +1,7 @@
 'use client';
 import React, { useState, useMemo } from 'react';
 import { SiSpotify, SiSoundcloud, SiYoutube } from 'react-icons/si';
-import { MdContentCopy, MdCheck } from 'react-icons/md'; // Added copy icons
+import { MdContentCopy, MdCheck } from 'react-icons/md';
 import { discography, Track, Platform } from '../config/music.config';
 import Reveal from './Reveal';
 import TypedText from './TypedText';
@@ -32,7 +32,7 @@ export default function Discography() {
         try {
             await navigator.clipboard.writeText(activeTrack.url);
             setCopied(true);
-            setTimeout(() => setCopied(false), 2000); // Reset after 2 seconds
+            setTimeout(() => setCopied(false), 2000);
         } catch (err) {
             console.error('Failed to copy: ', err);
         }
@@ -60,13 +60,11 @@ export default function Discography() {
 
     return (
         <Reveal draw className="flex flex-col gap-6 px-4 py-6 border border-[var(--terminal-border)] rounded bg-[rgba(var(--terminal-bg-rgb),0.80)] font-mono relative overflow-hidden">
-            {/* Ambient Glow */}
             <div
                 className="absolute top-0 right-0 w-[400px] h-[400px] opacity-10 blur-[120px] pointer-events-none transition-colors duration-300"
                 style={{ backgroundColor: activeColor }}
             />
 
-            {/* HEADER */}
             <div className="flex justify-between items-center border-b border-[var(--terminal-border)] pb-4 mb-2 relative z-10">
                 <h2 className="text-xl font-bold tracking-tighter text-[var(--terminal-text)] flex items-center gap-2">
                     <TypedText text="DISCOGRAPHY" />
@@ -78,7 +76,6 @@ export default function Discography() {
 
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 relative z-10">
 
-                {/* LEFT: LIST */}
                 <div className="lg:col-span-5 flex flex-col gap-2">
                     <div className="flex justify-between px-1">
                         <p className="text-[10px] font-bold text-[var(--terminal-text)]/40 uppercase tracking-widest">Index</p>
@@ -121,7 +118,6 @@ export default function Discography() {
                     </div>
                 </div>
 
-                {/* RIGHT: PLAYER */}
                 <div className="lg:col-span-7 flex flex-col gap-4">
                     <div className="relative group rounded-xl overflow-hidden border border-[rgba(var(--terminal-text-rgb),0.10)] shadow-2xl bg-[#111]">
                         <iframe
@@ -138,7 +134,6 @@ export default function Discography() {
                     </div>
 
                     <div className="grid grid-cols-2 gap-4">
-                        {/* THE NEW COPY LINK COMPONENT */}
                         <button
                             onClick={handleCopy}
                             className="p-3 border border-[rgba(var(--terminal-text-rgb),0.5)] bg-[rgba(var(--terminal-text-rgb),0.05)] rounded flex flex-col justify-center text-left hover:bg-[rgba(var(--terminal-text-rgb),0.10)] hover:border-[rgba(var(--terminal-text-rgb),0.20)] active:scale-[0.98] transition group"

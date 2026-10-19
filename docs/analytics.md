@@ -33,6 +33,19 @@ Visitors only talk to your domain. The dashboard is never public.
 8. `docker compose up -d --build` again.
 9. Visit the site. Check Realtime in the dashboard.
 
+## Show view counts on the blog
+
+Blog posts and the blog list can show how many times each post was read. In the dashboard, create a
+**view-only** user (Settings > Users), then add to `.env`:
+
+```
+UMAMI_API_USER=blog-readonly
+UMAMI_API_PASSWORD=...
+```
+
+Rebuild. Counts refresh at most every 10 minutes, and a post only shows its count from 10 views up
+(`MIN_VIEWS_SHOWN` in `src/lib/umami.ts`). Without the login, or if Umami is down, no counts are shown.
+
 ## Turn it off
 
 - Keep the site, drop Umami: remove `COMPOSE_PROFILES` from `.env`, then `docker compose up -d --remove-orphans`.

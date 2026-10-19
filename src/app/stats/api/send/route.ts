@@ -1,11 +1,10 @@
 import { siteConfig } from '@/config';
 import { analyticsUpstream } from '@/lib/analytics';
 import { isAllowedOrigin } from '@/lib/origin';
+import { isDevelopment } from '@/lib/env';
 import { getClientKey, isRateLimited } from '@/lib/rate-limit';
 
 export const dynamic = 'force-dynamic';
-
-const isDevelopment = process.env.NODE_ENV === 'development';
 
 const MAX_BODY_BYTES = 16 * 1024;
 const MAX_CACHE_TOKEN = 2048;

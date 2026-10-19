@@ -11,10 +11,11 @@ Terminal/hacker-themed personal portfolio (Next.js 16, TypeScript, Tailwind CSS 
 
 - **ThreatGlobe** — a live 3D globe plotting IPs banned by the author's actual home-lab firewalls: local Fail2Ban bans (red) and CrowdSec community blocklist hits (blue), geolocated via GeoLite2 and arced toward the real infrastructure nodes. Not a demo widget — it's a dashboard of real firewall activity, refreshed from the actual edge.
 - **CV / résumé generator** — config-driven, multi-style, ATS-compliant. Exports a real vector-text PDF via `@react-pdf/renderer` (not a print/screenshot hack), with content-driven pagination and proper document metadata.
-- **Cover letter generator** — same PDF pipeline, independent style config from the CV.
+- **Cover letter generator** — same PDF pipeline. A letter can be paired with a CV style, and paired styles get a one-click **CV + letter** download as a single PDF.
 - **Interactive terminal** — a real command interpreter (`help`, `ls`, `cat <project>`, `whoami`, `contact`, `certs`, ...) reading from the same config as the rest of the site, with input sanitization since it's free-text echoed back to the DOM.
 - Skills radar, project showcase, music discography, and a private-route document viewer (streams large PDFs with range-request support instead of buffering the whole file).
-- Cloudflare Turnstile bot protection with a shared cross-page verification pass.
+- Cloudflare Turnstile bot protection enforced on the server: a passed check sets a signed 24-hour cookie, and `/cv`, the email and the phone number are only served to visitors who hold it. Contact details live in `.env`, so they are in no page source or script.
+- A blog with MDX posts, reading progress, related posts, RSS and optional view counts from a self-hosted Umami (see `docs/analytics.md`).
 - Dynamic CSP, built per-deploy from an allowlist config rather than hardcoded.
 - One security easter egg somewhere in the shipped JS. Not documenting what or where — that's rather the point. If you find it, you *really* shouldn't have been looking there.
 
@@ -30,7 +31,8 @@ Next.js 16 (App Router, `output: standalone`) · React 19 · TypeScript · Tailw
 
 ```bash
 npm install
-cp -r config.example config   # add your own content — see config/README.md
+mkdir -p src/config && cp -r config.example/. src/config/   # your own content — see config.example/README.md
+cp .env.example .env                                         # contact details and secrets
 npm run dev
 ```
 
@@ -38,13 +40,14 @@ Open [http://localhost:3000](http://localhost:3000).
 
 ## Configuration
 
-All personal content lives in `config/*.config.ts` and is gitignored by design — `config.example/` is the public template that mirrors every real config file with placeholders, so this repo stays reusable without leaking anyone's real data. Full field-by-field guide: [`config.example/README.md`](./config.example/README.md).
+All personal content lives in `src/config/*.config.ts` and is gitignored by design — `config.example/` is the public template that mirrors every real config file with placeholders, so this repo stays reusable without leaking anyone's real data. Secrets and contact details (`CONTACT_EMAIL`, `CONTACT_PHONE`, `TURNSTILE_SECRET_KEY`, …) go in `.env`, not in config. Full field-by-field guide and environment table: [`config.example/README.md`](./config.example/README.md).
 
 ## Project structure
 
 - `src/app/` — Next.js App Router pages and API routes
 - `src/components/` — one component per site section
 - `src/config/` — your real content (gitignored) / `config.example/` — the public template
+- `src/lib/` — server and shared logic (access cookie, SEO helpers, Strava, Umami); `docs/` — setup guides
 - `public/` — static assets
 
 ## Build & deploy

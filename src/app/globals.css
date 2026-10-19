@@ -138,15 +138,6 @@ html.boot-skip .boot-screen-overlay {
   display: none;
 }
 
-html:not(.turnstile-skip) .turnstile-gated-content {
-  filter: blur(12px);
-  pointer-events: none;
-  user-select: none;
-}
-html.turnstile-skip .turnstile-gate-overlay {
-  display: none;
-}
-
 a, button, input, [role="button"], [tabindex] {
   -webkit-tap-highlight-color: transparent;
 }
@@ -468,6 +459,16 @@ html.boot-done .animate-reveal {
   margin: 0 auto !important;
   padding: 0.6in !important;
   box-shadow: 0 3px 12px rgba(0, 0, 0, 0.1);
+}
+
+/* On screen the page is a fixed A4 sheet (like the generated PDF), so narrow screens scale it down instead of re-wrapping it. */
+@media screen {
+  .ats-friendly {
+    width: 210mm;
+    max-width: none !important;
+    padding: 0.4in !important;
+    box-sizing: border-box;
+  }
 }
 
 .ats-friendly h1 {

@@ -4,8 +4,15 @@ export interface CoverLetterStyle {
   description: string;
   domain: string;
   icon: string;
+  /**
+   * The CV style this letter goes with. Defaults to this letter's own `id`.
+   * A CV style with a paired letter gets the "CV + LETTER" download; one without doesn't.
+   */
+  cvStyleId?: string;
+  /** Default "Dear Hiring Manager,". */
   salutation?: string;
   opening: string;
+  /** One entry per paragraph. */
   body: string[];
   closing: string;
   colorScheme?: {
@@ -15,12 +22,10 @@ export interface CoverLetterStyle {
 }
 
 export interface CoverLetterConfig {
-  email?: string;
   styles: CoverLetterStyle[];
 }
 
 export const coverLetterConfig: CoverLetterConfig = {
-  email: 'your.email@example.com',
   styles: [
     {
       id: 'example',
@@ -40,6 +45,10 @@ export const coverLetterConfig: CoverLetterConfig = {
     },
   ],
 };
+
+/** The cover letter that pairs with a CV style, if there is one. */
+export const getCoverLetterForCV = (cvStyleId: string): CoverLetterStyle | undefined =>
+  coverLetterConfig.styles.find(style => (style.cvStyleId ?? style.id) === cvStyleId);
 
 export const getCoverLetterStyleById = (id: string): CoverLetterStyle | undefined =>
   coverLetterConfig.styles.find(style => style.id === id);

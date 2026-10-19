@@ -1,35 +1,45 @@
-export interface SiteConfig {
+export interface SocialLink {
+  name: string;
+  url: string;
+  /** Material Symbols icon name. */
+  icon?: string;
+  /** Also listed in the footer. */
+  showInFooter?: boolean;
+}
 
+/** Contact email and phone are not here: they live in CONTACT_EMAIL / CONTACT_PHONE in `.env`. */
+export interface SiteConfig {
+  /** Main domain, no protocol. Used for canonical URLs, the sitemap and origin checks. */
   domain: string;
+  /** Other domains that redirect to the main one. Turnstile tokens issued on them are accepted too. */
   alternateDomains?: string[];
+  /** Handle shown in the header and the terminal prompt. */
   username: string;
   fullName: string;
+  /** Site name: the home page title, social cards and the web app manifest. */
   title: string;
+  /** Default meta description. */
   description: string;
   favicon?: string;
-
-
+  /** Shown as a live age on /about. `month` is 1-12. */
   birthDate: {
     day: number;
     month: number;
     year: number;
   };
   location: string;
-  phone?: string;
-  email: string;
   role: string;
+  /** Availability line in the hero and on the profile card. */
   status: string;
   profileImage: string;
-
-
   social: {
     professional?: SocialLink[];
     gaming?: SocialLink[];
     other?: SocialLink[];
   };
-
+  /** Version label in the footer. */
   systemVersion: string;
-
+  /** Hosts allowed by the Content-Security-Policy and next/image. Add a host here when you embed something new. */
   security: {
     scripts: string[];
     styles: string[];
@@ -38,14 +48,6 @@ export interface SiteConfig {
     frames: string[];
     connects: string[];
   };
-
-}
-
-export interface SocialLink {
-  name: string;
-  url: string;
-  icon?: string;
-  showInFooter?: boolean;
 }
 
 export const siteConfig: SiteConfig = {
@@ -61,8 +63,6 @@ export const siteConfig: SiteConfig = {
     year: 2000,
   },
   location: 'Your Location',
-  phone: '+1 234 567 8900',
-  email: 'you@example.com',
   role: 'Your Role',
   status: 'Available for opportunities',
   profileImage: '/assets/profile.jpg',
@@ -94,7 +94,7 @@ export const siteConfig: SiteConfig = {
     ],
   },
 
-  systemVersion: 'v1.6.1',
+  systemVersion: 'v1.6.2',
 
   favicon: 'path/to/favicon.ico',
 

@@ -15,7 +15,7 @@ interface CoverLetterPreviewProps {
 }
 
 export default function CoverLetterPreview({ siteConfig, style, email }: CoverLetterPreviewProps) {
-  const contactInfo = getContactInfo(siteConfig, email, false);
+  const contactInfo = getContactInfo(siteConfig, email);
   const today = useSyncExternalStore(noopSubscribe, () => formatLetterDate(), () => '');
   const accentColor = style.colorScheme?.primary || '#000000';
   const salutation = style.salutation || 'Dear Hiring Manager,';

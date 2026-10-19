@@ -90,16 +90,16 @@ export default function Header() {
         <header className="flex items-center justify-between whitespace-nowrap px-3 sm:px-4 md:px-6 lg:px-10 py-2 sm:py-3">
           <Link href="/" aria-label={`Home, root@${siteConfig.username}`} className="flex items-center gap-2 sm:gap-4 text-[var(--terminal-text)] min-w-0 hover:opacity-80 active:scale-[0.97] transition">
             <span className="material-symbols-outlined text-primary text-xl sm:text-2xl flex-shrink-0">terminal</span>
-            <h2 className="hidden min-[380px]:block text-[var(--terminal-text)] text-sm sm:text-base md:text-lg font-bold leading-tight tracking-[-0.015em] font-mono truncate">root@{siteConfig.username}:~</h2>
+            <h2 className="hidden min-[420px]:block sm:max-[1099px]:hidden text-[var(--terminal-text)] text-sm sm:text-base md:text-lg font-bold leading-tight tracking-[-0.015em] font-mono truncate">root@{siteConfig.username}:~</h2>
           </Link>
-          <div className="flex flex-1 justify-end items-center gap-1.5 sm:gap-3 md:gap-6 lg:gap-8">
+          <div className="flex flex-1 justify-end items-center gap-1.5 sm:gap-3 lg:gap-6 xl:gap-8">
             <nav className="hidden sm:flex items-center gap-3 md:gap-4 lg:gap-6 xl:gap-9" aria-label="Primary">
               {navItems.map((item) => (
                 <Link
                   key={item.href}
                   href={item.href}
                   transitionTypes={getTransitionTypes(item.href)}
-                  className={`transition-colors active:scale-[0.97] inline-block text-xs md:text-sm font-medium leading-normal font-mono whitespace-nowrap ${
+                  className={`transition-colors active:scale-[0.97] inline-block text-xs lg:text-sm font-medium leading-normal font-mono whitespace-nowrap ${
                     pathname === item.href
                       ? 'text-primary glow-text'
                       : 'text-[var(--terminal-text-dim)] hover:text-primary'
@@ -122,7 +122,7 @@ export default function Header() {
               <Link
                 href="/cv"
                 prefetch={false}
-                className={`flex min-w-[50px] sm:min-w-[60px] md:min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded bg-primary hover:bg-primary/80 active:scale-[0.96] transition h-11 sm:h-9 px-3 sm:px-4 text-[var(--terminal-on-primary)] text-[10px] sm:text-xs md:text-sm font-bold leading-normal tracking-[0.015em] shadow-[0_0_15px_rgba(var(--terminal-accent-rgb),0.4)] border border-primary/30 ${
+                className={`flex min-w-[50px] sm:min-w-[60px] lg:min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded bg-primary hover:bg-primary/80 active:scale-[0.96] transition h-11 sm:h-9 px-3 sm:px-4 text-[var(--terminal-on-primary)] text-[10px] sm:text-xs lg:text-sm font-bold leading-normal tracking-[0.015em] shadow-[0_0_15px_rgba(var(--terminal-accent-rgb),0.4)] border border-primary/30 ${
                   pathname === '/cv' ? 'ring-2 ring-primary/50' : ''
                 }`}
                 >

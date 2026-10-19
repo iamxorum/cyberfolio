@@ -2,12 +2,18 @@ export interface CVStyle {
   id: string;
   name: string;
   description: string;
-  domain: string; 
+  /** Groups styles by role; see `getCVStylesByDomain`. */
+  domain: string;
   icon: string;
+  /** Replaces `CVConfig.summary` for this style. */
   summary?: string;
+  /** Skill categories to show. Omit to show all. */
   skillCategories?: string[];
+  /** Skill names to leave out of this style. */
   excludeSkills?: string[];
+  /** Default true. */
   showProjects?: boolean;
+  /** Default true. */
   showHobbies?: boolean;
   colorScheme?: {
     primary: string;
@@ -16,15 +22,13 @@ export interface CVStyle {
 }
 
 export interface CVConfig {
+  /** Summary used when a style has none of its own. */
   summary?: string;
-  email?: string;
   styles: CVStyle[];
-  cvProfileImage?: string;
 }
 
 export const cvConfig: CVConfig = {
   summary: 'Your default professional summary that will be used if no style-specific summary is provided. This should be a general overview of your professional background, skills, and career goals.',
-  email: 'your.email@example.com',
   styles: [
     {
       id: 'example',

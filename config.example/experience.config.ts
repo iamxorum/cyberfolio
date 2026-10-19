@@ -2,13 +2,16 @@ export interface Experience {
   id: string;
   company: string;
   role: string;
+  /** Free text, shown as written (e.g. "Jan 2023"). */
   startDate: string;
+  /** Omit, or use "Present", for a current role. */
   endDate?: string;
   description?: string;
   plainSummary?: string;
   location?: string;
   type?: 'full-time' | 'part-time' | 'contract' | 'freelance' | 'internship';
-  type2?: string; 
+  /** Second label next to `type` (e.g. "Employment"). */
+  type2?: string;
   icon?: string;
   skills?: string[];
 }

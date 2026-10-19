@@ -47,7 +47,7 @@ const searchIssueCount = async (query: string): Promise<number | null> => {
   }
 };
 
-export async function getContributionStats(repoUrl: string, username: string): Promise<ContributionStats | null> {
+async function getContributionStats(repoUrl: string, username: string): Promise<ContributionStats | null> {
   const parsed = parseGitHubRepo(repoUrl);
   if (!parsed) return null;
   const { owner, repo } = parsed;

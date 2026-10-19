@@ -1,41 +1,23 @@
-import type { Metadata } from 'next';
 import { siteConfig, projects } from '@/config';
 import { getContributionStatsForProjects } from '@/lib/github-contributions';
 import ProjectsClient from './ProjectsClient';
-import { serializeJsonLd } from '@/lib/json-ld';
+import JsonLd from '@/components/JsonLd';
+import { breadcrumbJsonLd, pageMetadata } from '@/lib/seo';
 
-const siteUrl = `https://${siteConfig.domain}`;
-const pageUrl = `${siteUrl}/projects`;
-const ogImage = `${siteUrl}/opengraph-image`;
-const title = `Projects | ${siteConfig.fullName}`;
-const description = `Selected projects and work by ${siteConfig.fullName}, ${siteConfig.role}.`;
+export const metadata = pageMetadata({
+  path: '/projects',
+  title: `Projects | ${siteConfig.fullName}`,
+  description: `Selected projects and work by ${siteConfig.fullName}, ${siteConfig.role}.`,
+});
 
-export const metadata: Metadata = {
-  title,
-  description,
-  alternates: { canonical: pageUrl },
-  openGraph: { title, description, url: pageUrl, images: [ogImage] },
-  twitter: { title, description, images: [ogImage] },
-};
-
-const breadcrumbJsonLd = {
-  '@context': 'https://schema.org',
-  '@type': 'BreadcrumbList',
-  itemListElement: [
-    { '@type': 'ListItem', position: 1, name: 'Home', item: siteUrl },
-    { '@type': 'ListItem', position: 2, name: 'Projects', item: pageUrl },
-  ],
-};
+const breadcrumbs = breadcrumbJsonLd([{ name: 'Projects', path: '/projects' }]);
 
 export default async function Projects() {
   const contributionStats = await getContributionStatsForProjects(projects, siteConfig.username);
 
   return (
     <>
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: serializeJsonLd(breadcrumbJsonLd) }}
-      />
+      <JsonLd data={breadcrumbs} />
       <ProjectsClient contributionStats={contributionStats} />
     </>
   );

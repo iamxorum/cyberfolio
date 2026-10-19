@@ -96,19 +96,19 @@ export interface ContactItem {
   href?: string;
 }
 
-export interface ContactGroups {
+interface ContactGroups {
   personal: ContactItem[];
   links: ContactItem[];
 }
 
-export const getContactInfo = (siteConfig: SiteConfig, email?: string, includePhone: boolean = true): ContactGroups => {
+export const getContactInfo = (siteConfig: SiteConfig, email?: string, phone?: string): ContactGroups => {
   const linkedinLink = siteConfig.social.professional?.find(s => s.name.toLowerCase().includes('linkedin'));
   const githubLink = siteConfig.social.professional?.find(s => s.name.toLowerCase().includes('github'));
   const website = siteConfig.domain ? `https://${siteConfig.domain}` : '';
 
   const personal: ContactItem[] = [];
   if (email) personal.push({ text: email, href: `mailto:${email}` });
-  if (includePhone && siteConfig.phone) personal.push({ text: siteConfig.phone, href: `tel:${siteConfig.phone.replace(/[^+\d]/g, '')}` });
+  if (phone) personal.push({ text: phone, href: `tel:${phone.replace(/[^+\d]/g, '')}` });
   if (siteConfig.location) personal.push({ text: siteConfig.location });
 
   const links: ContactItem[] = [];

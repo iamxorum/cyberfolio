@@ -84,8 +84,8 @@ export default function RunningSection({ data }: { data: RunningData | null }) {
         <WeeklyDistanceChart weeks={data.weekly} />
       </Reveal>
 
-      <div className="flex flex-col md:flex-row gap-3 sm:gap-4">
-        <Reveal draw delay={STAGGER_STEP_MS} className={`${panel} md:w-1/3 flex flex-col gap-3`}>
+      <div className="flex flex-col lg:flex-row gap-3 sm:gap-4">
+        <Reveal draw delay={STAGGER_STEP_MS} className={`${panel} lg:w-1/3 flex flex-col gap-3`}>
           <p className={label}>PERSONAL BESTS</p>
           {data.bests === null ? (
             <p className="text-xs text-[var(--terminal-text-muted)] animate-pulse">INDEXING_BEST_EFFORTS...</p>
@@ -106,7 +106,7 @@ export default function RunningSection({ data }: { data: RunningData | null }) {
           )}
         </Reveal>
 
-        <Reveal draw delay={STAGGER_STEP_MS * 2} className={`${panel} md:w-2/3 flex flex-col gap-3 min-w-0`}>
+        <Reveal draw delay={STAGGER_STEP_MS * 2} className={`${panel} lg:w-2/3 flex flex-col gap-3 min-w-0`}>
           <p className={label}>RECENT RUNS</p>
           {data.recent.length === 0 ? (
             <p className="text-xs text-[var(--terminal-text-muted)]">No public runs yet.</p>

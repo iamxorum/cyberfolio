@@ -4,6 +4,7 @@ import { Document, Page, View, Text, Link, StyleSheet } from '@react-pdf/rendere
 import { CoverLetterStyle, SiteConfig } from '@/config';
 import { formatLetterDate } from '@/lib/format-time';
 import { getContactInfo, type ContactItem } from '@/lib/cv-helpers';
+import { coverLetterMetadata } from '@/lib/pdf-metadata';
 
 interface CoverLetterDocumentProps {
   siteConfig: SiteConfig;
@@ -81,39 +82,39 @@ const ContactLine = ({ items }: { items: ContactItem[] }) => items.length > 0 &&
   </Text>
 );
 
-export default function CoverLetterDocument({ siteConfig, style, email }: CoverLetterDocumentProps) {
-  const contactInfo = getContactInfo(siteConfig, email, false);
+export function CoverLetterPage({ siteConfig, style, email }: CoverLetterDocumentProps) {
+  const contactInfo = getContactInfo(siteConfig, email);
   const today = formatLetterDate();
   const accentColor = style.colorScheme?.primary || '#000000';
   const salutation = style.salutation || 'Dear Hiring Manager,';
 
   return (
-    <Document
-      title={`Cover Letter | ${siteConfig.fullName} - ${style.name}`}
-      author={siteConfig.fullName}
-      subject={`Cover Letter | ${style.name}`}
-      creator={siteConfig.fullName}
-      producer={siteConfig.fullName}
-    >
-      <Page size="A4" style={styles.page} wrap>
-        <View style={[styles.header, { borderBottomColor: accentColor }]}>
-          <Text style={[styles.name, { color: accentColor }]}>{siteConfig.fullName}</Text>
-          <Text style={[styles.roleTagline, { color: accentColor }]}>{style.name}</Text>
-          <ContactLine items={contactInfo.personal} />
-          <ContactLine items={contactInfo.links} />
-        </View>
+    <Page size="A4" style={styles.page} wrap>
+      <View style={[styles.header, { borderBottomColor: accentColor }]}>
+        <Text style={[styles.name, { color: accentColor }]}>{siteConfig.fullName}</Text>
+        <Text style={[styles.roleTagline, { color: accentColor }]}>{style.name}</Text>
+        <ContactLine items={contactInfo.personal} />
+        <ContactLine items={contactInfo.links} />
+      </View>
 
-        <Text style={styles.date}>{today}</Text>
-        <Text style={styles.salutation}>{salutation}</Text>
-        <Text style={styles.paragraph}>{style.opening}</Text>
-        {style.body.map((paragraph) => (
-          <Text key={paragraph} style={styles.paragraph}>{paragraph}</Text>
-        ))}
-        <Text style={styles.paragraph}>{style.closing}</Text>
+      <Text style={styles.date}>{today}</Text>
+      <Text style={styles.salutation}>{salutation}</Text>
+      <Text style={styles.paragraph}>{style.opening}</Text>
+      {style.body.map((paragraph) => (
+        <Text key={paragraph} style={styles.paragraph}>{paragraph}</Text>
+      ))}
+      <Text style={styles.paragraph}>{style.closing}</Text>
 
-        <Text style={styles.signOff}>Sincerely,</Text>
-        <Text style={[styles.signName, { color: accentColor }]}>{siteConfig.fullName}</Text>
-      </Page>
+      <Text style={styles.signOff}>Sincerely,</Text>
+      <Text style={[styles.signName, { color: accentColor }]}>{siteConfig.fullName}</Text>
+    </Page>
+  );
+}
+
+export default function CoverLetterDocument(props: CoverLetterDocumentProps) {
+  return (
+    <Document {...coverLetterMetadata(props.style, props.siteConfig)}>
+      <CoverLetterPage {...props} />
     </Document>
   );
 }

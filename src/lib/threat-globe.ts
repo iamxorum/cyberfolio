@@ -55,7 +55,7 @@ export interface CountryLeaderboardEntry {
   lng: number;
 }
 
-export interface GlobeBudget {
+interface GlobeBudget {
   arcs: number;
   rings: number;
   points: number;
@@ -106,7 +106,7 @@ export const getArcDashAnimateTime = (obj: object) => (obj as GlobeArcDatum).das
 export const getRingMaxRadius = (obj: object) => (obj as GlobeRingDatum).maxRadius;
 export const getRingRepeatPeriod = (obj: object) => (obj as GlobeRingDatum).repeatPeriod;
 
-export const nearestNode = (lat: number, lng: number) => {
+const nearestNode = (lat: number, lng: number) => {
   return dcConfig.nodes.reduce((nearest, node) => {
     const dist = (node.lat - lat) ** 2 + (node.lng - lng) ** 2;
     const nearestDist = (nearest.lat - lat) ** 2 + (nearest.lng - lng) ** 2;
@@ -188,7 +188,7 @@ function buildLeaderboard(countryStats: Record<string, { count: number; lat: num
     .slice(0, 15);
 }
 
-export interface ThreatGeometry {
+interface ThreatGeometry {
   banPoints: BannedIP[];
   serverNodes: GlobePointDatum[];
   arcsData: GlobeArcDatum[];

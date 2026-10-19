@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
+import type { GlobeMethods } from 'react-globe.gl';
 import { dcConfig } from '@/config';
 import { prefersReducedMotion } from '@/lib/motion';
 import type { CountryLeaderboardEntry } from '@/lib/threat-globe';
@@ -14,8 +15,7 @@ interface UseGlobeCameraOptions {
 export function useGlobeCamera({ isGlobeReady, countryLeaderboard, clearSelectedPoint }: UseGlobeCameraOptions) {
   const [selectedCountry, setSelectedCountry] = useState<string | null>(null);
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const globeRef = useRef<any>(null);
+  const globeRef = useRef<GlobeMethods | undefined>(undefined);
   const resumeRotateTimeout = useRef<ReturnType<typeof setTimeout> | null>(null);
   const lastInteractionRef = useRef(0);
   const spotlightIndexRef = useRef(0);

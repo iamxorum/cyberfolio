@@ -2,7 +2,7 @@ import type { Metadata, Viewport } from "next";
 import { ViewTransition } from "react";
 import { JetBrains_Mono } from "next/font/google";
 import localFont from "next/font/local";
-import { siteConfig, scripts, experience, education, getTopSkills, features, analyticsConfig, type ScriptConfig } from "../config";
+import { siteConfig, scripts, features, analyticsConfig, type ScriptConfig } from "../config";
 import "./globals.css";
 import Script from "next/script";
 import SmoothScroll from "@/components/SmoothScroll";
@@ -11,6 +11,7 @@ import CommandPalette from "@/components/CommandPalette";
 import { getSearchIndex } from "@/lib/blog";
 import { ANALYTICS_PATH } from "@/lib/analytics";
 import { serializeJsonLd } from "@/lib/json-ld";
+import { personJsonLd, siteUrl } from '@/lib/seo';
 
 const jetBrainsMono = JetBrains_Mono({
   variable: "--font-display",
@@ -27,7 +28,6 @@ const materialSymbols = localFont({
   weight: "400",
 });
 
-const siteUrl = `https://${siteConfig.domain}`;
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
@@ -73,36 +73,6 @@ export const viewport: Viewport = {
   themeColor: '#141022',
 };
 
-const currentRole = experience.find(
-  (exp) => !exp.endDate || exp.endDate.toLowerCase() === "ongoing"
-);
-
-const personJsonLd = {
-  "@context": "https://schema.org",
-  "@type": "Person",
-  name: siteConfig.fullName,
-  alternateName: siteConfig.username,
-  url: siteUrl,
-  jobTitle: siteConfig.role,
-  description: siteConfig.description,
-  sameAs: (siteConfig.social.professional || [])
-    .filter((link) => link.showInFooter)
-    .map((link) => link.url),
-  ...(currentRole && {
-    worksFor: {
-      "@type": "Organization",
-      name: currentRole.company,
-    },
-  }),
-  ...(education.length > 0 && {
-    alumniOf: education.map((edu) => ({
-      "@type": "EducationalOrganization",
-      name: edu.institution,
-    })),
-  }),
-  knowsAbout: getTopSkills(15).map((skill) => skill.name),
-};
-
 // Umami tracker, served from this site under /stats. Skips localhost.
 const analyticsScripts: ScriptConfig[] =
   features.analytics && analyticsConfig.websiteId
@@ -126,7 +96,7 @@ export default function RootLayout({
     <html
       lang="en"
       // Switched-off features that normally add a class client-side get it here instead, so there is no flash.
-      className={['dark', !features.turnstile && 'turnstile-skip', (!features.bootScreen || features.calmMode) && 'boot-skip', !features.scrollIndicator && 'native-scrollbar', features.calmMode && 'calm'].filter(Boolean).join(' ')}
+      className={['dark', (!features.bootScreen || features.calmMode) && 'boot-skip', !features.scrollIndicator && 'native-scrollbar', features.calmMode && 'calm'].filter(Boolean).join(' ')}
       data-scroll-behavior="smooth"
       suppressHydrationWarning
     >
@@ -146,13 +116,8 @@ export default function RootLayout({
           }}
         />
         <script
-          dangerouslySetInnerHTML={{
-            __html: `(function(){try{var t=localStorage.getItem('iamxorum_turnstile_verified');if(t&&(Date.now()-parseInt(t))<86400000){document.documentElement.classList.add('turnstile-skip');}}catch(e){}})();`,
-          }}
-        />
-        <script
           type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: serializeJsonLd(personJsonLd) }}
+          dangerouslySetInnerHTML={{ __html: serializeJsonLd(personJsonLd()) }}
         />
       </head>
       <body
