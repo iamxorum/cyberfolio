@@ -12,6 +12,7 @@ import {
   filterForCV,
   getPublicProjects,
   formatDateRange,
+  formatDateSpan,
 } from '@/lib/cv-helpers';
 import type { ContributionStats } from '@/lib/github-contributions';
 import { cvMetadata } from '@/lib/pdf-metadata';
@@ -35,14 +36,15 @@ interface CVDocumentProps {
 
 const styles = StyleSheet.create({
   page: {
-    padding: '0.4in',
+    paddingHorizontal: '0.4in',
+    paddingVertical: '0.32in',
     fontFamily: 'Times-Roman',
     fontSize: 11,
-    lineHeight: 1.3,
+    lineHeight: 1.25,
     color: '#000000',
   },
   section: {
-    marginBottom: 7,
+    marginBottom: 6,
   },
   sectionHeader: {
     fontFamily: 'Times-Bold',
@@ -55,7 +57,7 @@ const styles = StyleSheet.create({
     borderBottomColor: '#000000',
   },
   entry: {
-    marginBottom: 5,
+    marginBottom: 4,
   },
   certLine: {
     fontSize: 11,
@@ -103,8 +105,8 @@ const styles = StyleSheet.create({
   },
   bulletItem: {
     fontSize: 11,
-    lineHeight: 1.32,
-    marginBottom: 1.5,
+    lineHeight: 1.26,
+    marginBottom: 1.2,
     color: '#1a1a1a',
   },
   techLine: {
@@ -140,6 +142,18 @@ const styles = StyleSheet.create({
     color: '#000000',
     letterSpacing: 0.1,
   },
+  projectTitleRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'baseline',
+    marginBottom: 2,
+  },
+  projectLink: {
+    fontSize: 10,
+    fontFamily: 'Times-Italic',
+    color: '#3a3a3a',
+    textDecoration: 'none',
+  },
   twoColumnRow: {
     flexDirection: 'row',
     gap: 16,
@@ -150,7 +164,7 @@ const styles = StyleSheet.create({
 });
 
 const SectionHeader = ({ children, accentColor }: { children: string; accentColor: string }) => (
-  <Text style={[styles.sectionHeader, { color: accentColor, borderBottomColor: accentColor }]}>{children}</Text>
+  <Text minPresenceAhead={50} style={[styles.sectionHeader, { color: accentColor, borderBottomColor: accentColor }]}>{children}</Text>
 );
 
 const SkillsList = ({ skills }: { skills: Record<string, Skill[]> }) => (
@@ -193,14 +207,13 @@ const EducationBlock = ({ education, accentColor, siteDomain }: { education: Edu
         <Text style={styles.entrySubtitle}>{edu.institution}{edu.location && `, ${edu.location}`}</Text>
         <Text style={styles.entryMeta}>
           {formatDateRange(edu.startDate, edu.endDate)}{edu.grade && ` | ${edu.grade}`}
+          {edu.thesisUrl && (
+            <>
+              {' | '}
+              <Link src={`https://${siteDomain}${edu.thesisUrl}`} style={{ color: '#3a3a3a' }}>Thesis (PDF)</Link>
+            </>
+          )}
         </Text>
-        {edu.thesisUrl && (
-          <Text style={styles.entryMeta}>
-            <Text style={styles.inlineLabel}>Thesis: </Text>
-            <Link src={`https://${siteDomain}${edu.thesisUrl}`} style={{ color: '#3a3a3a', textDecoration: 'none' }}>View PDF</Link>
-            {' ('}{stripUrl(`https://${siteDomain}${edu.thesisUrl}`)}{')'}
-          </Text>
-        )}
       </View>
     ))}
   </View>
@@ -216,7 +229,7 @@ const CertificationsBlock = ({ certifications, accentColor }: { certifications: 
         <Text style={{ color: accentColor }}>{cert.issuer}</Text>
         {' | '}
         <Text style={styles.certMeta}>
-          {cert.issueDate}{cert.expiryDate && ` - ${cert.expiryDate}`}
+          {formatDateSpan(cert.issueDate, cert.expiryDate)}
         </Text>
       </Text>
     ))}
@@ -245,38 +258,32 @@ const ProjectsBlock = ({ projects, accentColor, contributionStats = {} }: { proj
       const stats = contributionStats[project.id];
       return (
       <View key={project.id} style={styles.entry} wrap={false}>
-        <Text style={styles.entryTitle}>
-          {project.name}
-          {project.repository && (
-            <Text style={{ fontFamily: 'Times-Roman', fontSize: 10, color: '#3a3a3a' }}>
-              {'  ('}{project.projectType === 'contribution' ? 'Contribution' : 'Personal'}{')'}
-            </Text>
-          )}
-        </Text>
-        <Text style={[styles.entrySubtitle, { textAlign: 'justify' }]}>{project.cvDescription || project.description}</Text>
-        {(project.repository || (stats && stats.mergedCount > 0)) && (
-          <Text style={styles.entryMeta}>
-            {stats && stats.mergedCount > 0 && (
-              <>
-                <Text style={styles.inlineLabel}>Contributions: </Text>
-                <Link src={stats.searchUrl} style={{ color: '#3a3a3a', textDecoration: 'none' }}>
-                  {stats.mergedCount} merged PR{stats.mergedCount !== 1 ? 's' : ''}
-                </Link>
-                {stats.reviewCount > 0 && (
-                  <>
-                    {', '}
-                    <Link src={stats.reviewSearchUrl} style={{ color: '#3a3a3a', textDecoration: 'none' }}>
-                      {stats.reviewCount} code review{stats.reviewCount !== 1 ? 's' : ''}
-                    </Link>
-                  </>
-                )}
-              </>
-            )}
-            {stats && stats.mergedCount > 0 && project.repository ? '   |   ' : ''}
+        <View style={styles.projectTitleRow}>
+          <Text style={styles.entryTitle}>
+            {project.name}
             {project.repository && (
+              <Text style={{ fontFamily: 'Times-Roman', fontSize: 10, color: '#3a3a3a' }}>
+                {'  ('}{project.projectType === 'contribution' ? 'Contribution' : 'Personal'}{')'}
+              </Text>
+            )}
+          </Text>
+          {project.repository && (
+            <Link src={project.repository} style={styles.projectLink}>{stripUrl(project.repository)}</Link>
+          )}
+        </View>
+        <Text style={[styles.entrySubtitle, { textAlign: 'justify' }]}>{project.cvDescription || project.description}</Text>
+        {stats && stats.mergedCount > 0 && (
+          <Text style={styles.entryMeta}>
+            <Text style={styles.inlineLabel}>Contributions: </Text>
+            <Link src={stats.searchUrl} style={{ color: '#3a3a3a', textDecoration: 'none' }}>
+              {stats.mergedCount} merged PR{stats.mergedCount !== 1 ? 's' : ''}
+            </Link>
+            {stats.reviewCount > 0 && (
               <>
-                <Text style={styles.inlineLabel}>Repository: </Text>
-                <Link src={project.repository} style={{ color: '#3a3a3a', textDecoration: 'none' }}>{stripUrl(project.repository)}</Link>
+                {', '}
+                <Link src={stats.reviewSearchUrl} style={{ color: '#3a3a3a', textDecoration: 'none' }}>
+                  {stats.reviewCount} code review{stats.reviewCount !== 1 ? 's' : ''}
+                </Link>
               </>
             )}
           </Text>
@@ -331,7 +338,7 @@ export function CVPage({
         </View>
       )}
 
-      <View style={styles.section}>
+      <>
         <SectionHeader accentColor={accentColor}>Experience</SectionHeader>
         {sortedExperience.map((exp) => {
           const descriptionPoints = parseDescription(exp.description);
@@ -359,7 +366,7 @@ export function CVPage({
             </View>
           );
         })}
-      </View>
+      </>
 
       {useColumnLayout ? (
         <View style={styles.twoColumnRow}>

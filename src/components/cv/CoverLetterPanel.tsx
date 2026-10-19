@@ -12,7 +12,7 @@ import { coverLetterConfig, siteConfig } from '@/config';
 import Reveal from '@/components/Reveal';
 import TypedText from '@/components/TypedText';
 
-export default function CoverLetterPanel({ email }: { email?: string }) {
+export default function CoverLetterPanel({ email, phone }: { email?: string; phone?: string }) {
   const [selectedLetterStyle, setSelectedLetterStyle] = useState<string>(coverLetterConfig.styles[0].id);
   const [showLetter, setShowLetter] = useState<boolean>(true);
   const { isDownloading, succeeded, download } = usePdfDownload();
@@ -25,7 +25,7 @@ export default function CoverLetterPanel({ email }: { email?: string }) {
       import('@/components/CoverLetterDocument'),
     ]);
     const blob = await pdf(
-      <CoverLetterDocument siteConfig={siteConfig} style={selectedCoverLetterStyle} email={email} />
+      <CoverLetterDocument siteConfig={siteConfig} style={selectedCoverLetterStyle} email={email} phone={phone} />
     ).toBlob();
     return { blob, filename: `${siteConfig.fullName.replace(/\s+/g, '_')}_Cover_Letter_${selectedLetterStyle}.pdf` };
   });

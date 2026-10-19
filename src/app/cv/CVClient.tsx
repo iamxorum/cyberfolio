@@ -35,7 +35,7 @@ export default function CVClient({ contributionStats = NO_CONTRIBUTION_STATS, em
 
                 <div key={activeTab} className="animate-fade-in-fast print:animate-none">
                   {activeTab === 'resume' && <ResumePanel contributionStats={contributionStats} email={email} phone={phone} />}
-                  {features.coverLetter && activeTab === 'letter' && <CoverLetterPanel email={email} />}
+                  {features.coverLetter && activeTab === 'letter' && <CoverLetterPanel email={email} phone={phone} />}
                 </div>
               </main>
 

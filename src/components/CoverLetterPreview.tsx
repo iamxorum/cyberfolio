@@ -28,11 +28,11 @@ export default function CoverLetterPreview({ siteConfig, style, email }: CoverLe
       <div style={{ padding: '14pt 0.35in 0' }}>
         <p style={{ marginBottom: '16pt' }}>{today}</p>
         <p style={{ marginBottom: '12pt' }}>{salutation}</p>
-        <p style={{ marginBottom: '12pt', textAlign: 'justify' }}>{style.opening}</p>
+        <p style={{ marginBottom: '12pt' }}>{style.opening}</p>
         {style.body.map((paragraph) => (
-          <p key={paragraph} style={{ marginBottom: '12pt', textAlign: 'justify' }}>{paragraph}</p>
+          <p key={paragraph} style={{ marginBottom: '12pt' }}>{paragraph}</p>
         ))}
-        <p style={{ marginBottom: '12pt', textAlign: 'justify' }}>{style.closing}</p>
+        <p style={{ marginBottom: '12pt' }}>{style.closing}</p>
 
         <p style={{ marginTop: '8pt' }}>Sincerely,</p>
         <p style={{ marginTop: '24pt', fontWeight: 'bold', color: accentColor }}>{siteConfig.fullName}</p>

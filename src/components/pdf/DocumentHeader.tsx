@@ -13,7 +13,7 @@ const styles = StyleSheet.create({
     fontFamily: 'Times-Bold',
     fontSize: 21,
     letterSpacing: 0.8,
-    marginBottom: 3,
+    marginBottom: 5,
   },
   roleTagline: {
     fontFamily: 'Courier-Bold',

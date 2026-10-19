@@ -1,5 +1,5 @@
 import type { Education, SiteConfig } from '@/config';
-import { stripUrl, formatDateRange } from '@/lib/cv-helpers';
+import { formatDateRange } from '@/lib/cv-helpers';
 import { SectionHeader } from './primitives';
 
 interface CVEducationSectionProps {
@@ -27,12 +27,13 @@ export default function CVEducationSection({ education, siteConfig, accentColor,
             <div style={{ fontSize: '10pt', fontStyle: 'italic', color: '#3a3a3a', letterSpacing: '0.05pt' }}>
               {formatDateRange(edu.startDate, edu.endDate)}
               {edu.grade && ` | ${edu.grade}`}
+              {edu.thesisUrl && (
+                <>
+                  {' | '}
+                  <a href={`https://${siteConfig.domain}${edu.thesisUrl}`} target="_blank" rel="noopener noreferrer" style={{ color: 'inherit', textDecoration: 'underline' }}>Thesis (PDF)</a>
+                </>
+              )}
             </div>
-            {edu.thesisUrl && (
-              <div style={{ fontSize: '10pt', color: '#3a3a3a', marginTop: '2pt' }}>
-                <strong style={{ color: '#000' }}>Thesis:</strong> <a href={`https://${siteConfig.domain}${edu.thesisUrl}`} target="_blank" rel="noopener noreferrer" style={{ color: 'inherit' }}>View PDF</a> ({stripUrl(`https://${siteConfig.domain}${edu.thesisUrl}`)})
-              </div>
-            )}
           </div>
         </div>
       ))}

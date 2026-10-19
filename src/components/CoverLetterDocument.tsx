@@ -11,6 +11,7 @@ interface CoverLetterDocumentProps {
   siteConfig: SiteConfig;
   style: CoverLetterStyle;
   email?: string;
+  phone?: string;
 }
 
 const styles = StyleSheet.create({
@@ -37,7 +38,6 @@ const styles = StyleSheet.create({
   },
   paragraph: {
     fontSize: 11,
-    textAlign: 'justify',
     lineHeight: 1.5,
     marginBottom: 12,
   },
@@ -52,8 +52,8 @@ const styles = StyleSheet.create({
   },
 });
 
-export function CoverLetterPage({ siteConfig, style, email }: CoverLetterDocumentProps) {
-  const contactInfo = getContactInfo(siteConfig, email);
+export function CoverLetterPage({ siteConfig, style, email, phone }: CoverLetterDocumentProps) {
+  const contactInfo = getContactInfo(siteConfig, email, phone);
   const today = formatLetterDate();
   const accentColor = style.colorScheme?.primary || '#000000';
   const salutation = style.salutation || 'Dear Hiring Manager,';

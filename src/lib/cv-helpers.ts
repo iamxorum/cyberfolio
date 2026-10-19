@@ -48,10 +48,23 @@ const parseDate = (dateStr: string): Date => {
   return isNaN(parsed.getTime()) ? new Date(0) : parsed;
 };
 
+const SHORT_MONTHS: Record<string, string> = {
+  January: 'Jan', February: 'Feb', March: 'Mar', April: 'Apr', June: 'Jun', July: 'Jul',
+  August: 'Aug', September: 'Sep', October: 'Oct', November: 'Nov', December: 'Dec',
+};
+
+/** "October 2024" becomes "Oct 2024", so every date on the CV is written the same way. */
+const shortDate = (date: string) => date.replace(/\b[A-Z][a-z]{2,8}\b/g, (month) => SHORT_MONTHS[month] ?? month);
+
+/** A period that may still be running: no end date reads as "Present". */
 export const formatDateRange = (startDate: string, endDate?: string): string => {
   const isOngoing = !endDate || endDate.toLowerCase() === 'ongoing';
-  return `${startDate} - ${isOngoing ? 'Present' : endDate}`;
+  return `${shortDate(startDate)} – ${isOngoing ? 'Present' : shortDate(endDate)}`;
 };
+
+/** A fixed span, or a single date when there is no end (e.g. a certificate that never expires). */
+export const formatDateSpan = (startDate: string, endDate?: string): string =>
+  endDate ? `${shortDate(startDate)} – ${shortDate(endDate)}` : shortDate(startDate);
 
 export const sortExperienceByDate = (experience: Experience[]): Experience[] => {
   return [...experience].sort((a, b) => {

@@ -1,4 +1,5 @@
 import type { Certification } from '@/config';
+import { formatDateSpan } from '@/lib/cv-helpers';
 
 export const SkillsList = ({ skills }: { skills: Record<string, { name: string }[]> }) => (
   <>
@@ -25,7 +26,7 @@ export const CertificationsList = ({ certifications, accentColor }: { certificat
         <span style={{ color: accentColor }}>{cert.issuer}</span>
         {' | '}
         <span style={{ fontSize: '10pt', fontStyle: 'italic', color: '#3a3a3a' }}>
-          {cert.issueDate}{cert.expiryDate && ` - ${cert.expiryDate}`}
+          {formatDateSpan(cert.issueDate, cert.expiryDate)}
         </span>
       </p>
     ))}
