@@ -5,6 +5,7 @@ import { formatRelativeTime } from '@/lib/format-time';
 import { computeThreatGeometry, globeBudget, preloadGlobeTexture } from '@/lib/threat-globe';
 import { useThreatFeed } from '@/hooks/useThreatFeed';
 import { useScrollReveal } from '@/hooks/useScrollReveal';
+import { track } from '@/lib/track';
 import TypedText from '@/components/TypedText';
 import { useWindowWidth } from '@/hooks/useWindowWidth';
 import { useThemeSync } from '@/hooks/useThemeSync';
@@ -37,7 +38,7 @@ export default function ThreatGlobe() {
   );
   const banPoints = useMemo(() => allBanPoints.slice(0, budget.points), [allBanPoints, budget.points]);
 
-  const { globeRef, selectedCountry, flyToCountry, lastInteractionRef } = useGlobeCamera({
+  const { globeRef, selectedCountry, flyToCountry, lastInteractionRef, isSpinning, toggleSpin } = useGlobeCamera({
     isGlobeReady,
     countryLeaderboard,
     clearSelectedPoint: () => setSelectedPoint(null),
@@ -64,8 +65,18 @@ export default function ThreatGlobe() {
 
   const markInteraction = useCallback(() => { lastInteractionRef.current = Date.now(); }, [lastInteractionRef]);
   const handleGlobeReady = useCallback(() => setIsGlobeReady(true), []);
-  const toggleSource = (source: 'local' | 'public') =>
+  const toggleSource = (source: 'local' | 'public') => {
+    track('globe_source_toggle', { source });
     setVisibleSources((v) => ({ ...v, [source]: !v[source] }));
+  };
+  const handleToggleSpin = () => {
+    track('globe_spin_toggle', { to: isSpinning ? 'stopped' : 'spinning' });
+    toggleSpin();
+  };
+  const selectCountry = (item: Parameters<typeof flyToCountry>[0]) => {
+    track('globe_country_select', { country: item.country });
+    flyToCountry(item);
+  };
 
   // Nothing is shown while the feed is in flight, so the panel can ease in like the other cards once it lands.
   // "Unavailable" is only for a failed fetch.
@@ -112,6 +123,8 @@ export default function ThreatGlobe() {
           panelPoint={panelPoint}
           visibleSources={visibleSources}
           onToggleSource={toggleSource}
+          isSpinning={isSpinning}
+          onToggleSpin={handleToggleSpin}
         />
 
         <div className="w-full lg:w-1/2 font-mono flex flex-col gap-4 flex-1">
@@ -120,7 +133,7 @@ export default function ThreatGlobe() {
             entries={countryLeaderboard}
             selectedCountry={selectedCountry}
             isGlobeReady={isGlobeReady}
-            onSelect={flyToCountry}
+            onSelect={selectCountry}
           />
           <LiveBanTicker entries={banPoints} />
         </div>

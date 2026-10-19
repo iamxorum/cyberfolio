@@ -14,11 +14,18 @@ interface UseGlobeCameraOptions {
 
 export function useGlobeCamera({ isGlobeReady, countryLeaderboard, clearSelectedPoint }: UseGlobeCameraOptions) {
   const [selectedCountry, setSelectedCountry] = useState<string | null>(null);
+  // The visitor's choice: stopped means no auto-rotate and no ambient tour, until they press play.
+  const [isSpinning, setIsSpinning] = useState(() => !prefersReducedMotion());
+  const isSpinningRef = useRef(isSpinning);
 
   const globeRef = useRef<GlobeMethods | undefined>(undefined);
   const resumeRotateTimeout = useRef<ReturnType<typeof setTimeout> | null>(null);
   const lastInteractionRef = useRef(0);
   const spotlightIndexRef = useRef(0);
+
+  useEffect(() => {
+    isSpinningRef.current = isSpinning;
+  }, [isSpinning]);
 
   useEffect(() => {
     lastInteractionRef.current = Date.now();
@@ -37,7 +44,7 @@ export function useGlobeCamera({ isGlobeReady, countryLeaderboard, clearSelected
 
     if (resumeRotateTimeout.current) clearTimeout(resumeRotateTimeout.current);
     resumeRotateTimeout.current = setTimeout(() => {
-      if (globeRef.current) globeRef.current.controls().autoRotate = !prefersReducedMotion();
+      if (globeRef.current) globeRef.current.controls().autoRotate = isSpinningRef.current;
       setSelectedCountry(null);
     }, 5000);
   }, [clearSelectedPoint]);
@@ -46,7 +53,6 @@ export function useGlobeCamera({ isGlobeReady, countryLeaderboard, clearSelected
   useEffect(() => {
     if (globeRef.current && isGlobeReady) {
       const controls = globeRef.current.controls();
-      controls.autoRotate = !prefersReducedMotion();
       controls.autoRotateSpeed = 0.5;
       controls.enableDamping = true;
       controls.minDistance = 150;
@@ -56,12 +62,20 @@ export function useGlobeCamera({ isGlobeReady, countryLeaderboard, clearSelected
     }
   }, [isGlobeReady]);
 
+  // Applies the spin choice, and again once the globe mesh exists.
+  useEffect(() => {
+    if (!isGlobeReady || !globeRef.current) return;
+    globeRef.current.controls().autoRotate = isSpinning;
+  }, [isGlobeReady, isSpinning]);
+
+  const toggleSpin = useCallback(() => setIsSpinning((spinning) => !spinning), []);
+
   // Ambient auto-tour of the top 3 threat countries when nobody has touched the globe recently.
   useEffect(() => {
     if (!isGlobeReady || prefersReducedMotion() || countryLeaderboard.length === 0) return;
     const top3 = countryLeaderboard.slice(0, 3);
     const interval = setInterval(() => {
-      if (Date.now() - lastInteractionRef.current < SPOTLIGHT_INTERVAL_MS) return;
+      if (!isSpinningRef.current || Date.now() - lastInteractionRef.current < SPOTLIGHT_INTERVAL_MS) return;
       const next = top3[spotlightIndexRef.current % top3.length];
       spotlightIndexRef.current += 1;
       flyToCountry(next);
@@ -69,5 +83,5 @@ export function useGlobeCamera({ isGlobeReady, countryLeaderboard, clearSelected
     return () => clearInterval(interval);
   }, [isGlobeReady, countryLeaderboard, flyToCountry]);
 
-  return { globeRef, selectedCountry, flyToCountry, lastInteractionRef };
+  return { globeRef, selectedCountry, flyToCountry, lastInteractionRef, isSpinning, toggleSpin };
 }

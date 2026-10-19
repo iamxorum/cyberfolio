@@ -4,6 +4,7 @@ import dynamic from 'next/dynamic';
 import type { GlobeMethods } from 'react-globe.gl';
 import { useCallback, useEffect, useMemo, useRef, type RefObject } from 'react';
 import GlobeSourceToggle from './GlobeSourceToggle';
+import GlobeSpinToggle from './GlobeSpinToggle';
 import GlobeInspectorPanel from './GlobeInspectorPanel';
 import { usePrefersReducedMotion } from '@/lib/motion';
 import {
@@ -68,6 +69,8 @@ interface GlobeStageProps {
   panelPoint: GlobePointDatum | null;
   visibleSources: VisibleSources;
   onToggleSource: (source: keyof VisibleSources) => void;
+  isSpinning: boolean;
+  onToggleSpin: () => void;
 }
 
 export default function GlobeStage({
@@ -88,6 +91,8 @@ export default function GlobeStage({
   panelPoint,
   visibleSources,
   onToggleSource,
+  isSpinning,
+  onToggleSpin,
 }: GlobeStageProps) {
   const size = globeSize(windowWidth);
   const budget = globeBudget(windowWidth);
@@ -132,8 +137,9 @@ export default function GlobeStage({
         ref={containerRef}
         className="w-full aspect-square relative max-w-[450px] xl:max-w-[550px] flex items-center justify-center"
         onPointerDown={onPointerDownContainer}
-        // Lenis would turn the wheel into page scroll; here it zooms the globe.
+        // Lenis and the ultrawide rail would turn the wheel into page scroll; here it zooms the globe.
         data-lenis-prevent-wheel
+        data-wheel-capture
       >
         {isRendering && (
           <div
@@ -189,6 +195,7 @@ export default function GlobeStage({
             />
 
             <GlobeSourceToggle visibleSources={visibleSources} onToggle={onToggleSource} />
+            <GlobeSpinToggle isSpinning={isSpinning} onToggle={onToggleSpin} />
 
             {panelPoint && (
               <GlobeInspectorPanel panelPoint={panelPoint} visible={!!selectedPoint} onClose={() => onSelectPoint(null)} />
