@@ -47,7 +47,8 @@ services:
       POSTGRES_DB: umami
       POSTGRES_USER: umami
     volumes:
-      - umami-db:/var/lib/postgresql/data
+      # A folder path in UMAMI_DATA mounts that host folder; leave it unset to keep the Docker volume below.
+      - ${UMAMI_DATA:-umami-db}:/var/lib/postgresql/data
     networks: [analytics-db]
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U umami -d umami"]

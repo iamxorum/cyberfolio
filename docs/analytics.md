@@ -33,6 +33,29 @@ Visitors only talk to your domain. The dashboard is never public.
 8. `docker compose up -d --build` again.
 9. Visit the site. Check Realtime in the dashboard.
 
+## Where the data lives
+
+Umami keeps everything in its Postgres database. By default that is the Docker volume `analytics_umami-db`.
+To keep it in a folder on the host instead (simple to back up or snapshot), set an absolute path in `.env`:
+
+```
+UMAMI_DATA=/srv/umami-db
+```
+
+The folder is created if missing and must be writable by the Postgres user (uid 70 in the alpine image):
+`sudo mkdir -p /srv/umami-db && sudo chown 70:70 /srv/umami-db`.
+
+A new folder starts with an empty database. To keep your existing stats, copy the volume across first:
+
+```bash
+docker compose stop umami umami-db
+docker run --rm -v analytics_umami-db:/from -v /srv/umami-db:/to alpine cp -a /from/. /to/
+# set UMAMI_DATA in .env, then
+docker compose up -d
+```
+
+Remove `UMAMI_DATA` to go back to the Docker volume.
+
 ## Show view counts on the blog
 
 Blog posts and the blog list can show how many times each post was read. In the dashboard, create a
