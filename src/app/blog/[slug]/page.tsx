@@ -1,13 +1,18 @@
 import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import { siteConfig } from '@/config';
-import { extractHeadings, getAdjacentPosts, getAllPostSlugs, getPostBySlug } from '@/lib/blog';
+import { extractHeadings, getAdjacentPosts, getAllPostSlugs, getPostBySlug, getRelatedPosts } from '@/lib/blog';
+import { getPostViews } from '@/lib/umami';
 import BlogPostClient from './BlogPostClient';
 import MdxContent from './MdxContent';
-import { serializeJsonLd } from '@/lib/json-ld';
+import JsonLd from '@/components/JsonLd';
+import { breadcrumbJsonLd, siteUrl } from '@/lib/seo';
 
 // Only the slugs listed by generateStaticParams exist; anything else is a 404, never rendered on demand.
 export const dynamicParams = false;
+
+// Pages are built once, then rebuilt in the background at most this often so the view count stays fresh.
+export const revalidate = 600;
 
 interface PageProps {
   params: Promise<{ slug: string }>;
@@ -22,7 +27,6 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   const post = getPostBySlug(slug);
   if (!post) return {};
 
-  const siteUrl = `https://${siteConfig.domain}`;
   const pageUrl = `${siteUrl}/blog/${slug}`;
   const title = `${post.title} | ${siteConfig.fullName}`;
 
@@ -41,20 +45,16 @@ export default async function BlogPost({ params }: PageProps) {
   const post = getPostBySlug(slug);
   if (!post) notFound();
 
-  const siteUrl = `https://${siteConfig.domain}`;
   const pageUrl = `${siteUrl}/blog/${slug}`;
   const ogImage = `${pageUrl}/opengraph-image`;
   const { previous, next } = getAdjacentPosts(slug);
+  const related = getRelatedPosts(slug);
+  const views = (await getPostViews())[slug];
 
-  const breadcrumbJsonLd = {
-    '@context': 'https://schema.org',
-    '@type': 'BreadcrumbList',
-    itemListElement: [
-      { '@type': 'ListItem', position: 1, name: 'Home', item: siteUrl },
-      { '@type': 'ListItem', position: 2, name: 'Blog', item: `${siteUrl}/blog` },
-      { '@type': 'ListItem', position: 3, name: post.title, item: pageUrl },
-    ],
-  };
+  const breadcrumbs = breadcrumbJsonLd([
+    { name: 'Blog', path: '/blog' },
+    { name: post.title, path: `/blog/${slug}` },
+  ]);
 
   const postJsonLd = {
     '@context': 'https://schema.org',
@@ -63,7 +63,7 @@ export default async function BlogPost({ params }: PageProps) {
     description: post.excerpt,
     image: ogImage,
     datePublished: post.date,
-    dateModified: post.date,
+    dateModified: post.updated ?? post.date,
     url: pageUrl,
     keywords: post.tags?.join(', '),
     author: { '@type': 'Person', name: siteConfig.fullName, url: siteUrl },
@@ -71,15 +71,9 @@ export default async function BlogPost({ params }: PageProps) {
 
   return (
     <>
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: serializeJsonLd(breadcrumbJsonLd) }}
-      />
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: serializeJsonLd(postJsonLd) }}
-      />
-      <BlogPostClient title={post.title} date={post.date} tags={post.tags} readingMinutes={post.readingMinutes} headings={extractHeadings(post.content)} previous={previous} next={next}>
+      <JsonLd data={breadcrumbs} />
+      <JsonLd data={postJsonLd} />
+      <BlogPostClient title={post.title} date={post.date} tags={post.tags} readingMinutes={post.readingMinutes} headings={extractHeadings(post.content)} previous={previous} next={next} related={related} views={views}>
         <MdxContent source={post.content} />
       </BlogPostClient>
     </>

@@ -1,44 +1,32 @@
-import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import { features, siteConfig } from '@/config';
 import { getAllPosts } from '@/lib/blog';
+import { getPostViews } from '@/lib/umami';
 import BlogClient from './BlogClient';
-import { serializeJsonLd } from '@/lib/json-ld';
+import JsonLd from '@/components/JsonLd';
+import { breadcrumbJsonLd, pageMetadata, siteUrl } from '@/lib/seo';
 
-const siteUrl = `https://${siteConfig.domain}`;
-const pageUrl = `${siteUrl}/blog`;
-const ogImage = `${siteUrl}/opengraph-image`;
-const title = `Blog | ${siteConfig.fullName}`;
-const description = `Notes and write-ups from ${siteConfig.fullName}.`;
+export const metadata = pageMetadata({
+  path: '/blog',
+  title: `Blog | ${siteConfig.fullName}`,
+  description: `Notes and write-ups from ${siteConfig.fullName}.`,
+  alternates: { types: { 'application/rss+xml': `${siteUrl}/blog/rss.xml` } },
+});
 
-export const metadata: Metadata = {
-  title,
-  description,
-  alternates: { canonical: pageUrl, types: { 'application/rss+xml': `${siteUrl}/blog/rss.xml` } },
-  openGraph: { title, description, url: pageUrl, images: [ogImage] },
-  twitter: { title, description, images: [ogImage] },
-};
+const breadcrumbs = breadcrumbJsonLd([{ name: 'Blog', path: '/blog' }]);
 
-const breadcrumbJsonLd = {
-  '@context': 'https://schema.org',
-  '@type': 'BreadcrumbList',
-  itemListElement: [
-    { '@type': 'ListItem', position: 1, name: 'Home', item: siteUrl },
-    { '@type': 'ListItem', position: 2, name: 'Blog', item: pageUrl },
-  ],
-};
+// Rebuilt in the background at most this often so the view counts stay fresh.
+export const revalidate = 600;
 
-export default function Blog() {
+export default async function Blog() {
   if (!features.blog) notFound();
   const posts = getAllPosts();
+  const views = await getPostViews();
 
   return (
     <>
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: serializeJsonLd(breadcrumbJsonLd) }}
-      />
-      <BlogClient posts={posts} />
+      <JsonLd data={breadcrumbs} />
+      <BlogClient posts={posts} views={views} />
     </>
   );
 }
