@@ -191,6 +191,9 @@ export default function GlobeStage({
               arcDashInitialGap={getArcDashInitialGap}
               arcDashAnimateTime={getArcDashAnimateTime}
               arcAltitudeAutoScale={0.5}
+              arcCurveResolution={20}
+              arcCircularResolution={4}
+              arcsTransitionDuration={0}
 
               atmosphereColor={atmosphereColor}
               atmosphereAltitude={0.1}
