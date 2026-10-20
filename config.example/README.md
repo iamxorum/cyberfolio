@@ -23,7 +23,7 @@ That's it. Edit the files below, `npm run dev`, and the site rebuilds around you
 | `languages.config.ts` | Spoken languages + CEFR-style proficiency |
 | `experience.config.ts` | Work history for the About page and CV |
 | `hobbies.config.ts` | Interests shown on the About page |
-| `features.config.ts` | On/off switches for every optional feature: the blog, /life, /cv, the world globe, stat cards, badges, Strava, discography, ⌘K palette, boot screen, Turnstile, smooth scroll, scroll rail, footer tagline, calm mode (no animations) and GitHub stats. Strava and Turnstile are off by default here because they need credentials |
+| `features.config.ts` | On/off switches for every optional feature: the blog, /life, /cv, the world globe, stat cards, badges, Strava, Steam, discography, ⌘K palette, boot screen, Turnstile, smooth scroll, scroll rail, footer tagline, calm mode (no animations) and GitHub stats. Strava and Turnstile are off by default here because they need credentials |
 | `analytics.config.ts` | The Umami website ID for self-hosted analytics (off until `features.analytics` is on) |
 | `badges.config.ts` | External contributor/verification badges (optional, empty by default) |
 | `music.config.ts` | Discography tracks (Spotify/SoundCloud/YouTube embeds) |
@@ -55,6 +55,7 @@ Secrets and contact details are never in the config files, because config is com
 | `CONTACT_EMAIL` | Shown (and printed on the CV) only after a visitor passes Turnstile |
 | `CONTACT_PHONE` | Optional. Same, and printed on the downloaded CV |
 | `STRAVA_*` | Only when `features.strava` is on |
+| `STEAM_API_KEY`, `STEAM_ID` | Only when `features.steam` is on |
 | `ANALYTICS_UPSTREAM`, `UMAMI_*`, `COMPOSE_PROFILES` | Only for analytics, see `docs/analytics.md` |
 | `RATE_LIMIT_PROXY`, `RATE_LIMIT_PROXY_HOPS` | How far to trust client-IP headers behind a proxy |
 

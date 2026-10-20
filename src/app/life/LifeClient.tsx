@@ -3,18 +3,21 @@
 import PageShell from '@/components/PageShell';
 import Discography from '@/components/Discography';
 import RunningSection from '@/components/life/RunningSection';
+import GamingSection from '@/components/life/GamingSection';
 import HobbiesSection from '@/components/about/HobbiesSection';
 import { features } from '@/config';
 import { lifeTopics } from '@/lib/life-topics';
 import type { RunningData } from '@/lib/strava';
+import type { GamingData } from '@/lib/steam';
 
 const SECTIONS = [
   ...(features.strava ? [{ href: '#running', label: 'RUNNING' }] : []),
   { href: '#off-duty', label: 'OFF_DUTY' },
+  ...(features.steam ? [{ href: '#gaming', label: 'GAMING' }] : []),
   ...(features.discography ? [{ href: '#music', label: 'MUSIC' }] : []),
 ];
 
-export default function LifeClient({ running }: { running: RunningData | null }) {
+export default function LifeClient({ running, gaming }: { running: RunningData | null; gaming: GamingData | null }) {
 
   return (
     <PageShell crumbs={[{ label: 'life.log', href: '/life' }]} rail gap="gap-6 sm:gap-8">
@@ -36,6 +39,8 @@ export default function LifeClient({ running }: { running: RunningData | null })
       <div className="uw-panel uw-panel-wide">
         <HobbiesSection kind="personal" />
       </div>
+
+      {features.steam && <div className="uw-panel uw-panel-wide"><GamingSection data={gaming} /></div>}
 
       {features.discography && (
         <section id="music" className="uw-panel uw-panel-wide scroll-mt-20">

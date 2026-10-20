@@ -20,6 +20,8 @@ export interface FeaturesConfig {
   // /life
   /** Strava running log. Needs STRAVA_* in .env. */
   strava: boolean;
+  /** Steam gaming log. Needs STEAM_* in .env and a public Steam profile. */
+  steam: boolean;
   /** Music player (music.config.ts). */
   discography: boolean;
 
@@ -55,6 +57,7 @@ export const features: FeaturesConfig = {
   badges: true,
 
   strava: false,
+  steam: false,
   discography: true,
 
   commandPalette: true,
