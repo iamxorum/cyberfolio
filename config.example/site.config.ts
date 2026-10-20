@@ -110,6 +110,7 @@ export const siteConfig: SiteConfig = {
       'https://grainy-gradients.vercel.app',
       'https://*.googleusercontent.com',
       'http://*.googleusercontent.com',
+      'https://*.steamstatic.com',
     ],
     fonts: [
     ],
