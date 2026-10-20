@@ -13,7 +13,7 @@ export default function ExperienceTimeline() {
 
   return (
     <Reveal id="experience" draw className="border border-[var(--terminal-border)] rounded bg-[var(--terminal-bg)] p-4 scroll-mt-32">
-      <h2 className="text-xs font-mono text-[var(--terminal-text-dim)] mb-3">RECENT_ACTIVITY_LOG</h2>
+      <h2 className="text-xs font-mono text-[var(--terminal-text-dim)] mb-3 pb-2 border-b border-[var(--terminal-border)]">RECENT_ACTIVITY_LOG</h2>
       <div className="space-y-3 font-mono text-sm">
         {[...experience].reverse().map((exp, index) => {
           const isOngoing = !exp.endDate || exp.endDate.toLowerCase() === 'ongoing';

@@ -52,7 +52,7 @@ export default function HobbiesSection({ kind, compact = false }: HobbiesSection
 
   return (
     <Reveal id={id} draw className="bg-[var(--terminal-surface)] border border-[var(--terminal-border)] rounded p-4 sm:p-6 matrix-bg scroll-mt-32">
-      <h2 className="text-[var(--terminal-text)] font-mono text-base sm:text-lg font-bold mb-4 sm:mb-6 flex items-center gap-2">
+      <h2 className="text-[var(--terminal-text)] font-mono text-base sm:text-lg font-bold mb-4 sm:mb-6 pb-3 sm:pb-4 border-b border-[var(--terminal-border)] flex items-center gap-2">
         <span className="material-symbols-outlined text-primary text-lg sm:text-xl">{icon}</span>
         <span className="text-sm sm:text-base"><TypedText text={title} /></span>
       </h2>

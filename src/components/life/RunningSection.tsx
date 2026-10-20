@@ -38,7 +38,7 @@ function TotalsTile({ title, totals, delay }: { title: string; totals: RunTotals
 
 function SectionTitle({ profileUrl }: { profileUrl?: string }) {
   return (
-    <div className="flex items-center justify-between gap-3">
+    <div className="flex items-center justify-between gap-3 border-b border-[var(--terminal-border)] pb-3 sm:pb-4">
       <h2 className="text-[var(--terminal-text)] text-base sm:text-lg font-bold flex items-center gap-2">
         <span className="material-symbols-outlined text-primary text-lg sm:text-xl">directions_run</span>
         <TypedText text="RUNNING_LOG" />

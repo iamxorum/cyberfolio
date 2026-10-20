@@ -4,6 +4,7 @@ import { SiSteam } from 'react-icons/si';
 import { useState } from 'react';
 import type { GamingData, SteamGame } from '@/lib/steam';
 import { STAGGER_STEP_MS } from '@/lib/motion';
+import { formatRelativeTime } from '@/lib/format-time';
 import Reveal from '@/components/Reveal';
 import TypedText from '@/components/TypedText';
 
@@ -42,7 +43,7 @@ function GameRow({ game, hours }: { game: SteamGame; hours: number }) {
 
 function SectionTitle({ profileUrl }: { profileUrl?: string }) {
   return (
-    <div className="flex items-center justify-between gap-3">
+    <div className="flex items-center justify-between gap-3 border-b border-[var(--terminal-border)] pb-3 sm:pb-4">
       <h2 className="text-[var(--terminal-text)] text-base sm:text-lg font-bold flex items-center gap-2">
         <span className="material-symbols-outlined text-primary text-lg sm:text-xl">sports_esports</span>
         <TypedText text="GAMING_LOG" />
@@ -87,7 +88,6 @@ export default function GamingSection({ data }: { data: GamingData | null }) {
             <p className="text-sm sm:text-base font-bold text-[var(--terminal-text)] truncate">{data.personaName}</p>
             {data.nowPlaying ? (
               <p className="text-xs text-green-400 truncate">
-                <span className="inline-block w-1.5 h-1.5 rounded-full bg-green-400 mr-1.5 animate-pulse" />
                 playing {data.nowPlaying}
               </p>
             ) : (
@@ -125,6 +125,10 @@ export default function GamingSection({ data }: { data: GamingData | null }) {
           )}
         </Reveal>
       </div>
+
+      <p className="text-[10px] text-[var(--terminal-text-dim)] text-right" suppressHydrationWarning>
+        synced {formatRelativeTime(data.fetchedAt)} · public profile only
+      </p>
     </section>
   );
 }
