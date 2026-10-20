@@ -111,6 +111,7 @@ export const siteConfig: SiteConfig = {
       'https://*.googleusercontent.com',
       'http://*.googleusercontent.com',
       'https://*.steamstatic.com',
+      'https://i.scdn.co',
     ],
     fonts: [
     ],
@@ -118,11 +119,15 @@ export const siteConfig: SiteConfig = {
       'https://challenges.cloudflare.com',
       'https://www.youtube.com',
       'https://youtube.com',
+      'https://open.spotify.com',
+      'https://w.soundcloud.com',
     ],
     connects: [
       'https://challenges.cloudflare.com',
       'https://www.youtube.com',
       'https://youtube.com',
+      'https://open.spotify.com',
+      'https://api-widget.soundcloud.com',
     ]
   }
 };
