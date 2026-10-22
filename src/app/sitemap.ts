@@ -3,6 +3,9 @@ import { features, projects } from '@/config';
 import { getAllPosts } from '@/lib/blog';
 import { siteUrl } from '@/lib/seo';
 
+// Re-read content/blog at most this often, so new posts reach the sitemap without a rebuild.
+export const revalidate = 60;
+
 // `lastModified` only appears where a real date exists (posts). A date stamped at build time would
 // tell crawlers every page changed on every deploy, and they learn to ignore it.
 export default function sitemap(): MetadataRoute.Sitemap {

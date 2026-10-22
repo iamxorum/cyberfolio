@@ -8,11 +8,9 @@ import MdxContent from './MdxContent';
 import JsonLd from '@/components/JsonLd';
 import { breadcrumbJsonLd, siteUrl } from '@/lib/seo';
 
-// Only the slugs listed by generateStaticParams exist; anything else is a 404, never rendered on demand.
-export const dynamicParams = false;
-
+// Posts live in the mounted content/ folder, so slugs added after the build render on demand (unknown ones still 404 via notFound()).
 // Pages are built once, then rebuilt in the background at most this often so the view count stays fresh.
-export const revalidate = 600;
+export const revalidate = 60;
 
 interface PageProps {
   params: Promise<{ slug: string }>;

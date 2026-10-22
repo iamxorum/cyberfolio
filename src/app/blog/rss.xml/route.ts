@@ -2,7 +2,8 @@ import { features, siteConfig } from '@/config';
 import { getAllPosts } from '@/lib/blog';
 import { siteUrl } from '@/lib/seo';
 
-export const dynamic = 'force-static';
+// Re-read content/blog at most this often, so new posts reach the feed without a rebuild.
+export const revalidate = 60;
 
 const escapeXml = (value: string) =>
   value.replace(/[<>&'"]/g, (c) => ({ '<': '&lt;', '>': '&gt;', '&': '&amp;', "'": '&apos;', '"': '&quot;' }[c] as string));
