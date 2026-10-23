@@ -9,14 +9,14 @@ export default function CertificationsSection() {
   return (
     <Reveal id="certifications" draw className="bg-[var(--terminal-surface)] border border-[var(--terminal-border)] rounded p-4 sm:p-6 scroll-mt-32">
       <h2 className="text-[var(--terminal-text)] font-mono text-base sm:text-lg font-bold mb-4 sm:mb-6 pb-3 sm:pb-4 border-b border-[var(--terminal-border)] flex items-center gap-2">
-        <span className="material-symbols-outlined text-primary text-lg sm:text-xl">verified</span>
+        <span aria-hidden="true" className="material-symbols-outlined text-primary text-lg sm:text-xl">verified</span>
         <span className="text-sm sm:text-base"><TypedText text="CERTIFICATIONS" /></span>
       </h2>
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
         {certifications.map((cert, index) => (
           <div key={cert.id} data-reveal style={revealDelay(Math.min(index, 5) * STAGGER_STEP_DENSE_MS)} className="scroll-reveal flex items-start gap-2 sm:gap-3 p-3 rounded border border-[var(--terminal-border)] bg-[var(--terminal-bg)] hover:border-primary/50 transition-colors group">
             {cert.icon && (
-              <span className="material-symbols-outlined text-primary text-lg sm:text-xl group-hover:scale-110 transition-transform flex-shrink-0">
+              <span aria-hidden="true" className="material-symbols-outlined text-primary text-lg sm:text-xl group-hover:scale-110 transition-transform flex-shrink-0">
                 {cert.icon}
               </span>
             )}
@@ -47,7 +47,7 @@ export default function CertificationsSection() {
                   rel="noopener noreferrer"
                   className="text-[9px] sm:text-[10px] font-mono text-primary hover:text-blue-400 mt-1 inline-flex items-center gap-1"
                 >
-                  Verify <span className="material-symbols-outlined text-[12px]">open_in_new</span>
+                  Verify <span aria-hidden="true" className="material-symbols-outlined text-[12px]">open_in_new</span>
                 </a>
               )}
               {cert.description && (

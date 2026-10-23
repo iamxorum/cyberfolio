@@ -41,7 +41,7 @@ export default function CodeBlock({ children, ...props }: ComponentProps<'pre'>)
         aria-label={copied ? 'Copied to clipboard' : 'Copy code'}
         className="absolute top-2 right-2 flex items-center gap-1 px-2 py-1 rounded border border-[var(--terminal-border)] bg-[var(--terminal-surface)] text-[10px] font-mono text-[var(--terminal-text-dim)] hover:text-primary hover:border-primary transition opacity-100 [@media(hover:hover)]:opacity-0 [@media(hover:hover)]:group-hover/code:opacity-100 focus-visible:opacity-100"
       >
-        <span className="material-symbols-outlined text-sm">{copied ? 'check' : 'content_copy'}</span>
+        <span aria-hidden="true" className="material-symbols-outlined text-sm">{copied ? 'check' : 'content_copy'}</span>
         {copied ? 'COPIED' : 'COPY'}
       </button>
     </div>

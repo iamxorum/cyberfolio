@@ -17,7 +17,7 @@ export default function ProjectsTable({ title, icon, projects, contributionStats
   return (
     <div className="flex flex-col gap-4">
       <Reveal className="flex items-center gap-3 border-b border-[var(--terminal-border-alt)] pb-3">
-        <span className="material-symbols-outlined text-primary text-2xl sm:text-3xl">{icon}</span>
+        <span aria-hidden="true" className="material-symbols-outlined text-primary text-2xl sm:text-3xl">{icon}</span>
         <h2 className="text-[var(--terminal-text)] text-xl sm:text-2xl md:text-3xl font-bold tracking-tight uppercase">
           <TypedText text={title} />
         </h2>

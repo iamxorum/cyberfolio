@@ -46,7 +46,7 @@ const crumbLink = 'text-[var(--terminal-text-muted)] hover:text-[var(--terminal-
 function Breadcrumbs({ crumbs }: { crumbs: Crumb[] }) {
   return (
     <div className="flex flex-wrap items-center gap-2 text-sm font-mono tracking-wide">
-      <span className="material-symbols-outlined text-[var(--terminal-text-dim)] text-lg">folder_open</span>
+      <span aria-hidden="true" className="material-symbols-outlined text-[var(--terminal-text-dim)] text-lg">folder_open</span>
       <Link href="/" className={crumbLink}>~/root</Link>
       {crumbs.map(({ label, href }) => (
         <span key={label} className="contents">

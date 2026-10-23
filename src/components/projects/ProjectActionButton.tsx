@@ -13,7 +13,7 @@ export default function ProjectActionButton({ project }: { project: Project }) {
       >
         <span className="hidden sm:inline">VIEW_SOURCE</span>
         <span className="sm:hidden">SOURCE</span>
-        <span className="material-symbols-outlined text-sm sm:text-[16px]">code</span>
+        <span aria-hidden="true" className="material-symbols-outlined text-sm sm:text-[16px]">code</span>
       </a>
     );
   }
@@ -21,7 +21,7 @@ export default function ProjectActionButton({ project }: { project: Project }) {
   if (project.visibility === 'private') {
     return (
       <div className="h-7 sm:h-8 px-2 sm:px-3 rounded border border-[var(--terminal-border)] text-[var(--terminal-text-dim)] text-[10px] sm:text-xs font-bold font-mono tracking-wider flex items-center gap-1 sm:gap-2 cursor-not-allowed opacity-50">
-        <span className="material-symbols-outlined text-sm sm:text-[16px]">lock</span>
+        <span aria-hidden="true" className="material-symbols-outlined text-sm sm:text-[16px]">lock</span>
         <span className="hidden sm:inline">LOCKED</span>
         <span className="sm:hidden">LOCK</span>
       </div>

@@ -31,7 +31,7 @@ export default function ProjectsClient({ contributionStats = NO_CONTRIBUTION_STA
         subtitle={contentConfig.projects.subtitle}
         aside={
           <Link href="/" className="group flex items-center justify-center gap-2 rounded h-9 sm:h-10 px-3 sm:px-5 bg-[var(--terminal-border-alt)] hover:bg-[var(--terminal-border)] transition text-[var(--terminal-text)] text-xs sm:text-sm font-bold tracking-wide border border-transparent hover:border-[var(--terminal-text-dim)]">
-            <span className="material-symbols-outlined text-sm group-hover:-translate-x-1 transition-transform">arrow_back</span>
+            <span aria-hidden="true" className="material-symbols-outlined text-sm group-hover:-translate-x-1 transition-transform">arrow_back</span>
             <span className="hidden sm:inline">CD .. [ RETURN_HOME ]</span>
             <span className="sm:hidden">HOME</span>
           </Link>

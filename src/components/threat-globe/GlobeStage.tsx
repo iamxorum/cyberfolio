@@ -152,7 +152,7 @@ export default function GlobeStage({
 
         {!isGlobeReady && (
           <div className="absolute inset-0 z-20 flex flex-col items-center justify-center bg-[rgba(var(--terminal-bg-rgb),0.40)] backdrop-blur-sm rounded-full animate-pulse text-[#ef4444] font-mono text-xs">
-            <span className="material-symbols-outlined animate-spin mb-2">satellite_alt</span>
+            <span aria-hidden="true" className="material-symbols-outlined animate-spin mb-2">satellite_alt</span>
             RENDERING_GLOBE...
           </div>
         )}

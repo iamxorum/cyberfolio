@@ -45,7 +45,7 @@ function SectionTitle({ profileUrl }: { profileUrl?: string }) {
   return (
     <div className="flex items-center justify-between gap-3 border-b border-[var(--terminal-border)] pb-3 sm:pb-4">
       <h2 className="text-[var(--terminal-text)] text-base sm:text-lg font-bold flex items-center gap-2">
-        <span className="material-symbols-outlined text-primary text-lg sm:text-xl">sports_esports</span>
+        <span aria-hidden="true" className="material-symbols-outlined text-primary text-lg sm:text-xl">sports_esports</span>
         <TypedText text="GAMING_LOG" />
       </h2>
       {profileUrl && (
@@ -69,7 +69,7 @@ export default function GamingSection({ data }: { data: GamingData | null }) {
       <section id="gaming" className="flex flex-col gap-4 font-mono scroll-mt-20">
         <SectionTitle />
         <div className={`${panel} flex items-center gap-3 text-xs sm:text-sm text-[var(--terminal-text-muted)]`}>
-          <span className="material-symbols-outlined text-[var(--terminal-text-dim)]">cloud_off</span>
+          <span aria-hidden="true" className="material-symbols-outlined text-[var(--terminal-text-dim)]">cloud_off</span>
           STEAM_FEED_OFFLINE: game data is unavailable right now.
         </div>
       </section>

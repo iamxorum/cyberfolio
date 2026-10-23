@@ -144,13 +144,13 @@ export default function PagedPreview({ children, label }: PagedPreviewProps) {
 
       <div className="flex items-center justify-center gap-4 font-mono text-sm text-[var(--terminal-text-muted)]">
         <button type="button" className={navButton} onClick={() => go(-1)} disabled={current === 0} aria-label={`Previous ${label} page`}>
-          <span className="material-symbols-outlined">arrow_back</span>
+          <span aria-hidden="true" className="material-symbols-outlined">arrow_back</span>
         </button>
         <span aria-live="polite" className="min-w-32 text-center tracking-widest">
           {label} · PAGE {current + 1} / {pageCount}
         </span>
         <button type="button" className={navButton} onClick={() => go(1)} disabled={current >= pageCount - 1} aria-label={`Next ${label} page`}>
-          <span className="material-symbols-outlined">arrow_forward</span>
+          <span aria-hidden="true" className="material-symbols-outlined">arrow_forward</span>
         </button>
       </div>
     </div>

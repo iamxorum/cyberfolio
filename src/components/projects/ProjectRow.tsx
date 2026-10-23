@@ -37,14 +37,14 @@ export default function ProjectRow({ project, index, contributionStats = {}, onS
           className={`inline-flex items-center justify-center ${project.visibility === 'public' ? 'text-green-400' : 'text-red-400'}`}
           title={project.visibility === 'public' ? 'Public' : 'Private'}
         >
-          <span className="material-symbols-outlined text-sm sm:text-base">
+          <span aria-hidden="true" className="material-symbols-outlined text-sm sm:text-base">
             {project.visibility === 'public' ? 'public' : 'lock'}
           </span>
         </span>
       </div>
 
       <div className="col-span-4 flex items-center gap-2 sm:gap-3">
-        <span className="material-symbols-outlined text-[var(--terminal-text-muted)] text-base sm:text-lg md:text-xl">{project.icon}</span>
+        <span aria-hidden="true" className="material-symbols-outlined text-[var(--terminal-text-muted)] text-base sm:text-lg md:text-xl">{project.icon}</span>
         <div className="flex flex-col min-w-0">
           <Link
             href={`/projects/${project.id}`}

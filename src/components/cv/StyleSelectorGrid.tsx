@@ -34,7 +34,7 @@ export default function StyleSelectorGrid<T extends SelectableStyle>({ styles, s
             <div className="flex items-center gap-3">
               <div className={`p-2 rounded flex items-center justify-center ${isSelected ? 'bg-primary/20 text-primary' : 'bg-[var(--terminal-bg)] text-[var(--terminal-text-dim)]'
                 }`}>
-                <span className="material-symbols-outlined text-[24px] leading-none">{style.icon}</span>
+                <span aria-hidden="true" className="material-symbols-outlined text-[24px] leading-none">{style.icon}</span>
               </div>
               <div className="flex-1 min-w-0">
                 <h2 className={`text-sm sm:text-base font-bold font-mono ${isSelected ? 'text-primary' : 'text-[var(--terminal-text)]'

@@ -29,7 +29,7 @@ export default function HobbiesSection({ kind, compact = false }: HobbiesSection
           {items.map((hobby) => (
             <li key={hobby.name} className="flex items-start gap-2 group">
               {hobby.icon && (
-                <span className="material-symbols-outlined text-primary text-base flex-shrink-0 group-hover:scale-110 transition-transform">
+                <span aria-hidden="true" className="material-symbols-outlined text-primary text-base flex-shrink-0 group-hover:scale-110 transition-transform">
                   {hobby.icon}
                 </span>
               )}
@@ -53,14 +53,14 @@ export default function HobbiesSection({ kind, compact = false }: HobbiesSection
   return (
     <Reveal id={id} draw className="bg-[var(--terminal-surface)] border border-[var(--terminal-border)] rounded p-4 sm:p-6 matrix-bg scroll-mt-32">
       <h2 className="text-[var(--terminal-text)] font-mono text-base sm:text-lg font-bold mb-4 sm:mb-6 pb-3 sm:pb-4 border-b border-[var(--terminal-border)] flex items-center gap-2">
-        <span className="material-symbols-outlined text-primary text-lg sm:text-xl">{icon}</span>
+        <span aria-hidden="true" className="material-symbols-outlined text-primary text-lg sm:text-xl">{icon}</span>
         <span className="text-sm sm:text-base"><TypedText text={title} /></span>
       </h2>
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
         {items.map((hobby, index) => (
           <div key={hobby.name} data-reveal style={revealDelay(Math.min(index, 5) * STAGGER_STEP_DENSE_MS)} className="scroll-reveal flex items-start gap-2 sm:gap-3 p-2.5 sm:p-3 rounded border border-[var(--terminal-border)] bg-[var(--terminal-bg)] hover:border-primary/50 transition-colors group">
             {hobby.icon && (
-              <span className="material-symbols-outlined text-primary text-lg sm:text-xl group-hover:scale-110 transition-transform flex-shrink-0">
+              <span aria-hidden="true" className="material-symbols-outlined text-primary text-lg sm:text-xl group-hover:scale-110 transition-transform flex-shrink-0">
                 {hobby.icon}
               </span>
             )}

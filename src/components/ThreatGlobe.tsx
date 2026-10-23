@@ -90,7 +90,7 @@ export default function ThreatGlobe() {
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center z-10 border-b border-[var(--terminal-border)] pb-4 gap-3 relative">
         <div>
           <h2 className="text-lg sm:text-2xl font-bold font-mono tracking-widest text-[#ef4444] glow-text flex items-center gap-2">
-            <span className="material-symbols-outlined">radar</span>
+            <span aria-hidden="true" className="material-symbols-outlined">radar</span>
             <TypedText text="THREAT_FEED" />
           </h2>
           <p className="text-xs text-[var(--terminal-text-muted)] mt-1">

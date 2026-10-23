@@ -75,17 +75,17 @@ export default function ProjectsGrid() {
 
                 {isClickable && (
                   <div className="absolute top-3 right-3 opacity-0 group-hover:opacity-100 transition-opacity">
-                    <span className="material-symbols-outlined text-primary">arrow_forward</span>
+                    <span aria-hidden="true" className="material-symbols-outlined text-primary">arrow_forward</span>
                   </div>
                 )}
                 {project.visibility === 'private' && (
                   <div className="absolute top-3 right-3">
-                    <span className="material-symbols-outlined text-red-400 text-lg">lock</span>
+                    <span aria-hidden="true" className="material-symbols-outlined text-red-400 text-lg">lock</span>
                   </div>
                 )}
                 <div className="flex items-center gap-3">
                   <div className="p-2 rounded bg-primary/20 text-primary border border-primary/20">
-                    <span className="material-symbols-outlined text-[28px]">{project.icon}</span>
+                    <span aria-hidden="true" className="material-symbols-outlined text-[28px]">{project.icon}</span>
                   </div>
                   <div className="flex-1 min-w-0">
                     <h2 className="text-[var(--terminal-text)] text-lg font-bold leading-tight font-mono">{project.name}</h2>

@@ -84,7 +84,7 @@ function ColumnLayoutToggle({ active, onToggle }: { active: boolean; onToggle: (
         : 'bg-[var(--terminal-surface-alt)] border-[var(--terminal-border)] text-[var(--terminal-text-muted)] hover:border-primary hover:text-primary'
         }`}
     >
-      <span className="material-symbols-outlined text-base sm:text-lg mr-2">
+      <span aria-hidden="true" className="material-symbols-outlined text-base sm:text-lg mr-2">
         {active ? 'view_column' : 'view_list'}
       </span>
       <span className="truncate font-mono text-xs sm:text-sm">
@@ -149,7 +149,7 @@ export default function ResumePanel({ contributionStats, email, phone }: ResumeP
           aria-hidden={!useColumnLayout}
         >
           <div className="flex items-center gap-2 px-3 py-2 rounded border border-yellow-500/30 bg-yellow-500/10">
-            <span className="material-symbols-outlined text-yellow-400 text-base flex-shrink-0">warning</span>
+            <span aria-hidden="true" className="material-symbols-outlined text-yellow-400 text-base flex-shrink-0">warning</span>
             <p className="text-[var(--terminal-text-muted)] text-[10px] sm:text-xs font-mono leading-relaxed">
               1 Column style recommended.
             </p>

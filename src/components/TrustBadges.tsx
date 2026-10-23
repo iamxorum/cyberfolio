@@ -88,7 +88,7 @@ export default function TrustBadges() {
               ></div>
 
               {badge.icon && (
-                <span
+                <span aria-hidden="true"
                   className="material-symbols-outlined text-lg flex-shrink-0 relative z-10"
                   style={{ color: 'color-mix(in srgb, var(--badge-accent) 65%, var(--terminal-text))' }}
                 >

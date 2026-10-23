@@ -38,7 +38,7 @@ function ContactRow({ icon, value, copied, onCopy }: { icon: string; value: stri
         aria-label={`Copy ${value}`}
         className="flex h-7 w-7 flex-shrink-0 items-center justify-center rounded text-[var(--terminal-text-dim)] hover:text-primary active:scale-95 transition"
       >
-        <span className="material-symbols-outlined text-base">{copied ? 'check' : 'content_copy'}</span>
+        <span aria-hidden="true" className="material-symbols-outlined text-base">{copied ? 'check' : 'content_copy'}</span>
       </button>
     </div>
   );
@@ -65,7 +65,7 @@ interface ContactDetailsProps {
 function ContactDetails({ email, phone, copied, error, openMailRef, onCopy, onNavigate }: ContactDetailsProps) {
   return (
     <>
-      <span className="material-symbols-outlined text-primary text-2xl mb-2 animate-pop-in">mark_email_read</span>
+      <span aria-hidden="true" className="material-symbols-outlined text-primary text-2xl mb-2 animate-pop-in">mark_email_read</span>
       <p className="text-[var(--terminal-text)] text-xs font-bold uppercase tracking-widest mb-1">Verified</p>
       <div className="mb-3 flex flex-col gap-2 text-left">
         {email && <ContactRow icon="mail" value={email} copied={copied === 'email'} onCopy={() => onCopy('email')} />}
@@ -81,7 +81,7 @@ function ContactDetails({ email, phone, copied, error, openMailRef, onCopy, onNa
             onClick={onNavigate}
             className={`${actionButton} bg-primary text-[var(--terminal-on-primary)] hover:bg-primary/80`}
           >
-            <span className="material-symbols-outlined text-base">mail</span>
+            <span aria-hidden="true" className="material-symbols-outlined text-base">mail</span>
             Open_Mail
           </a>
         )}
@@ -92,7 +92,7 @@ function ContactDetails({ email, phone, copied, error, openMailRef, onCopy, onNa
             onClick={onNavigate}
             className={`${actionButton} border border-[var(--terminal-border)] text-[var(--terminal-text-muted)] hover:border-primary hover:text-primary`}
           >
-            <span className="material-symbols-outlined text-base">call</span>
+            <span aria-hidden="true" className="material-symbols-outlined text-base">call</span>
             Call
           </a>
         )}
@@ -104,7 +104,7 @@ function ContactDetails({ email, phone, copied, error, openMailRef, onCopy, onNa
 function UnavailableNotice({ onRetry }: { onRetry: () => void }) {
   return (
     <>
-      <span className="material-symbols-outlined text-red-400 text-2xl mb-2">error</span>
+      <span aria-hidden="true" className="material-symbols-outlined text-red-400 text-2xl mb-2">error</span>
       <p className="text-[var(--terminal-text-dim)] text-[10px] mb-3 leading-relaxed">Contact is unavailable right now.</p>
       <button
         type="button"
@@ -120,7 +120,7 @@ function UnavailableNotice({ onRetry }: { onRetry: () => void }) {
 function VerifyPrompt({ error, isVerifying, onToken }: { error: string | null; isVerifying: boolean; onToken: (token: string) => void }) {
   return (
     <>
-      <span className="material-symbols-outlined text-primary text-2xl mb-2">mail_lock</span>
+      <span aria-hidden="true" className="material-symbols-outlined text-primary text-2xl mb-2">mail_lock</span>
       <p className="text-[var(--terminal-text)] text-xs font-bold uppercase tracking-widest mb-1">Verify_To_Reveal</p>
       <p className="text-[var(--terminal-text-dim)] text-[10px] mb-3 leading-relaxed">
         Quick bot check before revealing contact details.
@@ -261,7 +261,7 @@ export default function EmailCTA({ className, children, ariaLabel, title, onNavi
               aria-label="Close"
               className="absolute top-0.5 right-0.5 p-2.5 text-[var(--terminal-text-dim)] hover:text-[var(--terminal-text)] active:scale-95 transition-transform leading-none"
             >
-              <span className="material-symbols-outlined text-lg">close</span>
+              <span aria-hidden="true" className="material-symbols-outlined text-lg">close</span>
             </button>
 
             {status === 'ready' && (

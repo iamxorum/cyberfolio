@@ -25,11 +25,11 @@ function SocialLinkGroup({ title, links, offset }: { title: string; links: Socia
               className="flex items-center gap-2 px-2 py-1.5 scroll-reveal rounded border border-[var(--terminal-border)] bg-[var(--terminal-bg)] hover:border-primary hover:bg-primary/10 transition group"
             >
               {link.icon && (
-                <span className="material-symbols-outlined text-[var(--terminal-text-muted)] group-hover:text-primary text-base">{link.icon}</span>
+                <span aria-hidden="true" className="material-symbols-outlined text-[var(--terminal-text-muted)] group-hover:text-primary text-base">{link.icon}</span>
               )}
               <span className="text-[var(--terminal-text-muted)] group-hover:text-primary text-[10px] sm:text-xs">{link.name}</span>
               {!isMailto && (
-                <span className="ml-auto material-symbols-outlined text-[var(--terminal-text-dim)] group-hover:text-primary text-sm opacity-0 group-hover:opacity-100 transition-opacity">arrow_outward</span>
+                <span aria-hidden="true" className="ml-auto material-symbols-outlined text-[var(--terminal-text-dim)] group-hover:text-primary text-sm opacity-0 group-hover:opacity-100 transition-opacity">arrow_outward</span>
               )}
             </a>
           );
@@ -51,7 +51,7 @@ export default function SocialLinks() {
   return (
     <Reveal draw className="bg-[var(--terminal-surface)] border border-[var(--terminal-border)] rounded p-3 sm:p-4 font-mono text-xs">
       <div className="flex items-center gap-2 mb-3 border-b border-[var(--terminal-border)] pb-2">
-        <span className="material-symbols-outlined text-primary text-base">link</span>
+        <span aria-hidden="true" className="material-symbols-outlined text-primary text-base">link</span>
         <span className="text-[var(--terminal-text-dim)] text-[10px] sm:text-xs">SOCIAL_LINKS</span>
       </div>
       <div className="flex flex-col gap-3">

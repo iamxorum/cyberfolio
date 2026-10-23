@@ -44,7 +44,7 @@ function ProjectLinks({ project }: { project: Project }) {
           rel="noopener noreferrer"
           className="inline-flex items-center gap-2 rounded h-10 px-5 bg-primary text-[var(--terminal-on-primary)] text-sm font-bold font-mono tracking-wide hover:bg-primary/80 active:scale-[0.97] transition shadow-[0_0_15px_rgba(var(--terminal-accent-rgb),0.3)]"
         >
-          <span className="material-symbols-outlined text-lg">
+          <span aria-hidden="true" className="material-symbols-outlined text-lg">
             {isGithubUrl(project.link) ? 'code' : 'open_in_new'}
           </span>
           {isGithubUrl(project.link) ? 'VIEW_SOURCE' : 'OPEN_LIVE'}
@@ -58,7 +58,7 @@ function ProjectLinks({ project }: { project: Project }) {
           rel="noopener noreferrer"
           className="inline-flex items-center gap-2 rounded h-10 px-5 border border-[var(--terminal-border)] hover:border-primary hover:bg-primary/10 text-[var(--terminal-text)] text-sm font-bold font-mono tracking-wide active:scale-[0.97] transition"
         >
-          <span className="material-symbols-outlined text-lg">code</span>
+          <span aria-hidden="true" className="material-symbols-outlined text-lg">code</span>
           VIEW_SOURCE
         </a>
       )}
@@ -102,7 +102,7 @@ export function ProjectDetailContent({ project, contributionStats, embedded = fa
       <div className="flex flex-col gap-4 border-b border-[var(--terminal-border-alt)] pb-6">
         <div className="flex items-start gap-4">
           <div className="p-3 rounded bg-primary/20 text-primary border border-primary/20 flex-shrink-0">
-            <span className="material-symbols-outlined text-3xl">{project.icon}</span>
+            <span aria-hidden="true" className="material-symbols-outlined text-3xl">{project.icon}</span>
           </div>
           <div className="flex flex-col gap-2 min-w-0">
             <Title className="animate-reveal text-[var(--terminal-text)] text-2xl sm:text-3xl md:text-4xl font-black leading-tight tracking-tight font-mono break-words">
@@ -114,7 +114,7 @@ export function ProjectDetailContent({ project, contributionStats, embedded = fa
                 className={`inline-flex items-center gap-1 ${project.visibility === 'public' ? 'text-green-400' : 'text-red-400'}`}
                 title={project.visibility === 'public' ? 'Public' : 'Private'}
               >
-                <span className="material-symbols-outlined text-sm">
+                <span aria-hidden="true" className="material-symbols-outlined text-sm">
                   {project.visibility === 'public' ? 'public' : 'lock'}
                 </span>
                 {project.visibility}
@@ -164,14 +164,14 @@ export function ProjectDetailContent({ project, contributionStats, embedded = fa
           className="group inline-flex items-center gap-2 self-start text-sm font-mono text-[var(--terminal-text-dim)] hover:text-primary transition-colors mt-2"
         >
           OPEN_FULL_PAGE
-          <span className="material-symbols-outlined text-base group-hover:translate-x-1 transition-transform">arrow_forward</span>
+          <span aria-hidden="true" className="material-symbols-outlined text-base group-hover:translate-x-1 transition-transform">arrow_forward</span>
         </Link>
       ) : (
         <Link
           href="/projects"
           className="group inline-flex items-center gap-2 self-start text-sm font-mono text-[var(--terminal-text-dim)] hover:text-primary transition-colors mt-2"
         >
-          <span className="material-symbols-outlined text-base group-hover:-translate-x-1 transition-transform">arrow_back</span>
+          <span aria-hidden="true" className="material-symbols-outlined text-base group-hover:-translate-x-1 transition-transform">arrow_back</span>
           CD .. [ ALL_PROJECTS ]
         </Link>
       )}

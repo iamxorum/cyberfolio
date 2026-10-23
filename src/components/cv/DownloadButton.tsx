@@ -19,7 +19,7 @@ export default function DownloadButton({ isDownloading, succeeded, onClick, labe
       disabled={isDownloading}
       className={`flex min-w-[140px] cursor-pointer items-center justify-center overflow-hidden rounded h-10 sm:h-12 px-4 sm:px-6 text-sm sm:text-base font-bold leading-normal tracking-[0.015em] transition active:scale-[0.97] disabled:opacity-50 disabled:cursor-not-allowed disabled:active:scale-100 ${VARIANTS[variant]}`}
     >
-      <span className={`material-symbols-outlined text-base sm:text-lg mr-2 ${isDownloading ? 'animate-spin' : succeeded ? 'animate-pop-in' : ''}`}>
+      <span aria-hidden="true" className={`material-symbols-outlined text-base sm:text-lg mr-2 ${isDownloading ? 'animate-spin' : succeeded ? 'animate-pop-in' : ''}`}>
         {isDownloading ? 'progress_activity' : succeeded ? 'check' : 'download'}
       </span>
       <span className="truncate font-mono text-xs sm:text-sm md:text-base">

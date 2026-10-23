@@ -80,7 +80,7 @@ export default function SkillsPanel() {
               >
                 <div className="flex items-center gap-1 min-w-0 flex-1">
                   {hasEvidence && (
-                    <span className={`material-symbols-outlined text-[12px] flex-shrink-0 transition-transform ${isExpanded ? 'rotate-90 text-primary' : 'text-[var(--terminal-text-dim)]'}`}>
+                    <span aria-hidden="true" className={`material-symbols-outlined text-[12px] flex-shrink-0 transition-transform ${isExpanded ? 'rotate-90 text-primary' : 'text-[var(--terminal-text-dim)]'}`}>
                       chevron_right
                     </span>
                   )}

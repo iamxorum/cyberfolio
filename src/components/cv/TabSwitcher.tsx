@@ -18,7 +18,7 @@ export default function TabSwitcher({ activeTab, onChange }: TabSwitcherProps) {
           : 'border-[var(--terminal-border)] bg-[var(--terminal-surface-alt)] text-[var(--terminal-text-muted)] hover:border-primary/50'
           }`}
       >
-        <span className="material-symbols-outlined text-lg">description</span>
+        <span aria-hidden="true" className="material-symbols-outlined text-lg">description</span>
         RESUME
       </button>
       <button
@@ -29,7 +29,7 @@ export default function TabSwitcher({ activeTab, onChange }: TabSwitcherProps) {
           : 'border-[var(--terminal-border)] bg-[var(--terminal-surface-alt)] text-[var(--terminal-text-muted)] hover:border-primary/50'
           }`}
       >
-        <span className="material-symbols-outlined text-lg">mail</span>
+        <span aria-hidden="true" className="material-symbols-outlined text-lg">mail</span>
         COVER LETTER
       </button>
     </div>
