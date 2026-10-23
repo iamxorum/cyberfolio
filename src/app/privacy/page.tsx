@@ -90,7 +90,6 @@ export default function Privacy() {
               It records which pages are opened
               {analyticsConfig.events && ', and clicks on things like downloads, project links and social links'}
               {analyticsConfig.performance && ', plus page speed measurements'}.
-              Browsers that send Do Not Track are not counted at all.
             </p>
           </Section>
         )}
@@ -127,7 +126,10 @@ export default function Privacy() {
 
         <Section title="YOUR CHOICES">
           <ul className="list-disc pl-5 space-y-1">
-            <li>Turn on Do Not Track, or use a content blocker, to skip statistics and most third-party content. The site keeps working.</li>
+            <li>
+              A content blocker stops the third-party images and embeds above, and the statistics too. The site keeps working
+              {features.turnstile && ', except that blocking Cloudflare Turnstile means the CV and contact details cannot be unlocked'}.
+            </li>
             <li>Clear this site&apos;s data in your browser at any time to remove everything listed above.</li>
             <li>Questions or removal requests: use the contact options on the About page.</li>
           </ul>
