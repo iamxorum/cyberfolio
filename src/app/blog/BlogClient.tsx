@@ -21,6 +21,103 @@ interface BlogClientProps {
   openBody?: ReactNode;
 }
 
+const TAG_CHIP_BASE = 'px-2.5 py-1 rounded border transition active:scale-95';
+const TAG_CHIP_ACTIVE = 'border-primary text-primary bg-primary/10';
+const TAG_CHIP_IDLE = 'border-[var(--terminal-border)] text-[var(--terminal-text-muted)] hover:border-primary hover:text-primary';
+
+function TagFilter({ tags, total, activeTag, onChange }: {
+  tags: [string, number][];
+  total: number;
+  activeTag: string | null;
+  onChange: (tag: string | null) => void;
+}) {
+  return (
+    <div role="group" aria-label="Filter posts by tag" className="flex flex-wrap gap-2 font-mono text-xs">
+      <button
+        type="button"
+        aria-pressed={activeTag === null}
+        onClick={() => { track('blog_tag_filter', { tag: 'all' }); onChange(null); }}
+        className={`${TAG_CHIP_BASE} ${activeTag === null ? TAG_CHIP_ACTIVE : TAG_CHIP_IDLE}`}
+      >
+        all ({total})
+      </button>
+      {tags.map(([tag, count]) => (
+        <button
+          key={tag}
+          type="button"
+          aria-pressed={activeTag === tag}
+          onClick={() => { track('blog_tag_filter', { tag: activeTag === tag ? 'all' : tag }); onChange(activeTag === tag ? null : tag); }}
+          className={`${TAG_CHIP_BASE} ${activeTag === tag ? TAG_CHIP_ACTIVE : TAG_CHIP_IDLE}`}
+        >
+          #{tag} ({count})
+        </button>
+      ))}
+    </div>
+  );
+}
+
+function PostCard({ post, index, views, selected, onOpen }: {
+  post: PostMeta;
+  index: number;
+  views?: number;
+  selected: boolean;
+  onOpen: (e: MouseEvent, slug: string) => void;
+}) {
+  return (
+    <Link
+      href={`/blog/${post.slug}`}
+      {...eventProps('blog_post_open', { post: post.slug })}
+      onClick={(e) => onOpen(e, post.slug)}
+      aria-current={selected ? 'true' : undefined}
+      data-reveal
+      style={revealDelay(Math.min(index, 4) * STAGGER_STEP_MS)}
+      className="scroll-reveal panel-draw relative group flex flex-col gap-2 rounded border-2 border-[var(--terminal-border)] bg-[var(--terminal-surface-alt)] p-4 sm:p-5 transition-[transform,background-color,border-color,box-shadow] duration-300 hover:bg-[var(--terminal-surface-hover)] hover:border-primary hover:-translate-y-1 hover:shadow-[0_0_25px_rgba(var(--terminal-accent-rgb),0.3)] active:scale-[0.98] aria-[current=true]:border-primary aria-[current=true]:bg-[var(--terminal-surface-hover)]"
+    >
+      <div className="flex items-center justify-between gap-3">
+        <h2 className="text-[var(--terminal-text)] text-lg font-bold font-mono group-hover:text-primary transition-colors">
+          {post.title}
+        </h2>
+        <span className="text-[var(--terminal-text-dim)] text-xs font-mono flex-shrink-0">
+          {post.date && <>{post.date} · </>}{post.readingMinutes} min{views && <> · {views.toLocaleString('en-US')} views</>}
+        </span>
+      </div>
+      {post.excerpt && (
+        <p className="text-[var(--terminal-text-muted)] text-sm font-mono leading-relaxed">
+          {post.excerpt}
+        </p>
+      )}
+      {post.tags && post.tags.length > 0 && (
+        <div className="flex flex-wrap gap-2 mt-1">
+          {post.tags.map((tag) => (
+            <span key={tag} className="px-2 py-1 rounded bg-[var(--terminal-bg)] border border-[var(--terminal-border)] text-[10px] text-[var(--terminal-text-dim)] font-mono">
+              {tag}
+            </span>
+          ))}
+        </div>
+      )}
+    </Link>
+  );
+}
+
+function PostDetail({ post, views, body }: { post: PostMeta; views?: number; body?: ReactNode }) {
+  return (
+    <article key={post.slug} className="flex flex-col gap-5">
+      <div className="flex flex-col gap-2 border-b border-[var(--terminal-border-alt)] pb-5">
+        <h2 className="text-[var(--terminal-text)] text-2xl md:text-3xl font-black leading-tight tracking-tight font-mono">{post.title}</h2>
+        <div className="flex flex-wrap items-center gap-3 text-xs font-mono text-[var(--terminal-text-dim)]">
+          {post.date && <span>{post.date}</span>}
+          <span>{post.readingMinutes} min read</span>
+          {views && <span>{views.toLocaleString('en-US')} views</span>}
+          <Link href={`/blog/${post.slug}`} className="ml-auto hover:text-primary transition-colors">OPEN_FULL_PAGE →</Link>
+        </div>
+      </div>
+      {body || (
+        <p className="font-mono text-sm text-[var(--terminal-text-dim)] animate-pulse">LOADING_POST...</p>
+      )}
+    </article>
+  );
+}
+
 export default function BlogClient({ posts, views, openSlug, openBody }: BlogClientProps) {
   const router = useRouter();
   const listRef = useScrollReveal<HTMLDivElement>();
@@ -60,29 +157,7 @@ export default function BlogClient({ posts, views, openSlug, openBody }: BlogCli
         </Link>
       </PageHeading>
 
-      {tags.length > 1 && (
-        <div role="group" aria-label="Filter posts by tag" className="flex flex-wrap gap-2 font-mono text-xs">
-          <button
-            type="button"
-            aria-pressed={activeTag === null}
-            onClick={() => { track('blog_tag_filter', { tag: 'all' }); setActiveTag(null); }}
-            className={`px-2.5 py-1 rounded border transition active:scale-95 ${activeTag === null ? 'border-primary text-primary bg-primary/10' : 'border-[var(--terminal-border)] text-[var(--terminal-text-muted)] hover:border-primary hover:text-primary'}`}
-          >
-            all ({posts.length})
-          </button>
-          {tags.map(([tag, count]) => (
-            <button
-              key={tag}
-              type="button"
-              aria-pressed={activeTag === tag}
-              onClick={() => { track('blog_tag_filter', { tag: activeTag === tag ? 'all' : tag }); setActiveTag(activeTag === tag ? null : tag); }}
-              className={`px-2.5 py-1 rounded border transition active:scale-95 ${activeTag === tag ? 'border-primary text-primary bg-primary/10' : 'border-[var(--terminal-border)] text-[var(--terminal-text-muted)] hover:border-primary hover:text-primary'}`}
-            >
-              #{tag} ({count})
-            </button>
-          ))}
-        </div>
-      )}
+      {tags.length > 1 && <TagFilter tags={tags} total={posts.length} activeTag={activeTag} onChange={setActiveTag} />}
 
       {posts.length === 0 ? (
         <div className="border border-dashed border-[var(--terminal-border)] rounded p-6 text-center font-mono text-sm text-[var(--terminal-text-dim)]">
@@ -92,61 +167,21 @@ export default function BlogClient({ posts, views, openSlug, openBody }: BlogCli
         // Keyed by the filter so the cards remount and each one is re-observed for its entrance.
         <div key={activeTag ?? 'all'} ref={listRef} className="flex flex-col gap-3 sm:gap-4">
           {visiblePosts.map((post, index) => (
-            <Link
+            <PostCard
               key={post.slug}
-              href={`/blog/${post.slug}`}
-              {...eventProps('blog_post_open', { post: post.slug })}
-              onClick={(e) => openPost(e, post.slug)}
-              aria-current={post.slug === selectedSlug ? 'true' : undefined}
-              data-reveal
-              style={revealDelay(Math.min(index, 4) * STAGGER_STEP_MS)}
-              className="scroll-reveal panel-draw relative group flex flex-col gap-2 rounded border-2 border-[var(--terminal-border)] bg-[var(--terminal-surface-alt)] p-4 sm:p-5 transition-[transform,background-color,border-color,box-shadow] duration-300 hover:bg-[var(--terminal-surface-hover)] hover:border-primary hover:-translate-y-1 hover:shadow-[0_0_25px_rgba(var(--terminal-accent-rgb),0.3)] active:scale-[0.98] aria-[current=true]:border-primary aria-[current=true]:bg-[var(--terminal-surface-hover)]"
-            >
-              <div className="flex items-center justify-between gap-3">
-                <h2 className="text-[var(--terminal-text)] text-lg font-bold font-mono group-hover:text-primary transition-colors">
-                  {post.title}
-                </h2>
-                <span className="text-[var(--terminal-text-dim)] text-xs font-mono flex-shrink-0">
-                  {post.date && <>{post.date} · </>}{post.readingMinutes} min{views[post.slug] && <> · {views[post.slug].toLocaleString('en-US')} views</>}
-                </span>
-              </div>
-              {post.excerpt && (
-                <p className="text-[var(--terminal-text-muted)] text-sm font-mono leading-relaxed">
-                  {post.excerpt}
-                </p>
-              )}
-              {post.tags && post.tags.length > 0 && (
-                <div className="flex flex-wrap gap-2 mt-1">
-                  {post.tags.map((tag) => (
-                    <span key={tag} className="px-2 py-1 rounded bg-[var(--terminal-bg)] border border-[var(--terminal-border)] text-[10px] text-[var(--terminal-text-dim)] font-mono">
-                      {tag}
-                    </span>
-                  ))}
-                </div>
-              )}
-            </Link>
+              post={post}
+              index={index}
+              views={views[post.slug]}
+              selected={post.slug === selectedSlug}
+              onOpen={openPost}
+            />
           ))}
         </div>
       )}
       </div>
       {ultrawide && (
         <UltrawideDetail label="POST">
-          {selectedPost && (
-            <article key={selectedPost.slug} className="flex flex-col gap-5">
-              <div className="flex flex-col gap-2 border-b border-[var(--terminal-border-alt)] pb-5">
-                <h2 className="text-[var(--terminal-text)] text-2xl md:text-3xl font-black leading-tight tracking-tight font-mono">{selectedPost.title}</h2>
-                <div className="flex flex-wrap items-center gap-3 text-xs font-mono text-[var(--terminal-text-dim)]">
-                  {selectedPost.date && <span>{selectedPost.date}</span>}
-                  <span>{selectedPost.readingMinutes} min read</span>
-                  {views[selectedPost.slug] && <span>{views[selectedPost.slug].toLocaleString('en-US')} views</span>}
-                  <Link href={`/blog/${selectedPost.slug}`} className="ml-auto hover:text-primary transition-colors">OPEN_FULL_PAGE →</Link>
-                </div>
-              </div>
-              {(openSlug === selectedPost.slug && openBody) || (
-                <p className="font-mono text-sm text-[var(--terminal-text-dim)] animate-pulse">LOADING_POST...</p>
-              )}
-            </article>
-          )}
+          {selectedPost && <PostDetail post={selectedPost} views={views[selectedPost.slug]} body={openSlug === selectedPost.slug ? openBody : undefined} />}
         </UltrawideDetail>
       )}
     </PageShell>
