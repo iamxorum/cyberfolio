@@ -54,6 +54,7 @@ Secrets and contact details are never in the config files, because config is com
 | `TURNSTILE_SECRET_KEY` | Server side of the Turnstile check. The matching public key is in `security.config.ts` |
 | `CONTACT_EMAIL` | Shown (and printed on the CV) only after a visitor passes Turnstile |
 | `CONTACT_PHONE` | Optional. Same, and printed on the downloaded CV |
+| `SECURITY_CONTACT` | Optional. Public contact for `/.well-known/security.txt` (email or URL). Unset means the file is not served. Public by design, so use a dedicated address, not `CONTACT_EMAIL` |
 | `STRAVA_*` | Only when `features.strava` is on |
 | `STEAM_API_KEY`, `STEAM_ID` | Only when `features.steam` is on |
 | `ANALYTICS_UPSTREAM`, `UMAMI_*`, `COMPOSE_PROFILES` | Only for analytics, see `docs/analytics.md` |
