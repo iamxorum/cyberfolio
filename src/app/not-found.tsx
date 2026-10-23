@@ -1,6 +1,10 @@
+import type { Metadata } from 'next';
+import { siteConfig } from '@/config';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import NotFoundCard from '@/components/NotFoundCard';
+
+export const metadata: Metadata = { title: `Page not found | ${siteConfig.fullName}` };
 
 export default function NotFound() {
   return (

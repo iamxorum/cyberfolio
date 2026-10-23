@@ -18,7 +18,7 @@ export default function TurnstileGate({ decryptingLabel, onVerified }: Turnstile
 
   return (
     <div className="fixed inset-0 z-[9998] flex items-center justify-center bg-[rgba(var(--terminal-bg-rgb),0.85)] backdrop-blur-md font-mono p-4">
-      <div className="max-w-md w-full border border-[var(--terminal-border)] bg-[var(--terminal-surface)] p-8 rounded shadow-[0_0_20px_rgba(var(--terminal-accent-rgb),0.2)] text-center relative overflow-hidden">
+      <div role="dialog" aria-modal="true" aria-labelledby="gate-title" className="max-w-md w-full border border-[var(--terminal-border)] bg-[var(--terminal-surface)] p-8 rounded shadow-[0_0_20px_rgba(var(--terminal-accent-rgb),0.2)] text-center relative overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-b from-transparent via-primary/5 to-transparent h-[10%] w-full animate-scan pointer-events-none"></div>
 
         <svg
@@ -36,9 +36,9 @@ export default function TurnstileGate({ decryptingLabel, onVerified }: Turnstile
           <path d="M9 12l2 2 4-4" />
         </svg>
 
-        <h2 className="text-[var(--terminal-text)] text-xl font-bold mb-2 tracking-widest uppercase">
+        <h1 id="gate-title" className="text-[var(--terminal-text)] text-xl font-bold mb-2 tracking-widest uppercase">
           {isDecrypting ? decryptingLabel : 'Access_Restriction'}
-        </h2>
+        </h1>
 
         <p className="text-[var(--terminal-text-dim)] text-xs mb-6 leading-relaxed">
           {isDecrypting
@@ -97,7 +97,7 @@ export default function TurnstileGate({ decryptingLabel, onVerified }: Turnstile
           </div>
         )}
 
-        <div className="text-[10px] text-[var(--terminal-text-muted)] animate-pulse font-mono uppercase tracking-tighter">
+        <div role="status" className="text-[10px] text-[var(--terminal-text-muted)] animate-pulse font-mono uppercase tracking-tighter">
           {isDecrypting ? '>> VERIFIED' : 'Awaiting_Challenge_Response...'}
         </div>
 

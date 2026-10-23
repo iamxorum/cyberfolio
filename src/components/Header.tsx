@@ -90,8 +90,8 @@ export default function Header() {
       <div className="layout-content-container flex flex-col max-w-[1200px] w-full flex-1">
         <header className="flex items-center justify-between whitespace-nowrap px-3 sm:px-4 md:px-6 lg:px-10 py-2 sm:py-3">
           <Link href="/" aria-label={`Home, root@${siteConfig.username}`} className="flex items-center gap-2 sm:gap-4 text-[var(--terminal-text)] min-w-0 hover:opacity-80 active:scale-[0.97] transition">
-            <span className="material-symbols-outlined text-primary text-xl sm:text-2xl flex-shrink-0">terminal</span>
-            <h2 className="hidden min-[420px]:block sm:max-[1099px]:hidden text-[var(--terminal-text)] text-sm sm:text-base md:text-lg font-bold leading-tight tracking-[-0.015em] font-mono truncate">root@{siteConfig.username}:~</h2>
+            <span aria-hidden="true" className="material-symbols-outlined text-primary text-xl sm:text-2xl flex-shrink-0">terminal</span>
+            <p className="hidden min-[420px]:block sm:max-[1099px]:hidden text-[var(--terminal-text)] text-sm sm:text-base md:text-lg font-bold leading-tight tracking-[-0.015em] font-mono truncate">root@{siteConfig.username}:~</p>
           </Link>
           <div className="flex flex-1 justify-end items-center gap-1.5 sm:gap-3 lg:gap-6 xl:gap-8">
             <nav className="hidden sm:flex items-center gap-3 md:gap-4 lg:gap-6 xl:gap-9" aria-label="Primary">
@@ -117,7 +117,7 @@ export default function Header() {
               ariaLabel={`Email ${siteConfig.fullName}`}
               title={`Email ${siteConfig.fullName}`}
             >
-              <span className="material-symbols-outlined text-base sm:text-lg">mail</span>
+              <span aria-hidden="true" className="material-symbols-outlined text-base sm:text-lg">mail</span>
             </EmailCTA>
             {features.commandPalette && <CommandPaletteButton />}
             <ThemeToggle />
@@ -130,7 +130,7 @@ export default function Header() {
                   pathname === '/cv' ? 'ring-2 ring-primary/50' : ''
                 }`}
                 >
-                  <span className="material-symbols-outlined text-sm sm:text-base md:text-[18px] sm:mr-1 md:mr-2">download</span>
+                  <span aria-hidden="true" className="material-symbols-outlined text-sm sm:text-base md:text-[18px] sm:mr-1 md:mr-2">download</span>
                   <span className="hidden sm:inline truncate font-mono">GET_CV.sh</span>
                   <span className="sm:hidden font-mono">CV</span>
               </Link>
@@ -144,7 +144,7 @@ export default function Header() {
               aria-controls="mobile-nav-panel"
               className="sm:hidden flex items-center justify-center w-11 h-11 rounded border border-[var(--terminal-border)] text-[var(--terminal-text-dim)] hover:text-primary hover:border-primary active:scale-95 transition flex-shrink-0"
             >
-              <span className="material-symbols-outlined text-lg">{isMenuOpen ? 'close' : 'menu'}</span>
+              <span aria-hidden="true" className="material-symbols-outlined text-lg">{isMenuOpen ? 'close' : 'menu'}</span>
             </button>
           </div>
         </header>
