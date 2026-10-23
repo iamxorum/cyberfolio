@@ -13,6 +13,8 @@ export interface Experience {
   /** Second label next to `type` (e.g. "Employment"). */
   type2?: string;
   icon?: string;
+  /** Square logo path under /public (e.g. "/logos/acme.png"), shown next to the company name (24px). */
+  logo?: string;
   skills?: string[];
 }
 

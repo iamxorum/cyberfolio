@@ -56,15 +56,18 @@ const SHORT_MONTHS: Record<string, string> = {
 /** "October 2024" becomes "Oct 2024", so every date on the CV is written the same way. */
 const shortDate = (date: string) => date.replace(/\b[A-Z][a-z]{2,8}\b/g, (month) => SHORT_MONTHS[month] ?? month);
 
+/** No end date, "ongoing" or "Present" all mean the period is still running. */
+export const isOngoingEnd = (endDate?: string): boolean => !endDate || /^(ongoing|present)$/i.test(endDate.trim());
+
 /** A period that may still be running: no end date reads as "Present". */
 export const formatDateRange = (startDate: string, endDate?: string): string => {
-  const isOngoing = !endDate || endDate.toLowerCase() === 'ongoing';
-  return `${shortDate(startDate)} – ${isOngoing ? 'Present' : shortDate(endDate)}`;
+  const isOngoing = isOngoingEnd(endDate);
+  return `${shortDate(startDate)} – ${isOngoing ? 'Present' : shortDate(endDate ?? '')}`;
 };
 
 /** A fixed span, or a single date when there is no end (e.g. a certificate that never expires). */
 export const formatDateSpan = (startDate: string, endDate?: string): string =>
-  endDate ? `${shortDate(startDate)} – ${shortDate(endDate)}` : shortDate(startDate);
+  endDate ? `${shortDate(startDate)} – ${shortDate(endDate ?? '')}` : shortDate(startDate);
 
 export const sortExperienceByDate = (experience: Experience[]): Experience[] => {
   return [...experience].sort((a, b) => {
@@ -138,4 +141,57 @@ export const filterForCV = <T extends { includeInCV?: boolean }>(items: T[]): T[
 export const getPublicProjects = (projects: Project[] | undefined, style: CVStyle): Project[] => {
   const showProjects = style.showProjects !== false;
   return showProjects && projects ? filterForCV(projects.filter(p => p.visibility === 'public')) : [];
+};
+
+const MONTHS = ['jan', 'feb', 'mar', 'apr', 'may', 'jun', 'jul', 'aug', 'sep', 'oct', 'nov', 'dec'];
+
+const parseMonthYear = (value: string): { year: number; month: number } | null => {
+  const year = value.match(/\b(\d{4})\b/);
+  if (!year) return null;
+  const monthIdx = MONTHS.findIndex(m => value.toLowerCase().includes(m));
+  return { year: Number(year[1]), month: monthIdx === -1 ? 0 : monthIdx };
+};
+
+const toMonthIndex = (startDate: string, endDate?: string): [number, number] | null => {
+  const start = parseMonthYear(startDate);
+  if (!start) return null;
+  const isOngoing = isOngoingEnd(endDate);
+  const now = new Date();
+  const end = isOngoing ? { year: now.getFullYear(), month: now.getMonth() } : parseMonthYear(endDate ?? '');
+  if (!end) return null;
+  const from = start.year * 12 + start.month;
+  const to = end.year * 12 + end.month;
+  return to >= from ? [from, to] : null;
+};
+
+const formatMonths = (total: number): string => {
+  const years = Math.floor(total / 12);
+  const months = total % 12;
+  const parts = [];
+  if (years > 0) parts.push(`${years} ${years === 1 ? 'yr' : 'yrs'}`);
+  if (months > 0) parts.push(`${months} ${months === 1 ? 'mo' : 'mos'}`);
+  return parts.join(' ');
+};
+
+/** "2 yrs 4 mos" from config-style dates ("Jan 2023", "2023"); end counts inclusively. Empty if unparseable. */
+export const formatDuration = (startDate: string, endDate?: string): string => {
+  const range = toMonthIndex(startDate, endDate);
+  return range ? formatMonths(range[1] - range[0] + 1) : '';
+};
+
+/** Combined length of all roles; overlapping months are counted once. Empty if nothing parses. */
+export const formatTotalDuration = (roles: { startDate: string; endDate?: string }[]): string => {
+  const ranges = roles
+    .map(r => toMonthIndex(r.startDate, r.endDate))
+    .filter((r): r is [number, number] => r !== null)
+    .sort((a, b) => a[0] - b[0]);
+
+  let total = 0;
+  let curEnd = -Infinity;
+  for (const [from, to] of ranges) {
+    const begin = Math.max(from, curEnd + 1);
+    if (to >= begin) total += to - begin + 1;
+    curEnd = Math.max(curEnd, to);
+  }
+  return total > 0 ? formatMonths(total) : '';
 };

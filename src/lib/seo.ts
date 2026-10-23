@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import { education, experience, getTopSkills, siteConfig } from '@/config';
+import { isOngoingEnd } from '@/lib/cv-helpers';
 
 export const siteUrl = `https://${siteConfig.domain}`;
 
@@ -44,7 +45,7 @@ export const personId = `${siteUrl}/#person`;
 
 /** The site owner as schema.org Person. Emitted once site-wide; other pages reference it by `@id`. */
 export function personJsonLd() {
-  const currentRole = experience.find((exp) => !exp.endDate || exp.endDate.toLowerCase() === 'ongoing');
+  const currentRole = experience.find((exp) => isOngoingEnd(exp.endDate));
 
   return {
     '@context': 'https://schema.org',

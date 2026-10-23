@@ -45,6 +45,7 @@ next-env.d.ts
 /public/assets
 /public/data
 /public/blog
+/public/logos
 /content
 
 # private

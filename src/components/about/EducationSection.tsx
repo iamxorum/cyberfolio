@@ -2,11 +2,12 @@ import { education } from '@/config';
 import Reveal from '@/components/Reveal';
 import TypedText from '@/components/TypedText';
 import { STAGGER_STEP_DENSE_MS, revealDelay } from '@/lib/motion';
+import { isOngoingEnd } from '@/lib/cv-helpers';
 
 type Education = (typeof education)[number];
 
 function EducationBadge({ edu }: { edu: Education }) {
-  const isOngoing = !edu.endDate || edu.endDate.toLowerCase() === 'ongoing';
+  const isOngoing = isOngoingEnd(edu.endDate);
   const hasGrade = edu.grade && edu.grade.trim() !== '';
 
   if (hasGrade) {
@@ -36,14 +37,14 @@ export default function EducationSection() {
   return (
     <Reveal id="education" draw className="bg-[var(--terminal-surface)] border border-[var(--terminal-border)] rounded p-4 sm:p-6 scroll-mt-32">
       <h2 className="text-[var(--terminal-text)] font-mono text-base sm:text-lg font-bold mb-4 sm:mb-6 pb-3 sm:pb-4 border-b border-[var(--terminal-border)] flex items-center gap-2">
-        <span className="material-symbols-outlined text-primary text-lg sm:text-xl">school</span>
+        <span aria-hidden="true" className="material-symbols-outlined text-primary text-lg sm:text-xl">school</span>
         <span className="text-sm sm:text-base"><TypedText text="EDUCATION" /></span>
       </h2>
       <div className="space-y-4">
         {education.map((edu, index) => (
           <div key={edu.id} data-reveal style={revealDelay(Math.min(index, 4) * STAGGER_STEP_DENSE_MS)} className="scroll-reveal flex items-start gap-3 sm:gap-4 p-3 sm:p-4 rounded border border-[var(--terminal-border)] bg-[var(--terminal-bg)] hover:border-primary/50 transition-colors group">
             {edu.icon && (
-              <span className="material-symbols-outlined text-primary text-xl sm:text-2xl group-hover:scale-110 transition-transform flex-shrink-0">
+              <span aria-hidden="true" className="material-symbols-outlined text-primary text-xl sm:text-2xl group-hover:scale-110 transition-transform flex-shrink-0">
                 {edu.icon}
               </span>
             )}
@@ -55,13 +56,13 @@ export default function EducationSection() {
               <p className="text-xs sm:text-sm font-mono text-primary mb-1">{edu.institution}</p>
               <div className="flex flex-wrap items-center gap-2 text-[10px] sm:text-xs font-mono text-[var(--terminal-text-muted)]">
                 <span>{edu.startDate}</span>
-                {edu.endDate && edu.endDate.toLowerCase() !== 'ongoing' && (
+                {edu.endDate && !isOngoingEnd(edu.endDate) && (
                   <>
                     <span>-</span>
                     <span>{edu.endDate}</span>
                   </>
                 )}
-                {edu.endDate && edu.endDate.toLowerCase() === 'ongoing' && (
+                {edu.endDate && isOngoingEnd(edu.endDate) && (
                   <span className="text-green-400">[ONGOING]</span>
                 )}
                 {!edu.endDate && <span className="text-green-400">[ONGOING]</span>}
@@ -87,7 +88,7 @@ export default function EducationSection() {
                     rel="noopener noreferrer"
                     className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded border border-[var(--terminal-border)] hover:border-primary hover:bg-primary/10 text-[var(--terminal-text)] text-[10px] sm:text-xs font-bold font-mono tracking-wider transition group/btn w-fit"
                   >
-                    <span className="material-symbols-outlined text-sm sm:text-base group-hover/btn:text-primary">
+                    <span aria-hidden="true" className="material-symbols-outlined text-sm sm:text-base group-hover/btn:text-primary">
                       description
                     </span>
                     <span>{edu.thesisLabel || 'VIEW_DOC'}</span>
