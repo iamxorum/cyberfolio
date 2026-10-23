@@ -1,5 +1,6 @@
 'use client';
 
+import Link from 'next/link';
 import { features, siteConfig } from '@/config';
 import { eventProps } from '@/lib/track';
 import EmailCTA from './EmailCTA';
@@ -24,6 +25,9 @@ export default function Footer() {
             <EmailCTA source="footer" className="hover:text-[var(--terminal-text)] transition-colors whitespace-nowrap">
               EMAIL
             </EmailCTA>
+            <Link href="/privacy" className="hover:text-[var(--terminal-text)] transition-colors whitespace-nowrap">
+              PRIVACY
+            </Link>
             {footerLinks.map((link) => (
               <a
                 key={link.url}
