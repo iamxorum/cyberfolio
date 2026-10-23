@@ -30,7 +30,7 @@ export interface FeaturesConfig {
   commandPalette: boolean;
   /** Boot screen on first visit. */
   bootScreen: boolean;
-  /** Cloudflare Turnstile gate on /about and /cv. Needs keys. Off = /api/verify 404. */
+  /** Cloudflare Turnstile gate on /cv and the contact details. Needs keys. Off = /api/verify 404. */
   turnstile: boolean;
   /** Lenis smooth scrolling. */
   smoothScroll: boolean;
