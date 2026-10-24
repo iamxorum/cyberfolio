@@ -4,6 +4,7 @@ import PageShell from '@/components/PageShell';
 import { useUltrawide } from '@/hooks/useUltrawide';
 import QuickNav from '@/components/about/QuickNav';
 import BioSection from '@/components/about/BioSection';
+import BuildNote from '@/components/about/BuildNote';
 import ProfileCard from '@/components/about/ProfileCard';
 import SocialLinks from '@/components/about/SocialLinks';
 import SkillsPanel from '@/components/about/SkillsPanel';
@@ -23,6 +24,7 @@ export default function AboutClient() {
             <div className="uw-hide"><QuickNav /></div>
             {ultrawide && <ProfileCard userId={userId} />}
             <BioSection />
+            <BuildNote />
           </div>
 
           <div className="uw-contents flex flex-col lg:flex-row gap-4 sm:gap-6">

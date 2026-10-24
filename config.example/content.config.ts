@@ -40,6 +40,7 @@ export interface ContentConfig {
       title: string;
       paragraphs: string[];
     };
+    buildNote?: string[];
   };
   
   
@@ -95,6 +96,9 @@ export const contentConfig: ContentConfig = {
         'Add more paragraphs as needed to tell your story.',
       ],
     },
+    buildNote: [
+      'A few short lines on how this site was built and what you did yourself.',
+    ],
   },
   projects: {
     title: '>> SYSTEM_READY',
