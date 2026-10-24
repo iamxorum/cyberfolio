@@ -15,6 +15,26 @@ const RATE_WINDOW_MS = 60_000;
 const reply = (status: number, error?: string) =>
   new Response(error ? JSON.stringify({ error }) : null, { status, headers: { 'Content-Type': 'application/json' } });
 
+// A chunked request carries no Content-Length, so the size is enforced while reading: the stream is cancelled
+// as soon as it passes the limit instead of buffering the whole body first. Returns null when it is too large.
+async function readBodyCapped(request: Request, maxBytes: number): Promise<string | null> {
+  if (!request.body) return '';
+  const reader = request.body.getReader();
+  const decoder = new TextDecoder();
+  let received = 0;
+  let text = '';
+  for (;;) {
+    const { done, value } = await reader.read();
+    if (done) return text + decoder.decode();
+    received += value.byteLength;
+    if (received > maxBytes) {
+      await reader.cancel();
+      return null;
+    }
+    text += decoder.decode(value, { stream: true });
+  }
+}
+
 // Relays tracker events to Umami. Only this path is exposed, with limits.
 export async function POST(request: Request) {
   const upstream = analyticsUpstream();
@@ -29,8 +49,8 @@ export async function POST(request: Request) {
   if (isRateLimited(`stats:${clientIp}`, RATE_LIMIT, RATE_WINDOW_MS)) return reply(429, 'Too many requests');
 
   if (Number(request.headers.get('content-length') ?? 0) > MAX_BODY_BYTES) return reply(413, 'Payload too large');
-  const body = await request.text();
-  if (body.length > MAX_BODY_BYTES) return reply(413, 'Payload too large');
+  const body = await readBodyCapped(request, MAX_BODY_BYTES);
+  if (body === null) return reply(413, 'Payload too large');
 
   // Forward only what Umami needs. Never cookies or auth headers.
   const headers: Record<string, string> = { 'Content-Type': 'application/json' };
