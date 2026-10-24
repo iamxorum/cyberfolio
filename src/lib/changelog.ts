@@ -14,6 +14,15 @@ export interface Release {
 // Newest first. Add a release here when the version is bumped.
 export const releases: Release[] = [
   {
+    version: '1.6.6',
+    date: '2026-10-25',
+    changes: [
+      'Cover letter and CV + letter PDFs can carry a signature, unlocked with a password checked on the server (the image never ships in the page)',
+      'features.config: new signature and accentPicker switches',
+      'Report endpoint for CSP violations is an absolute URL, which Safari requires',
+    ],
+  },
+  {
     version: '1.6.5',
     date: '2026-10-24',
     changes: [
