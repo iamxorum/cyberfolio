@@ -1,9 +1,10 @@
 'use client';
 
-import { useState } from 'react';
+import { useCallback, useState } from 'react';
 import PageShell, { PageHeading } from '@/components/PageShell';
 import UltrawideDetail from '@/components/UltrawideDetail';
 import { ProjectDetailContent } from './[id]/ProjectDetailClient';
+import { useEscapeKey } from '@/hooks/useEscapeKey';
 import { useUltrawide } from '@/hooks/useUltrawide';
 import Link from 'next/link';
 import { projects, contentConfig } from '@/config';
@@ -16,9 +17,18 @@ interface ProjectsClientProps {
 
 export default function ProjectsClient({ contributionStats = NO_CONTRIBUTION_STATS }: ProjectsClientProps) {
   const ultrawide = useUltrawide();
-  const [selectedId, setSelectedId] = useState<string | null>(null);
-  const selected = projects.find((p) => p.id === selectedId && p.visibility === 'public');
-  const onSelect = ultrawide ? setSelectedId : undefined;
+  // `?project=<id>` keeps the open project across reloads and shared links. Only ultrawide shows it.
+  const [selectedId, setSelectedId] = useState<string | null>(() =>
+    typeof window === 'undefined' ? null : new URLSearchParams(window.location.search).get('project'));
+  const selected = ultrawide ? projects.find((p) => p.id === selectedId && p.visibility === 'public') : undefined;
+
+  const select = useCallback((id: string | null) => {
+    setSelectedId(id);
+    window.history.replaceState(null, '', id ? `/projects?project=${encodeURIComponent(id)}` : '/projects');
+  }, []);
+  const clearSelection = useCallback(() => select(null), [select]);
+  useEscapeKey(selected !== undefined, clearSelection);
+  const onSelect = ultrawide ? select : undefined;
 
   const personalProjects = projects.filter((p) => p.projectType === 'personal');
   const contributionProjects = projects.filter((p) => p.projectType === 'contribution');

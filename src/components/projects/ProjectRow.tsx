@@ -27,8 +27,8 @@ export default function ProjectRow({ project, index, contributionStats = {}, onS
       className="group grid grid-cols-1 md:grid-cols-12 gap-2 md:gap-4 px-3 sm:px-4 md:px-6 py-3 sm:py-4 border-b border-[var(--terminal-border-alt)] hover:bg-[var(--terminal-hover-overlay)] transition-colors items-center relative overflow-hidden last:border-b-0"
     >
       {/* The Reveal's own classes must stay constant: a changed className would wipe its `.is-visible`. */}
-      <div className={`absolute inset-0 pointer-events-none bg-[var(--terminal-hover-overlay)] transition-opacity ${selected ? 'opacity-100' : 'opacity-0'}`}></div>
-      <div className={`absolute left-0 top-0 bottom-0 w-[2px] ${selected ? 'bg-primary' : 'bg-transparent group-hover:bg-primary'} transition-colors`}></div>
+      <div className={`absolute inset-0 pointer-events-none bg-[var(--terminal-hover-overlay)] transition-opacity duration-300 ${selected ? 'opacity-100' : 'opacity-0'}`}></div>
+      <div className={`absolute left-0 top-0 bottom-0 w-[2px] ${selected ? 'bg-primary' : 'bg-transparent group-hover:bg-primary'} transition-colors duration-300`}></div>
 
       <div className="col-span-2 flex items-center gap-2 text-[var(--terminal-text-dim)] font-mono text-[10px] sm:text-xs md:text-sm">
         <span className="md:hidden text-[var(--terminal-text-dim)] mr-2">HASH:</span>

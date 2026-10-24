@@ -1,13 +1,14 @@
 'use client';
 
 import PageShell, { PageHeading } from '@/components/PageShell';
-import { useState, type MouseEvent, type ReactNode } from 'react';
+import { useCallback, useState, type MouseEvent, type ReactNode } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { contentConfig } from '@/config';
 import { eventProps, track } from '@/lib/track';
 import UltrawideDetail from '@/components/UltrawideDetail';
 import { useUltrawide } from '@/hooks/useUltrawide';
+import { useEscapeKey } from '@/hooks/useEscapeKey';
 import { useScrollReveal } from '@/hooks/useScrollReveal';
 import { STAGGER_STEP_MS, revealDelay } from '@/lib/motion';
 import type { PostMeta } from '@/lib/blog';
@@ -111,9 +112,7 @@ function PostDetail({ post, views, body }: { post: PostMeta; views?: number; bod
           <Link href={`/blog/${post.slug}`} className="ml-auto hover:text-primary transition-colors">OPEN_FULL_PAGE →</Link>
         </div>
       </div>
-      {body || (
-        <p className="font-mono text-sm text-[var(--terminal-text-dim)] animate-pulse">LOADING_POST...</p>
-      )}
+      {body && <div className="animate-fade-in-fast">{body}</div>}
     </article>
   );
 }
@@ -134,6 +133,12 @@ export default function BlogClient({ posts, views, openSlug, openBody }: BlogCli
     setSelectedSlug(slug);
     router.replace(`/blog?post=${slug}`, { scroll: false });
   };
+
+  const closePost = useCallback(() => {
+    setSelectedSlug(null);
+    router.replace('/blog', { scroll: false });
+  }, [router]);
+  useEscapeKey(ultrawide && selectedSlug !== null, closePost);
 
   const tagCounts = new Map<string, number>();
   for (const post of posts) for (const tag of post.tags ?? []) tagCounts.set(tag, (tagCounts.get(tag) ?? 0) + 1);

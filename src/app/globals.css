@@ -19,6 +19,11 @@ html.lenis.lenis-stopped {
   overflow: clip;
 }
 
+/* Images are not draggable anywhere on the site. */
+img {
+  -webkit-user-drag: none;
+}
+
 /* Scroll indicator: replaces the native scrollbar on every device. Click/touch and drag it to
    jump around the page. */
 html {
@@ -359,6 +364,17 @@ html.boot-done .animate-reveal {
 
 .animate-fade-in-fast {
   animation: fade-in 250ms var(--ease-out);
+}
+
+@keyframes detail-slide-in {
+  from {
+    opacity: 0;
+    transform: translateX(28px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
 }
 
 @keyframes loading-bar {
@@ -902,6 +918,10 @@ html.light .text-red-400 { color: #b91c1c; }
   }
   .uw-detail .scroll-reveal.is-visible {
     animation: none;
+  }
+  /* The opened item eases in from the right; selecting another remounts it (keyed), which replays this. */
+  .uw-detail > * {
+    animation: detail-slide-in 380ms var(--ease-out) both;
   }
   .uw-panel-xl {
     width: min(62vw, 1300px);
