@@ -14,6 +14,8 @@ export default function SkillsRadar({ skills }: SkillsRadarProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [size, setSize] = useState(MAX_SIZE);
+  // Bumped when the theme or accent changes, so the canvas (which reads CSS variables once per draw) repaints.
+  const [paletteVersion, setPaletteVersion] = useState(0);
 
   useEffect(() => {
     const container = containerRef.current;
@@ -29,6 +31,12 @@ export default function SkillsRadar({ skills }: SkillsRadarProps) {
     recalc();
     const observer = new ResizeObserver(recalc);
     observer.observe(container);
+    return () => observer.disconnect();
+  }, []);
+
+  useEffect(() => {
+    const observer = new MutationObserver(() => setPaletteVersion((version) => version + 1));
+    observer.observe(document.documentElement, { attributes: true, attributeFilter: ['class', 'data-accent'] });
     return () => observer.disconnect();
   }, []);
 
@@ -188,7 +196,7 @@ export default function SkillsRadar({ skills }: SkillsRadarProps) {
       ctx.fillStyle = terminalAccent;
       ctx.fillText(scoreText, x, y);
     });
-  }, [skills, size]);
+  }, [skills, size, paletteVersion]);
 
   return (
     <div ref={containerRef} className="flex items-center justify-center p-1 sm:p-2 w-full">

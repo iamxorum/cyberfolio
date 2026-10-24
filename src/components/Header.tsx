@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { features, siteConfig } from '@/config';
 import { eventProps } from '@/lib/track';
+import AccentToggle from './AccentToggle';
 import ThemeToggle from './ThemeToggle';
 import EmailCTA from './EmailCTA';
 import CommandPaletteButton from './CommandPaletteButton';
@@ -89,12 +90,12 @@ export default function Header() {
       >
       <div className="layout-content-container flex flex-col max-w-[1200px] w-full flex-1">
         <header className="flex items-center justify-between whitespace-nowrap px-3 sm:px-4 md:px-6 lg:px-10 py-2 sm:py-3">
-          <Link href="/" aria-label={`Home, root@${siteConfig.username}`} className="flex items-center gap-2 sm:gap-4 text-[var(--terminal-text)] min-w-0 hover:opacity-80 active:scale-[0.97] transition">
+          <Link href="/" aria-label={`Home, root@${siteConfig.username}`} className="flex items-center gap-2 sm:gap-4 text-[var(--terminal-text)] min-w-0 lg:shrink-0 hover:opacity-80 active:scale-[0.97] transition">
             <span aria-hidden="true" className="material-symbols-outlined text-primary text-xl sm:text-2xl flex-shrink-0">terminal</span>
-            <p className="hidden min-[420px]:block sm:max-[1099px]:hidden text-[var(--terminal-text)] text-sm sm:text-base md:text-lg font-bold leading-tight tracking-[-0.015em] font-mono truncate">root@{siteConfig.username}:~</p>
+            <p className="hidden min-[470px]:block sm:max-[1099px]:hidden text-[var(--terminal-text)] text-sm sm:text-base md:text-lg font-bold leading-tight tracking-[-0.015em] font-mono truncate lg:overflow-visible">root@{siteConfig.username}:~</p>
           </Link>
-          <div className="flex flex-1 justify-end items-center gap-1.5 sm:gap-3 lg:gap-6 xl:gap-8">
-            <nav className="hidden sm:flex items-center gap-3 md:gap-4 lg:gap-6 xl:gap-9" aria-label="Primary">
+          <div className="flex flex-1 justify-end items-center gap-1.5 sm:gap-2 lg:gap-3 xl:gap-5">
+            <nav className="hidden sm:flex items-center gap-3 md:gap-4 lg:gap-5 xl:gap-7" aria-label="Primary">
               {navItems.map((item) => (
                 <Link
                   key={item.href}
@@ -120,6 +121,7 @@ export default function Header() {
               <span aria-hidden="true" className="material-symbols-outlined text-base sm:text-lg">mail</span>
             </EmailCTA>
             {features.commandPalette && <CommandPaletteButton />}
+            <AccentToggle />
             <ThemeToggle />
             {features.cv && (
               <Link

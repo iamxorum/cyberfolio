@@ -127,6 +127,170 @@ html.light {
   --terminal-on-primary: #ffffff;
 }
 
+/* Accent presets (data-accent on <html>, see lib/accent.ts). Each overrides the primary and accent family;
+   surfaces and text stay with the theme. Light values are darker so text keeps AA contrast on the cream background. */
+html.dark[data-accent="cyan"] {
+  --color-primary: #1fb5c9;
+  --color-accent: #0df2d3;
+  --color-accent-alt: #4fdbdb;
+  --color-primary-rgb: 31, 181, 201;
+  --color-accent-rgb: 13, 242, 211;
+  --color-accent-alt-rgb: 79, 219, 219;
+}
+html.light[data-accent="cyan"] {
+  --color-primary: #0e6e7a;
+  --color-accent: #0e6e7a;
+  --color-accent-alt: #12727a;
+  --color-primary-rgb: 14, 110, 122;
+  --color-accent-rgb: 14, 110, 122;
+  --color-accent-alt-rgb: 18, 114, 122;
+}
+html.dark[data-accent="green"] {
+  --color-primary: #2fb344;
+  --color-accent: #3dff7a;
+  --color-accent-alt: #7be495;
+  --color-primary-rgb: 47, 179, 68;
+  --color-accent-rgb: 61, 255, 122;
+  --color-accent-alt-rgb: 123, 228, 149;
+}
+html.light[data-accent="green"] {
+  --color-primary: #17692a;
+  --color-accent: #17692a;
+  --color-accent-alt: #1d6b32;
+  --color-primary-rgb: 23, 105, 42;
+  --color-accent-rgb: 23, 105, 42;
+  --color-accent-alt-rgb: 29, 107, 50;
+}
+html.dark[data-accent="magenta"] {
+  --color-primary: #c026d3;
+  --color-accent: #ff4df0;
+  --color-accent-alt: #e879f9;
+  --color-primary-rgb: 192, 38, 211;
+  --color-accent-rgb: 255, 77, 240;
+  --color-accent-alt-rgb: 232, 121, 249;
+}
+html.light[data-accent="magenta"] {
+  --color-primary: #86198f;
+  --color-accent: #86198f;
+  --color-accent-alt: #8f2a99;
+  --color-primary-rgb: 134, 25, 143;
+  --color-accent-rgb: 134, 25, 143;
+  --color-accent-alt-rgb: 143, 42, 153;
+}
+html.dark[data-accent="orange"] {
+  --color-primary: #e0731a;
+  --color-accent: #ff9a1f;
+  --color-accent-alt: #ffb25c;
+  --color-primary-rgb: 224, 115, 26;
+  --color-accent-rgb: 255, 154, 31;
+  --color-accent-alt-rgb: 255, 178, 92;
+}
+html.light[data-accent="orange"] {
+  --color-primary: #8a4208;
+  --color-accent: #8a4208;
+  --color-accent-alt: #93480c;
+  --color-primary-rgb: 138, 66, 8;
+  --color-accent-rgb: 138, 66, 8;
+  --color-accent-alt-rgb: 147, 72, 12;
+}
+html.dark[data-accent="matrix"] {
+  --color-primary: #00c853;
+  --color-accent: #00ff41;
+  --color-accent-alt: #39ff14;
+  --color-primary-rgb: 0, 200, 83;
+  --color-accent-rgb: 0, 255, 65;
+  --color-accent-alt-rgb: 57, 255, 20;
+}
+html.light[data-accent="matrix"] {
+  --color-primary: #0b5a1f;
+  --color-accent: #0b5a1f;
+  --color-accent-alt: #0f6a26;
+  --color-primary-rgb: 11, 90, 31;
+  --color-accent-rgb: 11, 90, 31;
+  --color-accent-alt-rgb: 15, 106, 38;
+}
+
+html.dark[data-accent="teal"] {
+  --color-primary: #14b8a6;
+  --color-accent: #2dd4bf;
+  --color-accent-alt: #5eead4;
+  --color-primary-rgb: 20, 184, 166;
+  --color-accent-rgb: 45, 212, 191;
+  --color-accent-alt-rgb: 94, 234, 212;
+}
+html.light[data-accent="teal"] {
+  --color-primary: #0f766e;
+  --color-accent: #0f766e;
+  --color-accent-alt: #115e59;
+  --color-primary-rgb: 15, 118, 110;
+  --color-accent-rgb: 15, 118, 110;
+  --color-accent-alt-rgb: 17, 94, 89;
+}
+html.dark[data-accent="blue"] {
+  --color-primary: #3b82f6;
+  --color-accent: #60a5fa;
+  --color-accent-alt: #93c5fd;
+  --color-primary-rgb: 59, 130, 246;
+  --color-accent-rgb: 96, 165, 250;
+  --color-accent-alt-rgb: 147, 197, 253;
+}
+html.light[data-accent="blue"] {
+  --color-primary: #1d4ed8;
+  --color-accent: #1d4ed8;
+  --color-accent-alt: #1e40af;
+  --color-primary-rgb: 29, 78, 216;
+  --color-accent-rgb: 29, 78, 216;
+  --color-accent-alt-rgb: 30, 64, 175;
+}
+html.dark[data-accent="violet"] {
+  --color-primary: #9a7cf8;
+  --color-accent: #a78bfa;
+  --color-accent-alt: #c4b5fd;
+  --color-primary-rgb: 154, 124, 248;
+  --color-accent-rgb: 167, 139, 250;
+  --color-accent-alt-rgb: 196, 181, 253;
+}
+html.light[data-accent="violet"] {
+  --color-primary: #5b21b6;
+  --color-accent: #5b21b6;
+  --color-accent-alt: #6d28d9;
+  --color-primary-rgb: 91, 33, 182;
+  --color-accent-rgb: 91, 33, 182;
+  --color-accent-alt-rgb: 109, 40, 217;
+}
+html.dark[data-accent="red"] {
+  --color-primary: #ef4444;
+  --color-accent: #ff6b6b;
+  --color-accent-alt: #fca5a5;
+  --color-primary-rgb: 239, 68, 68;
+  --color-accent-rgb: 255, 107, 107;
+  --color-accent-alt-rgb: 252, 165, 165;
+}
+html.light[data-accent="red"] {
+  --color-primary: #991b1b;
+  --color-accent: #991b1b;
+  --color-accent-alt: #a12020;
+  --color-primary-rgb: 153, 27, 27;
+  --color-accent-rgb: 153, 27, 27;
+  --color-accent-alt-rgb: 161, 32, 32;
+}
+html.dark[data-accent="mono"] {
+  --color-primary: #d4d4d8;
+  --color-accent: #ffffff;
+  --color-accent-alt: #e4e4e7;
+  --color-primary-rgb: 212, 212, 216;
+  --color-accent-rgb: 255, 255, 255;
+  --color-accent-alt-rgb: 228, 228, 231;
+}
+html.light[data-accent="mono"] {
+  --color-primary: #27272a;
+  --color-accent: #27272a;
+  --color-accent-alt: #3f3f46;
+  --color-primary-rgb: 39, 39, 42;
+  --color-accent-rgb: 39, 39, 42;
+  --color-accent-alt-rgb: 63, 63, 70;
+}
+
 @media (prefers-color-scheme: dark) {
   :root {
     --background: var(--background-dark);

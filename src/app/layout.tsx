@@ -8,6 +8,7 @@ import Script from "next/script";
 import SmoothScroll from "@/components/SmoothScroll";
 import ScrollIndicator from "@/components/ScrollIndicator";
 import CommandPalette from "@/components/CommandPalette";
+import KonamiCode from '@/components/KonamiCode';
 import AnalyticsEvents from "@/components/AnalyticsEvents";
 import { getSearchIndex } from "@/lib/blog";
 import { ANALYTICS_PATH } from "@/lib/analytics";
@@ -98,7 +99,7 @@ export default function RootLayout({
         {/* Applied before hydration to avoid a flash of the wrong theme */}
         <script
           dangerouslySetInnerHTML={{
-            __html: `(function(){try{var t=localStorage.getItem('theme');var root=document.documentElement;if(t==='light'){root.classList.remove('dark');root.classList.add('light');}else{root.classList.remove('light');root.classList.add('dark');}}catch(e){}})();`,
+            __html: `(function(){try{var t=localStorage.getItem('theme');var root=document.documentElement;if(t==='light'){root.classList.remove('dark');root.classList.add('light');}else{root.classList.remove('light');root.classList.add('dark');}var a=localStorage.getItem('accent');if(a&&/^[a-z]+$/.test(a)){root.dataset.accent=a;}}catch(e){}})();`,
           }}
         />
         <script
@@ -116,6 +117,7 @@ export default function RootLayout({
         // Browser extensions (e.g. ColorZilla) add attributes to <body> before React hydrates.
         suppressHydrationWarning
       >
+        <KonamiCode />
         {features.scrollIndicator && <ScrollIndicator />}
         {features.smoothScroll && <SmoothScroll />}
         {features.commandPalette && <CommandPalette posts={getSearchIndex()} />}

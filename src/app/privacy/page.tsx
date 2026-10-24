@@ -62,6 +62,7 @@ export default function Privacy() {
           </p>
           <ul className="list-disc pl-5 space-y-1">
             <li><Code>theme</Code>: your light or dark choice.</li>
+            <li><Code>accent</Code>: your accent colour choice.</li>
             {features.bootScreen && (
               <li>
                 <Code>iamxorum_initialized</Code> and <Code>iamxorum_user_id</Code>: that you have seen the intro animation (it is skipped for 24 hours),

@@ -13,7 +13,7 @@ export function useThemeSync() {
     syncTheme();
 
     const themeObserver = new MutationObserver(syncTheme);
-    themeObserver.observe(document.documentElement, { attributes: true, attributeFilter: ['class'] });
+    themeObserver.observe(document.documentElement, { attributes: true, attributeFilter: ['class', 'data-accent'] });
     return () => themeObserver.disconnect();
   }, []);
 
