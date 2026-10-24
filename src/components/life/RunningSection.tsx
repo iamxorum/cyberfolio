@@ -1,5 +1,7 @@
 'use client';
 
+import { useEffect, useState } from 'react';
+import { useRouter } from 'next/navigation';
 import { SiStrava } from 'react-icons/si';
 import type { RunningData, RunTotals } from '@/lib/strava';
 import { formatDay, formatDuration, formatHours, formatKm, formatPace } from '@/lib/running-format';
@@ -58,7 +60,33 @@ function SectionTitle({ profileUrl }: { profileUrl?: string }) {
   );
 }
 
+const BESTS_POLL_MS = 4000;
+const BESTS_MAX_POLLS = 15;
+
+function useRefreshUntilReady(pending: boolean) {
+  const router = useRouter();
+  const [gaveUp, setGaveUp] = useState(false);
+
+  useEffect(() => {
+    if (!pending) return;
+    let polls = 0;
+    const timer = setInterval(() => {
+      if (++polls > BESTS_MAX_POLLS) {
+        clearInterval(timer);
+        setGaveUp(true);
+        return;
+      }
+      router.refresh();
+    }, BESTS_POLL_MS);
+    return () => clearInterval(timer);
+  }, [pending, router]);
+
+  return gaveUp;
+}
+
 export default function RunningSection({ data }: { data: RunningData | null }) {
+  const bestsGaveUp = useRefreshUntilReady(data?.bests === null);
+
   if (!data) {
     return (
       <section id="running" className="flex flex-col gap-4 font-mono scroll-mt-20">
@@ -85,10 +113,15 @@ export default function RunningSection({ data }: { data: RunningData | null }) {
       </Reveal>
 
       <div className="flex flex-col lg:flex-row gap-3 sm:gap-4">
-        <Reveal draw delay={STAGGER_STEP_MS} className={`${panel} lg:w-1/3 flex flex-col gap-3`}>
+        {/* Keyed so the panel remounts when the bests arrive: the scroll reveal only watches items present at mount. */}
+        <Reveal key={data.bests === null ? 'pending' : 'ready'} draw delay={STAGGER_STEP_MS} className={`${panel} lg:w-1/3 flex flex-col gap-3`}>
           <p className={label}>PERSONAL BESTS</p>
           {data.bests === null ? (
-            <p className="text-xs text-[var(--terminal-text-muted)] animate-pulse">INDEXING_BEST_EFFORTS...</p>
+            bestsGaveUp ? (
+              <p className="text-xs text-[var(--terminal-text-muted)]">Personal bests are unavailable right now.</p>
+            ) : (
+              <p className="text-xs text-[var(--terminal-text-muted)] animate-pulse">INDEXING_BEST_EFFORTS...</p>
+            )
           ) : data.bests.length === 0 ? (
             <p className="text-xs text-[var(--terminal-text-muted)]">No best efforts recorded yet.</p>
           ) : (
