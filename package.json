@@ -4,6 +4,7 @@
   "private": true,
   "scripts": {
     "icons": "node scripts/subset-icon-font.mjs",
+    "check:og": "node scripts/check-og-images.mjs",
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
