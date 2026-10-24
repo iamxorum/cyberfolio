@@ -2,6 +2,7 @@
 
 import Link from 'next/link';
 import { features, siteConfig } from '@/config';
+import { changelogEnabled } from '@/lib/changelog';
 import { eventProps } from '@/lib/track';
 import EmailCTA from './EmailCTA';
 import FooterTagline from './FooterTagline';
@@ -25,7 +26,7 @@ export default function Footer() {
             <EmailCTA source="footer" className="hover:text-[var(--terminal-text)] transition-colors whitespace-nowrap">
               EMAIL
             </EmailCTA>
-            {features.changelog && (
+            {changelogEnabled && (
               <Link href="/changelog" className="hover:text-[var(--terminal-text)] transition-colors whitespace-nowrap">
                 CHANGELOG
               </Link>

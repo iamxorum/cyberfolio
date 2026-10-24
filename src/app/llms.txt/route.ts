@@ -1,5 +1,6 @@
 import { features, projects, siteConfig } from '@/config';
 import { getAllPosts } from '@/lib/blog';
+import { changelogEnabled } from '@/lib/changelog';
 import { siteUrl } from '@/lib/seo';
 
 // Re-read content/blog at most this often, so new posts reach the file without a rebuild.
@@ -14,7 +15,7 @@ export function GET() {
     entry('About', `${siteUrl}/about`, 'Background, experience, education, skills and certifications.'),
     entry('Projects', `${siteUrl}/projects`, 'Selected projects and open source contributions.'),
     ...(features.blog ? [entry('Blog', `${siteUrl}/blog`, 'Notes and write-ups.')] : []),
-    ...(features.changelog ? [entry('Changelog', `${siteUrl}/changelog`, 'Release history of this site.')] : []),
+    ...(changelogEnabled ? [entry('Changelog', `${siteUrl}/changelog`, 'Release history of this site.')] : []),
     ...(features.life ? [entry('Life', `${siteUrl}/life`, 'Off the clock: running, hobbies, gaming and music.')] : []),
   ];
 

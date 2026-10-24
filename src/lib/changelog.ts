@@ -1,3 +1,11 @@
+import { features } from '@/config';
+
+/**
+ * On unless `features.changelog` is false. A config written before this flag existed has no such key,
+ * so a missing one counts as on and an old src/config keeps building.
+ */
+export const changelogEnabled = !('changelog' in features) || Boolean(features.changelog);
+
 export interface Release {
   /** `Unreleased` for work that has not been tagged yet. */
   version: string;

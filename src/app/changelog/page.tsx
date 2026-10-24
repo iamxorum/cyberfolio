@@ -1,9 +1,9 @@
 import { notFound } from 'next/navigation';
-import { features, siteConfig } from '@/config';
+import { siteConfig } from '@/config';
 import PageShell, { PageHeading } from '@/components/PageShell';
 import JsonLd from '@/components/JsonLd';
 import Reveal from '@/components/Reveal';
-import { releases } from '@/lib/changelog';
+import { changelogEnabled, releases } from '@/lib/changelog';
 import { breadcrumbJsonLd, pageMetadata } from '@/lib/seo';
 
 export const metadata = pageMetadata({
@@ -15,7 +15,7 @@ export const metadata = pageMetadata({
 const breadcrumbs = breadcrumbJsonLd([{ name: 'Changelog', path: '/changelog' }]);
 
 export default function Changelog() {
-  if (!features.changelog) notFound();
+  if (!changelogEnabled) notFound();
 
   return (
     <>

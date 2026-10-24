@@ -1,6 +1,7 @@
 import type { MetadataRoute } from 'next';
 import { features, projects } from '@/config';
 import { getAllPosts } from '@/lib/blog';
+import { changelogEnabled } from '@/lib/changelog';
 import { siteUrl } from '@/lib/seo';
 
 // Re-read content/blog at most this often, so new posts reach the sitemap without a rebuild.
@@ -23,7 +24,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
       ? [{ url: `${siteUrl}/blog`, lastModified: newestPost, changeFrequency: 'weekly' as const, priority: 0.6 }]
       : []),
     ...(features.life ? [{ url: `${siteUrl}/life`, changeFrequency: 'weekly' as const, priority: 0.5 }] : []),
-    ...(features.changelog ? [{ url: `${siteUrl}/changelog`, changeFrequency: 'monthly' as const, priority: 0.3 }] : []),
+    ...(changelogEnabled ? [{ url: `${siteUrl}/changelog`, changeFrequency: 'monthly' as const, priority: 0.3 }] : []),
     { url: `${siteUrl}/privacy`, changeFrequency: 'yearly' as const, priority: 0.2 },
     ...posts.map((post) => ({
       url: `${siteUrl}/blog/${post.slug}`,
