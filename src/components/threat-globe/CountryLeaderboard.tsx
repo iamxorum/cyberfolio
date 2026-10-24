@@ -45,7 +45,7 @@ export default function CountryLeaderboard({ entries, selectedCountry, isGlobeRe
                 width={14}
                 height={10}
                 style={{ width: '14px', height: '10px' }}
-                className="rounded-[1px] flex-shrink-0"
+                className="rounded-[1px] flex-shrink-0 object-contain"
                 unoptimized
               />
               {item.country}

@@ -17,11 +17,11 @@ export default function LanguagesSection() {
               <div className="flex items-center gap-2">
                 <Image
                   src={`https://flagcdn.com/w20/${lang.countryCode}.png`}
-                  alt={`${lang.name} flag`}
+                  alt=""
                   width={20}
                   height={15}
                   style={{ width: '20px', height: '15px' }}
-                  className="rounded-sm"
+                  className="rounded-sm object-contain"
                   unoptimized
                 />
                 <span className="text-[var(--terminal-text-muted)] text-[10px] sm:text-xs">{lang.name}</span>
