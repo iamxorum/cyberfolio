@@ -1,7 +1,7 @@
 'use client';
 
 import { getPrintAccent } from '@/lib/accent';
-import { Document, Page, View, Text, StyleSheet } from '@react-pdf/renderer';
+import { Document, Page, View, Text, Image, StyleSheet } from '@react-pdf/renderer';
 import { CoverLetterStyle, SiteConfig } from '@/config';
 import { formatLetterDate } from '@/lib/format-time';
 import DocumentHeader from '@/components/pdf/DocumentHeader';
@@ -13,6 +13,8 @@ interface CoverLetterDocumentProps {
   style: CoverLetterStyle;
   email?: string;
   phone?: string;
+  /** Data URL of the signature image, shown above the typed name. */
+  signature?: string;
 }
 
 const styles = StyleSheet.create({
@@ -51,9 +53,16 @@ const styles = StyleSheet.create({
     fontSize: 11,
     marginTop: 24,
   },
+  signature: {
+    height: 44,
+    width: 140,
+    marginTop: 4,
+    objectFit: 'contain',
+    objectPosition: 'left',
+  },
 });
 
-export function CoverLetterPage({ siteConfig, style, email, phone }: CoverLetterDocumentProps) {
+export function CoverLetterPage({ siteConfig, style, email, phone, signature }: CoverLetterDocumentProps) {
   const contactInfo = getContactInfo(siteConfig, email, phone);
   const today = formatLetterDate();
   const accentColor = getPrintAccent();
@@ -74,6 +83,9 @@ export function CoverLetterPage({ siteConfig, style, email, phone }: CoverLetter
 
         <Text style={styles.signOff}>Sincerely,</Text>
         <Text style={[styles.signName, { color: accentColor }]}>{siteConfig.fullName}</Text>
+        {/* react-pdf's Image, not an <img>: PDFs have no alt text */}
+        {/* eslint-disable-next-line jsx-a11y/alt-text */}
+        {signature && <Image src={signature} style={styles.signature} />}
       </View>
     </Page>
   );

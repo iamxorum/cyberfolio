@@ -15,24 +15,28 @@ import type { ContributionStats } from '@/lib/github-contributions';
 import Reveal from '@/components/Reveal';
 import { eventProps } from '@/lib/track';
 import TypedText from '@/components/TypedText';
+import SignatureUnlock from '@/components/cv/SignatureUnlock';
+import type { SignatureState } from '@/hooks/useSignature';
 
 interface ResumePanelProps {
   contributionStats: Record<string, ContributionStats | null>;
   email?: string;
   phone?: string;
+  signature: SignatureState;
 }
 
 type CVStyle = (typeof cvConfig.styles)[number];
 
 const fileName = (kind: string, styleId: string) => `${siteConfig.fullName.replace(/\s+/g, '_')}_${kind}_${styleId}.pdf`;
 
-function useCVDownloads({ style, styleId, useColumnLayout, contributionStats, email, phone }: {
+function useCVDownloads({ style, styleId, useColumnLayout, contributionStats, email, phone, signature }: {
   style: CVStyle;
   styleId: string;
   useColumnLayout: boolean;
   contributionStats: Record<string, ContributionStats | null>;
   email?: string;
   phone?: string;
+  signature?: string;
 }) {
   const cv = usePdfDownload();
   const application = usePdfDownload();
@@ -68,7 +72,7 @@ function useCVDownloads({ style, styleId, useColumnLayout, contributionStats, em
       import('@react-pdf/renderer'),
       import('@/components/ApplicationDocument'),
     ]);
-    return { blob: await pdf(<ApplicationDocument cv={cvProps} letterStyle={letterStyle} />).toBlob(), filename: fileName('Application', styleId) };
+    return { blob: await pdf(<ApplicationDocument cv={cvProps} letterStyle={letterStyle} signature={signature} />).toBlob(), filename: fileName('Application', styleId) };
   });
 
   return { cv, downloadCV, application, downloadApplication, letterStyle };
@@ -94,7 +98,7 @@ function ColumnLayoutToggle({ active, onToggle }: { active: boolean; onToggle: (
   );
 }
 
-export default function ResumePanel({ contributionStats, email, phone }: ResumePanelProps) {
+export default function ResumePanel({ contributionStats, email, phone, signature }: ResumePanelProps) {
   const [selectedStyle, setSelectedStyle] = useState<string>(cvConfig.styles[0].id);
   const [useColumnLayout, setUseColumnLayout] = useState<boolean>(false);
   const [showCV, setShowCV] = useState<boolean>(true);
@@ -109,6 +113,7 @@ export default function ResumePanel({ contributionStats, email, phone }: ResumeP
     contributionStats,
     email,
     phone,
+    signature: signature.image,
   });
 
   return (
@@ -157,6 +162,8 @@ export default function ResumePanel({ contributionStats, email, phone }: ResumeP
         </div>
 
         <StyleSelectorGrid styles={cvConfig.styles} selectedId={selectedStyle} onSelect={setSelectedStyle} />
+
+        {features.signature && letterStyle && <SignatureUnlock signature={signature} />}
 
         {!ultrawide && <ViewToggleButton visible={showCV} onToggle={() => setShowCV(!showCV)} label="CV" />}
       </Reveal>

@@ -13,9 +13,11 @@ const noopSubscribe = () => () => {};
 interface CoverLetterPreviewProps {
   siteConfig: SiteConfig;
   style: CoverLetterStyle;
+  /** Data URL of the signature image, once unlocked. */
+  signature?: string;
 }
 
-export default function CoverLetterPreview({ siteConfig, style }: CoverLetterPreviewProps) {
+export default function CoverLetterPreview({ siteConfig, style, signature }: CoverLetterPreviewProps) {
   const contactInfo = getContactInfo(siteConfig);
   const today = useSyncExternalStore(noopSubscribe, () => formatLetterDate(), () => '');
   const accentColor = usePrintAccent();
@@ -36,6 +38,8 @@ export default function CoverLetterPreview({ siteConfig, style }: CoverLetterPre
 
         <p style={{ marginTop: '8pt' }}>Sincerely,</p>
         <p style={{ marginTop: '24pt', fontWeight: 'bold', color: accentColor }}>{siteConfig.fullName}</p>
+        {/* eslint-disable-next-line @next/next/no-img-element -- data URL, nothing for next/image to optimise */}
+        {signature && <img src={signature} alt="" draggable={false} style={{ height: '44pt', width: '140pt', marginTop: '4pt', objectFit: 'contain', objectPosition: 'left' }} />}
       </div>
     </div>
   );

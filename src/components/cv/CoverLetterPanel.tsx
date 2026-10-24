@@ -10,11 +10,13 @@ import ViewToggleButton from '@/components/cv/ViewToggleButton';
 import RevealContainer from '@/components/cv/RevealContainer';
 import DownloadButton from '@/components/cv/DownloadButton';
 import { usePdfDownload } from '@/hooks/usePdfDownload';
-import { coverLetterConfig, siteConfig } from '@/config';
+import { coverLetterConfig, features, siteConfig } from '@/config';
 import Reveal from '@/components/Reveal';
 import TypedText from '@/components/TypedText';
+import SignatureUnlock from '@/components/cv/SignatureUnlock';
+import type { SignatureState } from '@/hooks/useSignature';
 
-export default function CoverLetterPanel({ email, phone }: { email?: string; phone?: string }) {
+export default function CoverLetterPanel({ email, phone, signature }: { email?: string; phone?: string; signature: SignatureState }) {
   const [selectedLetterStyle, setSelectedLetterStyle] = useState<string>(coverLetterConfig.styles[0].id);
   const [showLetter, setShowLetter] = useState<boolean>(true);
   const ultrawide = useUltrawide();
@@ -28,7 +30,7 @@ export default function CoverLetterPanel({ email, phone }: { email?: string; pho
       import('@/components/CoverLetterDocument'),
     ]);
     const blob = await pdf(
-      <CoverLetterDocument siteConfig={siteConfig} style={selectedCoverLetterStyle} email={email} phone={phone} />
+      <CoverLetterDocument siteConfig={siteConfig} style={selectedCoverLetterStyle} email={email} phone={phone} signature={signature.image} />
     ).toBlob();
     return { blob, filename: `${siteConfig.fullName.replace(/\s+/g, '_')}_Cover_Letter_${selectedLetterStyle}.pdf` };
   });
@@ -52,13 +54,15 @@ export default function CoverLetterPanel({ email, phone }: { email?: string; pho
 
         <StyleSelectorGrid styles={coverLetterConfig.styles} selectedId={selectedLetterStyle} onSelect={setSelectedLetterStyle} />
 
+        {features.signature && <SignatureUnlock signature={signature} />}
+
         {!ultrawide && <ViewToggleButton visible={showLetter} onToggle={() => setShowLetter(!showLetter)} label="LETTER" />}
       </Reveal>
 
       {ultrawide ? (
         <div className="uw-cv-preview">
           <PagedPreview label="LETTER">
-            <CoverLetterPreview siteConfig={siteConfig} style={selectedCoverLetterStyle} />
+            <CoverLetterPreview siteConfig={siteConfig} style={selectedCoverLetterStyle} signature={signature.image} />
           </PagedPreview>
         </div>
       ) : (
@@ -68,6 +72,7 @@ export default function CoverLetterPanel({ email, phone }: { email?: string; pho
           <CoverLetterPreview
             siteConfig={siteConfig}
             style={selectedCoverLetterStyle}
+            signature={signature.image}
           />
         </ScaleToFit>
       </RevealContainer>

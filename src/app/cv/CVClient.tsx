@@ -6,6 +6,7 @@ import PageShell from '@/components/PageShell';
 import TabSwitcher, { type CVTab } from '@/components/cv/TabSwitcher';
 import ResumePanel from '@/components/cv/ResumePanel';
 import CoverLetterPanel from '@/components/cv/CoverLetterPanel';
+import { useSignature } from '@/hooks/useSignature';
 import { NO_CONTRIBUTION_STATS, type ContributionStats } from '@/lib/github-contributions';
 
 interface CVClientProps {
@@ -16,14 +17,16 @@ interface CVClientProps {
 
 export default function CVClient({ contributionStats = NO_CONTRIBUTION_STATS, email, phone }: CVClientProps) {
   const [activeTab, setActiveTab] = useState<CVTab>('resume');
+  // Held here so unlocking on one tab signs the PDFs on the other.
+  const signature = useSignature();
 
   return (
     <PageShell width="xl" viewport printable boot={false} mainClassName="uw-cv-main">
       {features.coverLetter && <TabSwitcher activeTab={activeTab} onChange={setActiveTab} />}
 
       <div key={activeTab} className="uw-cv animate-fade-in-fast print:animate-none">
-        {activeTab === 'resume' && <ResumePanel contributionStats={contributionStats} email={email} phone={phone} />}
-        {features.coverLetter && activeTab === 'letter' && <CoverLetterPanel email={email} phone={phone} />}
+        {activeTab === 'resume' && <ResumePanel contributionStats={contributionStats} email={email} phone={phone} signature={signature} />}
+        {features.coverLetter && activeTab === 'letter' && <CoverLetterPanel email={email} phone={phone} signature={signature} />}
       </div>
     </PageShell>
   );

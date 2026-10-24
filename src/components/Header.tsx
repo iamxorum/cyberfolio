@@ -121,7 +121,7 @@ export default function Header() {
               <span aria-hidden="true" className="material-symbols-outlined text-base sm:text-lg">mail</span>
             </EmailCTA>
             {features.commandPalette && <CommandPaletteButton />}
-            <AccentToggle />
+            {features.accentPicker && <AccentToggle />}
             <ThemeToggle />
             {features.cv && (
               <Link

@@ -10,6 +10,8 @@ export interface FeaturesConfig {
   cv: boolean;
   /** Cover letter tab on /cv. */
   coverLetter: boolean;
+  /** Password-gated signature on the cover letter and CV + letter PDFs. Needs SIGNATURE_PASSWORD in .env and private/signature.png. Off = /api/signature 404. */
+  signature: boolean;
 
   // Home
   /** World globe + live threat feed. */
@@ -28,6 +30,8 @@ export interface FeaturesConfig {
   discography: boolean;
 
   // Site-wide
+  /** Accent colour picker in the header. Off = the default accent only. */
+  accentPicker: boolean;
   /** Ctrl/⌘ K search. */
   commandPalette: boolean;
   /** Boot screen on first visit. */
@@ -54,6 +58,7 @@ export const features: FeaturesConfig = {
   changelog: true,
   cv: true,
   coverLetter: true,
+  signature: false,
 
   threatGlobe: true,
   systemStats: true,
@@ -63,6 +68,7 @@ export const features: FeaturesConfig = {
   steam: false,
   discography: true,
 
+  accentPicker: true,
   commandPalette: true,
   bootScreen: true,
   turnstile: false,
