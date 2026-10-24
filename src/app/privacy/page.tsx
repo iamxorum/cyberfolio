@@ -13,7 +13,7 @@ export const metadata = pageMetadata({
 const breadcrumbs = breadcrumbJsonLd([{ name: 'Privacy', path: '/privacy' }]);
 
 // Update by hand whenever the data this site handles changes.
-const LAST_UPDATED = '2026-10-23';
+const LAST_UPDATED = '2026-10-24';
 
 const hostname = (origin: string) => origin.replace(/^https?:\/\//, '').replace(/^www\./, '');
 
