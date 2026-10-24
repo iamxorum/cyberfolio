@@ -233,7 +233,7 @@ async function fetchBests(): Promise<PersonalBest[]> {
 }
 
 function loadFromDisk() {
-  diskLoad ??= readFile(CACHE_FILE, 'utf8')
+  diskLoad ??= readFile(/*turbopackIgnore: true*/ CACHE_FILE, 'utf8')
     .then((raw) => {
       const saved: { summary?: typeof summaryCache; bests?: typeof bestsCache } = JSON.parse(raw);
       summaryCache ??= saved.summary ?? null;
