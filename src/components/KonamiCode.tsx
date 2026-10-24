@@ -8,7 +8,7 @@ import { track } from '@/lib/track';
 const SEQUENCE = ['ArrowUp', 'ArrowUp', 'ArrowDown', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'ArrowLeft', 'ArrowRight', 'b', 'a'];
 const NOTICE_MS = 2800;
 
-/** Easter egg: the Konami code toggles the secret `matrix` accent. Renders only the confirmation line. */
+/** The Konami code toggles the hidden `matrix` accent. */
 export default function KonamiCode() {
   const [notice, setNotice] = useState<string | null>(null);
 

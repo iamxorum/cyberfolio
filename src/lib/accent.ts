@@ -1,11 +1,10 @@
-// Accent colour presets, applied as `data-accent` on <html> (the swatches live in colors.css). The layout's
-// pre-hydration script reads the same `accent` key, so the choice is in place before the first paint.
+// Accent presets: set as data-accent on <html>, colours in colors.css. The layout script restores the saved one before first paint.
 export const ACCENTS = ['default', 'cyan', 'teal', 'green', 'blue', 'violet', 'magenta', 'red', 'orange', 'mono'] as const;
 
-/** `matrix` is a secret preset (Konami code): outside the cycle, so the picker moves on to `default` from it. */
+/** `matrix` is the Konami preset and is not in the picker. */
 export type Accent = (typeof ACCENTS)[number] | 'matrix';
 
-/** Dark-theme primary of each preset, for the picker's dot. `default` reads the live variable instead. */
+/** Dot colour per preset in the picker. */
 export const ACCENT_DOT: Record<Accent, string> = {
   default: 'var(--color-primary)',
   cyan: '#1fb5c9',
@@ -33,6 +32,6 @@ export function setAccent(accent: Accent) {
     if (accent === 'default') localStorage.removeItem('accent');
     else localStorage.setItem('accent', accent);
   } catch {
-    // Storage can be blocked; the accent still applies for this visit.
+    // storage can be blocked
   }
 }

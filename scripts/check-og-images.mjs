@@ -1,7 +1,6 @@
-// Checks that every page in the sitemap has a social card (og:image, twitter:image) that actually loads.
-// Run against a running site: `npm run check:og` (http://localhost:3000) or `npm run check:og -- https://iamxorum.ro`.
-// Absolute URLs in the sitemap and meta tags point at the production domain; they are rewritten to the base
-// given here, so a local server can be checked before deploying. Exits 1 if any card is missing or broken.
+// Checks that every page in the sitemap has an og:image / twitter:image that loads.
+// `npm run check:og` tests localhost:3000, `npm run check:og -- https://iamxorum.ro` another site.
+// Sitemap and meta URLs point at production, so they are rewritten to the base given here. Exits 1 on any failure.
 const base = (process.argv[2] ?? 'http://localhost:3000').replace(/\/$/, '');
 
 const local = (url) => `${base}${new URL(url, base).pathname}${new URL(url, base).search}`;

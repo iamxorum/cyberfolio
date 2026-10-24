@@ -15,8 +15,7 @@ const RATE_WINDOW_MS = 60_000;
 const reply = (status: number, error?: string) =>
   new Response(error ? JSON.stringify({ error }) : null, { status, headers: { 'Content-Type': 'application/json' } });
 
-// A chunked request carries no Content-Length, so the size is enforced while reading: the stream is cancelled
-// as soon as it passes the limit instead of buffering the whole body first. Returns null when it is too large.
+// Chunked requests have no Content-Length, so the limit is enforced while streaming. Returns null if too large.
 async function readBodyCapped(request: Request, maxBytes: number): Promise<string | null> {
   if (!request.body) return '';
   const reader = request.body.getReader();

@@ -57,7 +57,7 @@
   --terminal-hover-border: rgba(var(--color-text-rgb), 0.2);
   --terminal-on-primary: #000000;
 
-  /* Motion tokens — see .claude/skills/improve-animations/AUDIT.md for the rules behind these. */
+  /* Motion tokens */
   --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
   --duration-fast: 150ms;
   --duration-base: 200ms;
@@ -127,8 +127,7 @@ html.light {
   --terminal-on-primary: #ffffff;
 }
 
-/* Accent presets (data-accent on <html>, see lib/accent.ts). Each overrides the primary and accent family;
-   surfaces and text stay with the theme. Light values are darker so text keeps AA contrast on the cream background. */
+/* Accent presets (data-accent on <html>). Light variants are darker to keep text contrast. */
 html.dark[data-accent="cyan"] {
   --color-primary: #1fb5c9;
   --color-accent: #0df2d3;

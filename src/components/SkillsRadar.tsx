@@ -14,7 +14,7 @@ export default function SkillsRadar({ skills }: SkillsRadarProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [size, setSize] = useState(MAX_SIZE);
-  // Bumped when the theme or accent changes, so the canvas (which reads CSS variables once per draw) repaints.
+  // Bumped on theme or accent change so the canvas redraws.
   const [paletteVersion, setPaletteVersion] = useState(0);
 
   useEffect(() => {

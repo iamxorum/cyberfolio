@@ -4,8 +4,7 @@ import { useEffect, useRef, useState, useSyncExternalStore } from 'react';
 import { ACCENTS, ACCENT_DOT, getAccent, setAccent, type Accent } from '@/lib/accent';
 import { track } from '@/lib/track';
 
-// The accent lives on <html>'s data-accent attribute (set pre-hydration by the layout script), so read it from
-// there. The server snapshot is 'default', which keeps hydration consistent.
+// Read from <html data-accent>, which the layout script sets before hydration.
 function subscribeToAccent(onChange: () => void) {
   const observer = new MutationObserver(onChange);
   observer.observe(document.documentElement, { attributes: true, attributeFilter: ['data-accent'] });
@@ -20,7 +19,7 @@ export default function AccentToggle() {
   const wrapperRef = useRef<HTMLDivElement>(null);
   const buttonRef = useRef<HTMLButtonElement>(null);
 
-  // Close on Escape (returning focus to the button) or a tap outside.
+  // Close on Escape or an outside click.
   useEffect(() => {
     if (!open) return;
     const onKeyDown = (e: KeyboardEvent) => {
@@ -46,9 +45,7 @@ export default function AccentToggle() {
     buttonRef.current?.focus();
   };
 
-  // The secret preset is not in the list, so it is shown as the current dot but is not selectable.
-  // The wrapper is static on phones so the picker spans the header (its sticky bar is the positioned parent);
-  // from sm up it is anchored under the button.
+  // On phones the wrapper is static so the picker spans the header; from sm up it sits under the button.
   return (
     <div ref={wrapperRef} className="static sm:relative flex-shrink-0">
       <button
