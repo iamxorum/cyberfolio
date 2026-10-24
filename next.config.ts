@@ -6,22 +6,6 @@ const { security } = siteConfig;
 
 const isDev = process.env.NODE_ENV === 'development';
 
-// connect-src allows data: because yoga-layout (inside @react-pdf, used for the CV PDFs) fetches its inlined WASM from a data: URL.
-const cspHeader = `
-  default-src 'self';
-  script-src 'self' 'unsafe-inline' 'wasm-unsafe-eval' ${security.scripts.join(' ')};
-  style-src 'self' 'unsafe-inline' ${security.styles.join(' ')};
-  img-src 'self' blob: data: ${security.images.join(' ')};
-  font-src 'self' ${security.fonts.join(' ')};
-  object-src 'none';
-  base-uri 'self';
-  form-action 'self';
-  frame-src 'self' ${security.frames.join(' ')};
-  connect-src 'self' data: ${isDev ? 'ws: wss:' : ''} iamxorum.ro *.iamxorum.ro ${security.connects.join(' ')};
-  worker-src 'self' blob:;
-  ${isDev ? '' : 'upgrade-insecure-requests;'}
-`.replace(/\n/g, '').replace(/\s{2,}/g, ' ').trim();
-
 const dynamicRemotePatterns = security.images.map((domain) => {
   const isHttp = domain.startsWith('http://');
   const cleanHostname = domain.replace(/^https?:\/\//, '');
@@ -48,13 +32,13 @@ const nextConfig: NextConfig = {
       {
         source: '/(.*)',
         headers: [
-          { key: 'Content-Security-Policy', value: cspHeader },
           { key: 'X-Content-Type-Options', value: 'nosniff' },
           { key: 'X-Frame-Options', value: 'SAMEORIGIN' },
           { key: 'Referrer-Policy', value: 'strict-origin-when-cross-origin' },
-          { key: 'Strict-Transport-Security', value: 'max-age=63072000; includeSubDomains' },
+          { key: 'Strict-Transport-Security', value: 'max-age=63072000; includeSubDomains; preload' },
           { key: 'Permissions-Policy', value: 'camera=(), microphone=(), geolocation=(), interest-cohort=()' },
           { key: 'Cross-Origin-Opener-Policy', value: 'same-origin' },
+          { key: 'Cross-Origin-Resource-Policy', value: 'same-origin' },
         ],
       },
       // Everything in these paths is committed config content, immutable at a given URL —
