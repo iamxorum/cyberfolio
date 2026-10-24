@@ -14,6 +14,17 @@ export interface Release {
 // Newest first. Add a release here when the version is bumped.
 export const releases: Release[] = [
   {
+    version: '1.6.5',
+    date: '2026-10-24',
+    changes: [
+      'Security: the access cookie is bound to the browser it was issued to, signed with its own secret and uses the __Host- prefix',
+      'Security: scripts run only with a per-request nonce (no more unsafe-inline), blocked content is reported to a log endpoint, and HSTS is ready for preload',
+      'Theme and accent are saved as cookies, so the page loads already themed with no flash',
+      'CV and cover letter take the site accent instead of a colour per style, with more room under the name',
+      'Accent picker: hovering a swatch outlines it in its own colour',
+    ],
+  },
+  {
     version: '1.6.4',
     date: '2026-10-24',
     changes: [
