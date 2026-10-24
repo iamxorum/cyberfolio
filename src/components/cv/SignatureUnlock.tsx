@@ -27,7 +27,7 @@ export default function SignatureUnlock({ signature }: { signature: SignatureSta
     >
       <label htmlFor="signature-password" className="flex items-center gap-2 font-mono text-xs sm:text-sm text-[var(--terminal-text-dim)]">
         <span aria-hidden="true" className="material-symbols-outlined text-base">draw</span>
-        Sign the PDF
+        Sign the PDF (only for admin)
       </label>
       <input
         id="signature-password"
