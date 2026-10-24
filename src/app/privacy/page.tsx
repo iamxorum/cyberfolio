@@ -13,7 +13,7 @@ export const metadata = pageMetadata({
 const breadcrumbs = breadcrumbJsonLd([{ name: 'Privacy', path: '/privacy' }]);
 
 // Update by hand whenever the data this site handles changes.
-const LAST_UPDATED = '2026-10-24';
+const LAST_UPDATED = '2026-10-25';
 
 const hostname = (origin: string) => origin.replace(/^https?:\/\//, '').replace(/^www\./, '');
 
@@ -81,6 +81,10 @@ export default function Privacy() {
               It is signed, HttpOnly, lasts 24 hours, and just tells the server you passed, so the CV and contact details unlock. It holds no personal data.
             </p>
           )}
+          <p>
+            Cloudflare, which sits in front of this site, may also set <Code>cf_clearance</Code> after one of its security checks.
+            It is Cloudflare&apos;s cookie, not this site&apos;s: it only records that your browser passed the check, and lasts up to a year.
+          </p>
         </Section>
 
         {analyticsOn && (
