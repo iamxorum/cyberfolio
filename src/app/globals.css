@@ -303,6 +303,7 @@ html.calm::view-transition-group(*) {
 
 .animate-panel-scan {
   animation: panel-scan 7s ease-in-out infinite;
+  will-change: transform, opacity;
 }
 
 .globe-tooltip {

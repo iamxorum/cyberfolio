@@ -36,6 +36,8 @@ const nextConfig: NextConfig = {
   allowedDevOrigins: DEV_LAN_HOSTS,
   output: 'standalone',
   poweredByHeader: false,
+  // The source is public on GitHub; shipping maps makes production errors readable and clears Lighthouse's source-map audit.
+  productionBrowserSourceMaps: true,
 
   // View transitions need no flag since Next 16.4: <ViewTransition> works in the App Router out of the box.
 
