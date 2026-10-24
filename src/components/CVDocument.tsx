@@ -1,5 +1,6 @@
 'use client';
 
+import { getPrintAccent } from '@/lib/accent';
 import { Document, Page, View, Text, Link, StyleSheet } from '@react-pdf/renderer';
 import { CVStyle, SiteConfig, Experience, Education, Language, Certification, Hobby, Project, Skill } from '@/config';
 import {
@@ -319,7 +320,7 @@ export function CVPage({
   useColumnLayout = false,
   contributionStats = {},
 }: CVDocumentProps) {
-  const accentColor = style.colorScheme?.primary || '#000000';
+  const accentColor = getPrintAccent();
   const { technicalSkills, softSkills, hasSoftSkills } = getRelevantSkills(style);
   const publicProjects = getPublicProjects(projects, style);
   const sortedExperience = sortExperienceByDate(experience);

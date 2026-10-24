@@ -1,5 +1,6 @@
 'use client';
 
+import { usePrintAccent } from '@/hooks/usePrintAccent';
 import { CVStyle, SiteConfig, Experience, Education, Language, Certification, Hobby, Project } from '@/config';
 import {
   getRelevantSkills,
@@ -46,7 +47,7 @@ export default function CVTemplate({
   useColumnLayout = true,
   contributionStats = NO_CONTRIBUTION_STATS,
 }: CVTemplateProps) {
-  const accentColor = style.colorScheme?.primary || '#000000';
+  const accentColor = usePrintAccent();
   const { technicalSkills, softSkills, hasSoftSkills } = getRelevantSkills(style);
   const publicProjects = getPublicProjects(projects, style);
 

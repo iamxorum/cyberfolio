@@ -15,10 +15,6 @@ export interface CVStyle {
   showProjects?: boolean;
   /** Default true. */
   showHobbies?: boolean;
-  colorScheme?: {
-    primary: string;
-    secondary?: string;
-  };
 }
 
 export interface CVConfig {
@@ -38,9 +34,6 @@ export const cvConfig: CVConfig = {
       icon: 'settings',
       summary: 'Example',
       skillCategories: ['Example'],
-      colorScheme: {
-        primary: '#1919e6',
-      }, 
     },
   ],
 };

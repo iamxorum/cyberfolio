@@ -1,5 +1,6 @@
 'use client';
 
+import { getPrintAccent } from '@/lib/accent';
 import { Document, Page, View, Text, StyleSheet } from '@react-pdf/renderer';
 import { CoverLetterStyle, SiteConfig } from '@/config';
 import { formatLetterDate } from '@/lib/format-time';
@@ -55,7 +56,7 @@ const styles = StyleSheet.create({
 export function CoverLetterPage({ siteConfig, style, email, phone }: CoverLetterDocumentProps) {
   const contactInfo = getContactInfo(siteConfig, email, phone);
   const today = formatLetterDate();
-  const accentColor = style.colorScheme?.primary || '#000000';
+  const accentColor = getPrintAccent();
   const salutation = style.salutation || 'Dear Hiring Manager,';
 
   return (

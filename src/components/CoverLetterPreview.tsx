@@ -1,6 +1,7 @@
 'use client';
 
 import { useSyncExternalStore } from 'react';
+import { usePrintAccent } from '@/hooks/usePrintAccent';
 import { formatLetterDate } from '@/lib/format-time';
 import { CoverLetterStyle, SiteConfig } from '@/config';
 import { getContactInfo } from '@/lib/cv-helpers';
@@ -17,7 +18,7 @@ interface CoverLetterPreviewProps {
 export default function CoverLetterPreview({ siteConfig, style }: CoverLetterPreviewProps) {
   const contactInfo = getContactInfo(siteConfig);
   const today = useSyncExternalStore(noopSubscribe, () => formatLetterDate(), () => '');
-  const accentColor = style.colorScheme?.primary || '#000000';
+  const accentColor = usePrintAccent();
   const salutation = style.salutation || 'Dear Hiring Manager,';
 
   return (

@@ -15,10 +15,6 @@ export interface CoverLetterStyle {
   /** One entry per paragraph. */
   body: string[];
   closing: string;
-  colorScheme?: {
-    primary: string;
-    secondary?: string;
-  };
 }
 
 export interface CoverLetterConfig {
@@ -39,9 +35,6 @@ export const coverLetterConfig: CoverLetterConfig = {
         'Example paragraph describing what draws you to this kind of role.',
       ],
       closing: 'Thank you for considering my application. I would welcome the opportunity to discuss how my background could contribute to your team.',
-      colorScheme: {
-        primary: '#1919e6',
-      },
     },
   ],
 };
