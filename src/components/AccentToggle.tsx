@@ -1,10 +1,10 @@
 'use client';
 
-import { useEffect, useRef, useState, useSyncExternalStore } from 'react';
+import { useEffect, useRef, useState, useSyncExternalStore, type CSSProperties } from 'react';
 import { ACCENTS, ACCENT_DOT, getAccent, setAccent, type Accent } from '@/lib/accent';
 import { track } from '@/lib/track';
 
-// Read from <html data-accent>, which the layout script sets before hydration.
+// Read from <html data-accent>, which the layout renders from the saved cookie.
 function subscribeToAccent(onChange: () => void) {
   const observer = new MutationObserver(onChange);
   observer.observe(document.documentElement, { attributes: true, attributeFilter: ['data-accent'] });
@@ -77,8 +77,10 @@ export default function AccentToggle() {
             aria-pressed={accent === option}
             aria-label={option}
             title={option}
-            className={`flex h-8 w-8 items-center justify-center rounded-full border transition active:scale-90 ${
-              accent === option ? 'border-primary' : 'border-[var(--terminal-border)] hover:border-primary'
+            // --dot is this swatch's own colour, so hovering one previews that colour rather than the current accent.
+            style={{ '--dot': ACCENT_DOT[option] } as CSSProperties}
+            className={`flex h-8 w-8 items-center justify-center rounded-full border transition active:scale-90 hover:border-[var(--dot)] ${
+              accent === option ? 'border-[var(--dot)]' : 'border-[var(--terminal-border)]'
             }`}
           >
             <span aria-hidden="true" className="block h-4 w-4 rounded-full" style={dotStyle(ACCENT_DOT[option])} />
