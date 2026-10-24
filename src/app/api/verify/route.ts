@@ -86,7 +86,7 @@ export async function POST(request: Request) {
         }
 
         const response = NextResponse.json({ success: true });
-        if (!grantAccess(response)) return fail('Server misconfiguration', 500);
+        if (!grantAccess(request, response)) return fail('Server misconfiguration', 500);
         return response;
     } catch (error) {
         if (error instanceof DOMException && error.name === 'TimeoutError') {

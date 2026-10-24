@@ -1,25 +1,43 @@
 import 'server-only';
-import { createHmac, timingSafeEqual } from 'node:crypto';
-import { cookies } from 'next/headers';
+import { createHash, createHmac, timingSafeEqual } from 'node:crypto';
+import { cookies, headers } from 'next/headers';
 import type { NextResponse } from 'next/server';
 import { features } from '@/config';
 import { isDevelopment } from '@/lib/env';
 import { getTurnstileSecretKey } from '@/lib/turnstile';
 
-const ACCESS_COOKIE = 'iamxorum_access';
+// The __Host- prefix makes browsers require Secure + Path=/ and reject a Domain, so a sibling subdomain cannot overwrite
+// the cookie. It needs HTTPS, which plain-http dev servers lack.
+const ACCESS_COOKIE = isDevelopment ? 'iamxorum_access' : '__Host-iamxorum_access';
 const ACCESS_MAX_AGE_S = 24 * 60 * 60;
+// Bump to invalidate every cookie issued under an older payload format.
+const ACCESS_VERSION = 'v1';
+const MIN_SECRET_LENGTH = 32;
 
-// Signed with a key derived from the Turnstile secret, so no extra secret has to be configured.
-const sign = (payload: string, secret: string) =>
-  createHmac('sha256', `access-cookie:${secret}`).update(payload).digest('hex');
+/** ACCESS_COOKIE_SECRET when set; otherwise a key derived from the Turnstile secret, so existing installs keep working. */
+function getSigningKey(): string | undefined {
+  const dedicated = process.env.ACCESS_COOKIE_SECRET;
+  if (dedicated && dedicated.length >= MIN_SECRET_LENGTH) return `access-cookie:${dedicated}`;
+  if (dedicated) console.warn(`[ACCESS] ACCESS_COOKIE_SECRET is shorter than ${MIN_SECRET_LENGTH} characters and was ignored`);
+
+  const turnstile = getTurnstileSecretKey();
+  return turnstile ? `access-cookie:${turnstile}` : undefined;
+}
+
+const sign = (payload: string, key: string) => createHmac('sha256', key).update(payload).digest('hex');
+
+// Binds the cookie to the browser it was issued to: a copy replayed from another client fails the check.
+// The IP is left out on purpose, as mobile visitors change it constantly.
+const clientFingerprint = (userAgent: string | null) =>
+  createHash('sha256').update(userAgent ?? '').digest('hex').slice(0, 16);
 
 /** Marks the visitor as verified for 24h with a signed, HttpOnly cookie. Returns false if no secret is configured. */
-export function grantAccess(response: NextResponse): boolean {
-  const secret = getTurnstileSecretKey();
-  if (!secret) return false;
+export function grantAccess(request: Request, response: NextResponse): boolean {
+  const key = getSigningKey();
+  if (!key) return false;
 
-  const expires = String(Date.now() + ACCESS_MAX_AGE_S * 1000);
-  response.cookies.set(ACCESS_COOKIE, `${expires}.${sign(expires, secret)}`, {
+  const payload = [ACCESS_VERSION, Date.now() + ACCESS_MAX_AGE_S * 1000, clientFingerprint(request.headers.get('user-agent'))].join('.');
+  response.cookies.set(ACCESS_COOKIE, `${payload}.${sign(payload, key)}`, {
     httpOnly: true,
     secure: !isDevelopment,
     sameSite: 'lax',
@@ -33,14 +51,18 @@ export function grantAccess(response: NextResponse): boolean {
 export async function hasAccess(): Promise<boolean> {
   if (!features.turnstile) return true;
 
-  const secret = getTurnstileSecretKey();
+  const key = getSigningKey();
   const value = (await cookies()).get(ACCESS_COOKIE)?.value;
-  if (!secret || !value) return false;
+  if (!key || !value) return false;
 
-  const [expires, signature = ''] = value.split('.');
+  const [version, expires, fingerprint, signature = ''] = value.split('.');
+  if (version !== ACCESS_VERSION || !fingerprint) return false;
   if (!(Number(expires) > Date.now())) return false;
 
-  const expected = Buffer.from(sign(expires, secret));
+  const expected = Buffer.from(sign(`${version}.${expires}.${fingerprint}`, key));
   const given = Buffer.from(signature);
-  return given.length === expected.length && timingSafeEqual(given, expected);
+  if (given.length !== expected.length || !timingSafeEqual(given, expected)) return false;
+
+  const current = clientFingerprint((await headers()).get('user-agent'));
+  return fingerprint === current;
 }
