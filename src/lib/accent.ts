@@ -6,7 +6,7 @@ export type Accent = (typeof ACCENTS)[number] | 'matrix';
 
 /** Dot colour per preset in the picker. */
 export const ACCENT_DOT: Record<Accent, string> = {
-  default: 'var(--color-primary)',
+  default: '#b0a61a',
   cyan: '#1fb5c9',
   teal: '#14b8a6',
   green: '#2fb344',

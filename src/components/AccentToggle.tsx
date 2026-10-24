@@ -11,7 +11,7 @@ function subscribeToAccent(onChange: () => void) {
   return () => observer.disconnect();
 }
 
-const dotStyle = (accent: Accent) => ({ backgroundColor: ACCENT_DOT[accent], boxShadow: `0 0 8px ${ACCENT_DOT[accent]}` });
+const dotStyle = (color: string) => ({ backgroundColor: color, boxShadow: `0 0 8px ${color}` });
 
 export default function AccentToggle() {
   const accent = useSyncExternalStore(subscribeToAccent, getAccent, () => 'default' as const);
@@ -58,7 +58,7 @@ export default function AccentToggle() {
         title={`Accent colour: ${accent}`}
         className="flex items-center justify-center w-11 h-11 sm:w-9 sm:h-9 rounded border border-[var(--terminal-border)] text-[var(--terminal-text-dim)] hover:text-primary hover:border-primary active:scale-95 transition"
       >
-        <span aria-hidden="true" className="block w-3.5 h-3.5 rounded-full" style={dotStyle(accent)} />
+        <span aria-hidden="true" className="block w-3.5 h-3.5 rounded-full" style={dotStyle('var(--color-primary)')} />
       </button>
       <div
         id="accent-picker"
@@ -81,7 +81,7 @@ export default function AccentToggle() {
               accent === option ? 'border-primary' : 'border-[var(--terminal-border)] hover:border-primary'
             }`}
           >
-            <span aria-hidden="true" className="block h-4 w-4 rounded-full" style={dotStyle(option)} />
+            <span aria-hidden="true" className="block h-4 w-4 rounded-full" style={dotStyle(ACCENT_DOT[option])} />
           </button>
         ))}
       </div>
