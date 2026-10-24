@@ -14,6 +14,7 @@ export function GET() {
     entry('About', `${siteUrl}/about`, 'Background, experience, education, skills and certifications.'),
     entry('Projects', `${siteUrl}/projects`, 'Selected projects and open source contributions.'),
     ...(features.blog ? [entry('Blog', `${siteUrl}/blog`, 'Notes and write-ups.')] : []),
+    ...(features.changelog ? [entry('Changelog', `${siteUrl}/changelog`, 'Release history of this site.')] : []),
     ...(features.life ? [entry('Life', `${siteUrl}/life`, 'Off the clock: running, hobbies, gaming and music.')] : []),
   ];
 

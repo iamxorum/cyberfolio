@@ -4,6 +4,8 @@ export interface FeaturesConfig {
   blog: boolean;
   /** /life. */
   life: boolean;
+  /** /changelog, release history from src/lib/changelog.ts. */
+  changelog: boolean;
   /** /cv and the GET_CV button. */
   cv: boolean;
   /** Cover letter tab on /cv. */
@@ -49,6 +51,7 @@ export interface FeaturesConfig {
 export const features: FeaturesConfig = {
   blog: true,
   life: true,
+  changelog: true,
   cv: true,
   coverLetter: true,
 

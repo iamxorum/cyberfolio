@@ -25,6 +25,11 @@ export default function Footer() {
             <EmailCTA source="footer" className="hover:text-[var(--terminal-text)] transition-colors whitespace-nowrap">
               EMAIL
             </EmailCTA>
+            {features.changelog && (
+              <Link href="/changelog" className="hover:text-[var(--terminal-text)] transition-colors whitespace-nowrap">
+                CHANGELOG
+              </Link>
+            )}
             <Link href="/privacy" className="hover:text-[var(--terminal-text)] transition-colors whitespace-nowrap">
               PRIVACY
             </Link>

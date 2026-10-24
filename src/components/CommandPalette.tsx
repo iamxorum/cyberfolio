@@ -67,6 +67,7 @@ export default function CommandPalette({ posts }: { posts: PaletteBlogPost[] }) 
       { id: 'nav-projects', group: 'NAVIGATE', label: './projects', icon: 'folder_open', keywords: 'work portfolio', run: go('/projects') },
       ...(features.blog ? [{ id: 'nav-blog', group: 'NAVIGATE' as const, label: './blog', icon: 'article', keywords: 'posts writing articles', run: go('/blog') }] : []),
       ...(features.life ? [{ id: 'nav-life', group: 'NAVIGATE' as const, label: './life', icon: 'directions_run', keywords: features.strava ? 'running strava hobbies' : 'hobbies music', run: go('/life') }] : []),
+      ...(features.changelog ? [{ id: 'nav-changelog', group: 'NAVIGATE' as const, label: './changelog', icon: 'history', keywords: 'releases versions updates news', run: go('/changelog') }] : []),
       ...(features.cv ? [{ id: 'nav-cv', group: 'NAVIGATE' as const, label: './cv', icon: 'download', keywords: 'resume cover letter pdf download', run: go('/cv') }] : []),
       ...posts.map<PaletteCommand>((post) => ({
         id: `post-${post.slug}`,
