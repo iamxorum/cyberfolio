@@ -1,6 +1,7 @@
 'use client';
 
 import Link from 'next/link';
+import CopyLinkButton from '@/components/CopyLinkButton';
 import PageShell from '@/components/PageShell';
 import Reveal from '@/components/Reveal';
 import TypedText from '@/components/TypedText';
@@ -159,13 +160,16 @@ export function ProjectDetailContent({ project, contributionStats, embedded = fa
       {contributionStats && contributionStats.mergedCount > 0 && <ContributionLog stats={contributionStats} />}
 
       {embedded ? (
-        <Link
-          href={`/projects/${project.id}`}
-          className="group inline-flex items-center gap-2 self-start text-sm font-mono text-[var(--terminal-text-dim)] hover:text-primary transition-colors mt-2"
-        >
-          OPEN_FULL_PAGE
-          <span aria-hidden="true" className="material-symbols-outlined text-base group-hover:translate-x-1 transition-transform">arrow_forward</span>
-        </Link>
+        <div className="flex flex-wrap items-center gap-x-6 gap-y-2 mt-2 text-sm text-[var(--terminal-text-dim)]">
+          <Link
+            href={`/projects/${project.id}`}
+            className="group inline-flex items-center gap-2 font-mono hover:text-primary transition-colors"
+          >
+            OPEN_FULL_PAGE
+            <span aria-hidden="true" className="material-symbols-outlined text-base group-hover:translate-x-1 transition-transform">arrow_forward</span>
+          </Link>
+          <CopyLinkButton path={`/projects/${project.id}`} event="project_link_copy" />
+        </div>
       ) : (
         <Link
           href="/projects"

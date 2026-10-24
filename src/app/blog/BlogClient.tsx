@@ -6,6 +6,7 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { contentConfig } from '@/config';
 import { eventProps, track } from '@/lib/track';
+import CopyLinkButton from '@/components/CopyLinkButton';
 import UltrawideDetail from '@/components/UltrawideDetail';
 import { useUltrawide } from '@/hooks/useUltrawide';
 import { useEscapeKey } from '@/hooks/useEscapeKey';
@@ -109,7 +110,10 @@ function PostDetail({ post, views, body }: { post: PostMeta; views?: number; bod
           {post.date && <span>{post.date}</span>}
           <span>{post.readingMinutes} min read</span>
           {views && <span>{views.toLocaleString('en-US')} views</span>}
-          <Link href={`/blog/${post.slug}`} className="ml-auto hover:text-primary transition-colors">OPEN_FULL_PAGE →</Link>
+          <span className="ml-auto flex items-center gap-4">
+            <CopyLinkButton path={`/blog/${post.slug}`} event="blog_link_copy" />
+            <Link href={`/blog/${post.slug}`} className="hover:text-primary transition-colors">OPEN_FULL_PAGE →</Link>
+          </span>
         </div>
       </div>
       {body && <div className="animate-fade-in-fast">{body}</div>}
