@@ -5,6 +5,9 @@ import localFont from "next/font/local";
 import { siteConfig, features, analyticsConfig } from "../config";
 import "./globals.css";
 import Script from "next/script";
+import { cookies, headers } from "next/headers";
+import { isAccent } from "@/lib/accent";
+import { ACCENT_COOKIE, THEME_COOKIE } from "@/lib/preferences";
 import SmoothScroll from "@/components/SmoothScroll";
 import ScrollIndicator from "@/components/ScrollIndicator";
 import CommandPalette from "@/components/CommandPalette";
@@ -79,16 +82,26 @@ export const viewport: Viewport = {
 const analyticsEnabled = features.analytics && Boolean(analyticsConfig.websiteId);
 const analyticsDomains = [siteConfig.domain, ...(siteConfig.alternateDomains ?? [])].flatMap((d) => [d, `www.${d}`]).join(',');
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  // Set per request by proxy.ts. Reading it makes every page render on demand, which a nonce-based CSP requires.
+  const nonce = (await headers()).get('x-nonce') ?? undefined;
+
+  // The visitor's saved look is rendered into the first HTML, so there is no flash of the wrong theme.
+  const jar = await cookies();
+  const theme = jar.get(THEME_COOKIE)?.value === 'light' ? 'light' : 'dark';
+  const savedAccent = jar.get(ACCENT_COOKIE)?.value;
+  const accent = isAccent(savedAccent) && savedAccent !== 'default' ? savedAccent : undefined;
+
   return (
     <html
       lang="en"
       // Switched-off features that normally add a class client-side get it here instead, so there is no flash.
-      className={['dark', (!features.bootScreen || features.calmMode) && 'boot-skip', !features.scrollIndicator && 'native-scrollbar', features.calmMode && 'calm'].filter(Boolean).join(' ')}
+      className={[theme, (!features.bootScreen || features.calmMode) && 'boot-skip', !features.scrollIndicator && 'native-scrollbar', features.calmMode && 'calm'].filter(Boolean).join(' ')}
+      data-accent={accent}
       data-scroll-behavior="smooth"
       suppressHydrationWarning
     >
@@ -96,13 +109,9 @@ export default function RootLayout({
         <noscript>
           <style dangerouslySetInnerHTML={{ __html: `.boot-screen-overlay{display:none !important;}` }} />
         </noscript>
-        {/* Applied before hydration to avoid a flash of the wrong theme */}
         <script
-          dangerouslySetInnerHTML={{
-            __html: `(function(){try{var t=localStorage.getItem('theme');var root=document.documentElement;if(t==='light'){root.classList.remove('dark');root.classList.add('light');}else{root.classList.remove('light');root.classList.add('dark');}var a=localStorage.getItem('accent');if(a&&/^[a-z]+$/.test(a)){root.dataset.accent=a;}}catch(e){}})();`,
-          }}
-        />
-        <script
+          nonce={nonce}
+          suppressHydrationWarning
           dangerouslySetInnerHTML={{
             __html: `(function(){try{var t=localStorage.getItem('iamxorum_initialized');if(t&&(Date.now()-parseInt(t))<86400000){document.documentElement.classList.add('boot-skip');}}catch(e){}})();`,
           }}
@@ -132,6 +141,7 @@ export default function RootLayout({
         {analyticsEnabled && (
           <Script
             src={`${ANALYTICS_PATH}/script.js`}
+            nonce={nonce}
             strategy="afterInteractive"
             data-website-id={analyticsConfig.websiteId}
             data-domains={analyticsDomains}

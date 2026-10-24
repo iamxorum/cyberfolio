@@ -58,11 +58,13 @@ export default function Privacy() {
 
         <Section title="STORED IN YOUR BROWSER">
           <p>
-            Small settings saved on your device. They never leave it, and clearing site data removes them.
+            Small settings saved on your device, and cleared with your site data.
           </p>
           <ul className="list-disc pl-5 space-y-1">
-            <li><Code>theme</Code>: your light or dark choice.</li>
-            <li><Code>accent</Code>: your accent colour choice.</li>
+            <li>
+              <Code>iamxorum_theme</Code> and <Code>iamxorum_accent</Code> (cookies): your light or dark choice and your accent colour, kept for a year.
+              They are sent with page requests so the page loads already themed, and hold nothing else.
+            </li>
             {features.bootScreen && (
               <li>
                 <Code>iamxorum_initialized</Code> and <Code>iamxorum_user_id</Code>: that you have seen the intro animation (it is skipped for 24 hours),
@@ -75,7 +77,7 @@ export default function Privacy() {
           </ul>
           {features.turnstile && (
             <p>
-              <strong className="text-[var(--terminal-text)]">One cookie</strong>, <Code>iamxorum_access</Code>, is set only after you pass the human check.
+              <strong className="text-[var(--terminal-text)]">One more cookie</strong>, <Code>__Host-iamxorum_access</Code>, is set only after you pass the human check.
               It is signed, HttpOnly, lasts 24 hours, and just tells the server you passed, so the CV and contact details unlock. It holds no personal data.
             </p>
           )}

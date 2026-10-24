@@ -1,4 +1,5 @@
 import { prefersReducedMotion } from '@/lib/motion';
+import { THEME_COOKIE, writePreference } from '@/lib/preferences';
 
 export function isLightTheme(): boolean {
   return document.documentElement.classList.contains('light');
@@ -7,15 +8,11 @@ export function isLightTheme(): boolean {
 function applyTheme(light: boolean) {
   document.documentElement.classList.toggle('light', light);
   document.documentElement.classList.toggle('dark', !light);
-  try {
-    localStorage.setItem('theme', light ? 'light' : 'dark');
-  } catch {
-    // Storage can be blocked; the theme still applies for this visit.
-  }
+  writePreference(THEME_COOKIE, light ? 'light' : 'dark');
 }
 
 /**
- * Applies and persists the theme (the layout's pre-hydration script reads the same key).
+ * Applies and persists the theme (the layout reads the same cookie to render the page already themed).
  *
  * Every element has its own colour transition, and nested text (code blocks, spans) re-starts that
  * transition each time its parent's inherited colour changes, so parts of the page finish late. Instead,
