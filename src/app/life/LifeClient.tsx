@@ -1,9 +1,10 @@
 'use client';
 
+import { Suspense } from 'react';
 import PageShell from '@/components/PageShell';
 import Discography from '@/components/Discography';
-import RunningSection from '@/components/life/RunningSection';
-import GamingSection from '@/components/life/GamingSection';
+import RunningSection, { RunningSkeleton } from '@/components/life/RunningSection';
+import GamingSection, { GamingSkeleton } from '@/components/life/GamingSection';
 import HobbiesSection from '@/components/about/HobbiesSection';
 import { features } from '@/config';
 import { lifeTopics } from '@/lib/life-topics';
@@ -17,8 +18,7 @@ const SECTIONS = [
   ...(features.discography ? [{ href: '#music', label: 'MUSIC' }] : []),
 ];
 
-export default function LifeClient({ running, gaming }: { running: RunningData | null; gaming: GamingData | null }) {
-
+export default function LifeClient({ running, gaming }: { running: Promise<RunningData | null>; gaming: Promise<GamingData | null> }) {
   return (
     <PageShell crumbs={[{ label: 'life.log', href: '/life' }]} rail gap="gap-6 sm:gap-8">
       <h1 className="sr-only">Life: {lifeTopics()}</h1>
@@ -34,13 +34,21 @@ export default function LifeClient({ running, gaming }: { running: RunningData |
         ))}
       </nav>
 
-      {features.strava && <div className="uw-panel uw-panel-wide"><RunningSection data={running} /></div>}
+      {features.strava && (
+        <div className="uw-panel uw-panel-wide">
+          <Suspense fallback={<RunningSkeleton />}><RunningSection running={running} /></Suspense>
+        </div>
+      )}
 
       <div className="uw-panel uw-panel-wide">
         <HobbiesSection kind="personal" />
       </div>
 
-      {features.steam && <div className="uw-panel uw-panel-wide"><GamingSection data={gaming} /></div>}
+      {features.steam && (
+        <div className="uw-panel uw-panel-wide">
+          <Suspense fallback={<GamingSkeleton />}><GamingSection gaming={gaming} /></Suspense>
+        </div>
+      )}
 
       {features.discography && (
         <section id="music" className="uw-panel uw-panel-wide scroll-mt-20">

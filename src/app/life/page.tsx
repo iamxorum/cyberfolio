@@ -18,12 +18,12 @@ export const metadata = pageMetadata({
 
 const breadcrumbs = breadcrumbJsonLd([{ name: 'Life', path: '/life' }]);
 
-export default async function Life() {
+export default function Life() {
   if (!features.life) notFound();
-  // Skipped entirely when the feature is off, so no Strava credentials or network access are needed.
-  const running = features.strava ? await getRunningData() : null;
-
-  const gaming = features.steam ? await getGamingData() : null;
+  // Not awaited: the page shell streams at once and each section fills in behind a skeleton.
+  // Skipped entirely when a feature is off, so no credentials or network access are needed.
+  const running = features.strava ? getRunningData() : Promise.resolve(null);
+  const gaming = features.steam ? getGamingData() : Promise.resolve(null);
 
   return (
     <>

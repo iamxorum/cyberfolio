@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { use, useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { SiStrava } from 'react-icons/si';
 import type { RunningData, RunTotals } from '@/lib/strava';
@@ -9,6 +9,7 @@ import { formatRelativeTime } from '@/lib/format-time';
 import { STAGGER_STEP_MS, revealDelay } from '@/lib/motion';
 import Reveal from '@/components/Reveal';
 import TypedText from '@/components/TypedText';
+import Bone from './Skeleton';
 import WeeklyDistanceChart from './WeeklyDistanceChart';
 
 const EFFORT_LABELS: Record<string, string> = {
@@ -38,7 +39,7 @@ function TotalsTile({ title, totals, delay }: { title: string; totals: RunTotals
   );
 }
 
-function SectionTitle({ profileUrl }: { profileUrl?: string }) {
+export function SectionTitle({ profileUrl }: { profileUrl?: string }) {
   return (
     <div className="flex items-center justify-between gap-3 border-b border-[var(--terminal-border)] pb-3 sm:pb-4">
       <h2 className="text-[var(--terminal-text)] text-base sm:text-lg font-bold flex items-center gap-2">
@@ -84,7 +85,39 @@ function useRefreshUntilReady(pending: boolean) {
   return gaveUp;
 }
 
-export default function RunningSection({ data }: { data: RunningData | null }) {
+export function RunningSkeleton() {
+  return (
+    <section id="running" aria-busy="true" aria-label="Loading running data" className="flex flex-col gap-4 font-mono scroll-mt-20">
+      <SectionTitle />
+      <div className="flex flex-wrap gap-3 sm:gap-4">
+        {[0, 1].map((tile) => (
+          <div key={tile} className={`${panel} flex-1 min-w-[220px] flex flex-col gap-3`}>
+            <Bone className="h-3 w-28" />
+            <Bone className="h-9 w-32" />
+            <Bone className="h-3 w-full" />
+          </div>
+        ))}
+      </div>
+      <div className={panel}>
+        <Bone className="h-32 w-full" />
+      </div>
+      <div className="flex flex-col lg:flex-row gap-3 sm:gap-4">
+        <div className={`${panel} lg:w-1/3 flex flex-col gap-3`}>
+          <Bone className="h-3 w-28" />
+          <Bone className="h-24 w-full" />
+        </div>
+        <div className={`${panel} lg:w-2/3 flex flex-col gap-3`}>
+          <Bone className="h-3 w-28" />
+          <Bone className="h-24 w-full" />
+        </div>
+      </div>
+    </section>
+  );
+}
+
+// `running` is a promise the page does not wait for: the section streams in behind <RunningSkeleton />.
+export default function RunningSection({ running }: { running: Promise<RunningData | null> }) {
+  const data = use(running);
   const bestsGaveUp = useRefreshUntilReady(data?.bests === null);
 
   if (!data) {

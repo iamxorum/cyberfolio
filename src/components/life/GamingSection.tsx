@@ -1,12 +1,13 @@
 'use client';
 
 import { SiSteam } from 'react-icons/si';
-import { useState } from 'react';
+import { use, useState } from 'react';
 import type { GamingData, SteamGame } from '@/lib/steam';
 import { STAGGER_STEP_MS } from '@/lib/motion';
 import { formatRelativeTime } from '@/lib/format-time';
 import Reveal from '@/components/Reveal';
 import TypedText from '@/components/TypedText';
+import Bone from './Skeleton';
 
 const panel = 'border border-[var(--terminal-border)] rounded bg-[var(--terminal-surface)] p-4 sm:p-5';
 const label = 'text-[10px] sm:text-xs tracking-widest text-[var(--terminal-text-dim)]';
@@ -41,7 +42,7 @@ function GameRow({ game, hours }: { game: SteamGame; hours: number }) {
   );
 }
 
-function SectionTitle({ profileUrl }: { profileUrl?: string }) {
+export function SectionTitle({ profileUrl }: { profileUrl?: string }) {
   return (
     <div className="flex items-center justify-between gap-3 border-b border-[var(--terminal-border)] pb-3 sm:pb-4">
       <h2 className="text-[var(--terminal-text)] text-base sm:text-lg font-bold flex items-center gap-2">
@@ -63,7 +64,44 @@ function SectionTitle({ profileUrl }: { profileUrl?: string }) {
   );
 }
 
-export default function GamingSection({ data }: { data: GamingData | null }) {
+export function GamingSkeleton() {
+  return (
+    <section id="gaming" aria-busy="true" aria-label="Loading gaming data" className="flex flex-col gap-4 font-mono scroll-mt-20">
+      <SectionTitle />
+      <div className="flex flex-wrap gap-3 sm:gap-4">
+        <div className={`${panel} flex-1 min-w-[220px] flex items-center gap-4`}>
+          <Bone className="h-14 w-14 shrink-0" />
+          <div className="flex flex-1 flex-col gap-2">
+            <Bone className="h-4 w-32" />
+            <Bone className="h-3 w-24" />
+          </div>
+        </div>
+        <div className={`${panel} flex-1 min-w-[220px] flex flex-col gap-3`}>
+          <Bone className="h-3 w-20" />
+          <Bone className="h-9 w-28" />
+          <Bone className="h-3 w-36" />
+        </div>
+      </div>
+      <div className="flex flex-col lg:flex-row gap-3 sm:gap-4">
+        {[0, 1].map((column) => (
+          <div key={column} className={`${panel} lg:w-1/2 flex flex-col gap-3`}>
+            <Bone className="h-3 w-24" />
+            {[0, 1, 2].map((row) => (
+              <div key={row} className="flex items-center gap-3">
+                <Bone className="h-[43px] w-[92px] shrink-0" />
+                <Bone className="h-3 flex-1" />
+              </div>
+            ))}
+          </div>
+        ))}
+      </div>
+    </section>
+  );
+}
+
+// `gaming` is a promise the page does not wait for: the section streams in behind <GamingSkeleton />.
+export default function GamingSection({ gaming }: { gaming: Promise<GamingData | null> }) {
+  const data = use(gaming);
   if (!data) {
     return (
       <section id="gaming" className="flex flex-col gap-4 font-mono scroll-mt-20">
