@@ -9,17 +9,18 @@ export interface Release {
 // Newest first. Add a release here when the version is bumped.
 export const releases: Release[] = [
   {
-    version: 'Unreleased',
+    version: '1.6.4',
     date: '2026-10-24',
     changes: [
+      'Accent colour picker in the header with 10 presets (and a hidden one); the skills radar and globe follow it live',
+      'Navbar fits at every width: the site name is no longer cut off',
       'Changelog page',
-      'Ultrawide: the post or project preview slides in, Esc closes it, and /projects?project= restores it after a reload',
-      'Accent colour picker in the header, with a hidden extra preset',
-      'Copy-link button in the ultrawide previews',
+      'Ultrawide: the post or project preview slides in, Esc closes it, /projects?project= restores it after a reload, and a copy-link button shares it',
       'Images can no longer be dragged out of the page',
       'Privacy page listing browser storage and third parties',
+      'Security: the analytics relay caps request bodies while streaming; Cross-Origin-Opener-Policy header; production source maps',
       'Accessibility 100: larger globe legend touch targets, undistorted flags, no redundant alt text',
-      'Cross-Origin-Opener-Policy header and production source maps',
+      'Hero button stays readable on hover in light mode',
     ],
   },
   {
