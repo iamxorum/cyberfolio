@@ -15,7 +15,8 @@ export function useAppInitialization() {
       initializedRef.current = true;
 
       const initTimestamp = localStorage.getItem('iamxorum_initialized');
-      const storedUserId = localStorage.getItem('iamxorum_user_id');
+      const rawUserId = localStorage.getItem('iamxorum_user_id');
+      const storedUserId = rawUserId && /^\d{6}$/.test(rawUserId) ? rawUserId : null;
 
       const isInitialized = skipBoot || (initTimestamp && (Date.now() - parseInt(initTimestamp)) < 24 * 60 * 60 * 1000);
 
@@ -25,7 +26,7 @@ export function useAppInitialization() {
         setInitialized(true);
         document.documentElement.classList.add('boot-skip');
       } else {
-        const newUserId = Math.floor(Math.random() * 1000000).toString().padStart(6, '0');
+        const newUserId = crypto.getRandomValues(new Uint32Array(1))[0].toString().slice(-6).padStart(6, '0');
         setUserId(newUserId);
         localStorage.setItem('iamxorum_user_id', newUserId);
       }
