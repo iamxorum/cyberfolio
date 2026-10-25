@@ -720,19 +720,46 @@ html.boot-done .animate-reveal {
   to { opacity: 1; }
 }
 
-/* Running chart: bars grow up from the baseline once their panel is revealed. */
-.chart-bar {
+/* Running heatmap: cells fade in column by column once their panel is revealed. */
+.scroll-reveal:not(.is-visible) .heat-cell {
+  opacity: 0 !important;
+}
+.scroll-reveal.is-visible .heat-cell {
+  animation: heat-cell-in 0.5s var(--ease-out) backwards;
+}
+@keyframes heat-cell-in {
+  from { opacity: 0; }
+}
+
+/* Weekday habit: bars grow up from the baseline once their panel is revealed. */
+.habit-bar {
   transform-origin: bottom;
 }
-.scroll-reveal:not(.is-visible) .chart-bar {
+.scroll-reveal:not(.is-visible) .habit-bar {
   transform: scaleY(0);
 }
-.scroll-reveal.is-visible .chart-bar {
-  animation: chart-bar-grow 0.7s var(--ease-out) backwards;
+.scroll-reveal.is-visible .habit-bar {
+  animation: habit-bar-grow 0.7s var(--ease-out) var(--bar-delay, 0ms) backwards;
 }
-@keyframes chart-bar-grow {
+@keyframes habit-bar-grow {
   from { transform: scaleY(0); }
   to { transform: scaleY(1); }
+}
+
+/* Run route traces: the line draws itself from start to finish. */
+.route-trace path {
+  stroke-dasharray: 1;
+  filter: drop-shadow(0 0 3px color-mix(in srgb, var(--primary) 60%, transparent));
+}
+.scroll-reveal:not(.is-visible) .route-trace path {
+  stroke-dashoffset: 1;
+}
+.scroll-reveal.is-visible .route-trace path {
+  animation: route-draw 1.4s var(--ease-out) calc(var(--reveal-delay, 0ms) + 200ms) backwards;
+}
+@keyframes route-draw {
+  from { stroke-dashoffset: 1; }
+  to { stroke-dashoffset: 0; }
 }
 
 /* Skills matrix: once the panel is revealed, the radar fades in, rows ease in (again on every filter

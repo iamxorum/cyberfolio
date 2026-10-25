@@ -10,8 +10,16 @@ const API = 'https://www.strava.com/api/v3';
 const RUN_TYPES = new Set(['Run', 'TrailRun', 'VirtualRun']);
 // Hard expiry: after 24h a snapshot is discarded and refetched, never served stale.
 const CACHE_TTL_MS = 24 * 60 * 60 * 1000;
-const WEEKS = 12;
-const RECENT_COUNT = 5;
+// Heatmap columns: the current week plus the 52 before it.
+const HEAT_WEEKS = 53;
+const MAX_YEAR_PAGES = 4;
+// Completed weeks that make up the "average week".
+const AVG_WEEKS = 12;
+const RECENT_COUNT = 6;
+// Routes are trimmed this far from both ends so a public trace never points at the front door.
+const ROUTE_TRIM_M = 300;
+const ROUTE_MIN_M = 1500;
+const ROUTE_MAX_POINTS = 120;
 const MAX_HISTORY_PAGES = 10;
 const MAX_DETAIL_CALLS = 25;
 const BEST_EFFORTS = ['5K', '10K', 'Half-Marathon', 'Marathon'] as const;
@@ -33,10 +41,19 @@ export interface RecentRun {
   distanceKm: number;
   movingTimeSec: number;
   elevationM: number;
+  /** The trimmed shape of the route in a 0-100 box, with no coordinates. Null when too short or unmapped. */
+  route: RoutePath | null;
 }
 
-export interface WeeklyDistance {
-  weekStart: string;
+export interface RoutePath {
+  d: string;
+  /** Where the visible trace begins and ends (the real start and end are trimmed off). */
+  start: [number, number];
+  end: [number, number];
+}
+
+export interface RunDay {
+  date: string;
   distanceKm: number;
   runs: number;
 }
@@ -46,16 +63,56 @@ export interface PersonalBest {
   timeSec: number;
   date: string;
   activityId: number;
+  distanceKm: number;
 }
 
-export interface RunningData {
+export interface PersonalBestView extends PersonalBest {
+  daysAgo: number;
+}
+
+export interface RunRecords {
+  longestKm: number;
+  longestDate: string;
+  climbM: number;
+  climbDate: string;
+}
+
+interface RunningSummary {
   ytd: RunTotals;
   allTime: RunTotals;
   recent: RecentRun[];
-  weekly: WeeklyDistance[];
-  bests: PersonalBest[] | null;
+  /** Biggest single run and biggest single climb in the heatmap window. Null with no runs. */
+  records: RunRecords | null;
+  /** Only days with at least one run. */
+  days: RunDay[];
   profileUrl: string;
   fetchedAt: string;
+}
+
+export interface WeekStats {
+  thisKm: number;
+  thisRuns: number;
+  lastKm: number;
+  /** Mean over the last AVG_WEEKS completed weeks (this week excluded, rest weeks included). */
+  avgKm: number;
+  avgRuns: number;
+  /** How many weeks the averages cover: AVG_WEEKS, or fewer on a young account. */
+  avgWeeks: number;
+  bestKm: number;
+  /** Monday of the biggest week in the window. */
+  bestStart: string;
+}
+
+export interface RunningData extends Omit<RunningSummary, 'days'> {
+  /** Every day from the first Monday of the heatmap window through today, zero days included. */
+  heat: RunDay[];
+  /** Consecutive Monday-to-Sunday weeks with a run, ending this week (or last, if this week has no run yet). */
+  weekStreak: number;
+  /** Longest run of consecutive active weeks in the heatmap window. */
+  bestWeekStreak: number;
+  weeks: WeekStats;
+  activeDays: number;
+  bests: PersonalBestView[] | null;
 }
 
 interface StravaTotals {
@@ -74,6 +131,7 @@ interface StravaSummaryActivity {
   sport_type?: string;
   type: string;
   start_date_local: string;
+  map?: { summary_polyline?: string | null };
   private?: boolean;
   visibility?: string;
 }
@@ -91,9 +149,9 @@ interface Cached<T> {
 
 let token: { accessToken: string; refreshToken: string; expiresAt: number } | null = null;
 let athleteId: number | null = null;
-let summaryCache: Cached<Omit<RunningData, 'bests'>> | null = null;
+let summaryCache: Cached<RunningSummary> | null = null;
 let bestsCache: Cached<PersonalBest[]> | null = null;
-let summaryInFlight: Promise<Omit<RunningData, 'bests'> | null> | null = null;
+let summaryInFlight: Promise<RunningSummary | null> | null = null;
 let bestsInFlight: Promise<PersonalBest[] | null> | null = null;
 let diskLoad: Promise<void> | null = null;
 
@@ -159,31 +217,160 @@ const mondayOf = (day: Date) => {
   return d;
 };
 
-function bucketWeeks(runs: StravaSummaryActivity[]): WeeklyDistance[] {
-  const thisMonday = mondayOf(new Date());
-  const weeks: WeeklyDistance[] = Array.from({ length: WEEKS }, (_, i) => {
-    const start = new Date(thisMonday);
-    start.setUTCDate(start.getUTCDate() - (WEEKS - 1 - i) * 7);
-    return { weekStart: start.toISOString().slice(0, 10), distanceKm: 0, runs: 0 };
-  });
-  const byStart = new Map(weeks.map((w) => [w.weekStart, w]));
+const heatStart = () => {
+  const start = mondayOf(new Date());
+  start.setUTCDate(start.getUTCDate() - (HEAT_WEEKS - 1) * 7);
+  return start;
+};
 
+function bucketDays(runs: StravaSummaryActivity[]): RunDay[] {
+  const byDay = new Map<string, RunDay>();
   for (const run of runs) {
-    const week = byStart.get(mondayOf(new Date(`${localDay(run.start_date_local)}T00:00:00Z`)).toISOString().slice(0, 10));
-    if (!week) continue;
-    week.distanceKm += run.distance / 1000;
-    week.runs += 1;
+    const date = localDay(run.start_date_local);
+    const day = byDay.get(date) ?? { date, distanceKm: 0, runs: 0 };
+    day.distanceKm += run.distance / 1000;
+    day.runs += 1;
+    byDay.set(date, day);
   }
-  return weeks;
+  return [...byDay.values()];
 }
 
-async function fetchSummary(): Promise<Omit<RunningData, 'bests'>> {
-  const id = await getAthleteId();
-  const [stats, activities] = await Promise.all([
-    stravaGet<{ ytd_run_totals: StravaTotals; all_run_totals: StravaTotals }>(`/athletes/${id}/stats`),
-    stravaGet<StravaSummaryActivity[]>('/athlete/activities?per_page=100&page=1'),
+function buildHeat(days: RunDay[]) {
+  const byDate = new Map(days.map((d) => [d.date, d]));
+  const today = new Date();
+  const heat: RunDay[] = [];
+  for (const d = heatStart(); d.getTime() <= today.getTime(); d.setUTCDate(d.getUTCDate() + 1)) {
+    const date = d.toISOString().slice(0, 10);
+    heat.push(byDate.get(date) ?? { date, distanceKm: 0, runs: 0 });
+  }
+
+  // The heatmap starts on a Monday, so every 7 entries is one calendar week and the last chunk is this week.
+  const weeks = Array.from({ length: Math.ceil(heat.length / 7) }, (_, i) => heat.slice(i * 7, i * 7 + 7));
+  const ran = (week: RunDay[]) => week.some((d) => d.runs > 0);
+  let weekStreak = 0;
+  for (let i = weeks.length - 1; i >= 0; i--) {
+    if (ran(weeks[i])) weekStreak++;
+    else if (i !== weeks.length - 1) break;
+  }
+  let bestWeekStreak = 0;
+  for (let i = 0, run = 0; i < weeks.length; i++) {
+    run = ran(weeks[i]) ? run + 1 : 0;
+    bestWeekStreak = Math.max(bestWeekStreak, run);
+  }
+
+  const km = (week: RunDay[]) => week.reduce((sum, d) => sum + d.distanceKm, 0);
+  const runCount = (week: RunDay[]) => week.reduce((sum, d) => sum + d.runs, 0);
+  const completed = weeks.slice(0, -1);
+  // A new runner's empty weeks before the first run would drag the average to nothing, so start counting there.
+  const window = completed.slice(-AVG_WEEKS);
+  const recent = window.slice(Math.max(0, window.findIndex(ran)));
+  const recentActive = recent.some(ran) ? recent : [];
+  const best = weeks.reduce((top, week) => (km(week) > km(top) ? week : top), weeks[0]);
+  const thisWeek = weeks[weeks.length - 1];
+  const weekStats: WeekStats = {
+    thisKm: km(thisWeek),
+    thisRuns: runCount(thisWeek),
+    lastKm: completed.length ? km(completed[completed.length - 1]) : 0,
+    avgKm: recentActive.length ? recentActive.reduce((sum, w) => sum + km(w), 0) / recentActive.length : 0,
+    avgRuns: recentActive.length ? recentActive.reduce((sum, w) => sum + runCount(w), 0) / recentActive.length : 0,
+    avgWeeks: recentActive.length,
+    bestKm: km(best),
+    bestStart: best[0].date,
+  };
+  return { heat, weekStreak, bestWeekStreak, weeks: weekStats, activeDays: days.length };
+}
+
+// Google's encoded polyline format: 5-decimal lat/lng deltas packed into base-64-ish chunks.
+function decodePolyline(encoded: string): [number, number][] {
+  const points: [number, number][] = [];
+  let index = 0;
+  let lat = 0;
+  let lng = 0;
+  const next = () => {
+    let result = 0;
+    let shift = 0;
+    let byte: number;
+    do {
+      byte = encoded.charCodeAt(index++) - 63;
+      result |= (byte & 0x1f) << shift;
+      shift += 5;
+    } while (byte >= 0x20 && index < encoded.length);
+    return result & 1 ? ~(result >> 1) : result >> 1;
+  };
+  while (index < encoded.length) {
+    lat += next();
+    lng += next();
+    points.push([lat / 1e5, lng / 1e5]);
+  }
+  return points;
+}
+
+// Turns a polyline into a bare SVG path: trimmed at both ends, projected flat, scaled into 0-100.
+// Nothing that locates the run (coordinates, bounding box, scale) leaves the server.
+function routePath(encoded?: string | null): RoutePath | null {
+  if (!encoded) return null;
+  const points = decodePolyline(encoded);
+  if (points.length < 10) return null;
+
+  const meanLat = points.reduce((sum, [lat]) => sum + lat, 0) / points.length;
+  const kx = Math.cos((meanLat * Math.PI) / 180);
+  const metres = points.map(([lat, lng]) => [lng * kx * 111_320, lat * 110_540] as const);
+
+  const along = [0];
+  for (let i = 1; i < metres.length; i++) {
+    along.push(along[i - 1] + Math.hypot(metres[i][0] - metres[i - 1][0], metres[i][1] - metres[i - 1][1]));
+  }
+  const total = along[along.length - 1];
+  if (total < ROUTE_MIN_M) return null;
+
+  const kept = metres.filter((_, i) => along[i] >= ROUTE_TRIM_M && total - along[i] >= ROUTE_TRIM_M);
+  if (kept.length < 5) return null;
+
+  const stride = Math.ceil(kept.length / ROUTE_MAX_POINTS);
+  const sampled = kept.filter((_, i) => i % stride === 0 || i === kept.length - 1);
+
+  const xs = sampled.map(([x]) => x);
+  const ys = sampled.map(([, y]) => y);
+  const minX = Math.min(...xs);
+  const minY = Math.min(...ys);
+  const span = Math.max(Math.max(...xs) - minX, Math.max(...ys) - minY);
+  if (span <= 0) return null;
+
+  const scale = 88 / span;
+  const offsetX = (100 - (Math.max(...xs) - minX) * scale) / 2;
+  const offsetY = (100 - (Math.max(...ys) - minY) * scale) / 2;
+  const flat = sampled.map(([x, y]): [number, number] => [
+    Math.round((offsetX + (x - minX) * scale) * 10) / 10,
+    Math.round((100 - offsetY - (y - minY) * scale) * 10) / 10,
   ]);
-  const runs = activities.filter(isPublicRun);
+  return {
+    d: flat.map(([x, y], i) => `${i === 0 ? 'M' : 'L'}${x} ${y}`).join(''),
+    start: flat[0],
+    end: flat[flat.length - 1],
+  };
+}
+
+// With `after`, Strava pages oldest-first, so every page of the window is read and re-sorted newest-first.
+async function fetchYearRuns(): Promise<StravaSummaryActivity[]> {
+  const after = Math.floor(heatStart().getTime() / 1000) - 86_400;
+  const runs: StravaSummaryActivity[] = [];
+  for (let page = 1; page <= MAX_YEAR_PAGES; page++) {
+    const batch = await stravaGet<StravaSummaryActivity[]>(`/athlete/activities?after=${after}&per_page=200&page=${page}`);
+    runs.push(...batch.filter(isPublicRun));
+    if (batch.length < 200) break;
+  }
+  return runs.sort((a, b) => b.start_date_local.localeCompare(a.start_date_local));
+}
+
+async function fetchSummary(): Promise<RunningSummary> {
+  const id = await getAthleteId();
+  const [stats, runs] = await Promise.all([
+    stravaGet<{ ytd_run_totals: StravaTotals; all_run_totals: StravaTotals }>(`/athletes/${id}/stats`),
+    fetchYearRuns(),
+  ]);
+
+  const longest = runs.reduce<StravaSummaryActivity | null>((top, r) => (!top || r.distance > top.distance ? r : top), null);
+  const climb = runs.reduce<StravaSummaryActivity | null>((top, r) => (!top || r.total_elevation_gain > top.total_elevation_gain ? r : top), null);
 
   return {
     ytd: toTotals(stats.ytd_run_totals),
@@ -195,8 +382,17 @@ async function fetchSummary(): Promise<Omit<RunningData, 'bests'>> {
       distanceKm: r.distance / 1000,
       movingTimeSec: r.moving_time,
       elevationM: r.total_elevation_gain,
+      route: routePath(r.map?.summary_polyline),
     })),
-    weekly: bucketWeeks(runs),
+    records: longest && climb
+      ? {
+          longestKm: longest.distance / 1000,
+          longestDate: localDay(longest.start_date_local),
+          climbM: climb.total_elevation_gain,
+          climbDate: localDay(climb.start_date_local),
+        }
+      : null,
+    days: bucketDays(runs),
     profileUrl: `https://www.strava.com/athletes/${id}`,
     fetchedAt: new Date().toISOString(),
   };
@@ -226,7 +422,7 @@ async function fetchBests(): Promise<PersonalBest[]> {
     for (const effort of detail.best_efforts ?? []) {
       const name = BEST_EFFORTS.find((e) => e === effort.name);
       if (!name || effort.pr_rank !== 1 || found.has(name)) continue;
-      found.set(name, { effort: name, timeSec: effort.elapsed_time, date: localDay(run.start_date_local), activityId: run.id });
+      found.set(name, { effort: name, timeSec: effort.elapsed_time, date: localDay(run.start_date_local), activityId: run.id, distanceKm: EFFORT_METERS[name] / 1000 });
     }
   }
   return BEST_EFFORTS.flatMap((e) => found.get(e) ?? []);
@@ -236,8 +432,10 @@ function loadFromDisk() {
   diskLoad ??= readFile(/*turbopackIgnore: true*/ CACHE_FILE, 'utf8')
     .then((raw) => {
       const saved: { summary?: typeof summaryCache; bests?: typeof bestsCache } = JSON.parse(raw);
-      summaryCache ??= saved.summary ?? null;
-      bestsCache ??= saved.bests ?? null;
+      // Snapshots from before the heatmap (no `days`) or with string routes are an old shape; drop them so the first load refetches.
+      const fresh = saved.summary?.value?.days && saved.summary.value.records !== undefined && saved.summary.value.recent.every((r) => typeof r.route !== 'string');
+      summaryCache ??= fresh && saved.summary ? saved.summary : null;
+      bestsCache ??= saved.bests?.value?.every((b) => b.distanceKm) ? saved.bests : null;
     })
     .catch(() => {});
   return diskLoad;
@@ -298,5 +496,7 @@ export async function getRunningData(): Promise<RunningData | null> {
   const summary = summaryCache?.value ?? (await refreshSummary());
 
   if (!summary) return null;
-  return { ...summary, bests: bestsCache?.value ?? null };
+  const { days, ...rest } = summary;
+  const bests = bestsCache?.value.map((b) => ({ ...b, daysAgo: Math.max(0, Math.floor((Date.now() - Date.parse(`${b.date}T00:00:00Z`)) / 86_400_000)) })) ?? null;
+  return { ...rest, ...buildHeat(days), bests };
 }
