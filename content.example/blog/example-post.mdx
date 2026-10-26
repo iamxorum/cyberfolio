@@ -2,6 +2,8 @@
 title: "Example post title"
 date: "2026-01-01"
 excerpt: "A one-sentence summary shown on the blog list page."
+summary: "An optional TL;DR shown in a box above the post. Use a list of strings for several points."
+category: "Notes"
 tags: ["example", "notes"]
 ---
 
@@ -22,3 +24,31 @@ const hello = "world";
 > A blockquote, for pulling out a quote or a note.
 
 Links work too ... [internal links](/projects) resolve with Next's router, external links open in a new tab automatically.
+
+## Tables and more
+
+GitHub-style tables, strikethrough and task lists work:
+
+| Feature | Supported |
+| --- | --- |
+| Tables | yes |
+| ~~Strikethrough~~ | yes |
+
+Images open full size when clicked, and their alt text is shown as the caption. Add `series: "Name"` to the frontmatter to group posts into a numbered series, and `updated: "2026-02-01"` to show an "updated" date.
+
+## Callouts and code labels
+
+A quote that starts with `[!NOTE]`, `[!TIP]`, `[!IMPORTANT]`, `[!WARNING]` or `[!CAUTION]` becomes a labelled callout:
+
+> [!WARNING]
+> Check the rule order before you reload the firewall.
+
+A code fence can carry a file name and highlighted lines:
+
+```yaml title="docker-compose.yml" {2,4-5}
+services:
+  app:
+    image: example/app
+    ports:
+      - "8080:80"
+```
