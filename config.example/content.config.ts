@@ -106,6 +106,6 @@ export const contentConfig: ContentConfig = {
   },
   blog: {
     title: '>> BLOG',
-    subtitle: 'Notes, write-ups, and things worth remembering.',
+    subtitle: 'Notes, write-ups, analyses and things worth remembering.',
   },
 };

@@ -13,6 +13,7 @@ interface PaletteBlogPost {
   slug: string;
   title: string;
   excerpt: string;
+  category: string;
   tags: string[];
   headings: Array<{ text: string; id: string }>;
 }
@@ -75,7 +76,7 @@ export default function CommandPalette({ posts }: { posts: PaletteBlogPost[] }) 
         group: 'BLOG',
         label: post.title,
         icon: 'article',
-        keywords: `${post.tags.join(' ')} ${post.excerpt} blog post`,
+        keywords: `${post.category} ${post.tags.join(' ')} ${post.excerpt} blog post`,
         run: go(`/blog/${post.slug}`),
       })),
       ...posts.flatMap((post) =>

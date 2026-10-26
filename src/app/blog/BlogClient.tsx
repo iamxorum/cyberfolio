@@ -1,7 +1,7 @@
 'use client';
 
 import PageShell, { PageHeading } from '@/components/PageShell';
-import { useCallback, useState, type MouseEvent, type ReactNode } from 'react';
+import { useCallback, useEffect, useRef, useState, type MouseEvent, type ReactNode } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { contentConfig } from '@/config';
@@ -10,9 +10,14 @@ import CopyLinkButton from '@/components/CopyLinkButton';
 import UltrawideDetail from '@/components/UltrawideDetail';
 import { useUltrawide } from '@/hooks/useUltrawide';
 import { useEscapeKey } from '@/hooks/useEscapeKey';
+import { usePanelScroll } from '@/hooks/usePanelScroll';
 import { useScrollReveal } from '@/hooks/useScrollReveal';
 import { STAGGER_STEP_MS, revealDelay } from '@/lib/motion';
-import type { PostMeta } from '@/lib/blog';
+import type { PostHeading, PostMeta } from '@/lib/blog';
+import PanelOutline from '@/components/PanelOutline';
+import { formatDate } from '@/lib/format-date';
+import BlogFilters from './BlogFilters';
+import { EMPTY_FILTERS, applyFilters, filtersToSearch, isFiltered, type FilterState } from './filters';
 
 interface BlogClientProps {
   posts: PostMeta[];
@@ -21,45 +26,15 @@ interface BlogClientProps {
   /** The post named by `?post=`, and its server-rendered body (shown beside the list on ultrawide). */
   openSlug?: string;
   openBody?: ReactNode;
+  /** Headings of the open post, for the outline bar in the side panel. */
+  openHeadings?: PostHeading[];
+  /** Filters parsed from the URL on the server, so a shared link opens already filtered. */
+  initialFilters?: FilterState;
 }
 
-const TAG_CHIP_BASE = 'px-2.5 py-1 rounded border transition active:scale-95';
-const TAG_CHIP_ACTIVE = 'border-primary text-primary bg-primary/10';
-const TAG_CHIP_IDLE = 'border-[var(--terminal-border)] text-[var(--terminal-text-muted)] hover:border-primary hover:text-primary';
-
-function TagFilter({ tags, total, activeTag, onChange }: {
-  tags: [string, number][];
-  total: number;
-  activeTag: string | null;
-  onChange: (tag: string | null) => void;
-}) {
-  return (
-    <div role="group" aria-label="Filter posts by tag" className="flex flex-wrap gap-2 font-mono text-xs">
-      <button
-        type="button"
-        aria-pressed={activeTag === null}
-        onClick={() => { track('blog_tag_filter', { tag: 'all' }); onChange(null); }}
-        className={`${TAG_CHIP_BASE} ${activeTag === null ? TAG_CHIP_ACTIVE : TAG_CHIP_IDLE}`}
-      >
-        all ({total})
-      </button>
-      {tags.map(([tag, count]) => (
-        <button
-          key={tag}
-          type="button"
-          aria-pressed={activeTag === tag}
-          onClick={() => { track('blog_tag_filter', { tag: activeTag === tag ? 'all' : tag }); onChange(activeTag === tag ? null : tag); }}
-          className={`${TAG_CHIP_BASE} ${activeTag === tag ? TAG_CHIP_ACTIVE : TAG_CHIP_IDLE}`}
-        >
-          #{tag} ({count})
-        </button>
-      ))}
-    </div>
-  );
-}
-
-function PostCard({ post, index, views, selected, onOpen }: {
+function PostCard({ post, index, views, selected, showCategory, onOpen }: {
   post: PostMeta;
+  showCategory: boolean;
   index: number;
   views?: number;
   selected: boolean;
@@ -71,17 +46,23 @@ function PostCard({ post, index, views, selected, onOpen }: {
       {...eventProps('blog_post_open', { post: post.slug })}
       onClick={(e) => onOpen(e, post.slug)}
       aria-current={selected ? 'true' : undefined}
+      data-post-card
       data-reveal
       style={revealDelay(Math.min(index, 4) * STAGGER_STEP_MS)}
       className="scroll-reveal panel-draw relative group flex flex-col gap-2 rounded border-2 border-[var(--terminal-border)] bg-[var(--terminal-surface-alt)] p-4 sm:p-5 transition-[transform,background-color,border-color,box-shadow] duration-300 hover:bg-[var(--terminal-surface-hover)] hover:border-primary hover:-translate-y-1 hover:shadow-[0_0_25px_rgba(var(--terminal-accent-rgb),0.3)] active:scale-[0.98] aria-[current=true]:border-primary aria-[current=true]:bg-[var(--terminal-surface-hover)]"
     >
-      <div className="flex items-center justify-between gap-3">
-        <h2 className="text-[var(--terminal-text)] text-lg font-bold font-mono group-hover:text-primary transition-colors">
+      <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-[var(--terminal-text-dim)] text-xs font-mono">
+        {showCategory && <span className="text-primary uppercase tracking-wider">{post.category}</span>}
+        {post.series && post.seriesTotal && post.seriesTotal > 1 && <span>{post.series} · part {post.seriesPart}/{post.seriesTotal}</span>}
+        {post.date && <time dateTime={post.date}>{formatDate(post.date)}</time>}
+        <span>{post.readingMinutes} min read</span>
+        {views && <span>{views.toLocaleString('en-US')} views</span>}
+      </div>
+      <div className="flex items-start justify-between gap-3">
+        <h2 className="text-[var(--terminal-text)] text-lg sm:text-xl font-bold font-mono leading-snug group-hover:text-primary transition-colors">
           {post.title}
         </h2>
-        <span className="text-[var(--terminal-text-dim)] text-xs font-mono flex-shrink-0">
-          {post.date && <>{post.date} · </>}{post.readingMinutes} min{views && <> · {views.toLocaleString('en-US')} views</>}
-        </span>
+        <span className="material-symbols-outlined mt-0.5 text-xl text-[var(--terminal-text-dim)] transition-[color,transform] duration-300 group-hover:text-primary group-hover:translate-x-1" aria-hidden="true">arrow_forward</span>
       </div>
       {post.excerpt && (
         <p className="text-[var(--terminal-text-muted)] text-sm font-mono leading-relaxed">
@@ -89,25 +70,27 @@ function PostCard({ post, index, views, selected, onOpen }: {
         </p>
       )}
       {post.tags && post.tags.length > 0 && (
-        <div className="flex flex-wrap gap-2 mt-1">
-          {post.tags.map((tag) => (
-            <span key={tag} className="px-2 py-1 rounded bg-[var(--terminal-bg)] border border-[var(--terminal-border)] text-[10px] text-[var(--terminal-text-dim)] font-mono">
-              {tag}
-            </span>
-          ))}
+        <div className="flex flex-wrap gap-x-3 gap-y-1 mt-1 text-[11px] text-[var(--terminal-text-dim)] font-mono">
+          {post.tags.slice(0, 4).map((tag) => <span key={tag}>#{tag}</span>)}
+          {post.tags.length > 4 && <span>+{post.tags.length - 4}</span>}
         </div>
       )}
     </Link>
   );
 }
 
-function PostDetail({ post, views, body }: { post: PostMeta; views?: number; body?: ReactNode }) {
+function PostDetail({ post, views, body, headings }: { post: PostMeta; views?: number; body?: ReactNode; headings?: PostHeading[] }) {
+  const articleRef = useRef<HTMLElement>(null);
+  const { scrollToId, scrollToTop } = usePanelScroll(articleRef, post.slug);
+  const outline = headings && headings.length >= 3 ? headings : null;
+
   return (
-    <article key={post.slug} className="flex flex-col gap-5">
+    <article ref={articleRef} key={post.slug} className="flex flex-col gap-5">
       <div className="flex flex-col gap-2 border-b border-[var(--terminal-border-alt)] pb-5">
         <h2 className="text-[var(--terminal-text)] text-2xl md:text-3xl font-black leading-tight tracking-tight font-mono">{post.title}</h2>
         <div className="flex flex-wrap items-center gap-3 text-xs font-mono text-[var(--terminal-text-dim)]">
-          {post.date && <span>{post.date}</span>}
+          {post.date && <time dateTime={post.date}>{formatDate(post.date)}</time>}
+          {post.updated && post.updated !== post.date && <span>updated {formatDate(post.updated)}</span>}
           <span>{post.readingMinutes} min read</span>
           {views && <span>{views.toLocaleString('en-US')} views</span>}
           <span className="ml-auto flex items-center gap-4">
@@ -116,15 +99,18 @@ function PostDetail({ post, views, body }: { post: PostMeta; views?: number; bod
           </span>
         </div>
       </div>
-      {body && <div className="animate-fade-in-fast">{body}</div>}
+      <div className="flex items-start gap-8">
+        <div className="min-w-0 flex-1">{body && <div className="animate-fade-in-fast">{body}</div>}</div>
+        {outline && body && <PanelOutline headings={outline} minutes={post.readingMinutes} onJump={scrollToId} onTop={scrollToTop} />}
+      </div>
     </article>
   );
 }
 
-export default function BlogClient({ posts, views, openSlug, openBody }: BlogClientProps) {
+export default function BlogClient({ posts, views, openSlug, openBody, openHeadings, initialFilters = EMPTY_FILTERS }: BlogClientProps) {
   const router = useRouter();
   const listRef = useScrollReveal<HTMLDivElement>();
-  const [activeTag, setActiveTag] = useState<string | null>(null);
+  const [filters, setFilters] = useState<FilterState>(initialFilters);
   const ultrawide = useUltrawide();
   const [selectedSlug, setSelectedSlug] = useState<string | null>(openSlug ?? null);
   const selectedPost = posts.find((p) => p.slug === selectedSlug);
@@ -135,19 +121,46 @@ export default function BlogClient({ posts, views, openSlug, openBody }: BlogCli
     if (!ultrawide || e.metaKey || e.ctrlKey || e.shiftKey || e.button !== 0) return;
     e.preventDefault();
     setSelectedSlug(slug);
-    router.replace(`/blog?post=${slug}`, { scroll: false });
+    router.replace(`/blog${filtersToSearch(filters, slug)}`, { scroll: false });
   };
 
   const closePost = useCallback(() => {
     setSelectedSlug(null);
-    router.replace('/blog', { scroll: false });
-  }, [router]);
+    router.replace(`/blog${filtersToSearch(filters)}`, { scroll: false });
+  }, [router, filters]);
   useEscapeKey(ultrawide && selectedSlug !== null, closePost);
 
-  const tagCounts = new Map<string, number>();
-  for (const post of posts) for (const tag of post.tags ?? []) tagCounts.set(tag, (tagCounts.get(tag) ?? 0) + 1);
-  const tags = [...tagCounts.entries()].sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0]));
-  const visiblePosts = activeTag ? posts.filter((p) => p.tags?.includes(activeTag)) : posts;
+  // Keep the address bar in step with the filters (and any open post) without a server round trip.
+  const changeFilters = (next: FilterState) => {
+    setFilters(next);
+    window.history.replaceState(null, '', `/blog${filtersToSearch(next, selectedSlug)}`);
+  };
+
+  // `j` and `k` walk the visible cards with real focus, so Enter opens one and the focus ring shows where you are.
+  useEffect(() => {
+    const onKeyDown = (e: KeyboardEvent) => {
+      if ((e.key !== 'j' && e.key !== 'k') || e.metaKey || e.ctrlKey || e.altKey || e.defaultPrevented) return;
+      if ((e.target as HTMLElement).closest('input, textarea, select, [contenteditable], [role="dialog"], dialog')) return;
+      const cards = [...document.querySelectorAll<HTMLElement>('[data-post-card]')];
+      if (cards.length === 0) return;
+      e.preventDefault();
+      const at = cards.indexOf(document.activeElement as HTMLElement);
+      const to = e.key === 'j' ? Math.min(cards.length - 1, at + 1) : Math.max(0, at - 1);
+      cards[to].focus();
+    };
+    window.addEventListener('keydown', onKeyDown);
+    return () => window.removeEventListener('keydown', onKeyDown);
+  }, []);
+
+  const visiblePosts = applyFilters(posts, filters, views);
+
+  // Under the default date sort with no category picked, the list is grouped under a heading per category.
+  // Sorting by views (or oldest-first across categories) is one flat list, so each card carries its category instead.
+  const categoryNames = [...new Set(posts.map((p) => p.category))];
+  const grouped = !filters.category && filters.sort === 'newest' && categoryNames.length > 1;
+  const groups: [string, PostMeta[]][] = grouped
+    ? categoryNames.map((c) => [c, visiblePosts.filter((p) => p.category === c)] as [string, PostMeta[]]).filter(([, g]) => g.length > 0)
+    : [['', visiblePosts]];
 
   return (
     <PageShell crumbs={[{ label: 'blog.log', href: '/blog' }]} rail>
@@ -166,7 +179,7 @@ export default function BlogClient({ posts, views, openSlug, openBody }: BlogCli
         </Link>
       </PageHeading>
 
-      {tags.length > 1 && <TagFilter tags={tags} total={posts.length} activeTag={activeTag} onChange={setActiveTag} />}
+      {posts.length > 0 && <BlogFilters posts={posts} views={views} filters={filters} onChange={changeFilters} shown={visiblePosts.length} />}
 
       {posts.length === 0 ? (
         <div className="border border-dashed border-[var(--terminal-border)] rounded p-6 text-center font-mono text-sm text-[var(--terminal-text-dim)]">
@@ -174,23 +187,41 @@ export default function BlogClient({ posts, views, openSlug, openBody }: BlogCli
         </div>
       ) : (
         // Keyed by the filter so the cards remount and each one is re-observed for its entrance.
-        <div key={activeTag ?? 'all'} ref={listRef} className="flex flex-col gap-3 sm:gap-4">
-          {visiblePosts.map((post, index) => (
-            <PostCard
-              key={post.slug}
-              post={post}
-              index={index}
-              views={views[post.slug]}
-              selected={post.slug === selectedSlug}
-              onOpen={openPost}
-            />
+        <div key={`${filters.category}|${filters.tags.join(",")}|${filters.sort}`} ref={listRef} className="flex flex-col gap-6 sm:gap-8">
+          {groups.map(([category, group]) => (
+            <section key={category || 'all'} aria-label={grouped ? category : undefined} className="flex flex-col gap-3 sm:gap-4">
+              {grouped && (
+                <h2 className="flex items-baseline gap-3 font-mono text-xs uppercase tracking-widest text-[var(--terminal-text-dim)]">
+                  <span className="text-primary">{category}</span>
+                  <span className="h-px flex-1 bg-[var(--terminal-border)]" aria-hidden="true" />
+                  <span>{group.length}</span>
+                </h2>
+              )}
+              {group.map((post, index) => (
+                <PostCard
+                  key={post.slug}
+                  post={post}
+                  index={index}
+                  views={views[post.slug]}
+                  selected={post.slug === selectedSlug}
+                  showCategory={!grouped && categoryNames.length > 1}
+                  onOpen={openPost}
+                />
+              ))}
+            </section>
           ))}
+          {visiblePosts.length === 0 && (
+            <div className="border border-dashed border-[var(--terminal-border)] rounded p-6 text-center font-mono text-sm text-[var(--terminal-text-dim)]">
+              No posts match these filters.{' '}
+              {isFiltered(filters) && <button type="button" onClick={() => changeFilters({ ...EMPTY_FILTERS, sort: filters.sort })} className="text-primary hover:underline">Clear filters</button>}
+            </div>
+          )}
         </div>
       )}
       </div>
       {ultrawide && (
         <UltrawideDetail label="POST">
-          {selectedPost && <PostDetail post={selectedPost} views={views[selectedPost.slug]} body={openSlug === selectedPost.slug ? openBody : undefined} />}
+          {selectedPost && <PostDetail post={selectedPost} views={views[selectedPost.slug]} body={openSlug === selectedPost.slug ? openBody : undefined} headings={openSlug === selectedPost.slug ? openHeadings : undefined} />}
         </UltrawideDetail>
       )}
     </PageShell>
