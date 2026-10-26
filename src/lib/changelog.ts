@@ -21,7 +21,7 @@ export const releases: Release[] = [
       'Blog posts: series box, TL;DR summary, updated date, tags that link to indexable /blog/tag pages, and ← → to step between posts',
       'Reading aids: progress bar, minutes left, back to top and a live "on this page" outline, also in the ultrawide side panel (with smooth scrolling and per-section reading time)',
       'Post content: tables and strikethrough, click-to-zoom images with captions and arrow-key browsing, [!NOTE]/[!WARNING] callouts, code blocks with file names and highlighted lines',
-      'RSS feed carries the full post text; posts print as clean black-on-white pages',
+      'Posts print as clean black-on-white pages',
       'Fixes: repeated headings now get distinct anchors, long dates read as "Oct 22, 2026"',
     ],
   },
