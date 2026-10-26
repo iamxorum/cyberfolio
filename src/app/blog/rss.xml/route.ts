@@ -1,6 +1,5 @@
 import { features, siteConfig } from '@/config';
-import { getAllPosts, getPostBySlug } from '@/lib/blog';
-import { markdownToHtml } from '@/lib/blog-html';
+import { getAllPosts } from '@/lib/blog';
 import { siteUrl } from '@/lib/seo';
 
 // Re-read content/blog at most this often, so new posts reach the feed without a rebuild.
@@ -15,18 +14,13 @@ const toRfc822 = (date: string) => {
   return Number.isNaN(parsed.getTime()) ? null : parsed.toUTCString();
 };
 
-// Text can't contain `]]>` inside a CDATA section; split it across two sections.
-const cdata = (html: string) => `<![CDATA[${html.replaceAll(']]>', ']]]]><![CDATA[>')}]]>`;
-
-export async function GET() {
+export function GET() {
   if (!features.blog) return new Response('Not found', { status: 404 });
   const posts = getAllPosts();
   const lastBuild = posts.map((p) => toRfc822(p.date)).find(Boolean) ?? new Date().toUTCString();
 
-  const items = (await Promise.all(posts
-    .map(async (post) => {
-      const body = getPostBySlug(post.slug)?.content;
-      const html = body ? await markdownToHtml(body) : '';
+  const items = posts
+    .map((post) => {
       const url = `${siteUrl}/blog/${post.slug}`;
       const pubDate = toRfc822(post.date);
       return [
@@ -36,16 +30,15 @@ export async function GET() {
         `      <guid isPermaLink="true">${url}</guid>`,
         pubDate ? `      <pubDate>${pubDate}</pubDate>` : '',
         `      <description>${escapeXml(post.excerpt)}</description>`,
-        html ? `      <content:encoded>${cdata(html)}</content:encoded>` : '',
         post.category ? `      <category>${escapeXml(post.category)}</category>` : '',
         ...(post.tags ?? []).map((tag) => `      <category>${escapeXml(tag)}</category>`),
         '    </item>',
       ].filter(Boolean).join('\n');
-    })))
+    })
     .join('\n');
 
   const xml = `<?xml version="1.0" encoding="UTF-8"?>
-<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/">
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>${escapeXml(`Blog | ${siteConfig.fullName}`)}</title>
     <link>${siteUrl}/blog</link>
