@@ -938,7 +938,7 @@ html.light .text-red-400 { color: #b91c1c; }
   }
   /* Long-form text keeps a readable line length; everything else uses the full pane. */
   .uw-detail > article {
-    max-width: 110ch;
+    max-width: 132ch;
   }
   /* Detail panels swap content often: show it at once instead of replaying scroll entrances. */
   .uw-detail .scroll-reveal:not(.is-visible) {
@@ -1007,5 +1007,37 @@ html.light .text-red-400 { color: #b91c1c; }
     color: var(--terminal-text-dim);
     opacity: calc(1 - var(--rail-progress) * 8);
     pointer-events: none;
+  }
+}
+
+/* A post prints as plain black-on-white text: the dark theme's light text would vanish on paper, and
+   entrance animations would leave everything below the fold invisible. */
+@media print {
+  body:has([data-reading-target]) {
+    background: white !important;
+  }
+  body:has([data-reading-target]) *,
+  body:has([data-reading-target]) *::before,
+  body:has([data-reading-target]) *::after {
+    color: #111 !important;
+    background: transparent !important;
+    border-color: #999 !important;
+    box-shadow: none !important;
+    text-shadow: none !important;
+  }
+  body:has([data-reading-target]) a {
+    text-decoration: underline;
+  }
+  body:has([data-reading-target]) pre {
+    background: #f4f4f4 !important;
+    white-space: pre-wrap;
+  }
+  body:has([data-reading-target]) img {
+    max-width: 100%;
+    break-inside: avoid;
+  }
+  body:has([data-reading-target]) .scroll-reveal {
+    opacity: 1 !important;
+    animation: none !important;
   }
 }
