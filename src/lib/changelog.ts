@@ -14,6 +14,18 @@ export interface Release {
 // Newest first. Add a release here when the version is bumped.
 export const releases: Release[] = [
   {
+    version: '1.6.8',
+    date: '2026-10-26',
+    changes: [
+      'Blog list: filter by category and tag, search, sort by date or views, shareable filter URLs, j/k and Enter to move through posts',
+      'Blog posts: series box, TL;DR summary, updated date, tags that link to indexable /blog/tag pages, and ← → to step between posts',
+      'Reading aids: progress bar, minutes left, back to top and a live "on this page" outline, also in the ultrawide side panel (with smooth scrolling and per-section reading time)',
+      'Post content: tables and strikethrough, click-to-zoom images with captions and arrow-key browsing, [!NOTE]/[!WARNING] callouts, code blocks with file names and highlighted lines',
+      'RSS feed carries the full post text; posts print as clean black-on-white pages',
+      'Fixes: repeated headings now get distinct anchors, long dates read as "Oct 22, 2026"',
+    ],
+  },
+  {
     version: '1.6.7',
     date: '2026-10-26',
     changes: [
