@@ -14,6 +14,15 @@ export interface Release {
 // Newest first. Add a release here when the version is bumped.
 export const releases: Release[] = [
   {
+    version: '1.6.7',
+    date: '2026-10-26',
+    changes: [
+      'CV: new Designed variant next to the ATS one (dark header band, timeline, skills panel, optional round photo in the PDF)',
+      'PDF downloads get plain names: Name_CV.pdf, Name_CV_Cover_Letter.pdf, Name_Cover_Letter.pdf',
+      'cv.config: new photo setting; /api/cv-photo serves private/cv-photo.jpg behind the same gate as /cv',
+    ],
+  },
+  {
     version: '1.6.6',
     date: '2026-10-25',
     changes: [
