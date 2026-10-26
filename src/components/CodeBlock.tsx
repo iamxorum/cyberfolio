@@ -1,13 +1,28 @@
 'use client';
 
-import { useEffect, useRef, useState, type ComponentProps } from 'react';
+import { Children, isValidElement, useEffect, useRef, useState, type ComponentProps, type ReactNode } from 'react';
 import { copyText } from '@/lib/copy-text';
 import { track } from '@/lib/track';
 
 const COPIED_MS = 1800;
+// Fences in these languages are plain output, not code, so they get no language badge.
+const PLAIN_LANGUAGES = new Set(['text', 'txt', 'plain', 'plaintext']);
 
-/** MDX `pre` with a copy button that appears on hover/focus (always visible on touch). */
-export default function CodeBlock({ children, ...props }: ComponentProps<'pre'>) {
+/** "2,4-6" -> {2, 4, 5, 6}. */
+function parseLines(spec: string | undefined) {
+  const lines = new Set<number>();
+  for (const part of spec?.split(',') ?? []) {
+    const [from, to = from] = part.split('-').map(Number);
+    if (Number.isInteger(from) && Number.isInteger(to) && to - from < 1000) for (let n = from; n <= to; n++) lines.add(n);
+  }
+  return lines;
+}
+
+/**
+ * MDX `pre` with a copy button that appears on hover/focus (always visible on touch). A fence can carry
+ * a file name and highlighted lines in its info string: ```yaml title="traefik.yml" {2,4-6}
+ */
+export default function CodeBlock({ children, ...preProps }: ComponentProps<'pre'>) {
   const preRef = useRef<HTMLPreElement>(null);
   const [copied, setCopied] = useState(false);
 
@@ -17,8 +32,17 @@ export default function CodeBlock({ children, ...props }: ComponentProps<'pre'>)
     return () => clearTimeout(timer);
   }, [copied]);
 
+  // remark puts the fence's info-string props on the inner <code>, not on the <pre>.
+  const codeElement = Children.toArray(children).find(isValidElement) as { props: { className?: string; children?: ReactNode; 'data-title'?: string; 'data-highlight'?: string } } | undefined;
+  const title = codeElement?.props['data-title'];
+  const highlight = codeElement?.props['data-highlight'];
+  const language = /language-([\w+#-]+)/.exec(codeElement?.props.className ?? '')?.[1];
+  const source = typeof codeElement?.props.children === 'string' ? codeElement.props.children : null;
+  const label = title ?? (language && !PLAIN_LANGUAGES.has(language) ? language : null);
+  const marked = parseLines(highlight);
+
   const copy = async () => {
-    const text = preRef.current?.textContent ?? '';
+    const text = source ?? preRef.current?.textContent ?? '';
     // Leaves the label unchanged if the clipboard is blocked.
     if (await copyText(text)) {
       setCopied(true);
@@ -26,20 +50,33 @@ export default function CodeBlock({ children, ...props }: ComponentProps<'pre'>)
     }
   };
 
+  // Highlighting needs one element per line; without any marked line the code renders untouched.
+  const body = source !== null && marked.size > 0
+    ? source.replace(/\n$/, '').split('\n').map((line, i) => (
+        <span key={i} className={`-mx-4 block px-4 ${marked.has(i + 1) ? 'border-l-2 border-primary bg-[rgba(var(--terminal-accent-rgb),0.12)] pl-[calc(1rem-2px)]' : ''}`}>{line || ' '}</span>
+      ))
+    : children;
+
   return (
     <div data-reveal className="scroll-reveal relative group/code mb-4">
+      {label && (
+        <div className="flex items-center gap-2 rounded-t border border-b-0 border-[var(--terminal-border)] bg-[var(--terminal-surface-alt)] px-4 py-1.5 pr-20 font-mono text-[11px] text-[var(--terminal-text-dim)]">
+          <span className="truncate">{label}</span>
+          {title && language && !PLAIN_LANGUAGES.has(language) && <span className="shrink-0 opacity-60">{language}</span>}
+        </div>
+      )}
       <pre
         ref={preRef}
-        className="rounded border border-[var(--terminal-border)] bg-[var(--terminal-bg-dark)] p-4 overflow-x-auto text-[13px] leading-relaxed [&>code]:bg-transparent [&>code]:border-0 [&>code]:p-0"
-        {...props}
+        className={`border border-[var(--terminal-border)] bg-[var(--terminal-bg-dark)] p-4 overflow-x-auto text-[13px] leading-relaxed [&>code]:bg-transparent [&>code]:border-0 [&>code]:p-0 ${label ? 'rounded-b' : 'rounded'}`}
+        {...preProps}
       >
-        {children}
+        {marked.size > 0 && source !== null ? <code className={codeElement?.props.className}>{body}</code> : children}
       </pre>
       <button
         type="button"
         onClick={copy}
         aria-label={copied ? 'Copied to clipboard' : 'Copy code'}
-        className="absolute top-2 right-2 flex items-center gap-1 px-2 py-1 rounded border border-[var(--terminal-border)] bg-[var(--terminal-surface)] text-[10px] font-mono text-[var(--terminal-text-dim)] hover:text-primary hover:border-primary transition opacity-100 [@media(hover:hover)]:opacity-0 [@media(hover:hover)]:group-hover/code:opacity-100 focus-visible:opacity-100"
+        className={`absolute right-2 flex items-center gap-1 px-2 py-1 rounded border border-[var(--terminal-border)] bg-[var(--terminal-surface)] text-[10px] font-mono text-[var(--terminal-text-dim)] hover:text-primary hover:border-primary transition opacity-100 [@media(hover:hover)]:opacity-0 [@media(hover:hover)]:group-hover/code:opacity-100 focus-visible:opacity-100 ${label ? 'top-1' : 'top-2'}`}
       >
         <span aria-hidden="true" className="material-symbols-outlined text-sm">{copied ? 'check' : 'content_copy'}</span>
         {copied ? 'COPIED' : 'COPY'}
