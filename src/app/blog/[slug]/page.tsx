@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import { siteConfig } from '@/config';
-import { extractHeadings, getAdjacentPosts, getAllPostSlugs, getPostBySlug, getRelatedPosts } from '@/lib/blog';
+import { extractHeadings, getAdjacentPosts, getAllPostSlugs, getPostBySlug, getRelatedPosts, getSeries } from '@/lib/blog';
 import { getPostViews } from '@/lib/umami';
 import BlogPostClient from './BlogPostClient';
 import MdxContent from './MdxContent';
@@ -33,7 +33,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
     description: post.excerpt,
     alternates: { canonical: pageUrl },
     // The image comes from this segment's opengraph-image.tsx (a card with the post's own title and tags).
-    openGraph: { title, description: post.excerpt, url: pageUrl, type: 'article', publishedTime: post.date, tags: post.tags },
+    openGraph: { title, description: post.excerpt, url: pageUrl, type: 'article', publishedTime: post.date, modifiedTime: post.updated, tags: post.tags },
     twitter: { card: 'summary_large_image', title, description: post.excerpt },
   };
 }
@@ -47,6 +47,7 @@ export default async function BlogPost({ params }: PageProps) {
   const ogImage = `${pageUrl}/opengraph-image`;
   const { previous, next } = getAdjacentPosts(slug);
   const related = getRelatedPosts(slug);
+  const series = getSeries(slug);
   const views = (await getPostViews())[slug];
 
   const breadcrumbs = breadcrumbJsonLd([
@@ -71,7 +72,7 @@ export default async function BlogPost({ params }: PageProps) {
     <>
       <JsonLd data={breadcrumbs} />
       <JsonLd data={postJsonLd} />
-      <BlogPostClient title={post.title} date={post.date} tags={post.tags} readingMinutes={post.readingMinutes} headings={extractHeadings(post.content)} previous={previous} next={next} related={related} views={views}>
+      <BlogPostClient title={post.title} date={post.date} updated={post.updated} series={series} summary={post.summary} category={post.category} tags={post.tags} readingMinutes={post.readingMinutes} headings={extractHeadings(post.content)} previous={previous} next={next} related={related} views={views}>
         <MdxContent source={post.content} />
       </BlogPostClient>
     </>
