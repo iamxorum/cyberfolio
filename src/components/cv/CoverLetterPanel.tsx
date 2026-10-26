@@ -32,7 +32,7 @@ export default function CoverLetterPanel({ email, phone, signature }: { email?: 
     const blob = await pdf(
       <CoverLetterDocument siteConfig={siteConfig} style={selectedCoverLetterStyle} email={email} phone={phone} signature={signature.image} />
     ).toBlob();
-    return { blob, filename: `${siteConfig.fullName.replace(/\s+/g, '_')}_Cover_Letter_${selectedLetterStyle}.pdf` };
+    return { blob, filename: `${siteConfig.fullName.replace(/\s+/g, '_')}_Cover_Letter.pdf` };
   });
 
   return (

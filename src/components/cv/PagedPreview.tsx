@@ -6,8 +6,6 @@ import { useCallback, useEffect, useLayoutEffect, useRef, useState, type ReactNo
 const PAGE_W = 794;
 const PAGE_H = 1123;
 const MARGIN = 48;
-const CONTENT_W = PAGE_W - MARGIN * 2;
-const CONTENT_H = PAGE_H - MARGIN * 2;
 const MIN_PAGE_FILL = 80;
 const MAX_ZOOM = 1.25;
 
@@ -30,13 +28,13 @@ function breakCandidates(root: HTMLElement): number[] {
   return [...tops].sort((a, b) => a - b);
 }
 
-function computeBreaks(root: HTMLElement): number[] {
+function computeBreaks(root: HTMLElement, contentH: number): number[] {
   const total = Math.ceil(root.getBoundingClientRect().height);
   const candidates = breakCandidates(root);
   const breaks = [0];
   let start = 0;
-  while (total - start > CONTENT_H) {
-    const limit = start + CONTENT_H;
+  while (total - start > contentH) {
+    const limit = start + contentH;
     let end = limit; // no clean break available: slice at the page edge
     for (const top of candidates) {
       if (top > limit) break;
@@ -53,6 +51,8 @@ interface PagedPreviewProps {
   children: ReactNode;
   /** Shown beside the page counter, e.g. "CV". */
   label: string;
+  /** No page margin: the document brings its own. */
+  bleed?: boolean;
 }
 
 /**
@@ -60,10 +60,13 @@ interface PagedPreviewProps {
  * controls. The content is rendered twice: once invisibly at page width to find clean page breaks,
  * and once per visible page, clipped to that page's slice.
  */
-export default function PagedPreview({ children, label }: PagedPreviewProps) {
+export default function PagedPreview({ children, label, bleed = false }: PagedPreviewProps) {
+  const margin = bleed ? 0 : MARGIN;
+  const contentW = PAGE_W - margin * 2;
+  const contentH = PAGE_H - margin * 2;
   const measureRef = useRef<HTMLDivElement>(null);
   const stageRef = useRef<HTMLDivElement>(null);
-  const [breaks, setBreaks] = useState<number[]>([0, CONTENT_H]);
+  const [breaks, setBreaks] = useState<number[]>([0, contentH]);
   const [page, setPage] = useState(0);
   const [zoom, setZoom] = useState(1);
 
@@ -73,9 +76,9 @@ export default function PagedPreview({ children, label }: PagedPreviewProps) {
   const remeasure = useCallback(() => {
     const root = measureRef.current;
     if (!root) return;
-    const next = computeBreaks(root);
+    const next = computeBreaks(root, contentH);
     setBreaks((prev) => (prev.length === next.length && prev.every((b, i) => b === next[i]) ? prev : next));
-  }, []);
+  }, [contentH]);
 
   useLayoutEffect(() => {
     const root = measureRef.current;
@@ -131,14 +134,14 @@ export default function PagedPreview({ children, label }: PagedPreviewProps) {
           className="absolute left-1/2 top-1/2 bg-white shadow-[0_0_40px_rgba(0,0,0,0.5)]"
           style={{ width: PAGE_W, height: PAGE_H, transform: `translate(-50%, -50%) scale(${zoom})` }}
         >
-          <div className="absolute overflow-hidden" style={{ left: MARGIN, top: MARGIN, width: CONTENT_W, height: sliceHeight }}>
-            <div style={{ width: CONTENT_W, transform: `translateY(${-start}px)` }}>{children}</div>
+          <div className="absolute overflow-hidden" style={{ left: margin, top: margin, width: contentW, height: sliceHeight }}>
+            <div style={{ width: contentW, transform: `translateY(${-start}px)` }}>{children}</div>
           </div>
         </div>
       </div>
 
       {/* Invisible copy at page width, only used to find the page breaks. */}
-      <div aria-hidden="true" inert className="pointer-events-none fixed -left-[9999px] top-0 invisible" style={{ width: CONTENT_W }}>
+      <div aria-hidden="true" inert className="pointer-events-none fixed -left-[9999px] top-0 invisible" style={{ width: contentW }}>
         <div ref={measureRef}>{children}</div>
       </div>
 

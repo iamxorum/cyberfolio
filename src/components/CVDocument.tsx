@@ -19,7 +19,7 @@ import type { ContributionStats } from '@/lib/github-contributions';
 import { cvMetadata } from '@/lib/pdf-metadata';
 import DocumentHeader from '@/components/pdf/DocumentHeader';
 
-interface CVDocumentProps {
+export interface CVDocumentProps {
   style: CVStyle;
   siteConfig: SiteConfig;
   experience: Experience[];
@@ -33,6 +33,8 @@ interface CVDocumentProps {
   phone?: string;
   useColumnLayout?: boolean;
   contributionStats?: Record<string, ContributionStats | null>;
+  /** Header photo (data URL). Designed CV only. */
+  photo?: string;
 }
 
 const styles = StyleSheet.create({

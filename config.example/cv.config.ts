@@ -18,6 +18,8 @@ export interface CVStyle {
 }
 
 export interface CVConfig {
+  /** Round photo for the designed CV (not ATS). "/api/cv-photo" serves private/cv-photo.jpg. Omit for none. */
+  photo?: string;
   /** Summary used when a style has none of its own. */
   summary?: string;
   styles: CVStyle[];

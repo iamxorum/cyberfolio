@@ -20,7 +20,7 @@ import CVLanguagesSection from '@/components/cv-template/CVLanguagesSection';
 import CVProjectsSection from '@/components/cv-template/CVProjectsSection';
 import CVAdditionalInfoSection from '@/components/cv-template/CVAdditionalInfoSection';
 
-interface CVTemplateProps {
+export interface CVTemplateProps {
   style: CVStyle;
   siteConfig: SiteConfig;
   experience: Experience[];

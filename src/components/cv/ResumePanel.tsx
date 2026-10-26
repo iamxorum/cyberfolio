@@ -2,6 +2,8 @@
 
 import { useState } from 'react';
 import CVTemplate from '@/components/CVTemplate';
+import CVDesignedTemplate from '@/components/CVDesignedTemplate';
+import VariantToggle, { type CVVariant } from '@/components/cv/VariantToggle';
 import ScaleToFit from '@/components/ScaleToFit';
 import PagedPreview from '@/components/cv/PagedPreview';
 import { useUltrawide } from '@/hooks/useUltrawide';
@@ -17,6 +19,7 @@ import { eventProps } from '@/lib/track';
 import TypedText from '@/components/TypedText';
 import SignatureUnlock from '@/components/cv/SignatureUnlock';
 import type { SignatureState } from '@/hooks/useSignature';
+import { loadCVPhoto } from '@/lib/cv-photo';
 
 interface ResumePanelProps {
   contributionStats: Record<string, ContributionStats | null>;
@@ -27,11 +30,12 @@ interface ResumePanelProps {
 
 type CVStyle = (typeof cvConfig.styles)[number];
 
-const fileName = (kind: string, styleId: string) => `${siteConfig.fullName.replace(/\s+/g, '_')}_${kind}_${styleId}.pdf`;
+const fileName = (kind: string) => `${siteConfig.fullName.replace(/\s+/g, '_')}_${kind}.pdf`;
 
-function useCVDownloads({ style, styleId, useColumnLayout, contributionStats, email, phone, signature }: {
+function useCVDownloads({ style, styleId, variant, useColumnLayout, contributionStats, email, phone, signature }: {
   style: CVStyle;
   styleId: string;
+  variant: CVVariant;
   useColumnLayout: boolean;
   contributionStats: Record<string, ContributionStats | null>;
   email?: string;
@@ -59,20 +63,24 @@ function useCVDownloads({ style, styleId, useColumnLayout, contributionStats, em
 
   const letterStyle = features.coverLetter ? getCoverLetterForCV(styleId) : undefined;
 
+  const designedPhoto = () => variant === 'designed' ? loadCVPhoto(cvConfig.photo) : undefined;
+
   const downloadCV = () => cv.download(async () => {
-    const [{ pdf }, { default: CVDocument }] = await Promise.all([
+    const [{ pdf }, { default: CVDocument }, photo] = await Promise.all([
       import('@react-pdf/renderer'),
-      import('@/components/CVDocument'),
+      variant === 'designed' ? import('@/components/CVDesignedDocument') : import('@/components/CVDocument'),
+      designedPhoto(),
     ]);
-    return { blob: await pdf(<CVDocument {...cvProps} />).toBlob(), filename: fileName('CV', styleId) };
+    return { blob: await pdf(<CVDocument {...cvProps} photo={photo} />).toBlob(), filename: fileName('CV') };
   });
 
   const downloadApplication = () => letterStyle && application.download(async () => {
-    const [{ pdf }, { default: ApplicationDocument }] = await Promise.all([
+    const [{ pdf }, { default: ApplicationDocument }, photo] = await Promise.all([
       import('@react-pdf/renderer'),
       import('@/components/ApplicationDocument'),
+      designedPhoto(),
     ]);
-    return { blob: await pdf(<ApplicationDocument cv={cvProps} letterStyle={letterStyle} signature={signature} />).toBlob(), filename: fileName('Application', styleId) };
+    return { blob: await pdf(<ApplicationDocument cv={{ ...cvProps, photo }} variant={variant} letterStyle={letterStyle} signature={signature} />).toBlob(), filename: fileName('CV_Cover_Letter') };
   });
 
   return { cv, downloadCV, application, downloadApplication, letterStyle };
@@ -100,15 +108,34 @@ function ColumnLayoutToggle({ active, onToggle }: { active: boolean; onToggle: (
 
 export default function ResumePanel({ contributionStats, email, phone, signature }: ResumePanelProps) {
   const [selectedStyle, setSelectedStyle] = useState<string>(cvConfig.styles[0].id);
+  const [variant, setVariant] = useState<CVVariant>('ats');
   const [useColumnLayout, setUseColumnLayout] = useState<boolean>(false);
   const [showCV, setShowCV] = useState<boolean>(true);
   const ultrawide = useUltrawide();
 
   const selectedCVStyle = cvConfig.styles.find(s => s.id === selectedStyle) || cvConfig.styles[0];
 
+  const designed = variant === 'designed';
+  const showColumnWarning = !designed && useColumnLayout;
+  const templateProps = {
+    style: selectedCVStyle,
+    siteConfig,
+    experience,
+    education,
+    languages,
+    certifications,
+    hobbies,
+    projects,
+    summary: cvConfig.summary,
+    useColumnLayout,
+    contributionStats,
+  };
+  const preview = designed ? <CVDesignedTemplate {...templateProps} /> : <CVTemplate {...templateProps} />;
+
   const { cv, downloadCV, application, downloadApplication, letterStyle } = useCVDownloads({
     style: selectedCVStyle,
     styleId: selectedStyle,
+    variant,
     useColumnLayout,
     contributionStats,
     email,
@@ -124,12 +151,10 @@ export default function ResumePanel({ contributionStats, email, phone, signature
             <h1 className="text-[var(--terminal-text)] text-2xl sm:text-3xl font-bold leading-tight tracking-[-0.015em] font-mono mb-2">
               <span className="text-primary">&gt;</span> <TypedText text="CV_DOWNLOAD.sh" />
             </h1>
-            <p className="text-[var(--terminal-text-dim)] text-sm font-mono">
-              Select a CV style for your target job domain
-            </p>
           </div>
           <div className="flex flex-col sm:flex-row gap-3 items-end">
-            <ColumnLayoutToggle active={useColumnLayout} onToggle={() => setUseColumnLayout(!useColumnLayout)} />
+            <VariantToggle variant={variant} onChange={setVariant} />
+            {!designed && <ColumnLayoutToggle active={useColumnLayout} onToggle={() => setUseColumnLayout(!useColumnLayout)} />}
             {letterStyle && (
               <DownloadButton
                 isDownloading={application.isDownloading}
@@ -146,12 +171,12 @@ export default function ResumePanel({ contributionStats, email, phone, signature
         <div
           className="overflow-hidden"
           style={{
-            opacity: useColumnLayout ? 1 : 0,
-            maxHeight: useColumnLayout ? '80px' : '0px',
-            marginBottom: useColumnLayout ? '1rem' : '0px',
+            opacity: showColumnWarning ? 1 : 0,
+            maxHeight: showColumnWarning ? '80px' : '0px',
+            marginBottom: showColumnWarning ? '1rem' : '0px',
             transition: 'opacity 300ms ease-out, max-height 300ms ease-out, margin-bottom 300ms ease-out',
           }}
-          aria-hidden={!useColumnLayout}
+          aria-hidden={!showColumnWarning}
         >
           <div className="flex items-center gap-2 px-3 py-2 rounded border border-yellow-500/30 bg-yellow-500/10">
             <span aria-hidden="true" className="material-symbols-outlined text-yellow-400 text-base flex-shrink-0">warning</span>
@@ -170,39 +195,15 @@ export default function ResumePanel({ contributionStats, email, phone, signature
 
       {ultrawide ? (
         <div className="uw-cv-preview">
-          <PagedPreview label="CV">
-            <CVTemplate
-              style={selectedCVStyle}
-              siteConfig={siteConfig}
-              experience={experience}
-              education={education}
-              languages={languages}
-              certifications={certifications}
-              hobbies={hobbies}
-              projects={projects}
-              summary={cvConfig.summary}
-              useColumnLayout={useColumnLayout}
-              contributionStats={contributionStats}
-            />
+          <PagedPreview label="CV" bleed={designed}>
+            {preview}
           </PagedPreview>
         </div>
       ) : (
       <Reveal>
       <RevealContainer visible={showCV}>
         <ScaleToFit>
-          <CVTemplate
-            style={selectedCVStyle}
-            siteConfig={siteConfig}
-            experience={experience}
-            education={education}
-            languages={languages}
-            certifications={certifications}
-            hobbies={hobbies}
-            projects={projects}
-            summary={cvConfig.summary}
-            useColumnLayout={useColumnLayout}
-            contributionStats={contributionStats}
-          />
+          {preview}
         </ScaleToFit>
       </RevealContainer>
       </Reveal>

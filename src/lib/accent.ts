@@ -56,3 +56,9 @@ export const ACCENT_PRINT: Record<Accent, string> = {
 export function getPrintAccent(): string {
   return ACCENT_PRINT[typeof document === 'undefined' ? 'default' : getAccent()];
 }
+
+/** Mixes a #rrggbb colour with white (0 = same, 1 = white). Plain hex, which the PDF renderer needs. */
+export function tint(hex: string, amount: number): string {
+  const channel = (i: number) => Math.round(parseInt(hex.slice(1 + i * 2, 3 + i * 2), 16) * (1 - amount) + 255 * amount);
+  return `#${[0, 1, 2].map((i) => channel(i).toString(16).padStart(2, '0')).join('')}`;
+}
