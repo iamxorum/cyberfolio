@@ -1,6 +1,6 @@
 import type { MetadataRoute } from 'next';
 import { features, projects } from '@/config';
-import { getAllPosts } from '@/lib/blog';
+import { getAllPosts, getAllTags } from '@/lib/blog';
 import { changelogEnabled } from '@/lib/changelog';
 import { siteUrl } from '@/lib/seo';
 
@@ -26,6 +26,9 @@ export default function sitemap(): MetadataRoute.Sitemap {
     ...(features.life ? [{ url: `${siteUrl}/life`, changeFrequency: 'weekly' as const, priority: 0.5 }] : []),
     ...(changelogEnabled ? [{ url: `${siteUrl}/changelog`, changeFrequency: 'monthly' as const, priority: 0.3 }] : []),
     { url: `${siteUrl}/privacy`, changeFrequency: 'yearly' as const, priority: 0.2 },
+    ...(features.blog
+      ? getAllTags().map((tag) => ({ url: `${siteUrl}/blog/tag/${encodeURIComponent(tag)}`, changeFrequency: 'monthly' as const, priority: 0.3 }))
+      : []),
     ...posts.map((post) => ({
       url: `${siteUrl}/blog/${post.slug}`,
       lastModified: post.updated || post.date || undefined,
