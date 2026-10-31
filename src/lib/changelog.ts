@@ -14,6 +14,13 @@ export interface Release {
 // Newest first. Add a release here when the version is bumped.
 export const releases: Release[] = [
   {
+    version: '1.7.3',
+    date: '2026-10-31',
+    changes: [
+      'Blog, projects and life ease their content in again after the loading skeleton. The skip-the-fade swap from 1.7.1 is removed',
+    ],
+  },
+  {
     version: '1.7.2',
     date: '2026-10-31',
     changes: [

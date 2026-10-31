@@ -8,7 +8,6 @@ import { formatRelativeTime } from '@/lib/format-time';
 import Reveal from '@/components/Reveal';
 import TypedText from '@/components/TypedText';
 import Bone from './Skeleton';
-import SkeletonSwap from './SkeletonSwap';
 
 const panel = 'border border-[var(--terminal-border)] rounded bg-[var(--terminal-surface)] p-4 sm:p-5';
 const label = 'text-xs sm:text-xs tracking-widest text-[var(--terminal-text-dim)]';
@@ -68,7 +67,6 @@ export function SectionTitle({ profileUrl }: { profileUrl?: string }) {
 export function GamingSkeleton() {
   return (
     <section id="gaming" aria-busy="true" aria-label="Loading gaming data" className="flex flex-col gap-4 font-mono scroll-mt-20">
-      <SkeletonSwap />
       <SectionTitle />
       <div className="flex flex-wrap gap-3 sm:gap-4">
         <div className={`${panel} flex-1 min-w-[220px] flex items-center gap-4`}>

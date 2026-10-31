@@ -659,21 +659,6 @@ html.boot-done .animate-reveal {
   to { opacity: 1; transform: translateY(0); }
 }
 
-/* A skeleton was just replaced by its content (SkeletonSwap): for that first paint, show the content instead of fading it
-   in from nothing. SkeletonSwap then marks the on-screen elements .reveal-settled for good, so none of them ever replays. */
-html[data-swap] .scroll-reveal:not(.is-visible),
-html[data-swap] .scroll-reveal-fade:not(.is-visible) {
-  opacity: 1;
-}
-html[data-swap] .animate-reveal {
-  animation: none;
-}
-.scroll-reveal.reveal-settled,
-.scroll-reveal-fade.reveal-settled,
-.animate-reveal.reveal-settled {
-  animation: none !important;
-}
-
 /* Accent scan lines sweep across the top and bottom edges as a panel appears, then fade out. */
 .panel-draw::before,
 .panel-draw::after {

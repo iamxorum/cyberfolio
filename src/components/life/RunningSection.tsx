@@ -9,7 +9,6 @@ import { STAGGER_STEP_DENSE_MS, STAGGER_STEP_MS, revealDelay } from '@/lib/motio
 import Reveal from '@/components/Reveal';
 import TypedText from '@/components/TypedText';
 import Bone from './Skeleton';
-import SkeletonSwap from './SkeletonSwap';
 import RunHeatmap from './RunHeatmap';
 import WeekdayHabit from './WeekdayHabit';
 import RunRecordsPanel from './RunRecordsPanel';
@@ -145,7 +144,6 @@ function useBestsUntilReady(initial: PersonalBestView[] | null | undefined) {
 export function RunningSkeleton() {
   return (
     <section id="running" aria-busy="true" aria-label="Loading running data" className="flex flex-col gap-4 font-mono scroll-mt-20">
-      <SkeletonSwap />
       <SectionTitle />
       <div className={`${panel} flex flex-col gap-3`}>
         <Bone className="h-3 w-28" />
