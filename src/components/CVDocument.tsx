@@ -16,7 +16,7 @@ import {
   formatDateSpan,
   getCVStack,
   getCVCertifications,
-  groupExperienceByCompany,
+  splitFamiliarSkills,
 } from '@/lib/cv-helpers';
 import { splitInterests } from '@/lib/cv-designed';
 import type { ContributionStats } from '@/lib/github-contributions';
@@ -95,21 +95,11 @@ const styles = StyleSheet.create({
     letterSpacing: 0.1,
     marginBottom: 3,
   },
-  roleLine: {
-    fontFamily: 'Times-Bold',
-    fontSize: 11.5,
-    marginTop: 2,
-  },
   roleIntro: {
     fontSize: 11,
     lineHeight: 1.3,
     color: '#1a1a1a',
     marginTop: 1,
-  },
-  roleDates: {
-    fontFamily: 'Times-Italic',
-    fontSize: 10.5,
-    color: '#2a2a2a',
   },
   entrySubtitle: {
     fontSize: 10.5,
@@ -224,8 +214,9 @@ const SkillsList = ({ skills }: { skills: Record<string, Skill[]> }) => (
   </>
 );
 
-const SkillsBlock = ({ technicalSkills, softSkills, hasSoftSkills, accentColor }: {
+const SkillsBlock = ({ technicalSkills, familiarSkills, softSkills, hasSoftSkills, accentColor }: {
   technicalSkills: Record<string, Skill[]>;
+  familiarSkills: Skill[];
   softSkills: Record<string, Skill[]>;
   hasSoftSkills: boolean;
   accentColor: string;
@@ -234,6 +225,12 @@ const SkillsBlock = ({ technicalSkills, softSkills, hasSoftSkills, accentColor }
     <View style={styles.section} wrap={false}>
       <SectionHeader accentColor={accentColor}>Technical Skills</SectionHeader>
       <SkillsList skills={technicalSkills} />
+      {familiarSkills.length > 0 && (
+        <Text style={styles.skillCategoryLine}>
+          <Text style={styles.skillCategoryLabel}>Familiar with: </Text>
+          {familiarSkills.map(s => s.name).join(', ')}
+        </Text>
+      )}
     </View>
     {hasSoftSkills && (
       <View style={styles.section} wrap={false}>
@@ -377,7 +374,8 @@ export function CVPage({
   contributionStats = {},
 }: CVDocumentProps) {
   const accentColor = getPrintAccent();
-  const { technicalSkills, softSkills, hasSoftSkills } = getRelevantSkills(style);
+  const { technicalSkills: allTechnicalSkills, softSkills, hasSoftSkills } = getRelevantSkills(style);
+  const { main: technicalSkills, familiar: familiarSkills } = splitFamiliarSkills(allTechnicalSkills);
   const publicProjects = getPublicProjects(projects, style);
   const sortedExperience = sortExperienceByDate(experience);
   const cvCertifications = getCVCertifications(certifications);
@@ -398,29 +396,13 @@ export function CVPage({
 
       <>
         <SectionHeader accentColor={accentColor}>Experience</SectionHeader>
-        {groupExperienceByCompany(sortedExperience).map((group) => group.roles.length === 1 ? (
-          <View key={group.id} style={[styles.entry, { marginBottom: 5 }]} wrap={false}>
+        {sortedExperience.map((exp) => (
+          <View key={exp.id} style={[styles.entry, { marginBottom: 5 }]} wrap={false}>
             <Text style={styles.entryTitle}>
-              {group.roles[0].role}, <Text style={{ color: accentColor }}>{group.company}</Text>{group.location && `, ${group.location}`}
+              {exp.role}, <Text style={{ color: accentColor }}>{exp.company}</Text>{exp.location && `, ${exp.location}`}
             </Text>
-            <Text style={styles.entryDate}>{formatDateRange(group.startDate, group.endDate)}</Text>
-            <RoleDetails exp={group.roles[0]} />
-          </View>
-        ) : (
-          <View key={group.id} style={[styles.entry, { marginBottom: 5 }]}>
-            <Text minPresenceAhead={80} style={styles.entryTitle}>
-              <Text style={{ color: accentColor }}>{group.company}</Text>{group.location && `, ${group.location}`}
-            </Text>
-            <Text style={styles.entryDate}>{formatDateRange(group.startDate, group.endDate)}</Text>
-            {group.roles.map((exp) => (
-              <View key={exp.id} style={{ marginBottom: 3 }} wrap={false}>
-                <Text style={styles.roleLine}>
-                  {exp.role}
-                  <Text style={styles.roleDates}>{`  |  ${formatDateRange(exp.startDate, exp.endDate)}`}</Text>
-                </Text>
-                <RoleDetails exp={exp} />
-              </View>
-            ))}
+            <Text style={styles.entryDate}>{formatDateRange(exp.startDate, exp.endDate)}</Text>
+            <RoleDetails exp={exp} />
           </View>
         ))}
       </>
@@ -432,7 +414,7 @@ export function CVPage({
             <CertificationsBlock certifications={cvCertifications} accentColor={accentColor} />
           </View>
           <View style={styles.column}>
-            <SkillsBlock technicalSkills={technicalSkills} softSkills={softSkills} hasSoftSkills={hasSoftSkills} accentColor={accentColor} />
+            <SkillsBlock technicalSkills={technicalSkills} familiarSkills={familiarSkills} softSkills={softSkills} hasSoftSkills={hasSoftSkills} accentColor={accentColor} />
             <LanguagesBlock languages={cvLanguages} accentColor={accentColor} />
             <ProjectsBlock projects={publicProjects} accentColor={accentColor} contributionStats={contributionStats} />
             <AdditionalInfoBlock hobbies={hobbies} accentColor={accentColor} showHobbies={style.showHobbies !== false} />
@@ -440,7 +422,7 @@ export function CVPage({
         </View>
       ) : (
         <>
-          <SkillsBlock technicalSkills={technicalSkills} softSkills={softSkills} hasSoftSkills={hasSoftSkills} accentColor={accentColor} />
+          <SkillsBlock technicalSkills={technicalSkills} familiarSkills={familiarSkills} softSkills={softSkills} hasSoftSkills={hasSoftSkills} accentColor={accentColor} />
           <EducationBlock education={cvEducation} accentColor={accentColor} siteDomain={siteConfig.domain} />
           <CertificationsBlock certifications={cvCertifications} accentColor={accentColor} />
           <LanguagesBlock languages={cvLanguages} accentColor={accentColor} />

@@ -1,5 +1,5 @@
 import type { Experience } from '@/config';
-import { formatDateRange, getCVStack, groupExperienceByCompany } from '@/lib/cv-helpers';
+import { formatDateRange, getCVStack } from '@/lib/cv-helpers';
 import { SectionHeader } from './primitives';
 
 interface CVExperienceSectionProps {
@@ -31,43 +31,22 @@ const RoleDetails = ({ exp }: { exp: Experience }) => {
   );
 };
 
-const titleStyle = { fontSize: '12pt', fontWeight: 'bold', marginBottom: '2pt', color: '#000', lineHeight: '1.3', letterSpacing: '0.1pt' } as const;
-const dateStyle = { fontSize: '10.5pt', fontStyle: 'italic', color: '#2a2a2a', letterSpacing: '0.1pt' } as const;
-
 export default function CVExperienceSection({ experience, accentColor }: CVExperienceSectionProps) {
   return (
     <section className="mb-5" style={{ marginBottom: '12pt' }}>
       <SectionHeader accentColor={accentColor}>EXPERIENCE</SectionHeader>
-      {groupExperienceByCompany(experience).map((group) => (
-        <div key={group.id} className="mb-5" style={{ marginBottom: '10pt', pageBreakInside: group.roles.length === 1 ? 'avoid' : 'auto' }}>
+      {experience.map((exp) => (
+        <div key={exp.id} className="mb-5" style={{ marginBottom: '10pt', pageBreakInside: 'avoid' }}>
           <div className="mb-3" style={{ marginBottom: '4pt' }}>
-            {group.roles.length === 1 ? (
-              <h3 style={titleStyle}>
-                {group.roles[0].role}, <span style={{ color: accentColor }}>{group.company}</span>
-                {group.location && `, ${group.location}`}
-              </h3>
-            ) : (
-              <h3 style={titleStyle}>
-                <span style={{ color: accentColor }}>{group.company}</span>
-                {group.location && `, ${group.location}`}
-              </h3>
-            )}
-            <div style={dateStyle}>{formatDateRange(group.startDate, group.endDate)}</div>
+            <h3 style={{ fontSize: '12pt', fontWeight: 'bold', marginBottom: '2pt', color: '#000', lineHeight: '1.3', letterSpacing: '0.1pt' }}>
+              {exp.role}, <span style={{ color: accentColor }}>{exp.company}</span>
+              {exp.location && `, ${exp.location}`}
+            </h3>
+            <div style={{ fontSize: '10.5pt', fontStyle: 'italic', color: '#2a2a2a', letterSpacing: '0.1pt' }}>
+              {formatDateRange(exp.startDate, exp.endDate)}
+            </div>
           </div>
-
-          {group.roles.length === 1 ? (
-            <RoleDetails exp={group.roles[0]} />
-          ) : (
-            group.roles.map((exp) => (
-              <div key={exp.id} style={{ marginBottom: '6pt', pageBreakInside: 'avoid' }}>
-                <div style={{ fontSize: '11.5pt', fontWeight: 'bold', color: '#000' }}>
-                  {exp.role}
-                  <span style={{ ...dateStyle, fontWeight: 'normal' }}>{`  |  ${formatDateRange(exp.startDate, exp.endDate)}`}</span>
-                </div>
-                <RoleDetails exp={exp} />
-              </div>
-            ))
-          )}
+          <RoleDetails exp={exp} />
         </div>
       ))}
     </section>

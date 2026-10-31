@@ -9,6 +9,7 @@ import {
   filterForCV,
   getPublicProjects,
   getCVCertifications,
+  splitFamiliarSkills,
 } from '@/lib/cv-helpers';
 import { NO_CONTRIBUTION_STATS, type ContributionStats } from '@/lib/github-contributions';
 import CVTemplateHeader from '@/components/cv-template/CVTemplateHeader';
@@ -49,7 +50,8 @@ export default function CVTemplate({
   contributionStats = NO_CONTRIBUTION_STATS,
 }: CVTemplateProps) {
   const accentColor = usePrintAccent();
-  const { technicalSkills, softSkills, hasSoftSkills } = getRelevantSkills(style);
+  const { technicalSkills: allTechnicalSkills, softSkills, hasSoftSkills } = getRelevantSkills(style);
+  const { main: technicalSkills, familiar: familiarSkills } = splitFamiliarSkills(allTechnicalSkills);
   const publicProjects = getPublicProjects(projects, style);
 
   const sortedExperience = sortExperienceByDate(experience);
@@ -62,7 +64,7 @@ export default function CVTemplate({
 
   const skillsSections = (marginBottom: string) => (
     <>
-      <CVSkillsSection title="TECHNICAL SKILLS" skills={technicalSkills} accentColor={accentColor} sectionMarginBottom={marginBottom} />
+      <CVSkillsSection title="TECHNICAL SKILLS" skills={technicalSkills} familiar={familiarSkills} accentColor={accentColor} sectionMarginBottom={marginBottom} />
       {hasSoftSkills && <CVSkillsSection title="SOFT SKILLS" skills={softSkills} accentColor={accentColor} sectionMarginBottom={marginBottom} />}
     </>
   );

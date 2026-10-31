@@ -232,3 +232,15 @@ export const getCVCertifications = (certifications: Certification[]): Certificat
   }
   return merged;
 };
+
+/** Beginner-level skills move out of their categories into one "Familiar with" list, so the main lines only claim what is used day to day. */
+export const splitFamiliarSkills = (skills: Record<string, Skill[]>): { main: Record<string, Skill[]>; familiar: Skill[] } => {
+  const main: Record<string, Skill[]> = {};
+  const familiar: Skill[] = [];
+  for (const [category, list] of Object.entries(skills)) {
+    const used = list.filter((s) => s.level !== 'beginner');
+    familiar.push(...list.filter((s) => s.level === 'beginner'));
+    if (used.length > 0) main[category] = used;
+  }
+  return { main, familiar };
+};
