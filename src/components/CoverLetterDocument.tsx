@@ -2,6 +2,7 @@
 
 import { getPrintAccent } from '@/lib/accent';
 import { Document, Page, View, Text, Image, StyleSheet } from '@react-pdf/renderer';
+import '@/components/pdf/no-hyphenation';
 import { CoverLetterStyle, SiteConfig } from '@/config';
 import { formatLetterDate } from '@/lib/format-time';
 import DocumentHeader from '@/components/pdf/DocumentHeader';

@@ -1,4 +1,4 @@
-import { CVStyle, SiteConfig, Experience, Language, Project, Skill, getSkillsGroupedByCategory } from '@/config';
+import { CVStyle, SiteConfig, Experience, Certification, Language, Project, Skill, getSkillsGroupedByCategory } from '@/config';
 
 export const getRelevantSkills = (style: CVStyle) => {
   const skillsByCategory = getSkillsGroupedByCategory();
@@ -82,22 +82,6 @@ export const sortExperienceByDate = (experience: Experience[]): Experience[] => 
   });
 };
 
-export const parseDescription = (description: string | undefined): string[] => {
-  if (!description) return [];
-
-  if (description.includes('•')) {
-    return description.split('•').filter(item => item.trim().length > 0).map(item => item.trim());
-  }
-  
-  if (description.includes(' - ')) {
-    return description.split(/\s-\s/).filter(item => item.trim().length > 0).map(item => item.trim());
-  }
-  if (description.includes(';')) {
-    return description.split(';').filter(item => item.trim().length > 0).map(item => item.trim());
-  }
-  return [description];
-};
-
 export const getProficiencyDisplay = (lang: Language): string => {
   if (lang.proficiency && lang.spoken) return `${lang.proficiency} (${lang.spoken})`;
   if (lang.proficiency) return lang.proficiency;
@@ -140,7 +124,14 @@ export const filterForCV = <T extends { includeInCV?: boolean }>(items: T[]): T[
 
 export const getPublicProjects = (projects: Project[] | undefined, style: CVStyle): Project[] => {
   const showProjects = style.showProjects !== false;
-  return showProjects && projects ? filterForCV(projects.filter(p => p.visibility === 'public')) : [];
+  if (!showProjects || !projects) return [];
+  const hidden = new Set(style.excludeProjects ?? []);
+  return filterForCV(projects.filter(p => p.visibility === 'public' && !hidden.has(p.id)))
+    .map(p => ({
+      ...p,
+      ...(style.projectDescriptions?.[p.id] && { cvDescription: style.projectDescriptions[p.id] }),
+      ...(style.projectUrls?.[p.id] && { link: style.projectUrls[p.id], repository: style.projectUrls[p.id] }),
+    }));
 };
 
 const MONTHS = ['jan', 'feb', 'mar', 'apr', 'may', 'jun', 'jul', 'aug', 'sep', 'oct', 'nov', 'dec'];
@@ -194,4 +185,50 @@ export const formatTotalDuration = (roles: { startDate: string; endDate?: string
     curEnd = Math.max(curEnd, to);
   }
   return total > 0 ? formatMonths(total) : '';
+};
+
+/** Stack shown on the CV: the short `cvSkills` list when set, otherwise every skill. */
+export const getCVStack = (exp: Experience): string[] => exp.cvSkills ?? exp.skills ?? [];
+
+export interface ExperienceGroup {
+  id: string;
+  company: string;
+  location?: string;
+  /** Newest first. */
+  roles: Experience[];
+  startDate: string;
+  endDate?: string;
+}
+
+/** Consecutive roles at one company become one group, so a promotion reads as growth. Expects newest first. */
+export const groupExperienceByCompany = (sorted: Experience[]): ExperienceGroup[] => {
+  const groups: Experience[][] = [];
+  for (const exp of sorted) {
+    const last = groups[groups.length - 1];
+    if (last && last[0].company === exp.company) last.push(exp);
+    else groups.push([exp]);
+  }
+  return groups.map((roles) => ({
+    id: roles[0].id,
+    company: roles[0].company,
+    location: roles[0].location,
+    roles,
+    startDate: roles[roles.length - 1].startDate,
+    endDate: roles[0].endDate,
+  }));
+};
+
+/** Same-issuer certificates with the same date and no expiry (course badges) collapse into one line. Uses `cvName` when set. */
+export const getCVCertifications = (certifications: Certification[]): Certification[] => {
+  const merged: Certification[] = [];
+  for (const cert of certifications) {
+    const label = cert.cvName ?? cert.name;
+    const same = !cert.expiryDate && merged.find((c) => !c.expiryDate && c.issuer === cert.issuer && c.issueDate === cert.issueDate);
+    if (same) {
+      if (label) same.name = `${same.name}, ${label}`;
+    } else {
+      merged.push({ ...cert, name: label || cert.name });
+    }
+  }
+  return merged;
 };

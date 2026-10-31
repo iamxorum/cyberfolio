@@ -7,7 +7,6 @@ import type { Skill } from '@/config';
 import {
   getRelevantSkills,
   sortExperienceByDate,
-  parseDescription,
   getProficiencyDisplay,
   stripUrl,
   getContactInfo,
@@ -15,8 +14,11 @@ import {
   getPublicProjects,
   formatDateRange,
   formatDateSpan,
+  getCVStack,
+  getCVCertifications,
+  groupExperienceByCompany,
 } from '@/lib/cv-helpers';
-import { INK, PAPER, getCVHighlights, isStrongSkill } from '@/lib/cv-designed';
+import { INK, PAPER, getCVHighlights, splitCoreSkills, splitInterests, isLiveProject } from '@/lib/cv-designed';
 import { NO_CONTRIBUTION_STATS } from '@/lib/github-contributions';
 import type { CVTemplateProps } from '@/components/CVTemplate';
 
@@ -44,7 +46,7 @@ const AsideSection = ({ title, accentColor, children }: { title: string; accentC
 );
 
 const DateBadge = ({ children, accentColor }: { children: string; accentColor: string }) => (
-  <span style={{ fontSize: '8pt', fontWeight: 700, lineHeight: 1, padding: '3.4pt 6pt 2.6pt', borderRadius: '3pt', color: accentColor, backgroundColor: tint(accentColor, 0.88), whiteSpace: 'nowrap' }}>
+  <span style={{ fontSize: '8.5pt', fontWeight: 700, lineHeight: 1, padding: '3.4pt 6pt 2.6pt', borderRadius: '3pt', color: accentColor, backgroundColor: tint(accentColor, 0.88), whiteSpace: 'nowrap' }}>
     {children}
   </span>
 );
@@ -63,23 +65,23 @@ const TimelineEntry = ({ accentColor, children }: { accentColor: string; childre
   </div>
 );
 
-const SkillChips = ({ skills, accentColor }: { skills: Record<string, Skill[]>; accentColor: string }) => (
+const SkillChips = ({ skills, accentColor, solid }: { skills: Record<string, Skill[]>; accentColor: string; solid?: boolean }) => (
   <>
     {Object.entries(skills).map(([category, categorySkills]) => (
       <div key={category} style={{ marginBottom: '6pt', breakInside: 'avoid' }}>
-        <div style={{ fontSize: '8.5pt', fontWeight: 700, color: '#475569', marginBottom: '3pt' }}>{category}</div>
+        <div style={{ fontSize: '9pt', fontWeight: 700, color: '#475569', marginBottom: '3pt' }}>{category}</div>
         <div style={{ display: 'flex', flexWrap: 'wrap', gap: '3pt' }}>
           {categorySkills.map((skill) => (
             <span
               key={skill.name}
               style={{
-                fontSize: '8pt',
+                fontSize: '8.5pt',
                 padding: '3.4pt 6pt 2.6pt',
                 lineHeight: 1,
                 borderRadius: '3pt',
-                border: `0.75pt solid ${isStrongSkill(skill) ? accentColor : tint(accentColor, 0.55)}`,
-                color: isStrongSkill(skill) ? '#fff' : accentColor,
-                backgroundColor: isStrongSkill(skill) ? accentColor : 'transparent',
+                border: `0.75pt solid ${solid ? accentColor : tint(accentColor, 0.55)}`,
+                color: solid ? '#fff' : accentColor,
+                backgroundColor: solid ? accentColor : 'transparent',
               }}
             >
               {skill.name}
@@ -109,12 +111,15 @@ export default function CVDesignedTemplate({
   const { technicalSkills, softSkills, hasSoftSkills } = getRelevantSkills(style);
   const publicProjects = getPublicProjects(projects, style);
   const sortedExperience = sortExperienceByDate(experience);
+  const cvCertifications = getCVCertifications(certifications);
   const cvEducation = filterForCV(education);
   const cvLanguages = filterForCV(languages);
   const contactInfo = getContactInfo(siteConfig);
   const highlights = getCVHighlights(experience, certifications, publicProjects, contributionStats);
   const summaryText = style.summary || summary;
   const showHobbies = style.showHobbies !== false && hobbies.length > 0;
+  const { studying, outside } = splitInterests(hobbies);
+  const { core: coreSkills, rest: otherSkills } = splitCoreSkills(technicalSkills, style.coreSkills);
 
   return (
     <div
@@ -124,9 +129,11 @@ export default function CVDesignedTemplate({
         width: '210mm',
         minHeight: '297mm',
         boxSizing: 'border-box',
+        display: 'flex',
+        flexDirection: 'column',
         fontFamily: 'Helvetica, Arial, sans-serif',
-        fontSize: '9.3pt',
-        lineHeight: 1.38,
+        fontSize: '9.8pt',
+        lineHeight: 1.4,
         color: '#1f2933',
       }}
     >
@@ -159,40 +166,54 @@ export default function CVDesignedTemplate({
             {highlights.map((h) => (
               <div key={h.label}>
                 <div style={{ fontSize: '14pt', fontWeight: 700, lineHeight: 1.1, color: '#fff', marginBottom: '3pt' }}>{h.value}</div>
-                <div style={{ fontSize: '7.5pt', letterSpacing: '0.6pt', textTransform: 'uppercase', color: '#94a3b8' }}>{h.label}</div>
+                <div style={{ fontSize: '8pt', letterSpacing: '0.6pt', textTransform: 'uppercase', color: '#94a3b8' }}>{h.label}</div>
               </div>
             ))}
           </div>
         )}
       </header>
 
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 34%', alignItems: 'stretch' }}>
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 34%', alignItems: 'stretch', flex: 1 }}>
         <main style={{ padding: '16pt 22pt 0.4in 30pt' }}>
           {summaryText && (
-            <p style={{ fontSize: '10pt', lineHeight: 1.55, margin: '0 0 14pt', paddingLeft: '10pt', borderLeft: `3pt solid ${accentColor}` }}>{summaryText}</p>
+            <p style={{ fontSize: '10.5pt', lineHeight: 1.55, margin: '0 0 14pt', paddingLeft: '10pt', borderLeft: `3pt solid ${accentColor}` }}>{summaryText}</p>
           )}
 
           <MainSection title="Experience" accentColor={accentColor}>
-            {sortedExperience.map((exp) => (
-              <TimelineEntry key={exp.id} accentColor={accentColor}>
-                <EntryHeader title={exp.role} badge={<DateBadge accentColor={accentColor}>{formatDateRange(exp.startDate, exp.endDate)}</DateBadge>} />
-                <div style={{ fontWeight: 700, color: accentColor, marginBottom: '3pt' }}>
-                  {exp.company}
-                  {exp.location && <span style={{ fontWeight: 400, color: MUTED }}>{`  ·  ${exp.location}`}</span>}
-                </div>
-                {parseDescription(exp.description).map((point) => (
-                  <div key={point} style={{ display: 'flex', marginBottom: '1.5pt' }}>
-                    <span style={{ width: '9pt', flexShrink: 0, fontWeight: 700, color: accentColor }}>›</span>
-                    <span>{point}</span>
+            {groupExperienceByCompany(sortedExperience).map((group) => {
+              const single = group.roles.length === 1;
+              return (
+                <TimelineEntry key={group.id} accentColor={accentColor}>
+                  <EntryHeader title={single ? group.roles[0].role : group.company} badge={<DateBadge accentColor={accentColor}>{formatDateRange(group.startDate, group.endDate)}</DateBadge>} />
+                  <div style={{ fontWeight: 700, color: accentColor, marginBottom: '3pt' }}>
+                    {single ? group.company : `${group.roles.length} roles`}
+                    {group.location && <span style={{ fontWeight: 400, color: MUTED }}>{`  ·  ${group.location}`}</span>}
                   </div>
-                ))}
-                {exp.skills && exp.skills.length > 0 && (
-                  <div style={{ marginTop: '3pt', fontSize: '8.5pt', color: MUTED }}>
-                    <strong style={{ color: '#334155' }}>Stack: </strong>{exp.skills.join(', ')}
-                  </div>
-                )}
-              </TimelineEntry>
-            ))}
+                  {group.roles.map((exp) => (
+                    <div key={exp.id} style={single ? undefined : { marginBottom: '5pt' }}>
+                      {!single && (
+                        <div style={{ display: 'flex', justifyContent: 'space-between', gap: '8pt' }}>
+                          <div style={{ fontWeight: 700, fontSize: '10.5pt', color: INK }}>{exp.role}</div>
+                          <div style={{ fontSize: '8.5pt', color: MUTED, whiteSpace: 'nowrap' }}>{formatDateRange(exp.startDate, exp.endDate)}</div>
+                        </div>
+                      )}
+                      {exp.intro && <div style={{ color: '#475569', marginBottom: '3pt' }}>{exp.intro}</div>}
+                      {(exp.bullets ?? []).map((point) => (
+                        <div key={point} style={{ display: 'flex', marginBottom: '1.5pt' }}>
+                          <span style={{ width: '9pt', flexShrink: 0, fontWeight: 700, color: accentColor }}>›</span>
+                          <span>{point}</span>
+                        </div>
+                      ))}
+                      {getCVStack(exp).length > 0 && (
+                        <div style={{ marginTop: '3pt', fontSize: '9pt', color: MUTED }}>
+                          <strong style={{ color: '#334155' }}>Stack: </strong>{getCVStack(exp).join(', ')}
+                        </div>
+                      )}
+                    </div>
+                  ))}
+                </TimelineEntry>
+              );
+            })}
           </MainSection>
 
           {publicProjects.length > 0 && (
@@ -205,6 +226,7 @@ export default function CVDesignedTemplate({
                       title={
                         <>
                           {project.name}
+                          {isLiveProject(project) && <span style={{ fontWeight: 700, fontSize: '7.5pt', letterSpacing: '0.8pt', color: accentColor }}>{'  LIVE'}</span>}
                           {project.repository && (
                             <span style={{ fontWeight: 400, fontSize: '8.5pt', color: MUTED }}>{`  ${project.projectType === 'contribution' ? 'Contribution' : 'Personal'}`}</span>
                           )}
@@ -216,7 +238,7 @@ export default function CVDesignedTemplate({
                     />
                     <div>{project.cvDescription || project.description}</div>
                     {stats && stats.mergedCount > 0 && (
-                      <div style={{ marginTop: '3pt', fontSize: '8.5pt', color: MUTED }}>
+                      <div style={{ marginTop: '3pt', fontSize: '9pt', color: MUTED }}>
                         <strong style={{ color: '#334155' }}>Contributions: </strong>
                         <a href={stats.searchUrl} target="_blank" rel="noopener noreferrer" style={plainLink}>
                           {stats.mergedCount} merged PR{stats.mergedCount !== 1 ? 's' : ''}
@@ -240,16 +262,17 @@ export default function CVDesignedTemplate({
 
         <aside style={{ backgroundColor: tint(accentColor, 0.92), padding: '16pt 24pt 0.4in 16pt' }}>
           <AsideSection title="Skills" accentColor={accentColor}>
-            <SkillChips skills={technicalSkills} accentColor={accentColor} />
+            {coreSkills.length > 0 && <SkillChips skills={{ 'Core stack': coreSkills }} accentColor={accentColor} solid />}
+            <SkillChips skills={otherSkills} accentColor={accentColor} />
             {hasSoftSkills && <SkillChips skills={softSkills} accentColor={accentColor} />}
           </AsideSection>
 
           <AsideSection title="Education" accentColor={accentColor}>
             {cvEducation.map((edu) => (
-              <div key={edu.id} style={{ marginBottom: '6pt', fontSize: '9pt', breakInside: 'avoid' }}>
+              <div key={edu.id} style={{ marginBottom: '6pt', fontSize: '9.5pt', breakInside: 'avoid' }}>
                 <div style={{ fontWeight: 700 }}>{edu.degree}{edu.field && `, ${edu.field}`}</div>
-                <div style={{ fontSize: '8.5pt', color: '#475569' }}>{edu.institution}{edu.grade && `  ·  ${edu.grade}`}</div>
-                <div style={{ fontSize: '8pt', color: MUTED }}>
+                <div style={{ fontSize: '9pt', color: '#475569' }}>{edu.institution}{edu.grade && `  ·  ${edu.grade}`}</div>
+                <div style={{ fontSize: '8.5pt', color: MUTED }}>
                   {formatDateRange(edu.startDate, edu.endDate)}
                   {edu.thesisUrl && (
                     <>
@@ -274,24 +297,40 @@ export default function CVDesignedTemplate({
             </AsideSection>
           )}
 
-          {certifications.length > 0 && (
+          {cvCertifications.length > 0 && (
             <AsideSection title="Certifications" accentColor={accentColor}>
-              {certifications.map((cert) => (
+              {cvCertifications.map((cert) => (
                 <div key={cert.id} style={{ marginBottom: '5pt', breakInside: 'avoid' }}>
                   <div style={{ fontSize: '9pt', fontWeight: 700 }}>{cert.name}</div>
-                  <div style={{ fontSize: '8pt', color: MUTED }}>{cert.issuer} · {formatDateSpan(cert.issueDate, cert.expiryDate)}</div>
+                  <div style={{ fontSize: '8.5pt', color: MUTED }}>{cert.issuer} · {formatDateSpan(cert.issueDate, cert.expiryDate)}</div>
                 </div>
               ))}
             </AsideSection>
           )}
 
-          {showHobbies && (
-            <AsideSection title="Interests" accentColor={accentColor}>
-              <div style={{ fontSize: '9pt' }}>{hobbies.map((h) => h.name).join(', ')}</div>
-            </AsideSection>
-          )}
         </aside>
       </div>
+
+      {showHobbies && (
+        <footer style={{ display: 'flex', gap: '16pt', padding: '10pt 30pt 0.3in', borderTop: `1pt solid ${tint(accentColor, 0.6)}`, backgroundColor: PAPER, breakInside: 'avoid' }}>
+          {studying.length > 0 && (
+            <div style={{ flex: 1 }}>
+              <h2 style={{ ...headingStyle, fontSize: '9pt', letterSpacing: '1.4pt', marginBottom: '6pt' }}><span style={{ color: accentColor }}>/ </span>Currently studying</h2>
+              <div style={{ display: 'flex', flexWrap: 'wrap', gap: '3pt' }}>
+                {studying.map((h) => (
+                  <span key={h.name} style={{ fontSize: '8.5pt', padding: '3.4pt 6pt 2.6pt', lineHeight: 1, borderRadius: '3pt', border: `0.75pt solid ${tint(accentColor, 0.55)}`, color: accentColor }}>{h.name}</span>
+                ))}
+              </div>
+            </div>
+          )}
+          {outside.length > 0 && (
+            <div style={{ flex: 1.3 }}>
+              <h2 style={{ ...headingStyle, fontSize: '9pt', letterSpacing: '1.4pt', marginBottom: '6pt' }}><span style={{ color: accentColor }}>/ </span>Outside work</h2>
+              <div style={{ fontSize: '9.5pt', lineHeight: 1.5 }}>{outside.map((h) => h.name).join('  ·  ')}</div>
+            </div>
+          )}
+        </footer>
+      )}
     </div>
   );
 }

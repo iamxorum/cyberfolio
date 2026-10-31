@@ -11,6 +11,14 @@ export interface CVStyle {
   skillCategories?: string[];
   /** Skill names to leave out of this style. */
   excludeSkills?: string[];
+  /** Designed CV: skills pulled out into a "Core stack" row at the top of the sidebar, in this order. */
+  coreSkills?: string[];
+  /** Project ids to leave out of this style. */
+  excludeProjects?: string[];
+  /** Per-project CV text for this style, by project id. Replaces `cvDescription`. */
+  projectDescriptions?: Record<string, string>;
+  /** Per-project link for this style, by project id. Replaces the project's link and repository on the CV. */
+  projectUrls?: Record<string, string>;
   /** Default true. */
   showProjects?: boolean;
   /** Default true. */
@@ -39,12 +47,3 @@ export const cvConfig: CVConfig = {
     },
   ],
 };
-
-export const getCVStyleById = (id: string): CVStyle | undefined => {
-  return cvConfig.styles.find(style => style.id === id);
-};
-
-export const getCVStylesByDomain = (domain: string): CVStyle[] => {
-  return cvConfig.styles.filter(style => style.domain === domain);
-};
-

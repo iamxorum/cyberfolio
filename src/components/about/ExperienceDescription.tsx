@@ -1,24 +1,22 @@
 'use client';
 
 import { useState } from 'react';
-import { parseDescription } from '@/lib/cv-helpers';
 import { usePrefersReducedMotion } from '@/lib/motion';
 
 const COLLAPSED_COUNT = 3;
 const LIST_CLASS = 'text-xs text-[var(--terminal-text-muted)] list-disc pl-4 space-y-0.5';
 
-export default function ExperienceDescription({ description }: { description?: string }) {
+export default function ExperienceDescription({ intro, points = [] }: { intro?: string; points?: string[] }) {
   const [expanded, setExpanded] = useState(false);
   const reduced = usePrefersReducedMotion();
-  const points = parseDescription(description);
-
-  if (points.length === 0) return null;
+  if (!intro && points.length === 0) return null;
 
   const head = points.slice(0, COLLAPSED_COUNT);
   const tail = points.slice(COLLAPSED_COUNT);
 
   return (
     <div className="mb-1">
+      {intro && <p className="text-xs text-[var(--terminal-text-muted)] mb-1">{intro}</p>}
       <ul className={LIST_CLASS}>
         {head.map((point) => (
           <li key={point}>{point}</li>

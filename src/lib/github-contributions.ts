@@ -28,6 +28,12 @@ interface GitHubSearchResponse {
   items: GitHubSearchItem[];
 }
 
+/** Optional server-side token: raises the search rate limit so a cold cache never drops the stats. */
+const githubHeaders = (): HeadersInit => ({
+  Accept: 'application/vnd.github+json',
+  ...(process.env.GITHUB_TOKEN ? { Authorization: `Bearer ${process.env.GITHUB_TOKEN}` } : {}),
+});
+
 const parseGitHubRepo = (url: string): { owner: string; repo: string } | null => {
   const match = url.match(/github\.com\/([^/]+)\/([^/]+?)\/?$/);
   return match ? { owner: match[1], repo: match[2] } : null;
@@ -36,7 +42,7 @@ const parseGitHubRepo = (url: string): { owner: string; repo: string } | null =>
 const searchIssueCount = async (query: string): Promise<number | null> => {
   try {
     const res = await fetch(`https://api.github.com/search/issues?q=${encodeURIComponent(query)}`, {
-      headers: { Accept: 'application/vnd.github+json' },
+      headers: githubHeaders(),
       next: { revalidate: 86400 },
     });
     if (!res.ok) return null;
@@ -59,7 +65,7 @@ async function getContributionStats(repoUrl: string, username: string): Promise<
 
   try {
     const res = await fetch(`https://api.github.com/search/issues?q=${encodeURIComponent(mergedQuery)}`, {
-      headers: { Accept: 'application/vnd.github+json' },
+      headers: githubHeaders(),
       next: { revalidate: 86400 },
     });
     if (!res.ok) return null;

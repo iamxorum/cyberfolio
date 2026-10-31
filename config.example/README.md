@@ -17,7 +17,7 @@ That's it. Edit the files below, `npm run dev`, and the site rebuilds around you
 | `security.config.ts` | Cloudflare Turnstile site key + widget theme (bot gate on `/cv` and the contact details) |
 | `content.config.ts` | Hero text, about bio paragraphs, projects page copy |
 | `projects.config.ts` | Every project card — name, tags, links, status, visibility, category |
-| `skills.config.ts` | Skills with a level (`informational` … `expert`) and a category; the radar chart shows the top 6 by level |
+| `skills.config.ts` | Skills with a level (`beginner`, `working`, `proficient` or `advanced`) and a category; the radar chart shows the top 6, ties broken by the `featuredSkills` list |
 | `education.config.ts` | Schools, degrees, dates |
 | `certifications.config.ts` | Certs, issuers, credential links |
 | `languages.config.ts` | Spoken languages + CEFR-style proficiency |
@@ -35,7 +35,7 @@ That's it. Edit the files below, `npm run dev`, and the site rebuilds around you
 
 **`projects.config.ts`** — `visibility: 'public' | 'private'` decides what actually renders anywhere (private stays entirely out of the bundle's visible output, useful for client work under NDA). `category` is cosmetic tagging (`production` / `thesis` / `personal` / `open-source` / `commercial` / `academic`).
 
-**`skills.config.ts`** — each skill has a `level`, which maps to a score (`skillLevelRanges` in the same file). The radar chart always shows your top 6 by score, so a 7th skill at a higher level bumps something off the chart automatically.
+**`skills.config.ts`** — each skill has a `level`, which maps to a score (`skillLevelRanges` in the same file). The radar chart shows your top 6 by score. When many skills share a level they tie, so `featuredSkills` (also in that file) decides which ones come first.
 
 **`cv.config.ts` vs `cover-letter.config.ts`** — each has its own styles, and a cover letter can exist with no CV style (a letter for "Data Analyst" with no matching CV).
 

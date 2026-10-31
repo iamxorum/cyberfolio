@@ -42,6 +42,3 @@ export const coverLetterConfig: CoverLetterConfig = {
 /** The cover letter that pairs with a CV style, if there is one. */
 export const getCoverLetterForCV = (cvStyleId: string): CoverLetterStyle | undefined =>
   coverLetterConfig.styles.find(style => (style.cvStyleId ?? style.id) === cvStyleId);
-
-export const getCoverLetterStyleById = (id: string): CoverLetterStyle | undefined =>
-  coverLetterConfig.styles.find(style => style.id === id);

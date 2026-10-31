@@ -60,7 +60,7 @@ export default function ExperienceTimeline() {
                     )}
                   </div>
                 </div>
-                <ExperienceDescription description={exp.description} />
+                <ExperienceDescription intro={exp.intro} points={exp.bullets} />
                 {exp.location && (
                   <div className="text-xs text-[var(--terminal-text-dim)] mb-2">{exp.location}</div>
                 )}

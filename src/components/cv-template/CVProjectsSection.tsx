@@ -1,5 +1,6 @@
 import type { Project } from '@/config';
 import { stripUrl } from '@/lib/cv-helpers';
+import { isLiveProject } from '@/lib/cv-designed';
 import type { ContributionStats } from '@/lib/github-contributions';
 import { SectionHeader } from './primitives';
 
@@ -33,7 +34,7 @@ function ProjectContributions({ project, stats }: ProjectContributionsProps) {
       {hasContributions && project.repository ? '   |   ' : ''}
       {project.repository && (
         <>
-          <strong style={{ color: '#000' }}>Repository:</strong>{' '}
+          <strong style={{ color: '#000' }}>{isLiveProject(project) ? 'Website:' : 'Repository:'}</strong>{' '}
           <a href={project.repository} target="_blank" rel="noopener noreferrer" style={{ color: 'inherit' }}>{stripUrl(project.repository)}</a>
         </>
       )}
@@ -63,7 +64,7 @@ export default function CVProjectsSection({ projects, contributionStats, accentC
                 </span>
               )}
             </h3>
-            <div style={{ fontSize: '10.5pt', lineHeight: '1.5', marginBottom: '2pt', color: '#1a1a1a', textAlign: 'justify' }}>
+            <div style={{ fontSize: '10.5pt', lineHeight: '1.5', marginBottom: '2pt', color: '#1a1a1a' }}>
               {project.cvDescription || project.description}
             </div>
             <ProjectContributions project={project} stats={contributionStats[project.id]} />

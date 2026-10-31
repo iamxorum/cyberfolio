@@ -8,6 +8,7 @@ import {
   getContactInfo,
   filterForCV,
   getPublicProjects,
+  getCVCertifications,
 } from '@/lib/cv-helpers';
 import { NO_CONTRIBUTION_STATS, type ContributionStats } from '@/lib/github-contributions';
 import CVTemplateHeader from '@/components/cv-template/CVTemplateHeader';
@@ -52,6 +53,7 @@ export default function CVTemplate({
   const publicProjects = getPublicProjects(projects, style);
 
   const sortedExperience = sortExperienceByDate(experience);
+  const cvCertifications = getCVCertifications(certifications);
   const cvEducation = filterForCV(education);
   const cvLanguages = filterForCV(languages);
   const contactInfo = getContactInfo(siteConfig);
@@ -68,8 +70,8 @@ export default function CVTemplate({
   const educationAndCerts = (
     <>
       <CVEducationSection education={cvEducation} siteConfig={siteConfig} accentColor={accentColor} sectionMarginBottom={sectionMarginBottom} />
-      {certifications.length > 0 && (
-        <CVCertificationsSection certifications={certifications} accentColor={accentColor} sectionMarginBottom={sectionMarginBottom} />
+      {cvCertifications.length > 0 && (
+        <CVCertificationsSection certifications={cvCertifications} accentColor={accentColor} sectionMarginBottom={sectionMarginBottom} />
       )}
     </>
   );

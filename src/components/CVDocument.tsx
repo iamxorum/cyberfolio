@@ -2,11 +2,11 @@
 
 import { getPrintAccent } from '@/lib/accent';
 import { Document, Page, View, Text, Link, StyleSheet } from '@react-pdf/renderer';
+import '@/components/pdf/no-hyphenation';
 import { CVStyle, SiteConfig, Experience, Education, Language, Certification, Hobby, Project, Skill } from '@/config';
 import {
   getRelevantSkills,
   sortExperienceByDate,
-  parseDescription,
   getProficiencyDisplay,
   stripUrl,
   getContactInfo,
@@ -14,7 +14,11 @@ import {
   getPublicProjects,
   formatDateRange,
   formatDateSpan,
+  getCVStack,
+  getCVCertifications,
+  groupExperienceByCompany,
 } from '@/lib/cv-helpers';
+import { splitInterests } from '@/lib/cv-designed';
 import type { ContributionStats } from '@/lib/github-contributions';
 import { cvMetadata } from '@/lib/pdf-metadata';
 import DocumentHeader from '@/components/pdf/DocumentHeader';
@@ -91,6 +95,22 @@ const styles = StyleSheet.create({
     letterSpacing: 0.1,
     marginBottom: 3,
   },
+  roleLine: {
+    fontFamily: 'Times-Bold',
+    fontSize: 11.5,
+    marginTop: 2,
+  },
+  roleIntro: {
+    fontSize: 11,
+    lineHeight: 1.3,
+    color: '#1a1a1a',
+    marginTop: 1,
+  },
+  roleDates: {
+    fontFamily: 'Times-Italic',
+    fontSize: 10.5,
+    color: '#2a2a2a',
+  },
   entrySubtitle: {
     fontSize: 10.5,
     color: '#1a1a1a',
@@ -136,7 +156,7 @@ const styles = StyleSheet.create({
   },
   bodyText: {
     fontSize: 11,
-    textAlign: 'justify',
+    textAlign: 'left',
     lineHeight: 1.4,
     color: '#1a1a1a',
   },
@@ -169,6 +189,29 @@ const styles = StyleSheet.create({
 const SectionHeader = ({ children, accentColor }: { children: string; accentColor: string }) => (
   <Text minPresenceAhead={50} style={[styles.sectionHeader, { color: accentColor, borderBottomColor: accentColor }]}>{children}</Text>
 );
+
+const RoleDetails = ({ exp }: { exp: Experience }) => {
+  const { intro, bullets: points = [] } = exp;
+  const stack = getCVStack(exp);
+  return (
+    <>
+      {intro && <Text style={styles.roleIntro}>{intro}</Text>}
+      {points.length > 0 && (
+        <View style={styles.bulletList}>
+          {points.map((point) => (
+            <Text key={point} style={styles.bulletItem}>{'• '}{point}</Text>
+          ))}
+        </View>
+      )}
+      {stack.length > 0 && (
+        <Text style={styles.techLine}>
+          <Text style={styles.techLineLabel}>Technologies: </Text>
+          {stack.join(', ')}
+        </Text>
+      )}
+    </>
+  );
+};
 
 const SkillsList = ({ skills }: { skills: Record<string, Skill[]> }) => (
   <>
@@ -274,7 +317,7 @@ const ProjectsBlock = ({ projects, accentColor, contributionStats = {} }: { proj
             <Link src={project.repository} style={styles.projectLink}>{stripUrl(project.repository)}</Link>
           )}
         </View>
-        <Text style={[styles.entrySubtitle, { textAlign: 'justify' }]}>{project.cvDescription || project.description}</Text>
+        <Text style={styles.entrySubtitle}>{project.cvDescription || project.description}</Text>
         {stats && stats.mergedCount > 0 && (
           <Text style={styles.entryMeta}>
             <Text style={styles.inlineLabel}>Contributions: </Text>
@@ -297,15 +340,26 @@ const ProjectsBlock = ({ projects, accentColor, contributionStats = {} }: { proj
   </View>
 );
 
-const AdditionalInfoBlock = ({ hobbies, accentColor, showHobbies }: { hobbies: Hobby[]; accentColor: string; showHobbies: boolean }) => showHobbies && hobbies.length > 0 && (
-  <View style={styles.section} wrap={false}>
-    <SectionHeader accentColor={accentColor}>Additional Information</SectionHeader>
-    <Text style={styles.bodyText}>
-      <Text style={styles.inlineLabel}>Interests: </Text>
-      {hobbies.map(h => h.name).join(', ')}
-    </Text>
-  </View>
-);
+const AdditionalInfoBlock = ({ hobbies, accentColor, showHobbies }: { hobbies: Hobby[]; accentColor: string; showHobbies: boolean }) => {
+  const { studying, outside } = splitInterests(hobbies);
+  return showHobbies && hobbies.length > 0 && (
+    <View style={styles.section} wrap={false}>
+      <SectionHeader accentColor={accentColor}>Interests</SectionHeader>
+      {studying.length > 0 && (
+        <Text style={styles.bodyText}>
+          <Text style={styles.inlineLabel}>Studying: </Text>
+          {studying.map(h => h.name).join(', ')}
+        </Text>
+      )}
+      {outside.length > 0 && (
+        <Text style={[styles.bodyText, { marginTop: 2 }]}>
+          <Text style={styles.inlineLabel}>Outside work: </Text>
+          {outside.map(h => h.name).join(', ')}
+        </Text>
+      )}
+    </View>
+  );
+};
 
 export function CVPage({
   style,
@@ -326,6 +380,7 @@ export function CVPage({
   const { technicalSkills, softSkills, hasSoftSkills } = getRelevantSkills(style);
   const publicProjects = getPublicProjects(projects, style);
   const sortedExperience = sortExperienceByDate(experience);
+  const cvCertifications = getCVCertifications(certifications);
   const cvEducation = filterForCV(education);
   const cvLanguages = filterForCV(languages);
   const contactInfo = getContactInfo(siteConfig, email, phone);
@@ -343,39 +398,38 @@ export function CVPage({
 
       <>
         <SectionHeader accentColor={accentColor}>Experience</SectionHeader>
-        {sortedExperience.map((exp) => {
-          const descriptionPoints = parseDescription(exp.description);
-          return (
-            <View key={exp.id} style={[styles.entry, { marginBottom: 5 }]} wrap={false}>
-              <Text style={styles.entryTitle}>
-                {exp.role}, <Text style={{ color: accentColor }}>{exp.company}</Text>{exp.location && `, ${exp.location}`}
-              </Text>
-              <Text style={styles.entryDate}>
-                {formatDateRange(exp.startDate, exp.endDate)}
-              </Text>
-              {descriptionPoints.length > 0 && (
-                <View style={styles.bulletList}>
-                  {descriptionPoints.map((point) => (
-                    <Text key={point} style={styles.bulletItem}>{'• '}{point}</Text>
-                  ))}
-                </View>
-              )}
-              {exp.skills && exp.skills.length > 0 && (
-                <Text style={styles.techLine}>
-                  <Text style={styles.techLineLabel}>Technologies: </Text>
-                  {exp.skills.join(', ')}
+        {groupExperienceByCompany(sortedExperience).map((group) => group.roles.length === 1 ? (
+          <View key={group.id} style={[styles.entry, { marginBottom: 5 }]} wrap={false}>
+            <Text style={styles.entryTitle}>
+              {group.roles[0].role}, <Text style={{ color: accentColor }}>{group.company}</Text>{group.location && `, ${group.location}`}
+            </Text>
+            <Text style={styles.entryDate}>{formatDateRange(group.startDate, group.endDate)}</Text>
+            <RoleDetails exp={group.roles[0]} />
+          </View>
+        ) : (
+          <View key={group.id} style={[styles.entry, { marginBottom: 5 }]}>
+            <Text minPresenceAhead={80} style={styles.entryTitle}>
+              <Text style={{ color: accentColor }}>{group.company}</Text>{group.location && `, ${group.location}`}
+            </Text>
+            <Text style={styles.entryDate}>{formatDateRange(group.startDate, group.endDate)}</Text>
+            {group.roles.map((exp) => (
+              <View key={exp.id} style={{ marginBottom: 3 }} wrap={false}>
+                <Text style={styles.roleLine}>
+                  {exp.role}
+                  <Text style={styles.roleDates}>{`  |  ${formatDateRange(exp.startDate, exp.endDate)}`}</Text>
                 </Text>
-              )}
-            </View>
-          );
-        })}
+                <RoleDetails exp={exp} />
+              </View>
+            ))}
+          </View>
+        ))}
       </>
 
       {useColumnLayout ? (
         <View style={styles.twoColumnRow}>
           <View style={styles.column}>
             <EducationBlock education={cvEducation} accentColor={accentColor} siteDomain={siteConfig.domain} />
-            <CertificationsBlock certifications={certifications} accentColor={accentColor} />
+            <CertificationsBlock certifications={cvCertifications} accentColor={accentColor} />
           </View>
           <View style={styles.column}>
             <SkillsBlock technicalSkills={technicalSkills} softSkills={softSkills} hasSoftSkills={hasSoftSkills} accentColor={accentColor} />
@@ -388,7 +442,7 @@ export function CVPage({
         <>
           <SkillsBlock technicalSkills={technicalSkills} softSkills={softSkills} hasSoftSkills={hasSoftSkills} accentColor={accentColor} />
           <EducationBlock education={cvEducation} accentColor={accentColor} siteDomain={siteConfig.domain} />
-          <CertificationsBlock certifications={certifications} accentColor={accentColor} />
+          <CertificationsBlock certifications={cvCertifications} accentColor={accentColor} />
           <LanguagesBlock languages={cvLanguages} accentColor={accentColor} />
           <ProjectsBlock projects={publicProjects} accentColor={accentColor} contributionStats={contributionStats} />
           <AdditionalInfoBlock hobbies={hobbies} accentColor={accentColor} showHobbies={style.showHobbies !== false} />

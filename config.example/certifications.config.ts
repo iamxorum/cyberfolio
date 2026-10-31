@@ -1,6 +1,8 @@
 export interface Certification {
   id: string;
   name: string;
+  /** Shorter name for the CV. An empty string leaves the certificate out of a merged line. */
+  cvName?: string;
   issuer: string;
   /** Free text, shown as written. */
   issueDate: string;
