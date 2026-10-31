@@ -209,19 +209,19 @@ html.theme-switching [data-site-header] {
 
 ::view-transition-old(.nav-forward) {
   --slide-offset: -60px;
-  animation: 150ms ease-out both view-transition-fade reverse, 400ms ease-in-out both view-transition-slide reverse;
+  animation: 120ms ease-out both view-transition-fade reverse, 220ms ease-out both view-transition-slide reverse;
 }
 ::view-transition-new(.nav-forward) {
   --slide-offset: 60px;
-  animation: 210ms ease-out 150ms both view-transition-fade, 400ms ease-in-out both view-transition-slide;
+  animation: 180ms ease-out 60ms both view-transition-fade, 220ms ease-out both view-transition-slide;
 }
 ::view-transition-old(.nav-back) {
   --slide-offset: 60px;
-  animation: 150ms ease-out both view-transition-fade reverse, 400ms ease-in-out both view-transition-slide reverse;
+  animation: 120ms ease-out both view-transition-fade reverse, 220ms ease-out both view-transition-slide reverse;
 }
 ::view-transition-new(.nav-back) {
   --slide-offset: -60px;
-  animation: 210ms ease-out 150ms both view-transition-fade, 400ms ease-in-out both view-transition-slide;
+  animation: 180ms ease-out 60ms both view-transition-fade, 220ms ease-out both view-transition-slide;
 }
 
 @keyframes view-transition-fade {
@@ -323,25 +323,14 @@ html.calm::view-transition-group(*) {
   white-space: nowrap;
 }
 
+/* Same motion as .scroll-reveal (panels), so headings and panels read as one system. */
 @keyframes reveal-in {
-  0% {
-    opacity: 0;
-    transform: translateY(8px) scale(0.97);
-    filter: blur(3px) hue-rotate(20deg);
-  }
-  50% {
-    opacity: 0.75;
-    filter: blur(1px) hue-rotate(-8deg);
-  }
-  100% {
-    opacity: 1;
-    transform: translateY(0) scale(1);
-    filter: blur(0) hue-rotate(0deg);
-  }
+  from { opacity: 0; transform: translateY(18px); }
+  to { opacity: 1; transform: translateY(0); }
 }
 
 .animate-reveal {
-  animation: reveal-in 0.45s var(--ease-out) both;
+  animation: reveal-in 0.6s var(--ease-out) both;
   animation-play-state: paused;
 }
 html.boot-done .animate-reveal {
@@ -670,6 +659,18 @@ html.boot-done .animate-reveal {
   to { opacity: 1; transform: translateY(0); }
 }
 
+/* A skeleton was just replaced by its content (SkeletonSwap): show the content straight away instead of fading it in
+   from nothing. Inner effects (bars growing, routes drawing) still run, they key off .is-visible. */
+html[data-swap] .scroll-reveal:not(.is-visible),
+html[data-swap] .scroll-reveal-fade:not(.is-visible) {
+  opacity: 1;
+}
+html[data-swap] .scroll-reveal.is-visible,
+html[data-swap] .scroll-reveal-fade.is-visible,
+html[data-swap] .animate-reveal {
+  animation: none;
+}
+
 /* Accent scan lines sweep across the top and bottom edges as a panel appears, then fade out. */
 .panel-draw::before,
 .panel-draw::after {
@@ -730,10 +731,10 @@ html.boot-done .animate-reveal {
   opacity: 0 !important;
 }
 .scroll-reveal.is-visible .heat-cell {
-  animation: heat-cell-in 0.5s var(--ease-out) backwards;
+  animation: heat-cell-in 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) backwards;
 }
 @keyframes heat-cell-in {
-  from { opacity: 0; }
+  from { opacity: 0; transform: scale(0.2); }
 }
 
 /* Weekday habit: bars grow up from the baseline once their panel is revealed. */

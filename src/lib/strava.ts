@@ -505,6 +505,17 @@ export async function getRunningData(): Promise<RunningData | null> {
 
   if (!summary) return null;
   const { days, ...rest } = summary;
-  const bests = bestsCache?.value.map((b) => ({ ...b, daysAgo: Math.max(0, Math.floor((Date.now() - Date.parse(`${b.date}T00:00:00Z`)) / 86_400_000)) })) ?? null;
-  return { ...rest, ...buildHeat(days), bests };
+  return { ...rest, ...buildHeat(days), bests: bestsView() };
+}
+
+function bestsView(): PersonalBestView[] | null {
+  return bestsCache?.value.map((b) => ({ ...b, daysAgo: Math.max(0, Math.floor((Date.now() - Date.parse(`${b.date}T00:00:00Z`)) / 86_400_000)) })) ?? null;
+}
+
+/** Just the personal bests, for the page to poll while they are still being indexed (they are slow to fetch). */
+export async function getPersonalBests(): Promise<PersonalBestView[] | null> {
+  if (!isConfigured()) return null;
+  await loadFromDisk();
+  if (!bestsCache || bestsCache.expiresAt <= Date.now()) void refreshBests();
+  return bestsView();
 }

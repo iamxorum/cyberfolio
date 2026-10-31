@@ -1,15 +1,15 @@
 'use client';
 
 import { use, useEffect, useState } from 'react';
-import { useRouter } from 'next/navigation';
 import { SiStrava } from 'react-icons/si';
-import type { RunningData, RunTotals, WeekStats } from '@/lib/strava';
+import type { PersonalBestView, RunningData, RunTotals, WeekStats } from '@/lib/strava';
 import { formatDay, formatDuration, formatHours, formatKm, formatPace } from '@/lib/running-format';
 import { formatRelativeTime } from '@/lib/format-time';
-import { STAGGER_STEP_MS, revealDelay } from '@/lib/motion';
+import { STAGGER_STEP_DENSE_MS, STAGGER_STEP_MS, revealDelay } from '@/lib/motion';
 import Reveal from '@/components/Reveal';
 import TypedText from '@/components/TypedText';
 import Bone from './Skeleton';
+import SkeletonSwap from './SkeletonSwap';
 import RunHeatmap from './RunHeatmap';
 import WeekdayHabit from './WeekdayHabit';
 import RunRecordsPanel from './RunRecordsPanel';
@@ -109,30 +109,43 @@ export function SectionTitle({ profileUrl }: { profileUrl?: string }) {
 const BESTS_POLL_MS = 4000;
 const BESTS_MAX_POLLS = 15;
 
-function useRefreshUntilReady(pending: boolean) {
-  const router = useRouter();
+/** Polls the small bests endpoint (not a full page refresh) until the bests are indexed or it gives up. */
+function useBestsUntilReady(initial: PersonalBestView[] | null | undefined) {
+  const [polled, setPolled] = useState<PersonalBestView[] | null>(null);
   const [gaveUp, setGaveUp] = useState(false);
+  const pending = initial === null && polled === null;
 
   useEffect(() => {
     if (!pending) return;
     let polls = 0;
-    const timer = setInterval(() => {
+    const controller = new AbortController();
+    const timer = setInterval(async () => {
       if (++polls > BESTS_MAX_POLLS) {
         clearInterval(timer);
         setGaveUp(true);
         return;
       }
-      router.refresh();
+      try {
+        const res = await fetch('/api/running-bests', { signal: controller.signal, cache: 'no-store' });
+        const body: { bests: PersonalBestView[] | null } = await res.json();
+        if (body.bests) setPolled(body.bests);
+      } catch {
+        // Offline or aborted: the next tick tries again.
+      }
     }, BESTS_POLL_MS);
-    return () => clearInterval(timer);
-  }, [pending, router]);
+    return () => {
+      clearInterval(timer);
+      controller.abort();
+    };
+  }, [pending]);
 
-  return gaveUp;
+  return { bests: initial ?? polled, gaveUp };
 }
 
 export function RunningSkeleton() {
   return (
     <section id="running" aria-busy="true" aria-label="Loading running data" className="flex flex-col gap-4 font-mono scroll-mt-20">
+      <SkeletonSwap />
       <SectionTitle />
       <div className={`${panel} flex flex-col gap-3`}>
         <Bone className="h-3 w-28" />
@@ -159,7 +172,7 @@ export function RunningSkeleton() {
 // `running` is a promise the page does not wait for: the section streams in behind <RunningSkeleton />.
 export default function RunningSection({ running }: { running: Promise<RunningData | null> }) {
   const data = use(running);
-  const bestsGaveUp = useRefreshUntilReady(data?.bests === null);
+  const { bests, gaveUp: bestsGaveUp } = useBestsUntilReady(data?.bests);
 
   if (!data) {
     return (
@@ -177,12 +190,12 @@ export default function RunningSection({ running }: { running: Promise<RunningDa
     <section id="running" className="flex flex-col gap-4 font-mono scroll-mt-20">
       <SectionTitle profileUrl={data.profileUrl} />
 
-      <p className="text-xs sm:text-sm text-[var(--terminal-text-muted)] break-words">
+      <Reveal as="p" delay={STAGGER_STEP_DENSE_MS} className="text-xs sm:text-sm text-[var(--terminal-text-muted)] break-words">
         <span className="text-primary">$</span> strava --summary
         <span className="block sm:inline sm:ml-3 text-[var(--terminal-text)]">
           {formatKm(data.allTime.distanceKm, 0)} km all-time · {data.activeDays} active days · {data.weekStreak}-week streak
         </span>
-      </p>
+      </Reveal>
 
       <Headline weeks={data.weeks} ytd={data.ytd} allTime={data.allTime} />
 
@@ -192,20 +205,22 @@ export default function RunningSection({ running }: { running: Promise<RunningDa
 
       <div className="flex flex-col lg:flex-row gap-3 sm:gap-4">
         <div className="lg:w-1/3 lg:self-start flex flex-col gap-3 sm:gap-4">
-        {/* Keyed so the panel remounts when the bests arrive: the scroll reveal only watches items present at mount. */}
-        <Reveal key={data.bests === null ? 'pending' : 'ready'} draw delay={STAGGER_STEP_MS} className={`${panel} flex flex-col gap-3`}>
+        {/* The panel itself stays mounted across the 4s polls (a remount replayed its entrance on every refresh, which
+            flashed on phones). Only the list is keyed, so its rows get observed once the bests arrive. */}
+        <Reveal draw delay={STAGGER_STEP_MS} className={`${panel} flex flex-col gap-3`}>
           <p className={label}>PERSONAL BESTS</p>
-          {data.bests === null ? (
+          {bests === null ? (
             bestsGaveUp ? (
               <p className="text-xs text-[var(--terminal-text-muted)]">Personal bests are unavailable right now.</p>
             ) : (
               <p className="text-xs text-[var(--terminal-text-muted)] animate-pulse">INDEXING_BEST_EFFORTS...</p>
             )
-          ) : data.bests.length === 0 ? (
+          ) : bests.length === 0 ? (
             <p className="text-xs text-[var(--terminal-text-muted)]">No best efforts recorded yet.</p>
           ) : (
+            <Reveal key="ready" className="contents">
             <ul className="flex flex-col">
-              {data.bests.map((pb, index) => (
+              {bests.map((pb, index) => (
                 <li key={pb.effort} data-reveal style={revealDelay(300 + index * 70)} className="scroll-reveal flex flex-col gap-0.5 border-t border-[var(--terminal-border)] first:border-0 py-2 first:pt-0 last:pb-0">
                   <div className="flex items-baseline justify-between gap-2 text-xs text-[var(--terminal-text-dim)]">
                     <span className="tracking-widest">{EFFORT_LABELS[pb.effort]}</span>
@@ -218,6 +233,7 @@ export default function RunningSection({ running }: { running: Promise<RunningDa
                 </li>
               ))}
             </ul>
+            </Reveal>
           )}
         </Reveal>
         <WeekdayHabit heat={data.heat} className={panel} />

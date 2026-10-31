@@ -39,11 +39,17 @@ export default function RunHeatmap({ days, weekStreak, activeDays }: { days: Run
     setActive(index);
   };
 
-  // A month label sits above the first column whose Monday falls in a new month.
-  const monthLabels = Array.from({ length: columns }, (_, col) => {
+  // A month label sits above the first column whose Monday falls in a new month. A label with the next one
+  // less than 3 columns away is dropped (a one-column month would otherwise print over its neighbour).
+  const starts = Array.from({ length: columns }, (_, col) => {
     const month = Number(days[col * 7].date.slice(5, 7));
     const prev = col > 0 ? Number(days[(col - 1) * 7].date.slice(5, 7)) : -1;
-    return month !== prev ? MONTHS[month - 1] : '';
+    return month !== prev ? col : -1;
+  }).filter((col) => col >= 0);
+  const monthLabels = Array.from({ length: columns }, () => '');
+  starts.forEach((col, i) => {
+    const next = starts[i + 1] ?? Infinity;
+    if (next - col >= 3) monthLabels[col] = MONTHS[Number(days[col * 7].date.slice(5, 7)) - 1];
   });
 
   return (
@@ -80,7 +86,7 @@ export default function RunHeatmap({ days, weekStreak, activeDays }: { days: Run
                   <div key={day.date} className="relative aspect-square" onMouseEnter={(e) => showTip(i, e)}>
                     <div
                       className={`heat-cell absolute inset-0 rounded-[2px] ${level === 0 ? 'bg-[var(--terminal-border)] opacity-40' : 'bg-primary'} ${active === i ? 'ring-1 ring-[var(--terminal-text)]' : ''}`}
-                      style={level > 0 ? { opacity: LEVEL_OPACITY[level], animationDelay: `${300 + col * 12}ms` } : undefined}
+                      style={{ ...(level > 0 && { opacity: LEVEL_OPACITY[level] }), animationDelay: `${col * 10 + (i % 7) * 25 + ((i * 37) % 40)}ms` }}
                     />
                   </div>
                 );
