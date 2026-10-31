@@ -14,6 +14,20 @@ export interface Release {
 // Newest first. Add a release here when the version is bumped.
 export const releases: Release[] = [
   {
+    version: '1.7.1',
+    date: '2026-10-31',
+    changes: [
+      'Navigation: page transitions are shorter and overlap, so opening a page no longer waits half a second',
+      'Navigation: /life, /blog and /projects show a loading skeleton straight away while the server renders',
+      'Life: fixed the personal bests panel flashing on phones. It is no longer remounted on every refresh',
+      'Life: personal bests load through a small /api/running-bests endpoint instead of refreshing the whole page every 4 seconds',
+      'Life: content no longer fades in from blank when it replaces a loading skeleton',
+      'Life: the strava --summary line eases in with the panels',
+      'Life: the run heatmap no longer prints one month label over another, and its squares pop in one by one from left to right',
+      'Headings now use the same slide-up entrance as the panels, in place of the blur and scale one',
+    ],
+  },
+  {
     version: '1.7.0',
     date: '2026-10-31',
     changes: [
