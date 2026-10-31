@@ -18,6 +18,7 @@ import { ANALYTICS_PATH } from "@/lib/analytics";
 import { serializeJsonLd } from "@/lib/json-ld";
 import { personJsonLd, siteUrl } from '@/lib/seo';
 import { INITIALIZED_KEY } from '@/lib/storage-keys';
+import { isDevelopment } from '@/lib/env';
 
 const jetBrainsMono = JetBrains_Mono({
   variable: "--font-display",
@@ -138,6 +139,18 @@ export default async function RootLayout({
         >
           {children}
         </ViewTransition>
+        {/* Reveals normally wait for hydration. When no boot screen is in the way, whatever is already on screen is shown
+            as soon as it is parsed, so content does not sit invisible for seconds on a slow phone. Production only: in dev
+            the class added before hydration makes React log a harmless attribute mismatch. */}
+        {!isDevelopment && (
+          <script
+            nonce={nonce}
+            suppressHydrationWarning
+            dangerouslySetInnerHTML={{
+              __html: `(function(){try{if(!document.documentElement.classList.contains('boot-skip'))return;var h=innerHeight*0.9;document.querySelectorAll('[data-reveal]').forEach(function(e){var r=e.getBoundingClientRect();if(r.top<h&&r.bottom>0)e.classList.add('is-visible')})}catch(e){}})();`,
+            }}
+          />
+        )}
         {analyticsEnabled && <AnalyticsEvents />}
         {analyticsEnabled && (
           <Script
