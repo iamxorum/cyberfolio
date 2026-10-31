@@ -14,6 +14,14 @@ export interface Release {
 // Newest first. Add a release here when the version is bumped.
 export const releases: Release[] = [
   {
+    version: '1.7.2',
+    date: '2026-10-31',
+    changes: [
+      'Fixed /blog and /projects replaying their entrance animation a moment after the page appeared',
+      'Content that replaces a loading skeleton is now settled for good after the first frame, so no animation can restart',
+    ],
+  },
+  {
     version: '1.7.1',
     date: '2026-10-31',
     changes: [
