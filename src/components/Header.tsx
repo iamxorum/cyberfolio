@@ -86,6 +86,7 @@ export default function Header() {
       <div
         ref={headerRef}
         className="w-full flex justify-center sticky top-0 z-50 bg-[var(--terminal-bg)]/95 border-b border-[var(--terminal-border)] backdrop-blur-sm"
+        data-site-header
         style={{ viewTransitionName: 'site-header' } as React.CSSProperties}
       >
       <div className="layout-content-container flex flex-col max-w-[1200px] w-full flex-1">

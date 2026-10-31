@@ -191,6 +191,11 @@ html.calm *::after {
 
 /* Directional page transitions between the main nav routes (View Transitions API).
    The header carries a stable name so it never slides with the content. */
+/* Not during a theme switch: Safari then snapshots the sticky header at its unscrolled position, so it vanishes
+   off the top of the page until the transition ends. Plain, it crossfades with the rest of the page. */
+html.theme-switching [data-site-header] {
+  view-transition-name: none !important;
+}
 ::view-transition-group(site-header) {
   animation: none;
   z-index: 100;
