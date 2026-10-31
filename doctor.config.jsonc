@@ -1,0 +1,27 @@
+{
+  // Each entry is a reviewed false positive, not a skipped fix. Anything new still gets reported.
+  "ignore": {
+    "overrides": [
+      {
+        // The PDF documents must import @react-pdf/renderer at the top. They are only reached through
+        // import() in components/cv/ResumePanel.tsx and CoverLetterPanel.tsx, so visitors who never open
+        // the CV never download the library.
+        "files": [
+          "src/components/ApplicationDocument.tsx",
+          "src/components/CVDesignedDocument.tsx",
+          "src/components/CVDocument.tsx",
+          "src/components/CoverLetterDocument.tsx",
+          "src/components/pdf/DocumentHeader.tsx"
+        ],
+        "rules": ["react-doctor/prefer-dynamic-import"]
+      },
+      {
+        // Personal-best scan: each Strava call decides whether the next one is needed, and the
+        // MAX_DETAIL_CALLS cap is spent on the newest runs long enough for the distances still missing.
+        // Running it concurrently would change which personal bests are found.
+        "files": ["src/lib/strava.ts"],
+        "rules": ["react-doctor/async-await-in-loop"]
+      }
+    ]
+  }
+}
