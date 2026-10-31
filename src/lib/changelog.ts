@@ -14,16 +14,34 @@ export interface Release {
 // Newest first. Add a release here when the version is bumped.
 export const releases: Release[] = [
   {
+    version: '1.7.0',
+    date: '2026-10-31',
+    changes: [
+      'CV: roles at the same company are grouped under one company header',
+      'CV: each role shows a short stack (up to about 10 items) instead of every tool, and same-issuer course badges collapse into one certification line',
+      'CV: PDF text is no longer hyphenated mid-word, and ATS text is left-aligned',
+      'CV: new Core stack row, and an Interests section split into Studying and Outside work (a full-width footer on the Designed variant)',
+      'CV: the Designed variant uses a single skill chip style, larger text and a LIVE tag on projects with a website',
+      'cv.config: per-style coreSkills, excludeProjects, projectDescriptions and projectUrls',
+      'Cover letter rewritten to match the CV',
+      'About: each role shows a one-line intro above its bullets',
+      'Skills: trimmed from 89 to 71, with Fail2Ban, CrowdSec and other missing tools added. Levels are now beginner, working, proficient and advanced; ties on the radar are broken by featuredSkills',
+      'Contribution stats use an optional GITHUB_TOKEN, which avoids GitHub search rate limits',
+      'Config changes: experience uses intro and bullets instead of description, plainSummary is gone, skill levels are renamed, and cvSkills, cvHighlight and certification cvName are new. config.example is updated',
+      'Removed unused helpers and the unused album field in music.config',
+    ],
+  },
+  {
     version: '1.6.9',
     date: '2026-10-31',
     changes: [
-      'Music player loads on click, so /life no longer pulls in the SoundCloud embed up front (performance 74 to 90, best practices 71 to 96)',
-      'Text is never smaller than 12px, and the image zoom no longer leaves a focus ring behind after closing',
-      'Cookies and local storage keys now use the cyberfolio_ prefix: theme, accent, intro and access reset once',
-      'Security: tighter CSP (no wildcard connect host, frame-ancestors), private files read once, response status checked before reading, rate-limit and origin checks covered by tests',
-      'Running data keeps showing the last good result while it refreshes and backs off for 15 minutes after a Strava failure',
-      'The threat globe flags a feed that has stopped updating',
-      'Under the hood: complex components split up, native dialog for the human check, typecheck and tests in CI, dependency updates',
+      'Performance: the music player loads on click, so /life no longer loads the SoundCloud embed up front (performance 74 to 90, best practices 71 to 96)',
+      'Accessibility: text is never smaller than 12px, and closing the image zoom no longer leaves a focus ring',
+      'Storage: cookie and local storage keys use the cyberfolio_ prefix. Theme, accent, intro and access reset once',
+      'Security: stricter CSP (no wildcard connect host, frame-ancestors added), private files are read once, response status is checked before parsing, and rate limiting and origin checks are tested',
+      'Running data serves the last good result while it refreshes, and backs off for 15 minutes after a Strava failure',
+      'Threat globe: shows a warning when the feed stops updating',
+      'Internal: large components split up, native dialog for the human check, typecheck and tests in CI, dependency updates',
     ],
   },
   {
