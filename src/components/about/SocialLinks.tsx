@@ -9,7 +9,7 @@ const MAX_STAGGERED = 8;
 function SocialLinkGroup({ title, links, offset }: { title: string; links: SocialLink[]; offset: number }) {
   return (
     <div data-reveal style={revealDelay(Math.min(offset, MAX_STAGGERED) * STAGGER_STEP_DENSE_MS)} className="scroll-reveal">
-      <div className="text-[var(--terminal-text-dim)] text-[9px] mb-1.5 uppercase">{title}</div>
+      <div className="text-[var(--terminal-text-dim)] text-xs mb-1.5 uppercase">{title}</div>
       <div className="flex flex-col gap-2">
         {links.map((link, index) => {
           const isMailto = link.url.startsWith('mailto:');
@@ -27,7 +27,7 @@ function SocialLinkGroup({ title, links, offset }: { title: string; links: Socia
               {link.icon && (
                 <span aria-hidden="true" className="material-symbols-outlined text-[var(--terminal-text-muted)] group-hover:text-primary text-base">{link.icon}</span>
               )}
-              <span className="text-[var(--terminal-text-muted)] group-hover:text-primary text-[10px] sm:text-xs">{link.name}</span>
+              <span className="text-[var(--terminal-text-muted)] group-hover:text-primary text-xs sm:text-xs">{link.name}</span>
               {!isMailto && (
                 <span aria-hidden="true" className="ml-auto material-symbols-outlined text-[var(--terminal-text-dim)] group-hover:text-primary text-sm opacity-0 group-hover:opacity-100 transition-opacity">arrow_outward</span>
               )}
@@ -52,7 +52,7 @@ export default function SocialLinks() {
     <Reveal draw className="bg-[var(--terminal-surface)] border border-[var(--terminal-border)] rounded p-3 sm:p-4 font-mono text-xs">
       <div className="flex items-center gap-2 mb-3 border-b border-[var(--terminal-border)] pb-2">
         <span aria-hidden="true" className="material-symbols-outlined text-primary text-base">link</span>
-        <span className="text-[var(--terminal-text-dim)] text-[10px] sm:text-xs">SOCIAL_LINKS</span>
+        <span className="text-[var(--terminal-text-dim)] text-xs sm:text-xs">SOCIAL_LINKS</span>
       </div>
       <div className="flex flex-col gap-3">
         {professional && professional.length > 0 && <SocialLinkGroup title="Professional" links={professional} offset={0} />}

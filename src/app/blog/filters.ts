@@ -17,7 +17,11 @@ export const matchesQuery = (post: PostMeta, query: string) => {
   return !q || `${post.title} ${post.excerpt} ${post.category} ${(post.tags ?? []).join(' ')}`.toLowerCase().includes(q);
 };
 export const matchesCategory = (post: PostMeta, category: string | null) => !category || post.category === category;
-export const matchesTags = (post: PostMeta, tags: string[]) => tags.length === 0 || tags.some((tag) => post.tags?.includes(tag));
+export const matchesTags = (post: PostMeta, tags: string[]) => {
+  if (tags.length === 0) return true;
+  const wanted = new Set(tags);
+  return post.tags?.some((tag) => wanted.has(tag)) ?? false;
+};
 
 export const isFiltered = (f: FilterState) => f.query.trim() !== '' || f.category !== null || f.tags.length > 0;
 

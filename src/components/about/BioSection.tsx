@@ -27,7 +27,7 @@ export default function BioSection() {
   return (
     <Reveal id="bio" draw className="bg-[var(--terminal-bg)] border border-[var(--terminal-border)] rounded overflow-hidden scroll-mt-32">
       <div className="bg-[var(--terminal-surface-alt)] px-3 sm:px-4 py-2 border-b border-[var(--terminal-border)] flex justify-between items-center">
-        <span className="text-[10px] sm:text-xs font-mono text-[var(--terminal-text-dim)]">
+        <span className="text-xs sm:text-xs font-mono text-[var(--terminal-text-dim)]">
           {terminalLabel}
         </span>
         <div className="flex gap-1.5">

@@ -49,7 +49,7 @@ export default function ExperienceDescription({ description }: { description?: s
             type="button"
             onClick={() => setExpanded(e => !e)}
             aria-expanded={expanded}
-            className="mt-1 text-[10px] font-mono tracking-wider text-primary hover:underline"
+            className="mt-1 text-xs font-mono tracking-wider text-primary hover:underline"
           >
             {expanded ? '[- show less]' : `[+ ${tail.length} more]`}
           </button>

@@ -6,7 +6,7 @@ import type { RoutePath } from '@/lib/strava';
  */
 export default function RouteTrace({ route }: { route: RoutePath | null }) {
   if (!route) {
-    return <div className="w-full h-full flex items-center justify-center text-[10px] tracking-widest text-[var(--terminal-text-dim)]" aria-hidden="true">NO_TRACE</div>;
+    return <div className="w-full h-full flex items-center justify-center text-xs tracking-widest text-[var(--terminal-text-dim)]" aria-hidden="true">NO_TRACE</div>;
   }
   const ring = { fill: 'var(--terminal-surface)', stroke: 'var(--primary)', strokeWidth: 0.9 };
   return (

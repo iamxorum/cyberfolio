@@ -1,16 +1,15 @@
 import { NextResponse } from 'next/server';
 import { createHash, timingSafeEqual } from 'node:crypto';
-import { readFile } from 'node:fs/promises';
-import path from 'node:path';
 import { features, siteConfig } from '@/config';
 import { isRateLimited, getClientKey } from '@/lib/rate-limit';
 import { isAllowedOrigin } from '@/lib/origin';
 import { devOrigins, isDevelopment } from '@/lib/env';
 import { notFoundResponse } from '@/lib/http';
+import { readPrivateFile } from '@/lib/private-file';
 
 const MAX_PASSWORD_LENGTH = 256;
 // Kept in private/ (never public/), so the image is only reachable through this route.
-const SIGNATURE_FILE = path.join(process.cwd(), 'private', 'signature.png');
+const SIGNATURE_FILE = 'signature.png';
 
 const fail = (error: string, status: number) =>
   NextResponse.json({ success: false, error }, { status, headers: { 'Cache-Control': 'no-store' } });
@@ -52,7 +51,7 @@ export async function POST(request: Request) {
   }
 
   try {
-    const image = await readFile(/*turbopackIgnore: true*/ SIGNATURE_FILE);
+    const image = await readPrivateFile(SIGNATURE_FILE);
     return NextResponse.json(
       { success: true, image: `data:${mimeType(image)};base64,${image.toString('base64')}` },
       { headers: { 'Cache-Control': 'no-store' } }

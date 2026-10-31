@@ -9,7 +9,7 @@ const IMAGE_HEIGHT_PX = 24;
 // Static badge drawn locally (same flat look as the shields.io ones), so it never depends on a remote service.
 function BadgePill({ pill, accent }: { pill: NonNullable<BadgeConfig['pill']>; accent: string }) {
   return (
-    <div className="flex overflow-hidden rounded-[4px] ring-1 ring-black/15 font-mono text-[11px] font-bold leading-none text-white" style={{ height: IMAGE_HEIGHT_PX }}>
+    <div className="flex overflow-hidden rounded-[4px] ring-1 ring-black/15 font-mono text-xs font-bold leading-none text-white" style={{ height: IMAGE_HEIGHT_PX }}>
       <span className="flex items-center px-2 bg-[#161b22]">{pill.label}</span>
       <span className="flex items-center px-2" style={{ backgroundColor: `color-mix(in srgb, ${accent} 78%, black)` }}>{pill.value}</span>
     </div>
@@ -37,7 +37,7 @@ function BadgeImage({ badge }: { badge: BadgeConfig }) {
   return (
     <div className="relative overflow-hidden rounded-[4px] ring-1 ring-black/15 bg-[var(--terminal-surface-dark)]" style={slotStyle}>
       {failed ? (
-        <div className="flex h-full items-center px-2 font-mono text-[9px] text-[var(--terminal-text-dim)]">
+        <div className="flex h-full items-center px-2 font-mono text-xs text-[var(--terminal-text-dim)]">
           badge unavailable
         </div>
       ) : (
@@ -61,7 +61,7 @@ export default function TrustBadges() {
 
   return (
     <div className="mt-6 z-10">
-      <div className="text-[var(--terminal-text-dim)] font-mono text-[10px] sm:text-xs mb-2.5">
+      <div className="text-[var(--terminal-text-dim)] font-mono text-xs sm:text-xs mb-2.5">
         badges
       </div>
       <div className="flex flex-wrap gap-2.5 sm:gap-3">
@@ -97,7 +97,7 @@ export default function TrustBadges() {
               )}
 
               <div className="flex flex-col gap-1 min-w-0 relative z-10">
-                <span className="text-[8px] sm:text-[9px] font-mono uppercase tracking-widest text-[var(--terminal-text-dim)] truncate">
+                <span className="text-xs sm:text-xs font-mono uppercase tracking-widest text-[var(--terminal-text-dim)] truncate">
                   {badge.name}
                 </span>
                 {badge.pill ? <BadgePill pill={badge.pill} accent={accent} /> : <BadgeImage badge={badge} />}

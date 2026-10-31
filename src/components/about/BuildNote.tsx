@@ -20,7 +20,7 @@ export default function BuildNote() {
         onClick={() => setExpanded((open) => !open)}
         aria-expanded={expanded}
         aria-controls="build-notes"
-        className="flex w-full items-center justify-between gap-3 px-4 sm:px-5 py-3 text-left text-[10px] sm:text-xs tracking-widest text-[var(--terminal-text-dim)] hover:text-primary transition-colors"
+        className="flex w-full items-center justify-between gap-3 px-4 sm:px-5 py-3 text-left text-xs sm:text-xs tracking-widest text-[var(--terminal-text-dim)] hover:text-primary transition-colors"
       >
         HOW_THIS_WAS_BUILT
         <span

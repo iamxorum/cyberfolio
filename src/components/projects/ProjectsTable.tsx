@@ -26,7 +26,7 @@ export default function ProjectsTable({ title, icon, projects, contributionStats
         </span>
       </Reveal>
       <Reveal draw className="flex flex-col rounded-lg border border-[var(--terminal-border)] bg-[var(--terminal-surface-table)] overflow-hidden shadow-2xl shadow-black/50">
-        <div className="hidden md:grid grid-cols-12 gap-2 md:gap-4 px-4 md:px-6 py-2 md:py-3 bg-[var(--terminal-surface-table-header)] border-b border-[var(--terminal-border)] text-[var(--terminal-text-dim)] text-[10px] md:text-xs font-bold tracking-widest uppercase">
+        <div className="hidden md:grid grid-cols-12 gap-2 md:gap-4 px-4 md:px-6 py-2 md:py-3 bg-[var(--terminal-surface-table-header)] border-b border-[var(--terminal-border)] text-[var(--terminal-text-dim)] text-xs md:text-xs font-bold tracking-widest uppercase">
           <div className="col-span-2">FILE_HASH</div>
           <div className="col-span-4">PROJECT_NAME</div>
           <div className="col-span-2">STATUS_LOG</div>

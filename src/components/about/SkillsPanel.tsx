@@ -31,15 +31,15 @@ export default function SkillsPanel() {
   return (
     <Reveal id="skills" draw className="bg-[var(--terminal-surface)] border border-[var(--terminal-border)] rounded p-3 sm:p-4 font-mono text-xs scroll-mt-32">
       <div className="flex justify-between items-center mb-2 sm:mb-3 border-b border-[var(--terminal-border)] pb-2">
-        <span className="text-[var(--terminal-text-dim)] text-[10px] sm:text-xs">SKILLS_MATRIX</span>
-        <span className="text-primary font-bold text-[10px] sm:text-xs">{selectedCategory ? selectedCategory.toUpperCase() : 'ALL'}</span>
+        <span className="text-[var(--terminal-text-dim)] text-xs sm:text-xs">SKILLS_MATRIX</span>
+        <span className="text-primary font-bold text-xs sm:text-xs">{selectedCategory ? selectedCategory.toUpperCase() : 'ALL'}</span>
       </div>
 
       <div className="flex flex-wrap gap-1.5 sm:gap-2 mb-2 sm:mb-3">
         <button
           onClick={() => setSelectedCategory(null)}
           {...eventProps('skills_filter', { category: 'all' })}
-          className={`px-1.5 sm:px-2 py-0.5 sm:py-1 rounded text-[9px] sm:text-[10px] font-mono transition active:scale-95 ${selectedCategory === null
+          className={`px-1.5 sm:px-2 py-0.5 sm:py-1 rounded text-xs sm:text-xs font-mono transition active:scale-95 ${selectedCategory === null
             ? 'bg-primary text-[var(--terminal-on-primary)] border border-primary'
             : 'bg-[var(--terminal-bg)] text-[var(--terminal-text-muted)] border border-[var(--terminal-border)] hover:border-primary hover:text-primary'
             }`}
@@ -51,7 +51,7 @@ export default function SkillsPanel() {
             key={category}
             onClick={() => setSelectedCategory(category)}
             {...eventProps('skills_filter', { category })}
-            className={`px-1.5 sm:px-2 py-0.5 sm:py-1 rounded text-[9px] sm:text-[10px] font-mono transition active:scale-95 ${selectedCategory === category
+            className={`px-1.5 sm:px-2 py-0.5 sm:py-1 rounded text-xs sm:text-xs font-mono transition active:scale-95 ${selectedCategory === category
               ? 'bg-primary text-[var(--terminal-on-primary)] border border-primary'
               : 'bg-[var(--terminal-bg)] text-[var(--terminal-text-muted)] border border-[var(--terminal-border)] hover:border-primary hover:text-primary'
               }`}
@@ -76,7 +76,7 @@ export default function SkillsPanel() {
                 type="button"
                 disabled={!hasEvidence}
                 onClick={() => setExpandedSkill(isExpanded ? null : skill.name)}
-                className={`w-full flex items-center justify-between text-[9px] sm:text-[10px] text-left ${hasEvidence ? 'cursor-pointer' : 'cursor-default'}`}
+                className={`w-full flex items-center justify-between text-xs sm:text-xs text-left ${hasEvidence ? 'cursor-pointer' : 'cursor-default'}`}
               >
                 <div className="flex items-center gap-1 min-w-0 flex-1">
                   {hasEvidence && (
@@ -96,7 +96,7 @@ export default function SkillsPanel() {
                       style={{ width: `${score}%` }}
                     ></div>
                   </div>
-                  <span className="text-primary font-bold w-7 sm:w-8 text-right text-[9px] sm:text-[10px]">{score}%</span>
+                  <span className="text-primary font-bold w-7 sm:w-8 text-right text-xs sm:text-xs">{score}%</span>
                 </div>
               </button>
 
@@ -104,7 +104,7 @@ export default function SkillsPanel() {
                 <RevealContainer visible={isExpanded}>
                   <div className="mt-1 mb-1 ml-4 pl-2 border-l border-primary/30 flex flex-col gap-0.5">
                     {evidence.experience.map((exp) => (
-                      <span key={exp.id} className="text-[9px] text-[var(--terminal-text-dim)] truncate">
+                      <span key={exp.id} className="text-xs text-[var(--terminal-text-dim)] truncate">
                         → {exp.role} @ {exp.company}
                       </span>
                     ))}
@@ -115,12 +115,12 @@ export default function SkillsPanel() {
                           href={project.link}
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="text-[9px] text-primary hover:underline truncate"
+                          className="text-xs text-primary hover:underline truncate"
                         >
                           → {project.name}
                         </a>
                       ) : (
-                        <span key={project.id} className="text-[9px] text-[var(--terminal-text-dim)] truncate">
+                        <span key={project.id} className="text-xs text-[var(--terminal-text-dim)] truncate">
                           → {project.name}{project.visibility === 'private' ? ' (private)' : ''}
                         </span>
                       )

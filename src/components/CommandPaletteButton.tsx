@@ -14,7 +14,7 @@ export default function CommandPaletteButton() {
       type="button"
       onClick={() => window.dispatchEvent(new Event(OPEN_PALETTE_EVENT))}
       title="Command palette"
-      className="hidden md:flex items-center gap-2 h-9 px-2.5 rounded border border-[var(--terminal-border)] text-[var(--terminal-text-dim)] hover:text-primary hover:border-primary active:scale-95 transition flex-shrink-0 font-mono text-[11px]"
+      className="hidden md:flex items-center gap-2 h-9 px-2.5 rounded border border-[var(--terminal-border)] text-[var(--terminal-text-dim)] hover:text-primary hover:border-primary active:scale-95 transition flex-shrink-0 font-mono text-xs"
     >
       <span className="material-symbols-outlined text-base" aria-hidden="true">search</span>
       {/* Visible text is part of the accessible name, as WCAG 2.5.3 requires. */}

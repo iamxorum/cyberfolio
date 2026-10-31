@@ -17,6 +17,7 @@ import { getSearchIndex } from "@/lib/blog";
 import { ANALYTICS_PATH } from "@/lib/analytics";
 import { serializeJsonLd } from "@/lib/json-ld";
 import { personJsonLd, siteUrl } from '@/lib/seo';
+import { INITIALIZED_KEY } from '@/lib/storage-keys';
 
 const jetBrainsMono = JetBrains_Mono({
   variable: "--font-display",
@@ -113,7 +114,7 @@ export default async function RootLayout({
           nonce={nonce}
           suppressHydrationWarning
           dangerouslySetInnerHTML={{
-            __html: `(function(){try{var t=localStorage.getItem('iamxorum_initialized');if(t&&(Date.now()-parseInt(t))<86400000){document.documentElement.classList.add('boot-skip');}}catch(e){}})();`,
+            __html: `(function(){try{var t=localStorage.getItem('${INITIALIZED_KEY}');if(t&&(Date.now()-parseInt(t))<86400000){document.documentElement.classList.add('boot-skip');}}catch(e){}})();`,
           }}
         />
         <script

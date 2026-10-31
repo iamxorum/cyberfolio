@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
 import { Turnstile } from '@marsidev/react-turnstile';
 import { securityConfig } from '@/config';
@@ -15,10 +15,23 @@ interface TurnstileGateProps {
 export default function TurnstileGate({ decryptingLabel, onVerified }: TurnstileGateProps) {
   const [isDecrypting, setIsDecrypting] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const dialogRef = useRef<HTMLDialogElement>(null);
+
+  // A modal dialog traps focus and makes the page behind it inert.
+  useEffect(() => {
+    const dialog = dialogRef.current;
+    if (dialog && !dialog.open) dialog.showModal();
+  }, []);
 
   return (
-    <div className="fixed inset-0 z-[9998] flex items-center justify-center bg-[rgba(var(--terminal-bg-rgb),0.85)] backdrop-blur-md font-mono p-4">
-      <div role="dialog" aria-modal="true" aria-labelledby="gate-title" className="max-w-md w-full border border-[var(--terminal-border)] bg-[var(--terminal-surface)] p-8 rounded shadow-[0_0_20px_rgba(var(--terminal-accent-rgb),0.2)] text-center relative overflow-hidden">
+    // Escape is blocked: the gate stays until the check passes.
+    <dialog
+      ref={dialogRef}
+      aria-labelledby="gate-title"
+      onCancel={(e) => e.preventDefault()}
+      className="m-0 h-full max-h-none w-full max-w-none items-center justify-center border-0 bg-[rgba(var(--terminal-bg-rgb),0.85)] p-4 font-mono text-inherit backdrop-blur-md open:flex"
+    >
+      <div className="max-w-md w-full border border-[var(--terminal-border)] bg-[var(--terminal-surface)] p-8 rounded shadow-[0_0_20px_rgba(var(--terminal-accent-rgb),0.2)] text-center relative overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-b from-transparent via-primary/5 to-transparent h-[10%] w-full animate-scan pointer-events-none"></div>
 
         <svg
@@ -97,7 +110,7 @@ export default function TurnstileGate({ decryptingLabel, onVerified }: Turnstile
           </div>
         )}
 
-        <div role="status" className="text-[10px] text-[var(--terminal-text-muted)] animate-pulse font-mono uppercase tracking-tighter">
+        <div role="status" className="text-xs text-[var(--terminal-text-muted)] animate-pulse font-mono uppercase tracking-tighter">
           {isDecrypting ? '>> VERIFIED' : 'Awaiting_Challenge_Response...'}
         </div>
 
@@ -107,6 +120,6 @@ export default function TurnstileGate({ decryptingLabel, onVerified }: Turnstile
           </Link>
         )}
       </div>
-    </div>
+    </dialog>
   );
 }

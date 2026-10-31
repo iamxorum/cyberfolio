@@ -56,7 +56,7 @@ function Blockquote({ children, ...props }: ComponentProps<'blockquote'>) {
       const rest = [(inner[0] as string).slice(head[0].length), ...inner.slice(1)].filter((part) => part !== '');
       return (
         <aside data-reveal role="note" aria-label={kind.label.toLowerCase()} className={`scroll-reveal my-4 rounded-r border-l-2 border-current bg-[var(--terminal-surface-alt)] px-4 py-3 ${kind.color}`}>
-          <p className="mb-1 font-mono text-[11px] font-bold tracking-widest">{kind.label}</p>
+          <p className="mb-1 font-mono text-xs font-bold tracking-widest">{kind.label}</p>
           <div className="font-mono text-sm leading-relaxed text-[var(--terminal-text-muted)] [&>p]:mb-2 [&>p:last-child]:mb-0">
             {rest.length > 0 && cloneElement(first, undefined, ...rest)}
             {blocks.slice(1)}
@@ -68,7 +68,11 @@ function Blockquote({ children, ...props }: ComponentProps<'blockquote'>) {
   return <blockquote data-reveal className="scroll-reveal border-l-2 border-primary pl-4 italic text-[var(--terminal-text-dim)] my-4" {...props}>{children}</blockquote>;
 }
 
-const Img = ({ src, alt }: ImgHTMLAttributes<HTMLImageElement>) => (typeof src === 'string' ? <ZoomImage src={src} alt={alt ?? ''} /> : null);
+// A post may point at an image relative to its .mdx file (../../public/blog/...), which editors can preview;
+// the site serves public/ from the root, so that prefix is dropped.
+const publicUrl = (src: string) => src.replace(/^(\.\.\/)+public\//, '/');
+
+const Img = ({ src, alt }: ImgHTMLAttributes<HTMLImageElement>) => (typeof src === 'string' ? <ZoomImage src={publicUrl(src)} alt={alt ?? ''} /> : null);
 
 // Headings get a stable id plus a hover-revealed `#` link so sections can be shared directly.
 // `idFor` is shared by every heading of one post, in document order, so repeated titles get distinct ids

@@ -45,7 +45,7 @@ export default function FooterTagline() {
 
   return (
     // Height is reserved (two lines on phones) so typing never pushes the footer around.
-    <p ref={ref} aria-hidden="true" className="min-h-[2.75rem] sm:min-h-[1.5rem] font-mono text-[10px] sm:text-xs text-[var(--terminal-text-dim)] leading-relaxed">
+    <p ref={ref} aria-hidden="true" className="min-h-[2.75rem] sm:min-h-[1.5rem] font-mono text-xs sm:text-xs text-[var(--terminal-text-dim)] leading-relaxed">
       {shown}
       {inView && !cursorDone && <span className="blinking-cursor text-primary" />}
     </p>

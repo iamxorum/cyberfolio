@@ -10,6 +10,8 @@ const API = 'https://www.strava.com/api/v3';
 const RUN_TYPES = new Set(['Run', 'TrailRun', 'VirtualRun']);
 // Hard expiry: after 24h a snapshot is discarded and refetched, never served stale.
 const CACHE_TTL_MS = 24 * 60 * 60 * 1000;
+// After a failed refresh (Strava down, rate-limited) nobody retries for this long, so visitors can't trigger a call storm.
+const RETRY_AFTER_FAILURE_MS = 15 * 60 * 1000;
 // Heatmap columns: the current week plus the 52 before it.
 const HEAT_WEEKS = 53;
 const MAX_YEAR_PAGES = 4;
@@ -153,6 +155,8 @@ let summaryCache: Cached<RunningSummary> | null = null;
 let bestsCache: Cached<PersonalBest[]> | null = null;
 let summaryInFlight: Promise<RunningSummary | null> | null = null;
 let bestsInFlight: Promise<PersonalBest[] | null> | null = null;
+let summaryRetryAt = 0;
+let bestsRetryAt = 0;
 let diskLoad: Promise<void> | null = null;
 
 const isConfigured = () =>
@@ -451,6 +455,7 @@ async function saveToDisk() {
 }
 
 function refreshSummary() {
+  if (Date.now() < summaryRetryAt) return Promise.resolve(summaryCache?.value ?? null);
   summaryInFlight ??= fetchSummary()
     .then((value) => {
       summaryCache = { value, expiresAt: Date.now() + CACHE_TTL_MS };
@@ -459,6 +464,7 @@ function refreshSummary() {
     })
     .catch((err) => {
       console.error(err);
+      summaryRetryAt = Date.now() + RETRY_AFTER_FAILURE_MS;
       return null;
     })
     .finally(() => {
@@ -468,6 +474,7 @@ function refreshSummary() {
 }
 
 function refreshBests() {
+  if (Date.now() < bestsRetryAt) return Promise.resolve(bestsCache?.value ?? null);
   bestsInFlight ??= fetchBests()
     .then((value) => {
       bestsCache = { value, expiresAt: Date.now() + CACHE_TTL_MS };
@@ -476,6 +483,7 @@ function refreshBests() {
     })
     .catch((err) => {
       console.error(err);
+      bestsRetryAt = Date.now() + RETRY_AFTER_FAILURE_MS;
       return null;
     })
     .finally(() => {
@@ -488,11 +496,11 @@ export async function getRunningData(): Promise<RunningData | null> {
   if (!isConfigured()) return null;
   await loadFromDisk();
 
+  // Expired entries stay in place until their replacement lands, so a refresh never blanks the page,
+  // and a failed one (Strava down, rate-limited) keeps showing the last good data.
   const now = Date.now();
-  if (bestsCache && bestsCache.expiresAt <= now) bestsCache = null;
-  if (summaryCache && summaryCache.expiresAt <= now) summaryCache = null;
-
-  if (!bestsCache) void refreshBests();
+  if (!bestsCache || bestsCache.expiresAt <= now) void refreshBests();
+  if (summaryCache && summaryCache.expiresAt <= now) void refreshSummary();
   const summary = summaryCache?.value ?? (await refreshSummary());
 
   if (!summary) return null;

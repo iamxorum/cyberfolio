@@ -5,7 +5,7 @@ import { useCallback, useEffect, useRef, useState, type MouseEvent, type ReactNo
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { contentConfig } from '@/config';
-import { eventProps, track } from '@/lib/track';
+import { eventProps } from '@/lib/track';
 import CopyLinkButton from '@/components/CopyLinkButton';
 import UltrawideDetail from '@/components/UltrawideDetail';
 import { useUltrawide } from '@/hooks/useUltrawide';
@@ -56,7 +56,7 @@ function PostCard({ post, index, views, selected, showCategory, onOpen }: {
         {post.series && post.seriesTotal && post.seriesTotal > 1 && <span>{post.series} · part {post.seriesPart}/{post.seriesTotal}</span>}
         {post.date && <time dateTime={post.date}>{formatDate(post.date)}</time>}
         <span>{post.readingMinutes} min read</span>
-        {views && <span>{views.toLocaleString('en-US')} views</span>}
+        {views ? <span>{views.toLocaleString('en-US')} views</span> : null}
       </div>
       <div className="flex items-start justify-between gap-3">
         <h2 className="text-[var(--terminal-text)] text-lg sm:text-xl font-bold font-mono leading-snug group-hover:text-primary transition-colors">
@@ -70,7 +70,7 @@ function PostCard({ post, index, views, selected, showCategory, onOpen }: {
         </p>
       )}
       {post.tags && post.tags.length > 0 && (
-        <div className="flex flex-wrap gap-x-3 gap-y-1 mt-1 text-[11px] text-[var(--terminal-text-dim)] font-mono">
+        <div className="flex flex-wrap gap-x-3 gap-y-1 mt-1 text-xs text-[var(--terminal-text-dim)] font-mono">
           {post.tags.slice(0, 4).map((tag) => <span key={tag}>#{tag}</span>)}
           {post.tags.length > 4 && <span>+{post.tags.length - 4}</span>}
         </div>
@@ -92,7 +92,7 @@ function PostDetail({ post, views, body, headings }: { post: PostMeta; views?: n
           {post.date && <time dateTime={post.date}>{formatDate(post.date)}</time>}
           {post.updated && post.updated !== post.date && <span>updated {formatDate(post.updated)}</span>}
           <span>{post.readingMinutes} min read</span>
-          {views && <span>{views.toLocaleString('en-US')} views</span>}
+          {views ? <span>{views.toLocaleString('en-US')} views</span> : null}
           <span className="ml-auto flex items-center gap-4">
             <CopyLinkButton path={`/blog/${post.slug}`} event="blog_link_copy" />
             <Link href={`/blog/${post.slug}`} className="hover:text-primary transition-colors">OPEN_FULL_PAGE →</Link>

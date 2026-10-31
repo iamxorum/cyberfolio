@@ -23,7 +23,7 @@ const EFFORT_LABELS: Record<string, string> = {
 };
 
 const panel = 'border border-[var(--terminal-border)] rounded bg-[var(--terminal-surface)] p-4 sm:p-5';
-const label = 'text-[10px] sm:text-xs tracking-widest text-[var(--terminal-text-dim)]';
+const label = 'text-xs sm:text-xs tracking-widest text-[var(--terminal-text-dim)]';
 
 function Headline({ weeks, ytd, allTime }: { weeks: WeekStats; ytd: RunTotals; allTime: RunTotals }) {
   const hasAvg = weeks.avgWeeks >= 2 && weeks.avgKm > 0;
@@ -64,13 +64,13 @@ function Headline({ weeks, ytd, allTime }: { weeks: WeekStats; ytd: RunTotals; a
       <dl className="flex flex-wrap gap-x-10 gap-y-4 border-t border-[var(--terminal-border)] pt-4">
         {stats.map(([title, value]) => (
           <div key={title} className="flex flex-col gap-1">
-            <dt className="text-[var(--terminal-text-dim)] text-[10px] tracking-widest">{title}</dt>
+            <dt className="text-[var(--terminal-text-dim)] text-xs tracking-widest">{title}</dt>
             <dd className="text-[var(--terminal-text)] text-base sm:text-lg tabular-nums whitespace-nowrap">{value}</dd>
           </div>
         ))}
       </dl>
 
-      <div className="flex flex-wrap gap-x-8 gap-y-1 border-t border-[var(--terminal-border)] pt-3 text-[10px] sm:text-xs tabular-nums">
+      <div className="flex flex-wrap gap-x-8 gap-y-1 border-t border-[var(--terminal-border)] pt-3 text-xs sm:text-xs tabular-nums">
         <p>
           <span className="tracking-widest text-[var(--terminal-text-dim)] mr-2">{new Date().getFullYear()}</span>
           <span className="text-[var(--terminal-text-muted)]">{formatKm(ytd.distanceKm, 0)} km · {ytd.count} runs · {formatHours(ytd.movingTimeSec)} · {formatPace(ytd.movingTimeSec, ytd.distanceKm)}</span>
@@ -96,7 +96,7 @@ export function SectionTitle({ profileUrl }: { profileUrl?: string }) {
           href={profileUrl}
           target="_blank"
           rel="noopener noreferrer"
-          className="flex items-center gap-1.5 text-[10px] sm:text-xs text-[var(--terminal-text-dim)] hover:text-primary transition-colors"
+          className="flex items-center gap-1.5 text-xs sm:text-xs text-[var(--terminal-text-dim)] hover:text-primary transition-colors"
         >
           <SiStrava aria-hidden="true" className="text-sm" />
           view on Strava
@@ -207,7 +207,7 @@ export default function RunningSection({ running }: { running: Promise<RunningDa
             <ul className="flex flex-col">
               {data.bests.map((pb, index) => (
                 <li key={pb.effort} data-reveal style={revealDelay(300 + index * 70)} className="scroll-reveal flex flex-col gap-0.5 border-t border-[var(--terminal-border)] first:border-0 py-2 first:pt-0 last:pb-0">
-                  <div className="flex items-baseline justify-between gap-2 text-[10px] text-[var(--terminal-text-dim)]">
+                  <div className="flex items-baseline justify-between gap-2 text-xs text-[var(--terminal-text-dim)]">
                     <span className="tracking-widest">{EFFORT_LABELS[pb.effort]}</span>
                     <span className="tabular-nums">{formatDay(pb.date)} {pb.date.slice(0, 4)}</span>
                   </div>
@@ -241,11 +241,11 @@ export default function RunningSection({ running }: { running: Promise<RunningDa
                     <RouteTrace route={run.route} />
                   </div>
                   <div className="flex items-baseline justify-between gap-2">
-                    <span className="text-base font-bold text-[var(--terminal-text)] tabular-nums">{formatKm(run.distanceKm, 2)}<span className="text-[10px] text-[var(--terminal-text-dim)] font-normal ml-0.5">km</span></span>
-                    <span className="text-[10px] text-[var(--terminal-text-dim)] whitespace-nowrap">{formatDay(run.date)}</span>
+                    <span className="text-base font-bold text-[var(--terminal-text)] tabular-nums">{formatKm(run.distanceKm, 2)}<span className="text-xs text-[var(--terminal-text-dim)] font-normal ml-0.5">km</span></span>
+                    <span className="text-xs text-[var(--terminal-text-dim)] whitespace-nowrap">{formatDay(run.date)}</span>
                   </div>
-                  <p className="text-[10px] sm:text-xs text-[var(--terminal-text-muted)] truncate" title={run.name}>{run.name}</p>
-                  <p className="text-[10px] text-[var(--terminal-text-dim)] tabular-nums">
+                  <p className="text-xs sm:text-xs text-[var(--terminal-text-muted)] truncate" title={run.name}>{run.name}</p>
+                  <p className="text-xs text-[var(--terminal-text-dim)] tabular-nums">
                     {formatPace(run.movingTimeSec, run.distanceKm)} · {formatDuration(run.movingTimeSec)}{run.elevationM >= 1 && <> · {Math.round(run.elevationM)} m</>}
                   </p>
                 </li>
@@ -255,7 +255,7 @@ export default function RunningSection({ running }: { running: Promise<RunningDa
         </Reveal>
       </div>
 
-      <p className="text-[10px] text-[var(--terminal-text-dim)] text-right" suppressHydrationWarning>
+      <p className="text-xs text-[var(--terminal-text-dim)] text-right" suppressHydrationWarning>
         synced {formatRelativeTime(data.fetchedAt)} · public activities only
       </p>
     </section>

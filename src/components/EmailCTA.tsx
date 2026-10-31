@@ -46,7 +46,7 @@ function ContactRow({ icon, value, copied, onCopy }: { icon: string; value: stri
 
 const errorText = (error: string | null) =>
   error && (
-    <p className="text-red-400 text-[10px] mb-3" role="alert">
+    <p className="text-red-400 text-xs mb-3" role="alert">
       {error}
     </p>
   );
@@ -105,7 +105,7 @@ function UnavailableNotice({ onRetry }: { onRetry: () => void }) {
   return (
     <>
       <span aria-hidden="true" className="material-symbols-outlined text-red-400 text-2xl mb-2">error</span>
-      <p className="text-[var(--terminal-text-dim)] text-[10px] mb-3 leading-relaxed">Contact is unavailable right now.</p>
+      <p className="text-[var(--terminal-text-dim)] text-xs mb-3 leading-relaxed">Contact is unavailable right now.</p>
       <button
         type="button"
         onClick={onRetry}
@@ -122,12 +122,12 @@ function VerifyPrompt({ error, isVerifying, onToken }: { error: string | null; i
     <>
       <span aria-hidden="true" className="material-symbols-outlined text-primary text-2xl mb-2">mail_lock</span>
       <p className="text-[var(--terminal-text)] text-xs font-bold uppercase tracking-widest mb-1">Verify_To_Reveal</p>
-      <p className="text-[var(--terminal-text-dim)] text-[10px] mb-3 leading-relaxed">
+      <p className="text-[var(--terminal-text-dim)] text-xs mb-3 leading-relaxed">
         Quick bot check before revealing contact details.
       </p>
       {errorText(error)}
       {isVerifying ? (
-        <div className="text-[10px] text-primary uppercase tracking-widest animate-pulse">Verifying...</div>
+        <div className="text-xs text-primary uppercase tracking-widest animate-pulse">Verifying...</div>
       ) : (
         <div className="flex justify-center">
           <Turnstile siteKey={getTurnstileSiteKey()} onSuccess={onToken} options={{ theme: securityConfig.turnstile.theme }} />
@@ -279,7 +279,7 @@ export default function EmailCTA({ className, children, ariaLabel, title, onNavi
               />
             )}
             {status === 'loading' && (
-              <div className="py-4 text-[10px] text-primary uppercase tracking-widest animate-pulse">Loading...</div>
+              <div className="py-4 text-xs text-primary uppercase tracking-widest animate-pulse">Loading...</div>
             )}
             {status === 'error' && <UnavailableNotice onRetry={loadEmail} />}
             {status === 'locked' && <VerifyPrompt error={error} isVerifying={isVerifying} onToken={verify} />}

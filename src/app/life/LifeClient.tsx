@@ -22,7 +22,7 @@ export default function LifeClient({ running, gaming }: { running: Promise<Runni
   return (
     <PageShell crumbs={[{ label: 'life.log', href: '/life' }]} rail gap="gap-6 sm:gap-8">
       <h1 className="sr-only">Life: {lifeTopics()}</h1>
-      <nav aria-label="Section jump links" className="uw-hide flex flex-wrap gap-2 text-[10px] sm:text-xs font-mono">
+      <nav aria-label="Section jump links" className="uw-hide flex flex-wrap gap-2 text-xs sm:text-xs font-mono">
         {SECTIONS.map((item) => (
           <a
             key={item.href}

@@ -24,7 +24,7 @@ export default function ProfileCard({ userId }: ProfileCardProps) {
           priority
         />
         <div className="absolute bottom-4 left-4 right-4 z-10">
-          <div className="text-[10px] font-mono text-[var(--terminal-text)]">ID: {userId || '------'}</div>
+          <div className="text-xs font-mono text-[var(--terminal-text)]">ID: {userId || '------'}</div>
         </div>
       </div>
       <div className="p-4 border-t border-[var(--terminal-border)] space-y-2 sm:space-y-2.5">
@@ -52,7 +52,7 @@ export default function ProfileCard({ userId }: ProfileCardProps) {
             <div className="text-[var(--terminal-text-dim)] mb-1.5">INTERESTED:</div>
             <div className="flex flex-wrap gap-1.5">
               {hobbies.filter((hobby) => !isPersonalHobby(hobby)).slice(0, 3).map((hobby, index) => (
-                <span key={index} className="px-1.5 py-0.5 rounded bg-[var(--terminal-bg)] border border-[var(--terminal-border)] text-[10px] text-[var(--terminal-text-muted)]">
+                <span key={index} className="px-1.5 py-0.5 rounded bg-[var(--terminal-bg)] border border-[var(--terminal-border)] text-xs text-[var(--terminal-text-muted)]">
                   {hobby.name}
                 </span>
               ))}

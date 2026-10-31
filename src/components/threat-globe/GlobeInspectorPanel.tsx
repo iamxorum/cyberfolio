@@ -10,7 +10,7 @@ interface GlobeInspectorPanelProps {
 export default function GlobeInspectorPanel({ panelPoint, visible, onClose }: GlobeInspectorPanelProps) {
   return (
     <div
-      className="absolute top-2 right-2 z-20 flex flex-col gap-1 font-mono text-[10px] bg-[rgba(var(--terminal-bg-rgb),0.85)] p-2.5 rounded border border-[var(--terminal-border)] backdrop-blur-sm max-w-[180px]"
+      className="absolute top-2 right-2 z-20 flex flex-col gap-1 font-mono text-xs bg-[rgba(var(--terminal-bg-rgb),0.85)] p-2.5 rounded border border-[var(--terminal-border)] backdrop-blur-sm max-w-[180px]"
       style={{
         opacity: visible ? 1 : 0,
         transform: visible ? 'scale(1)' : 'scale(0.95)',

@@ -75,7 +75,7 @@ function OutlineLinks({ headings, activeId, showTime = false }: { headings: Post
               }`}
             >
               {heading.text}
-              {showTime && <span className="ml-2 whitespace-nowrap text-[10px] opacity-0 transition-opacity duration-150 group-hover/outline:opacity-60 group-focus-within/outline:opacity-60">{sectionTime(heading.words)}</span>}
+              {showTime && <span className="ml-2 whitespace-nowrap text-xs opacity-0 transition-opacity duration-150 group-hover/outline:opacity-60 group-focus-within/outline:opacity-60">{sectionTime(heading.words)}</span>}
             </a>
           </li>
         );
@@ -114,7 +114,7 @@ export default function TableOfContents({ headings, variant, minutes = 0 }: { he
     <aside className="hidden xl:block print:hidden absolute left-full top-0 h-full ml-10 w-56" aria-label="Table of contents">
       <div className="sticky top-[calc(var(--header-h,64px)+24px)]">
         <nav className="max-h-[calc(100vh-var(--header-h,64px)-8rem)] overflow-y-auto" data-lenis-prevent>
-          <p className="mb-2 font-mono text-[10px] tracking-widest text-[var(--terminal-text-dim)]">ON_THIS_PAGE</p>
+          <p className="mb-2 font-mono text-xs tracking-widest text-[var(--terminal-text-dim)]">ON_THIS_PAGE</p>
           <OutlineLinks headings={headings} activeId={activeId} showTime />
         </nav>
         {minutes > 0 && (

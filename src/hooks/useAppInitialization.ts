@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { features } from '@/config';
+import { INITIALIZED_KEY, USER_ID_KEY } from '@/lib/storage-keys';
 
 // The boot sequence is a switched-off feature, and also an animation that calm mode removes.
 const skipBoot = !features.bootScreen || features.calmMode;
@@ -14,8 +15,8 @@ export function useAppInitialization() {
     if (typeof window !== 'undefined' && !initializedRef.current) {
       initializedRef.current = true;
 
-      const initTimestamp = localStorage.getItem('iamxorum_initialized');
-      const rawUserId = localStorage.getItem('iamxorum_user_id');
+      const initTimestamp = localStorage.getItem(INITIALIZED_KEY);
+      const rawUserId = localStorage.getItem(USER_ID_KEY);
       const storedUserId = rawUserId && /^\d{6}$/.test(rawUserId) ? rawUserId : null;
 
       const isInitialized = skipBoot || (initTimestamp && (Date.now() - parseInt(initTimestamp)) < 24 * 60 * 60 * 1000);
@@ -28,7 +29,7 @@ export function useAppInitialization() {
       } else {
         const newUserId = crypto.getRandomValues(new Uint32Array(1))[0].toString().slice(-6).padStart(6, '0');
         setUserId(newUserId);
-        localStorage.setItem('iamxorum_user_id', newUserId);
+        localStorage.setItem(USER_ID_KEY, newUserId);
       }
     }
 

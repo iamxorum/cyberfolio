@@ -8,7 +8,7 @@ export default function LanguagesSection() {
   return (
     <Reveal draw className="bg-[var(--terminal-surface)] border border-[var(--terminal-border)] rounded p-3 sm:p-4 font-mono text-xs">
       <div className="flex justify-between items-center mb-2 sm:mb-3 border-b border-[var(--terminal-border)] pb-2">
-        <span className="text-[var(--terminal-text-dim)] text-[10px] sm:text-xs">LANGUAGES</span>
+        <span className="text-[var(--terminal-text-dim)] text-xs sm:text-xs">LANGUAGES</span>
       </div>
       <div className="space-y-2">
         {languages.map((lang) => (
@@ -24,14 +24,14 @@ export default function LanguagesSection() {
                   className="rounded-sm object-contain"
                   unoptimized
                 />
-                <span className="text-[var(--terminal-text-muted)] text-[10px] sm:text-xs">{lang.name}</span>
+                <span className="text-[var(--terminal-text-muted)] text-xs sm:text-xs">{lang.name}</span>
               </div>
               {lang.proficiency && (
-                <span className="text-primary text-[9px] sm:text-[10px]">{lang.proficiency}</span>
+                <span className="text-primary text-xs sm:text-xs">{lang.proficiency}</span>
               )}
             </div>
             {(lang.spoken || lang.written || lang.listening) && (
-              <div className="flex flex-wrap items-center gap-2 text-[9px] sm:text-[10px] ml-7">
+              <div className="flex flex-wrap items-center gap-2 text-xs sm:text-xs ml-7">
                 {lang.spoken && (
                   <span className="text-[var(--terminal-text-dim)]">
                     <span className="text-[var(--terminal-text-muted)]">Spoken:</span> <span className="text-[var(--terminal-text)]">{lang.spoken}</span>

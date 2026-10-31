@@ -180,7 +180,7 @@ export default function ResumePanel({ contributionStats, email, phone, signature
         >
           <div className="flex items-center gap-2 px-3 py-2 rounded border border-yellow-500/30 bg-yellow-500/10">
             <span aria-hidden="true" className="material-symbols-outlined text-yellow-400 text-base flex-shrink-0">warning</span>
-            <p className="text-[var(--terminal-text-muted)] text-[10px] sm:text-xs font-mono leading-relaxed">
+            <p className="text-[var(--terminal-text-muted)] text-xs sm:text-xs font-mono leading-relaxed">
               1 Column style recommended.
             </p>
           </div>

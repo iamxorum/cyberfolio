@@ -20,6 +20,8 @@ const PlatformIcon = ({ platform, className, style }: { platform: Platform; clas
 export default function Discography() {
     const [activeTrack, setActiveTrack] = useState<Track | undefined>(discography[0]);
     const [copied, setCopied] = useState(false);
+    // The embed pulls in the platform's whole player (over 1 MB for SoundCloud) and its cookies, so it waits for a click.
+    const [playerLoaded, setPlayerLoaded] = useState(false);
 
     const platformColors: Record<Platform, string> = {
         Spotify: '#1DB954',
@@ -71,7 +73,7 @@ export default function Discography() {
                 <h2 className="text-xl font-bold tracking-tighter text-[var(--terminal-text)] flex items-center gap-2">
                     <TypedText text="DISCOGRAPHY" />
                 </h2>
-                <div className="hidden sm:block text-[10px] text-[var(--terminal-text-muted)] uppercase tracking-[0.2em]">
+                <div className="hidden sm:block text-xs text-[var(--terminal-text-muted)] uppercase tracking-[0.2em]">
                     Active: <span style={{ color: activeColor }}>{activeTrack.platform}</span>
                 </div>
             </div>
@@ -80,8 +82,8 @@ export default function Discography() {
 
                 <div className="lg:col-span-5 flex flex-col gap-2">
                     <div className="flex justify-between px-1">
-                        <p className="text-[10px] font-bold text-[var(--terminal-text)]/40 uppercase tracking-widest">Index</p>
-                        <p className="text-[10px] font-bold text-[var(--terminal-text)]/40 uppercase tracking-widest">Entry_Point</p>
+                        <p className="text-xs font-bold text-[var(--terminal-text)]/40 uppercase tracking-widest">Index</p>
+                        <p className="text-xs font-bold text-[var(--terminal-text)]/40 uppercase tracking-widest">Entry_Point</p>
                     </div>
 
                     <div data-lenis-prevent className="flex flex-col gap-1 max-h-[360px] overflow-y-auto pr-2 custom-scrollbar overflow-x-hidden">
@@ -90,7 +92,7 @@ export default function Discography() {
                             return (
                                 <button
                                     key={track.id}
-                                    onClick={() => { setActiveTrack(track); setCopied(false); }}
+                                    onClick={() => { setActiveTrack(track); setCopied(false); setPlayerLoaded(true); }}
                                     {...eventProps('track_select', { track: track.id, platform: track.platform })}
                                     className={`flex items-center justify-between p-3 border transition active:scale-[0.98] text-left group rounded w-full
                                         ${isSelected
@@ -107,11 +109,11 @@ export default function Discography() {
                                             <div className={`text-xs font-bold uppercase truncate ${isSelected ? 'text-[var(--terminal-text)]' : 'text-[var(--terminal-text)]/40'}`}>
                                                 {track.title}
                                             </div>
-                                            <div className="text-[9px] text-[var(--terminal-text-muted)] italic truncate">{track.category}</div>
+                                            <div className="text-xs text-[var(--terminal-text-muted)] italic truncate">{track.category}</div>
                                         </div>
                                     </div>
                                     {isSelected && (
-                                        <span className="text-[8px] font-bold px-1.5 py-0.5 border border-current rounded animate-pulse whitespace-nowrap ml-2" style={{ color: activeColor }}>
+                                        <span className="text-xs font-bold px-1.5 py-0.5 border border-current rounded animate-pulse whitespace-nowrap ml-2" style={{ color: activeColor }}>
                                             STREAMING
                                         </span>
                                     )}
@@ -123,6 +125,7 @@ export default function Discography() {
 
                 <div className="lg:col-span-7 flex flex-col gap-4">
                     <div className="relative group rounded-xl overflow-hidden border border-[rgba(var(--terminal-text-rgb),0.10)] shadow-2xl bg-[#111]">
+                        {playerLoaded ? (
                         <iframe
                             key={activeTrack.id}
                             title={`${activeTrack.platform} player | ${activeTrack.title}`}
@@ -134,6 +137,20 @@ export default function Discography() {
                             loading="lazy"
                             className="transition-opacity duration-200 opacity-90 group-hover:opacity-100"
                         ></iframe>
+                        ) : (
+                            <button
+                                type="button"
+                                onClick={() => setPlayerLoaded(true)}
+                                {...eventProps('player_load', { track: activeTrack.id, platform: activeTrack.platform })}
+                                aria-label={`Load the ${activeTrack.platform} player for ${activeTrack.title}`}
+                                className="flex h-[352px] w-full flex-col items-center justify-center gap-3 px-4 text-center transition-colors hover:bg-[rgba(var(--terminal-text-rgb),0.05)]"
+                            >
+                                <PlatformIcon platform={activeTrack.platform} className="text-4xl" style={{ color: activeColor }} />
+                                <span className="text-sm font-bold uppercase text-[var(--terminal-text)]">{activeTrack.title}</span>
+                                <span className="text-xs uppercase tracking-widest" style={{ color: activeColor }}>&gt; Load_Player</span>
+                                <span className="max-w-xs text-xs text-[var(--terminal-text-muted)]">Loads content from {activeTrack.platform}, which can set its own cookies.</span>
+                            </button>
+                        )}
                     </div>
 
                     <div className="grid grid-cols-2 gap-4">
@@ -141,7 +158,7 @@ export default function Discography() {
                             onClick={handleCopy}
                             className="p-3 border border-[rgba(var(--terminal-text-rgb),0.5)] bg-[rgba(var(--terminal-text-rgb),0.05)] rounded flex flex-col justify-center text-left hover:bg-[rgba(var(--terminal-text-rgb),0.10)] hover:border-[rgba(var(--terminal-text-rgb),0.20)] active:scale-[0.98] transition group"
                         >
-                            <span className="text-[8px] text-[var(--terminal-text-muted)] block uppercase mb-1">
+                            <span className="text-xs text-[var(--terminal-text-muted)] block uppercase mb-1">
                                 {copied ? 'Success' : 'Share_Stream'}
                             </span>
                             <div className="flex items-center justify-between w-full">
@@ -151,7 +168,7 @@ export default function Discography() {
                                     ) : (
                                         <MdContentCopy className="text-xs animate-pop-in group-hover:text-[var(--terminal-text)] transition-colors" style={{ color: activeColor }} />
                                     )}
-                                    <span className={`text-[10px] font-bold uppercase transition-colors ${copied ? 'text-[var(--terminal-text)]' : 'text-[var(--terminal-text)]/80 group-hover:text-[var(--terminal-text)]'}`}>
+                                    <span className={`text-xs font-bold uppercase transition-colors ${copied ? 'text-[var(--terminal-text)]' : 'text-[var(--terminal-text)]/80 group-hover:text-[var(--terminal-text)]'}`}>
                                         {copied ? 'Link_Copied' : 'Copy_Link'}
                                     </span>
                                 </div>
@@ -159,8 +176,8 @@ export default function Discography() {
                         </button>
 
                         <div className="p-3 border border-[rgba(var(--terminal-text-rgb),0.5)] bg-[rgba(var(--terminal-text-rgb),0.05)] rounded flex flex-col justify-center">
-                            <span className="text-[8px] text-[var(--terminal-text-muted)] block uppercase mb-1">Object_ID</span>
-                            <span className="text-[10px] text-[var(--terminal-text)] font-bold tracking-widest uppercase">
+                            <span className="text-xs text-[var(--terminal-text-muted)] block uppercase mb-1">Object_ID</span>
+                            <span className="text-xs text-[var(--terminal-text)] font-bold tracking-widest uppercase">
                                 TRK_{activeTrack.id.padStart(3, '0')}
                             </span>
                         </div>

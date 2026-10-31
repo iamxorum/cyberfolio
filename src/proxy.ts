@@ -28,8 +28,9 @@ function buildCsp(nonce: string) {
     object-src 'none';
     base-uri 'self';
     form-action 'self';
+    frame-ancestors 'self';
     frame-src 'self' ${security.frames.join(' ')};
-    connect-src 'self' data: iamxorum.ro *.iamxorum.ro ${security.connects.join(' ')};
+    connect-src 'self' data: ${security.connects.join(' ')};
     worker-src 'self' blob:;
     upgrade-insecure-requests;
     report-uri ${CSP_REPORT_PATH};

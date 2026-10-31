@@ -48,13 +48,13 @@ export default function RunHeatmap({ days, weekStreak, activeDays }: { days: Run
 
   return (
     <figure ref={figure} className="relative flex flex-col gap-3">
-      <figcaption className="flex items-baseline justify-between gap-2 text-[10px] sm:text-xs tracking-widest text-[var(--terminal-text-dim)]">
+      <figcaption className="flex items-baseline justify-between gap-2 text-xs sm:text-xs tracking-widest text-[var(--terminal-text-dim)]">
         <span>LAST 52 WEEKS · {activeDays} ACTIVE DAYS</span>
         <span className="text-[var(--terminal-text-muted)]">{formatKm(total, 0)} km · {weekStreak}-week streak</span>
       </figcaption>
 
       <div className="flex gap-2">
-        <div className="grid grid-rows-7 gap-[3px] pt-4 text-[10px] leading-none text-[var(--terminal-text-dim)] flex-shrink-0" aria-hidden="true">
+        <div className="grid grid-rows-7 gap-[3px] pt-4 text-xs leading-none text-[var(--terminal-text-dim)] flex-shrink-0" aria-hidden="true">
           {DAY_LABELS.map((label, i) => (
             <span key={i} className="flex items-center">{label}</span>
           ))}
@@ -62,7 +62,7 @@ export default function RunHeatmap({ days, weekStreak, activeDays }: { days: Run
 
         <div ref={scroller} className="flex-1 min-w-0 overflow-x-auto pb-1" onMouseLeave={() => setActive(null)} onScroll={() => setActive(null)}>
           <div className="flex flex-col gap-1 min-w-[640px]">
-            <div className="grid gap-[3px] h-3 text-[10px] leading-none text-[var(--terminal-text-dim)]" style={{ gridTemplateColumns: `repeat(${columns}, minmax(0, 1fr))` }} aria-hidden="true">
+            <div className="grid gap-[3px] h-3 text-xs leading-none text-[var(--terminal-text-dim)]" style={{ gridTemplateColumns: `repeat(${columns}, minmax(0, 1fr))` }} aria-hidden="true">
               {monthLabels.map((label, col) => (
                 <span key={col} className="overflow-visible whitespace-nowrap">{label}</span>
               ))}
@@ -92,7 +92,7 @@ export default function RunHeatmap({ days, weekStreak, activeDays }: { days: Run
 
       {active !== null && (
         <div
-          className="absolute z-10 -translate-x-1/2 -translate-y-full -mt-1.5 px-2.5 py-1.5 rounded border border-[var(--terminal-border)] bg-[var(--terminal-bg)] shadow-lg text-[10px] sm:text-xs whitespace-nowrap pointer-events-none"
+          className="absolute z-10 -translate-x-1/2 -translate-y-full -mt-1.5 px-2.5 py-1.5 rounded border border-[var(--terminal-border)] bg-[var(--terminal-bg)] shadow-lg text-xs sm:text-xs whitespace-nowrap pointer-events-none"
           style={{ left: tipPos.left, top: tipPos.top }}
           aria-hidden="true"
         >
@@ -102,7 +102,7 @@ export default function RunHeatmap({ days, weekStreak, activeDays }: { days: Run
         </div>
       )}
 
-      <div className="flex items-center justify-end gap-1.5 text-[10px] text-[var(--terminal-text-dim)]" aria-hidden="true">
+      <div className="flex items-center justify-end gap-1.5 text-xs text-[var(--terminal-text-dim)]" aria-hidden="true">
         less
         {LEVEL_OPACITY.map((opacity, level) => (
           <span

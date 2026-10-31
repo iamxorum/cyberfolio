@@ -17,7 +17,7 @@ interface CountryLeaderboardProps {
 export default function CountryLeaderboard({ entries, selectedCountry, isGlobeReady, onSelect }: CountryLeaderboardProps) {
   return (
     <div className="text-sm border border-[var(--terminal-border)] rounded overflow-hidden bg-[rgba(var(--terminal-bg-rgb),0.40)] w-full">
-      <div className="bg-[var(--terminal-surface-alt)] border-b border-[var(--terminal-border)] p-2 grid grid-cols-12 text-[10px] font-bold text-[var(--terminal-text-muted)] tracking-widest">
+      <div className="bg-[var(--terminal-surface-alt)] border-b border-[var(--terminal-border)] p-2 grid grid-cols-12 text-xs font-bold text-[var(--terminal-text-muted)] tracking-widest">
         <div className="col-span-2 text-center">RK</div>
         <div className="col-span-3">ORIGIN</div>
         <div className="col-span-3 text-right">COUNT</div>
@@ -31,7 +31,7 @@ export default function CountryLeaderboard({ entries, selectedCountry, isGlobeRe
             onClick={() => onSelect(item)}
             disabled={!isGlobeReady}
             title={`Fly the globe to ${item.country}`}
-            className={`grid grid-cols-12 w-full text-left text-[10px] items-center p-1.5 rounded transition-[background-color,color,transform] duration-150 ease-out active:scale-[0.98] group/row disabled:cursor-default ${
+            className={`grid grid-cols-12 w-full text-left text-xs items-center p-1.5 rounded transition-[background-color,color,transform] duration-150 ease-out active:scale-[0.98] group/row disabled:cursor-default ${
               selectedCountry === item.country
                 ? 'bg-[rgba(var(--terminal-text-rgb),0.10)]'
                 : 'hover:bg-[rgba(var(--terminal-text-rgb),0.05)]'
@@ -60,7 +60,7 @@ export default function CountryLeaderboard({ entries, selectedCountry, isGlobeRe
                   style={{ transform: `scaleX(${item.percentage / 100})` }}
                 ></div>
               </div>
-              <span className="text-[8px] text-[var(--terminal-text-muted)] w-6 text-right">{Math.ceil(item.percentage)}%</span>
+              <span className="text-xs text-[var(--terminal-text-muted)] w-6 text-right">{Math.ceil(item.percentage)}%</span>
             </div>
           </button>
         ))}

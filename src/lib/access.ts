@@ -4,11 +4,12 @@ import { cookies, headers } from 'next/headers';
 import type { NextResponse } from 'next/server';
 import { features } from '@/config';
 import { isDevelopment } from '@/lib/env';
+import { ACCESS_COOKIE_NAME } from '@/lib/storage-keys';
 import { getTurnstileSecretKey } from '@/lib/turnstile';
 
 // The __Host- prefix makes browsers require Secure + Path=/ and reject a Domain, so a sibling subdomain cannot overwrite
 // the cookie. It needs HTTPS, which plain-http dev servers lack.
-const ACCESS_COOKIE = isDevelopment ? 'iamxorum_access' : '__Host-iamxorum_access';
+const ACCESS_COOKIE = isDevelopment ? ACCESS_COOKIE_NAME : `__Host-${ACCESS_COOKIE_NAME}`;
 const ACCESS_MAX_AGE_S = 24 * 60 * 60;
 // Bump to invalidate every cookie issued under an older payload format.
 const ACCESS_VERSION = 'v1';

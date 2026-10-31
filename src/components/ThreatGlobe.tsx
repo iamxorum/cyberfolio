@@ -1,7 +1,7 @@
 'use client';
 
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import { formatRelativeTime } from '@/lib/format-time';
+import { formatRelativeTime, isStale } from '@/lib/format-time';
 import { computeThreatGeometry, globeBudget, preloadGlobeTexture } from '@/lib/threat-globe';
 import { useThreatFeed } from '@/hooks/useThreatFeed';
 import { useScrollReveal } from '@/hooks/useScrollReveal';
@@ -97,8 +97,9 @@ export default function ThreatGlobe() {
             <span className="text-[#ef4444] font-bold">Local</span> Fail2Ban & <span className="text-[#3b82f6] font-bold">Public</span> CrowdSec CAPI
           </p>
           {threatData.last_updated && (
-            <p className="text-[10px] text-[var(--terminal-text-dim)] mt-1">
+            <p className={`text-xs mt-1 ${isStale(threatData.last_updated) ? 'text-[#f59e0b]' : 'text-[var(--terminal-text-dim)]'}`}>
               Last synced: {formatRelativeTime(threatData.last_updated)}
+              {isStale(threatData.last_updated) && ' (feed is not updating)'}
             </p>
           )}
         </div>

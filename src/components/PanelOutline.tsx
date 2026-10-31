@@ -68,7 +68,7 @@ export default function PanelOutline({ headings, minutes, onJump, onTop }: { hea
   return (
     <aside ref={rootRef} aria-label="Table of contents" className="sticky top-0 w-52 shrink-0 self-start font-mono">
       <nav data-native-scroll className="max-h-[calc(100dvh-9rem)] overflow-y-auto">
-        <p className="mb-2 text-[10px] tracking-widest text-[var(--terminal-text-dim)]">ON_THIS_PAGE</p>
+        <p className="mb-2 text-xs tracking-widest text-[var(--terminal-text-dim)]">ON_THIS_PAGE</p>
         <ol className="flex flex-col gap-0.5 text-xs">
           {headings.map((heading) => (
             <li key={heading.id} className="group/outline">
@@ -81,7 +81,7 @@ export default function PanelOutline({ headings, minutes, onJump, onTop }: { hea
                 }`}
               >
                 {heading.text}
-                <span className="ml-2 whitespace-nowrap text-[10px] opacity-0 transition-opacity duration-150 group-hover/outline:opacity-60 group-focus-within/outline:opacity-60">{sectionTime(heading.words)}</span>
+                <span className="ml-2 whitespace-nowrap text-xs opacity-0 transition-opacity duration-150 group-hover/outline:opacity-60 group-focus-within/outline:opacity-60">{sectionTime(heading.words)}</span>
               </button>
             </li>
           ))}

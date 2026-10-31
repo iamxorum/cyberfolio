@@ -54,7 +54,7 @@ export default function EducationSection() {
                 {edu.field && <span className="text-[var(--terminal-text-muted)]"> - {edu.field}</span>}
               </h3>
               <p className="text-xs sm:text-sm font-mono text-primary mb-1">{edu.institution}</p>
-              <div className="flex flex-wrap items-center gap-2 text-[10px] sm:text-xs font-mono text-[var(--terminal-text-muted)]">
+              <div className="flex flex-wrap items-center gap-2 text-xs sm:text-xs font-mono text-[var(--terminal-text-muted)]">
                 <span>{edu.startDate}</span>
                 {edu.endDate && !isOngoingEnd(edu.endDate) && (
                   <>
@@ -75,7 +75,7 @@ export default function EducationSection() {
                 <EducationBadge edu={edu} />
               </div>
               {edu.description && (
-                <p className="text-[10px] sm:text-xs font-mono text-[var(--terminal-text-muted)] mt-2 leading-relaxed">
+                <p className="text-xs sm:text-xs font-mono text-[var(--terminal-text-muted)] mt-2 leading-relaxed">
                   {edu.description}
                 </p>
               )}
@@ -86,7 +86,7 @@ export default function EducationSection() {
                     href={edu.thesisUrl}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded border border-[var(--terminal-border)] hover:border-primary hover:bg-primary/10 text-[var(--terminal-text)] text-[10px] sm:text-xs font-bold font-mono tracking-wider transition group/btn w-fit"
+                    className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded border border-[var(--terminal-border)] hover:border-primary hover:bg-primary/10 text-[var(--terminal-text)] text-xs sm:text-xs font-bold font-mono tracking-wider transition group/btn w-fit"
                   >
                     <span aria-hidden="true" className="material-symbols-outlined text-sm sm:text-base group-hover/btn:text-primary">
                       description

@@ -46,9 +46,11 @@ export default function BlogFilters({ posts, views, filters, onChange, shown }: 
   const categoryCounts = new Map(countBy(posts.filter((p) => matchesQuery(p, filters.query) && matchesTags(p, filters.tags)), (p) => [p.category]));
   const tags = countBy(posts.filter((p) => matchesQuery(p, filters.query) && matchesCategory(p, filters.category)), (p) => p.tags ?? []);
   // A selected tag stays listed even if the current category has none, so it can be undone.
-  for (const tag of filters.tags) if (!tags.some(([t]) => t === tag)) tags.push([tag, 0]);
+  const listed = new Set(tags.map(([t]) => t));
+  for (const tag of filters.tags) if (!listed.has(tag)) tags.push([tag, 0]);
+  const selectedTags = new Set(filters.tags);
 
-  const visibleTags = allTags ? tags : tags.filter(([tag], i) => i < COLLAPSED_TAGS || filters.tags.includes(tag));
+  const visibleTags = allTags ? tags : tags.filter(([tag], i) => i < COLLAPSED_TAGS || selectedTags.has(tag));
   const hiddenCount = tags.length - visibleTags.length;
   const hasViews = Object.keys(views).length > 0;
   const total = [...categoryCounts.values()].reduce((a, b) => a + b, 0);
@@ -65,7 +67,7 @@ export default function BlogFilters({ posts, views, filters, onChange, shown }: 
   const tab = (on: boolean) =>
     `shrink-0 whitespace-nowrap flex items-center gap-2 px-3.5 min-h-11 -mb-px border-b-2 text-sm transition-[color,border-color,transform] duration-150 active:scale-[0.97] ${on ? 'border-primary text-primary font-bold' : 'border-transparent text-[var(--terminal-text-muted)] hover:text-[var(--terminal-text)]'}`;
   const count = (on: boolean) =>
-    `rounded px-1.5 py-0.5 text-[10px] leading-none tabular-nums transition-colors ${on ? 'bg-primary text-[var(--terminal-bg)]' : 'bg-[var(--terminal-surface-alt)] text-[var(--terminal-text-dim)]'}`;
+    `rounded px-1.5 py-0.5 text-xs leading-none tabular-nums transition-colors ${on ? 'bg-primary text-[var(--terminal-bg)]' : 'bg-[var(--terminal-surface-alt)] text-[var(--terminal-text-dim)]'}`;
   const chip = (on: boolean) =>
     `inline-flex items-center gap-1.5 whitespace-nowrap rounded border px-2.5 min-h-8 text-xs transition-[color,background-color,border-color,transform] duration-150 active:scale-[0.96] ${on ? 'border-primary bg-primary text-[var(--terminal-bg)] font-bold' : 'border-[var(--terminal-border)] text-[var(--terminal-text-muted)] hover:border-primary hover:text-primary'}`;
   const field = 'flex items-center gap-2 rounded border border-[var(--terminal-border)] bg-[var(--terminal-surface-alt)] px-3 min-h-11 text-[var(--terminal-text-dim)] transition-colors focus-within:border-primary hover:border-[var(--terminal-text-dim)] focus-within:hover:border-primary';
@@ -101,7 +103,7 @@ export default function BlogFilters({ posts, views, filters, onChange, shown }: 
             className="w-full bg-transparent text-sm text-[var(--terminal-text)] placeholder:text-[var(--terminal-text-dim)] focus:outline-none [&::-webkit-search-cancel-button]:hidden"
           />
           {!filters.query && (
-            <kbd aria-hidden="true" className="hidden rounded border border-[var(--terminal-border)] px-1.5 py-0.5 text-[10px] leading-none [@media(hover:hover)]:block">/</kbd>
+            <kbd aria-hidden="true" className="hidden rounded border border-[var(--terminal-border)] px-1.5 py-0.5 text-xs leading-none [@media(hover:hover)]:block">/</kbd>
           )}
           {filters.query && (
             <button type="button" aria-label="Clear search" onClick={() => set({ query: '' })} className="-mr-1 grid size-7 place-items-center rounded hover:text-primary active:scale-90 transition-[color,transform]">
@@ -128,7 +130,7 @@ export default function BlogFilters({ posts, views, filters, onChange, shown }: 
         <div role="group" aria-label="Tags (match any)" className="flex flex-wrap items-center gap-2">
           <span className="mr-1 text-[var(--terminal-text-dim)]">Topics</span>
           {visibleTags.map(([tag, n]) => {
-            const on = filters.tags.includes(tag);
+            const on = selectedTags.has(tag);
             return (
               <button key={tag} type="button" aria-pressed={on} onClick={() => toggleTag(tag)} className={chip(on)}>
                 {tag}

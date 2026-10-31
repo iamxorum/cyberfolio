@@ -224,7 +224,7 @@ export default function CommandPalette({ posts }: { posts: PaletteBlogPost[] }) 
             autoComplete="off"
             className="flex-1 bg-transparent border-none outline-none text-sm text-[var(--terminal-text)] placeholder:text-[var(--terminal-text-dim)]"
           />
-          <kbd className="text-[10px] px-1.5 py-0.5 rounded border border-[var(--terminal-border)] text-[var(--terminal-text-dim)]">ESC</kbd>
+          <kbd className="text-xs px-1.5 py-0.5 rounded border border-[var(--terminal-border)] text-[var(--terminal-text-dim)]">ESC</kbd>
         </div>
 
         <ul id="palette-results" ref={listRef} role="listbox" className="max-h-[50vh] overflow-y-auto py-1">
@@ -233,7 +233,7 @@ export default function CommandPalette({ posts }: { posts: PaletteBlogPost[] }) 
             const showGroup = index === 0 || results[index - 1].group !== command.group;
             return (
               <li key={command.id} role="presentation">
-                {showGroup && <div className="px-4 pt-2 pb-1 text-[10px] tracking-widest text-[var(--terminal-text-dim)]">{command.group}</div>}
+                {showGroup && <div className="px-4 pt-2 pb-1 text-xs tracking-widest text-[var(--terminal-text-dim)]">{command.group}</div>}
                 <div
                   id={`palette-${command.id}`}
                   role="option"
@@ -250,7 +250,7 @@ export default function CommandPalette({ posts }: { posts: PaletteBlogPost[] }) 
           })}
         </ul>
 
-        <div className="flex items-center gap-4 px-4 py-2 border-t border-[var(--terminal-border)] text-[10px] text-[var(--terminal-text-dim)]">
+        <div className="flex items-center gap-4 px-4 py-2 border-t border-[var(--terminal-border)] text-xs text-[var(--terminal-text-dim)]">
           <span>↑↓ navigate</span>
           <span>↵ select</span>
         </div>

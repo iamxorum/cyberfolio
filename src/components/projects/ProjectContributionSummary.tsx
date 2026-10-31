@@ -4,7 +4,7 @@ export default function ProjectContributionSummary({ stats }: { stats?: Contribu
   if (!stats || stats.mergedCount <= 0) return null;
 
   return (
-    <div className="flex items-center gap-2 text-[10px] sm:text-xs font-mono text-[var(--terminal-text-dim)] truncate">
+    <div className="flex items-center gap-2 text-xs sm:text-xs font-mono text-[var(--terminal-text-dim)] truncate">
       <a href={stats.searchUrl} target="_blank" rel="noopener noreferrer" className="hover:text-primary transition-colors">
         {stats.mergedCount} merged PR{stats.mergedCount !== 1 ? 's' : ''}
       </a>

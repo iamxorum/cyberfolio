@@ -107,7 +107,7 @@ export default function ProjectsGrid() {
                 </p>
                 <div className="flex flex-wrap gap-2 mt-2">
                   {project.tags.map((tag) => (
-                    <span key={tag} className="px-2 py-1 rounded bg-[var(--terminal-bg)] border border-[var(--terminal-border)] text-[10px] text-[var(--terminal-text-dim)] font-mono whitespace-nowrap">
+                    <span key={tag} className="px-2 py-1 rounded bg-[var(--terminal-bg)] border border-[var(--terminal-border)] text-xs text-[var(--terminal-text-dim)] font-mono whitespace-nowrap">
                       {tag}
                     </span>
                   ))}

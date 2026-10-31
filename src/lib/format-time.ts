@@ -13,6 +13,12 @@ export function formatRelativeTime(isoString: string): string {
   return `${days}d ago`;
 }
 
+/** Whether a timestamp is older than `maxHours` (a feed that should refresh daily is late after two days). */
+export function isStale(isoString: string, maxHours = 48): boolean {
+  const diffMs = Date.now() - new Date(isoString).getTime();
+  return Number.isFinite(diffMs) && diffMs > maxHours * 3_600_000;
+}
+
 export function formatLetterDate(date: Date = new Date()): string {
   return date.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
 }

@@ -111,7 +111,7 @@ export default function NotFoundCard() {
           >
             <span className="material-symbols-outlined text-lg" aria-hidden="true">search</span>
             SEARCH_SITE
-            <kbd className="text-[10px] px-1.5 py-0.5 rounded border border-[var(--terminal-border)] text-[var(--terminal-text-dim)]">⌘K / Ctrl K</kbd>
+            <kbd className="text-xs px-1.5 py-0.5 rounded border border-[var(--terminal-border)] text-[var(--terminal-text-dim)]">⌘K / Ctrl K</kbd>
           </button>
         )}
       </div>

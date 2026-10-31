@@ -23,7 +23,7 @@ export default function HobbiesSection({ kind, compact = false }: HobbiesSection
     return (
       <Reveal id={id} draw className="bg-[var(--terminal-surface)] border border-[var(--terminal-border)] rounded p-3 sm:p-4 font-mono text-xs scroll-mt-32">
         <div className="flex justify-between items-center mb-2 sm:mb-3 border-b border-[var(--terminal-border)] pb-2">
-          <span className="text-[var(--terminal-text-dim)] text-[10px] sm:text-xs">{title}</span>
+          <span className="text-[var(--terminal-text-dim)] text-xs sm:text-xs">{title}</span>
         </div>
         <ul className="space-y-2.5">
           {items.map((hobby) => (
@@ -34,11 +34,11 @@ export default function HobbiesSection({ kind, compact = false }: HobbiesSection
                 </span>
               )}
               <div className="min-w-0">
-                <div className="text-[var(--terminal-text-muted)] text-[10px] sm:text-xs group-hover:text-primary transition-colors">
+                <div className="text-[var(--terminal-text-muted)] text-xs sm:text-xs group-hover:text-primary transition-colors">
                   {hobby.name}
                 </div>
                 {hobby.description && (
-                  <p className="text-[var(--terminal-text-dim)] text-[9px] sm:text-[10px] leading-relaxed mt-0.5">
+                  <p className="text-[var(--terminal-text-dim)] text-xs sm:text-xs leading-relaxed mt-0.5">
                     {hobby.description}
                   </p>
                 )}
@@ -69,7 +69,7 @@ export default function HobbiesSection({ kind, compact = false }: HobbiesSection
                 {hobby.name}
               </h3>
               {hobby.description && (
-                <p className="text-[10px] sm:text-xs font-mono text-[var(--terminal-text-muted)] leading-relaxed">
+                <p className="text-xs sm:text-xs font-mono text-[var(--terminal-text-muted)] leading-relaxed">
                   {hobby.description}
                 </p>
               )}

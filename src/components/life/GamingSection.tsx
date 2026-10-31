@@ -10,7 +10,7 @@ import TypedText from '@/components/TypedText';
 import Bone from './Skeleton';
 
 const panel = 'border border-[var(--terminal-border)] rounded bg-[var(--terminal-surface)] p-4 sm:p-5';
-const label = 'text-[10px] sm:text-xs tracking-widest text-[var(--terminal-text-dim)]';
+const label = 'text-xs sm:text-xs tracking-widest text-[var(--terminal-text-dim)]';
 
 const formatHours = (h: number) => `${h.toLocaleString('en-US', { maximumFractionDigits: 1 })}h`;
 const artBox = 'w-[92px] h-[43px] rounded shrink-0 bg-[var(--terminal-surface-alt)]';
@@ -54,7 +54,7 @@ export function SectionTitle({ profileUrl }: { profileUrl?: string }) {
           href={profileUrl}
           target="_blank"
           rel="noopener noreferrer"
-          className="flex items-center gap-1.5 text-[10px] sm:text-xs text-[var(--terminal-text-dim)] hover:text-primary transition-colors"
+          className="flex items-center gap-1.5 text-xs sm:text-xs text-[var(--terminal-text-dim)] hover:text-primary transition-colors"
         >
           <SiSteam aria-hidden="true" className="text-sm" />
           view on Steam
@@ -164,7 +164,7 @@ export default function GamingSection({ gaming }: { gaming: Promise<GamingData |
         </Reveal>
       </div>
 
-      <p className="text-[10px] text-[var(--terminal-text-dim)] text-right" suppressHydrationWarning>
+      <p className="text-xs text-[var(--terminal-text-dim)] text-right" suppressHydrationWarning>
         synced {formatRelativeTime(data.fetchedAt)} · public profile only
       </p>
     </section>

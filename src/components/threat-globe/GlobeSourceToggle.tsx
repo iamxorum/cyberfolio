@@ -10,7 +10,7 @@ interface GlobeSourceToggleProps {
 
 export default function GlobeSourceToggle({ visibleSources, onToggle }: GlobeSourceToggleProps) {
   return (
-    <div className="absolute bottom-2 left-2 z-20 flex flex-col gap-1 font-mono text-[9px] bg-[rgba(var(--terminal-bg-rgb),0.40)] p-2 rounded border border-[rgba(var(--terminal-text-rgb),0.5)] backdrop-blur-sm">
+    <div className="absolute bottom-2 left-2 z-20 flex flex-col gap-1 font-mono text-xs bg-[rgba(var(--terminal-bg-rgb),0.40)] p-2 rounded border border-[rgba(var(--terminal-text-rgb),0.5)] backdrop-blur-sm">
       <button
         type="button"
         onClick={() => onToggle('local')}

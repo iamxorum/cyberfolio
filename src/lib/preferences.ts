@@ -1,5 +1,4 @@
-export const THEME_COOKIE = 'iamxorum_theme';
-export const ACCENT_COOKIE = 'iamxorum_accent';
+export { THEME_COOKIE, ACCENT_COOKIE } from '@/lib/storage-keys';
 
 const ONE_YEAR_S = 365 * 24 * 60 * 60;
 

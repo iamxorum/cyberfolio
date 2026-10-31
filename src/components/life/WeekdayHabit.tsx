@@ -15,21 +15,21 @@ export default function WeekdayHabit({ heat, className }: { heat: RunDay[]; clas
   return (
     <Reveal draw delay={STAGGER_STEP_MS * 2} className={`${className} flex flex-col gap-3`}>
       <div className="flex items-baseline justify-between gap-2">
-        <p className="text-[10px] sm:text-xs tracking-widest text-[var(--terminal-text-dim)]">WEEKDAY HABIT</p>
-        <p className="text-[10px] text-[var(--terminal-text-muted)]">mostly {DAYS[favourite]}s</p>
+        <p className="text-xs sm:text-xs tracking-widest text-[var(--terminal-text-dim)]">WEEKDAY HABIT</p>
+        <p className="text-xs text-[var(--terminal-text-muted)]">mostly {DAYS[favourite]}s</p>
       </div>
 
       <div className="grid grid-cols-7 gap-1.5" aria-hidden="true">
         {counts.map((count, weekday) => (
           <div key={weekday} className="flex flex-col items-center gap-1.5">
-            <span className="text-[10px] text-[var(--terminal-text-muted)] tabular-nums">{count}</span>
+            <span className="text-xs text-[var(--terminal-text-muted)] tabular-nums">{count}</span>
             <div className="w-full flex items-end" style={{ height: BAR_HEIGHT }}>
               <div
                 className={`habit-bar w-full rounded-t-[3px] ${weekday === favourite ? 'bg-primary' : 'bg-primary/40'}`}
                 style={{ height: count > 0 ? `max(${(count / max) * 100}%, 3px)` : 2, '--bar-delay': `${300 + weekday * 50}ms` } as React.CSSProperties}
               />
             </div>
-            <span className="text-[10px] text-[var(--terminal-text-dim)]">{DAYS[weekday][0]}</span>
+            <span className="text-xs text-[var(--terminal-text-dim)]">{DAYS[weekday][0]}</span>
           </div>
         ))}
       </div>

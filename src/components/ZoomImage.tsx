@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useRef, useState, type KeyboardEvent, type MouseEvent } from 'react';
+import { useEffect, useEffectEvent, useRef, useState } from 'react';
 
 /**
  * A post image that opens full size in a modal on click; its alt text doubles as the visible caption.
@@ -8,6 +8,8 @@ import { useEffect, useRef, useState, type KeyboardEvent, type MouseEvent } from
  */
 export default function ZoomImage({ src, alt }: { src: string; alt: string }) {
   const [open, setOpen] = useState(false);
+  // Closing hands focus back to the image, which would draw the focus ring around it until the next click or Tab.
+  const [justClosed, setJustClosed] = useState(false);
   const [position, setPosition] = useState({ index: 0, total: 1 });
   const dialogRef = useRef<HTMLDialogElement>(null);
   const buttonRef = useRef<HTMLButtonElement>(null);
@@ -27,20 +29,31 @@ export default function ZoomImage({ src, alt }: { src: string; alt: string }) {
     neighbour.click();
     dialogRef.current?.close();
   };
-  const onKeyDown = (e: KeyboardEvent) => {
+  // Always sees the current position, without the listeners below being re-attached on every step.
+  const onArrowKey = useEffectEvent((e: KeyboardEvent) => {
     if (e.key === 'ArrowLeft') step(-1);
     else if (e.key === 'ArrowRight') step(1);
     else return;
     e.preventDefault();
-  };
-  const stepButton = (direction: 1 | -1) => (e: MouseEvent) => {
-    e.stopPropagation();
-    step(direction);
-  };
+  });
 
   // The native dialog brings the focus trap, Escape to close and the backdrop; it is only mounted while open.
+  // A click outside the side buttons closes it (the backdrop is part of the dialog), and the arrow keys step.
   useEffect(() => {
-    if (open) dialogRef.current?.showModal();
+    const dialog = dialogRef.current;
+    if (!open || !dialog) return;
+    if (!dialog.open) dialog.showModal();
+
+    const onClick = (e: MouseEvent) => {
+      if (!(e.target as Element).closest('button')) dialog.close();
+    };
+    const onKeyDown = (e: KeyboardEvent) => onArrowKey(e);
+    dialog.addEventListener('click', onClick);
+    dialog.addEventListener('keydown', onKeyDown);
+    return () => {
+      dialog.removeEventListener('click', onClick);
+      dialog.removeEventListener('keydown', onKeyDown);
+    };
   }, [open]);
 
   return (
@@ -50,6 +63,8 @@ export default function ZoomImage({ src, alt }: { src: string; alt: string }) {
         data-zoom-button
         type="button"
         onClick={openZoom}
+        onBlur={() => setJustClosed(false)}
+        style={justClosed ? { outline: 'none' } : undefined}
         aria-label={alt ? `Enlarge image: ${alt}` : 'Enlarge image'}
         className="print-keep block w-full cursor-zoom-in rounded border border-[var(--terminal-border)] transition-[border-color,transform] duration-150 hover:border-primary active:scale-[0.99]"
       >
@@ -60,9 +75,7 @@ export default function ZoomImage({ src, alt }: { src: string; alt: string }) {
       {open && (
         <dialog
           ref={dialogRef}
-          onClose={() => setOpen(false)}
-          onClick={() => dialogRef.current?.close()}
-          onKeyDown={onKeyDown}
+          onClose={() => { setOpen(false); setJustClosed(true); }}
           aria-label={alt || 'Image'}
           className="animate-fade-in-fast m-auto max-h-[94vh] max-w-[96vw] cursor-zoom-out overflow-hidden bg-transparent p-0 backdrop:bg-black/85 backdrop:backdrop-blur-sm"
         >
@@ -77,7 +90,7 @@ export default function ZoomImage({ src, alt }: { src: string; alt: string }) {
                   <button
                     key={side}
                     type="button"
-                    onClick={stepButton(direction)}
+                    onClick={() => step(direction)}
                     disabled={disabled}
                     aria-label={side === 'prev' ? 'Previous image' : 'Next image'}
                     className={`absolute top-1/2 grid size-10 -translate-y-1/2 place-items-center rounded-full border border-white/20 bg-black/60 text-white transition-[opacity,transform] duration-150 hover:bg-black/80 active:scale-90 disabled:pointer-events-none disabled:opacity-0 ${side === 'prev' ? 'left-3' : 'right-3'}`}

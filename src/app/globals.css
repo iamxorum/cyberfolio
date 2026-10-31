@@ -308,7 +308,7 @@ html.calm::view-transition-group(*) {
 
 .globe-tooltip {
   font-family: var(--font-display), monospace;
-  font-size: 10px;
+  font-size: 12px;
   line-height: 1.4;
   background: rgba(var(--terminal-bg-rgb), 0.9);
   border: 1px solid var(--terminal-border);
@@ -1002,7 +1002,7 @@ html.light .text-red-400 { color: #b91c1c; }
     position: absolute;
     right: 0;
     bottom: 8px;
-    font-size: 10px;
+    font-size: 12px;
     letter-spacing: 0.2em;
     color: var(--terminal-text-dim);
     opacity: calc(1 - var(--rail-progress) * 8);

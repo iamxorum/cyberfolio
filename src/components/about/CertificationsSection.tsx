@@ -24,8 +24,8 @@ export default function CertificationsSection() {
               <h3 className="text-xs sm:text-sm font-mono text-[var(--terminal-text)] font-bold mb-1 group-hover:text-primary transition-colors">
                 {cert.name}
               </h3>
-              <p className="text-[10px] sm:text-xs font-mono text-primary mb-1">{cert.issuer}</p>
-              <div className="flex flex-wrap items-center gap-1.5 sm:gap-2 text-[9px] sm:text-[10px] font-mono text-[var(--terminal-text-muted)]">
+              <p className="text-xs sm:text-xs font-mono text-primary mb-1">{cert.issuer}</p>
+              <div className="flex flex-wrap items-center gap-1.5 sm:gap-2 text-xs sm:text-xs font-mono text-[var(--terminal-text-muted)]">
                 <span>Issued: {cert.issueDate}</span>
                 {cert.expiryDate && (
                   <>
@@ -36,7 +36,7 @@ export default function CertificationsSection() {
                 {!cert.expiryDate && <span className="text-green-400">• No expiry</span>}
               </div>
               {cert.credentialId && (
-                <p className="text-[9px] sm:text-[10px] font-mono text-[var(--terminal-text-dim)] mt-1">
+                <p className="text-xs sm:text-xs font-mono text-[var(--terminal-text-dim)] mt-1">
                   ID: {cert.credentialId}
                 </p>
               )}
@@ -45,13 +45,13 @@ export default function CertificationsSection() {
                   href={cert.credentialUrl}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="text-[9px] sm:text-[10px] font-mono text-primary hover:text-blue-400 mt-1 inline-flex items-center gap-1"
+                  className="text-xs sm:text-xs font-mono text-primary hover:text-blue-400 mt-1 inline-flex items-center gap-1"
                 >
                   Verify <span aria-hidden="true" className="material-symbols-outlined text-[12px]">open_in_new</span>
                 </a>
               )}
               {cert.description && (
-                <p className="text-[9px] sm:text-[10px] font-mono text-[var(--terminal-text-muted)] mt-2 leading-relaxed">
+                <p className="text-xs sm:text-xs font-mono text-[var(--terminal-text-muted)] mt-2 leading-relaxed">
                   {cert.description}
                 </p>
               )}

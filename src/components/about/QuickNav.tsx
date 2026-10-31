@@ -70,7 +70,7 @@ export default function QuickNav() {
     <nav
       ref={navRef}
       aria-label="Section jump links"
-      className="sticky top-[var(--header-h,60px)] z-40 -mx-1 px-1 py-2 bg-[var(--terminal-bg)]/95 backdrop-blur-sm flex flex-wrap gap-2 text-[10px] sm:text-xs font-mono"
+      className="sticky top-[var(--header-h,60px)] z-40 -mx-1 px-1 py-2 bg-[var(--terminal-bg)]/95 backdrop-blur-sm flex flex-wrap gap-2 text-xs sm:text-xs font-mono"
     >
       {SECTIONS.map((item) => (
         <a key={item.href} href={item.href} {...eventProps('about_nav_click', { section: item.label })} className={`${CHIP_BASE} ${CHIP_IDLE}`}>

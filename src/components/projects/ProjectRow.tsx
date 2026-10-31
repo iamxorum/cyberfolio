@@ -30,7 +30,7 @@ export default function ProjectRow({ project, index, contributionStats = {}, onS
       <div className={`absolute inset-0 pointer-events-none bg-[var(--terminal-hover-overlay)] transition-opacity duration-300 ${selected ? 'opacity-100' : 'opacity-0'}`}></div>
       <div className={`absolute left-0 top-0 bottom-0 w-[2px] ${selected ? 'bg-primary' : 'bg-transparent group-hover:bg-primary'} transition-colors duration-300`}></div>
 
-      <div className="col-span-2 flex items-center gap-2 text-[var(--terminal-text-dim)] font-mono text-[10px] sm:text-xs md:text-sm">
+      <div className="col-span-2 flex items-center gap-2 text-[var(--terminal-text-dim)] font-mono text-xs sm:text-xs md:text-sm">
         <span className="md:hidden text-[var(--terminal-text-dim)] mr-2">HASH:</span>
         <span>{hashId}</span>
         <span
@@ -66,7 +66,7 @@ export default function ProjectRow({ project, index, contributionStats = {}, onS
       <ProjectStatusBadges project={project} />
 
       <div className="col-span-2">
-        <span className="md:hidden text-[var(--terminal-text-dim)] text-[10px] mr-2">TYPE:</span>
+        <span className="md:hidden text-[var(--terminal-text-dim)] text-xs mr-2">TYPE:</span>
         <span className="text-[var(--terminal-text)] text-xs sm:text-sm font-mono uppercase">
           {project.category}
         </span>

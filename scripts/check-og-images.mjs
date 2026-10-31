@@ -23,33 +23,55 @@ function metaImages(html) {
 
 async function checkImage(url) {
   const res = await fetch(local(url));
-  const type = res.headers.get('content-type') ?? '';
-  const bytes = (await res.arrayBuffer()).byteLength;
   if (!res.ok) return `HTTP ${res.status}`;
+  const type = res.headers.get('content-type') ?? '';
   if (!type.startsWith('image/')) return `content-type ${type || 'missing'}`;
-  if (bytes === 0) return 'empty body';
+  if ((await res.arrayBuffer()).byteLength === 0) return 'empty body';
   return null;
 }
 
-const failures = [];
+// Runs at most `max` tasks at once, so the dev server is not hit with every page together.
+function limiter(max) {
+  const queue = [];
+  let active = 0;
+  const next = () => {
+    if (active >= max || queue.length === 0) return;
+    const { task, resolve, reject } = queue.shift();
+    active++;
+    task().then(resolve, reject).finally(() => {
+      active--;
+      next();
+    });
+  };
+  return (task) => new Promise((resolve, reject) => {
+    queue.push({ task, resolve, reject });
+    next();
+  });
+}
+
+const CONCURRENCY = 4;
+const limit = limiter(CONCURRENCY);
 const checked = new Set();
 const pages = await pageUrls();
 
-for (const page of pages) {
+// Returns this page's problems. An image is claimed in `checked` before any await, so two pages never test it twice.
+async function checkPage(page) {
   const res = await fetch(page);
   const path = new URL(page).pathname;
-  if (!res.ok) {
-    failures.push(`${path}: page returned ${res.status}`);
-    continue;
-  }
+  if (!res.ok) return [`${path}: page returned ${res.status}`];
   const images = metaImages(await res.text());
-  if (images.size === 0) failures.push(`${path}: no og:image or twitter:image`);
-  for (const [name, url] of images) {
-    const error = checked.has(url) ? null : await checkImage(url);
+  if (images.size === 0) return [`${path}: no og:image or twitter:image`];
+  const results = await Promise.all([...images].map(async ([name, url]) => {
+    if (checked.has(url)) return null;
     checked.add(url);
-    if (error) failures.push(`${path}: ${name} ${url} -> ${error}`);
-  }
+    const error = await checkImage(url);
+    return error ? `${path}: ${name} ${url} -> ${error}` : null;
+  }));
+  return results.filter(Boolean);
 }
+
+// Results come back in sitemap order, whichever page finishes first.
+const failures = (await Promise.all(pages.map((page) => limit(() => checkPage(page))))).flat();
 
 console.log(`Checked ${pages.length} pages, ${checked.size} distinct images.`);
 if (failures.length) {

@@ -17,10 +17,10 @@ export default function LiveBanTicker({ entries }: LiveBanTickerProps) {
   return (
     <div className="border border-[var(--terminal-border)] rounded bg-[rgba(var(--terminal-bg-rgb),0.40)] overflow-hidden">
       <div className="flex items-center justify-between px-3 py-1.5 bg-[var(--terminal-surface-alt)] border-b border-[var(--terminal-border)]">
-        <span className="text-[9px] sm:text-[10px] font-mono tracking-widest text-[var(--terminal-text-dim)]">MITIGATED_HOSTS.log</span>
-        <span className="text-[8px] sm:text-[9px] font-mono text-[var(--terminal-text-dim)]">{entries.length} tracked</span>
+        <span className="text-xs sm:text-xs font-mono tracking-widest text-[var(--terminal-text-dim)]">MITIGATED_HOSTS.log</span>
+        <span className="text-xs sm:text-xs font-mono text-[var(--terminal-text-dim)]">{entries.length} tracked</span>
       </div>
-      <div className="flex flex-col font-mono text-[10px] sm:text-[11px]">
+      <div className="flex flex-col font-mono text-xs sm:text-xs">
         {batch.map((ban, idx) => (
           <div
             key={ban.ip}

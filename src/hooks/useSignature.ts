@@ -20,12 +20,13 @@ export function useSignature() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ password }),
       });
-      const data = await response.json().catch(() => ({}));
-      if (!response.ok || typeof data.image !== 'string') {
-        setError(response.status === 429 ? 'Too many tries, wait a minute' : 'Wrong password');
+      const reject = (message: string) => {
+        setError(message);
         setStatus('locked');
-        return;
-      }
+      };
+      if (!response.ok) return reject(response.status === 429 ? 'Too many tries, wait a minute' : 'Wrong password');
+      const data = await response.json().catch(() => ({}));
+      if (typeof data.image !== 'string') return reject('Wrong password');
       setImage(data.image);
       setStatus('unlocked');
     } catch {

@@ -56,7 +56,7 @@ export default function ExperienceTimeline() {
                     </span>
                     </span>
                     {isOngoing && (
-                      <span className="text-[9px] px-1.5 py-0.5 rounded border border-primary text-primary font-mono tracking-wider">CURRENT</span>
+                      <span className="text-xs px-1.5 py-0.5 rounded border border-primary text-primary font-mono tracking-wider">CURRENT</span>
                     )}
                   </div>
                 </div>

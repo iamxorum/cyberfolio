@@ -36,7 +36,7 @@ export default function HeroSection() {
             <div className="w-3 h-3 rounded-full bg-green-500/80 border border-green-400 shadow-[0_0_8px_rgba(34,197,94,0.6)] hover:brightness-125 transition"></div>
           </div>
           {siteConfig.status && (
-            <div className="animate-reveal inline-flex items-center gap-2 self-start rounded border border-green-500/30 bg-green-500/10 px-3 py-1 text-[10px] sm:text-xs font-mono font-bold uppercase tracking-widest text-green-400 z-10">
+            <div className="animate-reveal inline-flex items-center gap-2 self-start rounded border border-green-500/30 bg-green-500/10 px-3 py-1 text-xs sm:text-xs font-mono font-bold uppercase tracking-widest text-green-400 z-10">
               {siteConfig.status}
             </div>
           )}

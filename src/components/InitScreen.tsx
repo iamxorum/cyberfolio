@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { prefersReducedMotion } from '@/lib/motion';
+import { INITIALIZED_KEY } from '@/lib/storage-keys';
 
 interface InitScreenProps {
   onInit: () => void;
@@ -28,7 +29,7 @@ export default function InitScreen({ onInit }: InitScreenProps) {
     if (doneRef.current) return;
     doneRef.current = true;
 
-    localStorage.setItem('iamxorum_initialized', Date.now().toString());
+    localStorage.setItem(INITIALIZED_KEY, Date.now().toString());
 
     if (textRef.current) {
       textRef.current.style.transition = 'opacity 0.35s ease-out, transform 0.35s ease-out, filter 0.35s ease-out';
