@@ -53,6 +53,7 @@ The field-by-field guide and the environment variable table are in [`config.exam
 | `npm test` | Unit tests (Node test runner) |
 | `npm run icons` | Rebuild the icon font after adding an icon name |
 | `npm run check:og` | Check that every page has a loading social image |
+| `npm run changelog` | Regenerate `CHANGELOG.md` from `src/lib/changelog.ts` |
 
 ## Project structure
 

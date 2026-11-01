@@ -49,6 +49,9 @@ jobs:
       - name: Typecheck
         run: npm run typecheck
 
+      - name: Check CHANGELOG.md matches src/lib/changelog.ts
+        run: npm run changelog -- --check
+
       - name: Test
         run: npm test
 

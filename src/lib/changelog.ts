@@ -22,6 +22,7 @@ export const releases: Release[] = [
       'The container runs with a read-only filesystem and no extra capabilities',
       'Fixed local previews in Safari loading unstyled because the CSP upgraded localhost requests to https',
       'Each version tag now publishes a GitHub Release and a demo image',
+      'CHANGELOG.md is generated from this changelog, and CI fails when the two differ',
       'Rewrote the README and restored the analytics guide. Added a contributing guide and a security policy',
     ],
   },

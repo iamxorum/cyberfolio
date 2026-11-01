@@ -22,3 +22,8 @@ test('rejects input that is not a version', () => {
   const result = spawnSync(process.execPath, ['scripts/release.mjs', '--notes', 'latest'], { encoding: 'utf8' });
   assert.equal(result.status, 1);
 });
+
+test('CHANGELOG.md matches the in-app changelog', () => {
+  const result = spawnSync(process.execPath, ['scripts/changelog.mjs', '--check'], { encoding: 'utf8' });
+  assert.equal(result.status, 0, result.stderr);
+});

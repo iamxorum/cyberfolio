@@ -30,4 +30,4 @@ npm run lint && npm run typecheck && npm test && npm run build
 
 ## Releases
 
-Version bumps and the changelog are handled by the maintainer. See `npm run release`.
+The changelog lives in `src/lib/changelog.ts`. `CHANGELOG.md` is generated from it: run `npm run changelog` after editing, and CI fails if the two differ. Version bumps and tags are handled by the maintainer with `npm run release`.
