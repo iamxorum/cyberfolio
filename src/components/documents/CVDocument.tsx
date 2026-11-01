@@ -2,7 +2,7 @@
 
 import { getPrintAccent } from '@/lib/accent';
 import { Document, Page, View, Text, Link, StyleSheet } from '@react-pdf/renderer';
-import '@/components/pdf/no-hyphenation';
+import '@/components/documents/pdf/no-hyphenation';
 import { CVStyle, SiteConfig, Experience, Education, Language, Certification, Hobby, Project, Skill } from '@/config';
 import {
   getRelevantSkills,
@@ -21,7 +21,7 @@ import {
 import { splitInterests } from '@/lib/cv-designed';
 import type { ContributionStats } from '@/lib/github-contributions';
 import { cvMetadata } from '@/lib/pdf-metadata';
-import DocumentHeader from '@/components/pdf/DocumentHeader';
+import DocumentHeader from '@/components/documents/pdf/DocumentHeader';
 
 export interface CVDocumentProps {
   style: CVStyle;

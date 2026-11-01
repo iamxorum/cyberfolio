@@ -1,8 +1,8 @@
 'use client';
 
 import { useState } from 'react';
-import CVTemplate from '@/components/CVTemplate';
-import CVDesignedTemplate from '@/components/CVDesignedTemplate';
+import CVTemplate from '@/components/documents/CVTemplate';
+import CVDesignedTemplate from '@/components/documents/CVDesignedTemplate';
 import VariantToggle, { type CVVariant } from '@/components/cv/VariantToggle';
 import ScaleToFit from '@/components/ScaleToFit';
 import PagedPreview from '@/components/cv/PagedPreview';
@@ -68,7 +68,7 @@ function useCVDownloads({ style, styleId, variant, useColumnLayout, contribution
   const downloadCV = () => cv.download(async () => {
     const [{ pdf }, { default: CVDocument }, photo] = await Promise.all([
       import('@react-pdf/renderer'),
-      variant === 'designed' ? import('@/components/CVDesignedDocument') : import('@/components/CVDocument'),
+      variant === 'designed' ? import('@/components/documents/CVDesignedDocument') : import('@/components/documents/CVDocument'),
       designedPhoto(),
     ]);
     return { blob: await pdf(<CVDocument {...cvProps} photo={photo} />).toBlob(), filename: fileName('CV') };
@@ -77,7 +77,7 @@ function useCVDownloads({ style, styleId, variant, useColumnLayout, contribution
   const downloadApplication = () => letterStyle && application.download(async () => {
     const [{ pdf }, { default: ApplicationDocument }, photo] = await Promise.all([
       import('@react-pdf/renderer'),
-      import('@/components/ApplicationDocument'),
+      import('@/components/documents/ApplicationDocument'),
       designedPhoto(),
     ]);
     return { blob: await pdf(<ApplicationDocument cv={{ ...cvProps, photo }} variant={variant} letterStyle={letterStyle} signature={signature} />).toBlob(), filename: fileName('CV_Cover_Letter') };

@@ -5,7 +5,7 @@ import { usePrintAccent } from '@/hooks/usePrintAccent';
 import { formatLetterDate } from '@/lib/format-time';
 import { CoverLetterStyle, SiteConfig } from '@/config';
 import { getContactInfo } from '@/lib/cv-helpers';
-import CVTemplateHeader from '@/components/cv-template/CVTemplateHeader';
+import CVTemplateHeader from '@/components/documents/cv-template/CVTemplateHeader';
 
 // The date only exists client-side; the empty server snapshot avoids a hydration mismatch.
 const noopSubscribe = () => () => {};

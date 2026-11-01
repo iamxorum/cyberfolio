@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
 import { siteConfig } from '@/config';
-import Header from '@/components/Header';
-import Footer from '@/components/Footer';
+import Header from '@/components/layout/Header';
+import Footer from '@/components/layout/Footer';
 import NotFoundCard from '@/components/NotFoundCard';
 
 export const metadata: Metadata = { title: `Page not found | ${siteConfig.fullName}` };

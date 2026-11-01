@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { prefersReducedMotion } from '@/lib/motion';
 
-/** Rotates through `items` in fixed-size batches on an interval — used for a scrolling log feed. */
+/** Rotates through `items` in fixed-size batches on an interval, for a scrolling log feed. */
 export function useLogTicker<T>(items: T[], batchSize: number, intervalMs: number) {
   const [offset, setOffset] = useState(0);
 

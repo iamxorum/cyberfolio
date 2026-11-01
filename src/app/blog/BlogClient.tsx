@@ -1,6 +1,6 @@
 'use client';
 
-import PageShell, { PageHeading } from '@/components/PageShell';
+import PageShell, { PageHeading } from '@/components/layout/PageShell';
 import { useCallback, useEffect, useRef, useState, type MouseEvent, type ReactNode } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';

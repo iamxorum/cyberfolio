@@ -1,6 +1,6 @@
 import type { Hobby } from '@/config';
 import { splitInterests } from '@/lib/cv-designed';
-import { SectionHeader } from './primitives';
+import { SectionHeader } from '@/components/documents/cv-template/primitives';
 
 interface CVAdditionalInfoSectionProps {
   hobbies: Hobby[];

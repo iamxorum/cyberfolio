@@ -2,7 +2,7 @@ import type { Project } from '@/config';
 import { stripUrl } from '@/lib/cv-helpers';
 import { isLiveProject } from '@/lib/cv-designed';
 import type { ContributionStats } from '@/lib/github-contributions';
-import { SectionHeader } from './primitives';
+import { SectionHeader } from '@/components/documents/cv-template/primitives';
 
 interface ProjectContributionsProps {
   project: Project;

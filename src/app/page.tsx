@@ -1,8 +1,8 @@
 'use client';
 
 import dynamic from 'next/dynamic';
-import Header from '@/components/Header';
-import Footer from '@/components/Footer';
+import Header from '@/components/layout/Header';
+import Footer from '@/components/layout/Footer';
 import InitScreen from '@/components/InitScreen';
 import HeroSection from '@/components/HeroSection';
 import SystemStats from '@/components/SystemStats';

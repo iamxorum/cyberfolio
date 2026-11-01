@@ -1,6 +1,6 @@
 import { notFound } from 'next/navigation';
 import { siteConfig } from '@/config';
-import PageShell, { PageHeading } from '@/components/PageShell';
+import PageShell, { PageHeading } from '@/components/layout/PageShell';
 import JsonLd from '@/components/JsonLd';
 import Reveal from '@/components/Reveal';
 import { changelogEnabled, releases } from '@/lib/changelog';

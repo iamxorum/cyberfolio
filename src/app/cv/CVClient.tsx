@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { features } from '@/config';
-import PageShell from '@/components/PageShell';
+import PageShell from '@/components/layout/PageShell';
 import TabSwitcher, { type CVTab } from '@/components/cv/TabSwitcher';
 import ResumePanel from '@/components/cv/ResumePanel';
 import CoverLetterPanel from '@/components/cv/CoverLetterPanel';

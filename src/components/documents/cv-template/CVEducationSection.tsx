@@ -1,6 +1,6 @@
 import type { Education, SiteConfig } from '@/config';
 import { formatDateRange } from '@/lib/cv-helpers';
-import { SectionHeader } from './primitives';
+import { SectionHeader } from '@/components/documents/cv-template/primitives';
 
 interface CVEducationSectionProps {
   education: Education[];

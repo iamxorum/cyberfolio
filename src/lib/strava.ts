@@ -1,7 +1,5 @@
-// Server-only Strava client. Credentials never reach the browser: the page renders
-// from this module's in-memory cache (24h max). The slow personal-best scan always runs
-// in the background so a visitor never waits on it. The cache is mirrored to disk so a
-// restart within the 24h window serves the snapshot instead of re-fetching from Strava.
+// Server-only Strava client. Pages render from an in-memory cache (24h max) that is mirrored to disk,
+// and the slow personal-best scan runs in the background so a visitor never waits on it.
 
 import { mkdir, readFile, writeFile } from 'node:fs/promises';
 import path from 'node:path';

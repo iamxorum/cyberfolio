@@ -2,10 +2,10 @@
 
 import { getPrintAccent } from '@/lib/accent';
 import { Document, Page, View, Text, Image, StyleSheet } from '@react-pdf/renderer';
-import '@/components/pdf/no-hyphenation';
+import '@/components/documents/pdf/no-hyphenation';
 import { CoverLetterStyle, SiteConfig } from '@/config';
 import { formatLetterDate } from '@/lib/format-time';
-import DocumentHeader from '@/components/pdf/DocumentHeader';
+import DocumentHeader from '@/components/documents/pdf/DocumentHeader';
 import { getContactInfo } from '@/lib/cv-helpers';
 import { coverLetterMetadata } from '@/lib/pdf-metadata';
 

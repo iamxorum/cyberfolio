@@ -2,8 +2,8 @@
 
 import type { ReactNode } from 'react';
 import Link from 'next/link';
-import Header from '@/components/Header';
-import Footer from '@/components/Footer';
+import Header from '@/components/layout/Header';
+import Footer from '@/components/layout/Footer';
 import InitScreen from '@/components/InitScreen';
 import UltrawideRail from '@/components/UltrawideRail';
 import { useAppInitialization } from '@/hooks/useAppInitialization';

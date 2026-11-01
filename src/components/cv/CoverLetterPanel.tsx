@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import CoverLetterPreview from '@/components/CoverLetterPreview';
+import CoverLetterPreview from '@/components/documents/CoverLetterPreview';
 import ScaleToFit from '@/components/ScaleToFit';
 import PagedPreview from '@/components/cv/PagedPreview';
 import { useUltrawide } from '@/hooks/useUltrawide';
@@ -27,7 +27,7 @@ export default function CoverLetterPanel({ email, phone, signature }: { email?: 
   const handleDownloadLetter = () => download(async () => {
     const [{ pdf }, { default: CoverLetterDocument }] = await Promise.all([
       import('@react-pdf/renderer'),
-      import('@/components/CoverLetterDocument'),
+      import('@/components/documents/CoverLetterDocument'),
     ]);
     const blob = await pdf(
       <CoverLetterDocument siteConfig={siteConfig} style={selectedCoverLetterStyle} email={email} phone={phone} signature={signature.image} />

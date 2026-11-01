@@ -4,8 +4,8 @@ import Link from 'next/link';
 import { features, siteConfig } from '@/config';
 import { changelogEnabled } from '@/lib/changelog';
 import { eventProps } from '@/lib/track';
-import EmailCTA from './EmailCTA';
-import FooterTagline from './FooterTagline';
+import EmailCTA from '@/components/EmailCTA';
+import FooterTagline from '@/components/layout/FooterTagline';
 
 export default function Footer() {
   const currentYear = new Date().getFullYear();

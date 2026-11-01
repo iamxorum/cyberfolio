@@ -1,7 +1,7 @@
 'use client';
 
 import { Suspense } from 'react';
-import PageShell from '@/components/PageShell';
+import PageShell from '@/components/layout/PageShell';
 import Discography from '@/components/Discography';
 import RunningSection, { RunningSkeleton } from '@/components/life/RunningSection';
 import GamingSection, { GamingSkeleton } from '@/components/life/GamingSection';

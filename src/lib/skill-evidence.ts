@@ -3,8 +3,8 @@ import { experience, projects, type Experience, type Project } from '@/config';
 /**
  * Real overlaps between skills.config's `name` and experience/project tag strings
  * aren't always exact text matches (e.g. skill "React" vs experience tag
- * "React.js"). Rather than fuzzy/substring matching — which would also create false
- * positives like "Git" matching inside "GitHub Copilot" — known real aliases are
+ * "React.js"). Rather than fuzzy/substring matching, which would also create false
+ * positives like "Git" matching inside "GitHub Copilot", known real aliases are
  * listed explicitly here. No match falls back to no evidence, never a guess.
  */
 const SKILL_ALIASES: Record<string, string[]> = {

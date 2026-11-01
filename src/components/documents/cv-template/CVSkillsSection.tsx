@@ -1,4 +1,4 @@
-import { SkillsList, SectionHeader } from './primitives';
+import { SkillsList, SectionHeader } from '@/components/documents/cv-template/primitives';
 
 interface CVSkillsSectionProps {
   title: string;

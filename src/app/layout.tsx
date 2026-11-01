@@ -8,8 +8,8 @@ import Script from "next/script";
 import { cookies, headers } from "next/headers";
 import { isAccent } from "@/lib/accent";
 import { ACCENT_COOKIE, THEME_COOKIE } from "@/lib/preferences";
-import SmoothScroll from "@/components/SmoothScroll";
-import ScrollIndicator from "@/components/ScrollIndicator";
+import SmoothScroll from "@/components/layout/SmoothScroll";
+import ScrollIndicator from "@/components/layout/ScrollIndicator";
 import CommandPalette from "@/components/CommandPalette";
 import KonamiCode from '@/components/KonamiCode';
 import AnalyticsEvents from "@/components/AnalyticsEvents";
@@ -139,9 +139,8 @@ export default async function RootLayout({
         >
           {children}
         </ViewTransition>
-        {/* Reveals normally wait for hydration. When no boot screen is in the way, whatever is already on screen is shown
-            as soon as it is parsed, so content does not sit invisible for seconds on a slow phone. Production only: in dev
-            the class added before hydration makes React log a harmless attribute mismatch. */}
+        {/* Without a boot screen, reveal what is already on screen at parse time instead of waiting for hydration.
+            Production only: in dev the early class causes a harmless hydration mismatch warning. */}
         {!isDevelopment && (
           <script
             nonce={nonce}

@@ -5,10 +5,10 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { features, siteConfig } from '@/config';
 import { eventProps } from '@/lib/track';
-import AccentToggle from './AccentToggle';
-import ThemeToggle from './ThemeToggle';
-import EmailCTA from './EmailCTA';
-import CommandPaletteButton from './CommandPaletteButton';
+import AccentToggle from '@/components/AccentToggle';
+import ThemeToggle from '@/components/ThemeToggle';
+import EmailCTA from '@/components/EmailCTA';
+import CommandPaletteButton from '@/components/CommandPaletteButton';
 import { STAGGER_STEP_DENSE_MS } from '@/lib/motion';
 
 // Stagger only opacity/transform/filter (the first three transitioned properties); the

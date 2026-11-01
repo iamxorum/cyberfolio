@@ -1,5 +1,5 @@
 import type { Certification } from '@/config';
-import { CertificationsList, SectionHeader } from './primitives';
+import { CertificationsList, SectionHeader } from '@/components/documents/cv-template/primitives';
 
 interface CVCertificationsSectionProps {
   certifications: Certification[];

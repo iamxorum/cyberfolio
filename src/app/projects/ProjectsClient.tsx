@@ -1,7 +1,7 @@
 'use client';
 
 import { useCallback, useState } from 'react';
-import PageShell, { PageHeading } from '@/components/PageShell';
+import PageShell, { PageHeading } from '@/components/layout/PageShell';
 import UltrawideDetail from '@/components/UltrawideDetail';
 import { ProjectDetailContent } from './[id]/ProjectDetailClient';
 import { useEscapeKey } from '@/hooks/useEscapeKey';

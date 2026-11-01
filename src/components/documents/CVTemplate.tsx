@@ -12,15 +12,15 @@ import {
   splitFamiliarSkills,
 } from '@/lib/cv-helpers';
 import { NO_CONTRIBUTION_STATS, type ContributionStats } from '@/lib/github-contributions';
-import CVTemplateHeader from '@/components/cv-template/CVTemplateHeader';
-import CVSummarySection from '@/components/cv-template/CVSummarySection';
-import CVExperienceSection from '@/components/cv-template/CVExperienceSection';
-import CVEducationSection from '@/components/cv-template/CVEducationSection';
-import CVCertificationsSection from '@/components/cv-template/CVCertificationsSection';
-import CVSkillsSection from '@/components/cv-template/CVSkillsSection';
-import CVLanguagesSection from '@/components/cv-template/CVLanguagesSection';
-import CVProjectsSection from '@/components/cv-template/CVProjectsSection';
-import CVAdditionalInfoSection from '@/components/cv-template/CVAdditionalInfoSection';
+import CVTemplateHeader from '@/components/documents/cv-template/CVTemplateHeader';
+import CVSummarySection from '@/components/documents/cv-template/CVSummarySection';
+import CVExperienceSection from '@/components/documents/cv-template/CVExperienceSection';
+import CVEducationSection from '@/components/documents/cv-template/CVEducationSection';
+import CVCertificationsSection from '@/components/documents/cv-template/CVCertificationsSection';
+import CVSkillsSection from '@/components/documents/cv-template/CVSkillsSection';
+import CVLanguagesSection from '@/components/documents/cv-template/CVLanguagesSection';
+import CVProjectsSection from '@/components/documents/cv-template/CVProjectsSection';
+import CVAdditionalInfoSection from '@/components/documents/cv-template/CVAdditionalInfoSection';
 
 export interface CVTemplateProps {
   style: CVStyle;

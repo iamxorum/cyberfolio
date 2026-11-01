@@ -3,7 +3,7 @@
 import type { ReactNode } from 'react';
 import { getPrintAccent, tint } from '@/lib/accent';
 import { Document, Page, View, Text, Link, Image, Svg, Circle, StyleSheet } from '@react-pdf/renderer';
-import '@/components/pdf/no-hyphenation';
+import '@/components/documents/pdf/no-hyphenation';
 import type { Skill } from '@/config';
 import {
   getRelevantSkills,
@@ -21,7 +21,7 @@ import {
 } from '@/lib/cv-helpers';
 import { INK, PAPER, getCVHighlights, splitCoreSkills, splitInterests, isLiveProject } from '@/lib/cv-designed';
 import { cvMetadata } from '@/lib/pdf-metadata';
-import type { CVDocumentProps } from '@/components/CVDocument';
+import type { CVDocumentProps } from '@/components/documents/CVDocument';
 
 const ASIDE_WIDTH = '34%';
 const PAGE_MARGIN = '0.4in';

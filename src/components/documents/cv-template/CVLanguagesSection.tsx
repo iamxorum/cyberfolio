@@ -1,6 +1,6 @@
 import type { Language } from '@/config';
 import { getProficiencyDisplay } from '@/lib/cv-helpers';
-import { SectionHeader } from './primitives';
+import { SectionHeader } from '@/components/documents/cv-template/primitives';
 
 interface CVLanguagesSectionProps {
   languages: Language[];

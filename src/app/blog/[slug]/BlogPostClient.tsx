@@ -1,7 +1,7 @@
 'use client';
 
 import type { ReactNode } from 'react';
-import PageShell from '@/components/PageShell';
+import PageShell from '@/components/layout/PageShell';
 import Link from 'next/link';
 import { useEffect } from 'react';
 import { useScrollReveal } from '@/hooks/useScrollReveal';

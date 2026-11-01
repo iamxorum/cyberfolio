@@ -1,4 +1,4 @@
-import PageShell from '@/components/PageShell';
+import PageShell from '@/components/layout/PageShell';
 import Bone from '@/components/life/Skeleton';
 
 /** Shown the moment a route is clicked, while the server renders it, so navigation answers at once. */

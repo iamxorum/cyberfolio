@@ -1,11 +1,11 @@
 'use client';
 
 import { Document } from '@react-pdf/renderer';
-import { CVPage } from '@/components/CVDocument';
-import { CVDesignedPage } from '@/components/CVDesignedDocument';
+import { CVPage } from '@/components/documents/CVDocument';
+import { CVDesignedPage } from '@/components/documents/CVDesignedDocument';
 import type { CVVariant } from '@/components/cv/VariantToggle';
 import { cvMetadata } from '@/lib/pdf-metadata';
-import { CoverLetterPage } from '@/components/CoverLetterDocument';
+import { CoverLetterPage } from '@/components/documents/CoverLetterDocument';
 import type { CoverLetterStyle } from '@/config';
 import type { ComponentProps } from 'react';
 

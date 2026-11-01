@@ -1,6 +1,6 @@
 import type { Experience } from '@/config';
 import { formatDateRange, getCVStack } from '@/lib/cv-helpers';
-import { SectionHeader } from './primitives';
+import { SectionHeader } from '@/components/documents/cv-template/primitives';
 
 interface CVExperienceSectionProps {
   experience: Experience[];

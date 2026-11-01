@@ -20,7 +20,7 @@ import {
 } from '@/lib/cv-helpers';
 import { INK, PAPER, getCVHighlights, splitCoreSkills, splitInterests, isLiveProject } from '@/lib/cv-designed';
 import { NO_CONTRIBUTION_STATS } from '@/lib/github-contributions';
-import type { CVTemplateProps } from '@/components/CVTemplate';
+import type { CVTemplateProps } from '@/components/documents/CVTemplate';
 
 const MUTED = '#64748b';
 

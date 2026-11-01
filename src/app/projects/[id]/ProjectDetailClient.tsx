@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import CopyLinkButton from '@/components/CopyLinkButton';
-import PageShell from '@/components/PageShell';
+import PageShell from '@/components/layout/PageShell';
 import Reveal from '@/components/Reveal';
 import TypedText from '@/components/TypedText';
 import { STAGGER_STEP_DENSE_MS, revealDelay } from '@/lib/motion';

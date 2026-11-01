@@ -14,10 +14,9 @@ const redirectHosts = new Set([
   ...(siteConfig.alternateDomains ?? []).flatMap((domain) => [domain, `www.${domain}`]),
 ]);
 
-// Built per request because script-src carries a fresh nonce: only scripts that present it run, so injected markup cannot execute.
-// 'strict-dynamic' lets those trusted scripts load others (the Turnstile widget); browsers that honour it ignore the host list,
-// which stays only as a fallback for the rest.
-// connect-src allows data: because yoga-layout (inside @react-pdf, used for the CV PDFs) fetches its inlined WASM from a data: URL.
+// Built per request: script-src carries a fresh nonce, so injected markup cannot run.
+// 'strict-dynamic' lets nonced scripts load others (Turnstile); the host list is a fallback for older browsers.
+// connect-src allows data: because yoga-layout (inside @react-pdf) fetches inlined WASM from a data: URL.
 // upgrade-insecure-requests is left out on localhost: Safari would rewrite every asset to https://localhost, which nothing serves.
 function buildCsp(nonce: string, local: boolean) {
   return `

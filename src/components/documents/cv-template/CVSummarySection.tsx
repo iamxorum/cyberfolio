@@ -1,4 +1,4 @@
-import { SectionHeader } from './primitives';
+import { SectionHeader } from '@/components/documents/cv-template/primitives';
 
 interface CVSummarySectionProps {
   text: string;

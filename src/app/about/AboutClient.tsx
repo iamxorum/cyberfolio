@@ -1,6 +1,6 @@
 'use client';
 
-import PageShell from '@/components/PageShell';
+import PageShell from '@/components/layout/PageShell';
 import { useUltrawide } from '@/hooks/useUltrawide';
 import QuickNav from '@/components/about/QuickNav';
 import BioSection from '@/components/about/BioSection';

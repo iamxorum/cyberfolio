@@ -2,10 +2,8 @@
 
 import { useEffect, useRef } from 'react';
 
-// Replaces the native scrollbar on desktop: a slim rail on the right edge that is empty at
-// the top of the page and fills as you scroll down. Click or drag it to jump around the page.
-// It writes straight to the DOM from the scroll handler, so scrolling never triggers a
-// React re-render.
+// Replaces the native scrollbar on desktop with a rail that fills as you scroll; click or drag to jump.
+// It writes straight to the DOM from the scroll handler, so scrolling never re-renders React.
 export default function ScrollIndicator({ variant = 'accent' }: { variant?: 'accent' | 'blue' }) {
   const containerRef = useRef<HTMLDivElement>(null);
   const fillRef = useRef<HTMLDivElement>(null);

@@ -1,6 +1,6 @@
 import type { ReactNode } from 'react';
 import { analyticsConfig, features, siteConfig } from '@/config';
-import PageShell, { PageHeading } from '@/components/PageShell';
+import PageShell, { PageHeading } from '@/components/layout/PageShell';
 import JsonLd from '@/components/JsonLd';
 import { breadcrumbJsonLd, pageMetadata } from '@/lib/seo';
 import { ACCENT_COOKIE, ACCESS_COOKIE_NAME, INITIALIZED_KEY, THEME_COOKIE, USER_ID_KEY } from '@/lib/storage-keys';
