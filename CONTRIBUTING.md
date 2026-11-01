@@ -6,9 +6,7 @@ Bug fixes, new config fields and cleaner components are welcome.
 
 ```bash
 npm install
-mkdir -p src/config && cp -r config.example/. src/config/
-mkdir -p content && cp -r content.example/. content/
-cp .env.example .env
+npm run setup
 npm run dev
 ```
 

@@ -11,7 +11,7 @@ A terminal-themed personal portfolio built with Next.js 16, TypeScript and Tailw
 
 ## Features
 
-- **Live threat globe.** A 3D globe of IPs banned by your firewalls (Fail2Ban and CrowdSec), geolocated and drawn toward your infrastructure nodes. Data comes from a JSON file you generate on your own firewall host.
+- **Live threat globe.** A 3D globe of IPs banned by your firewalls (Fail2Ban and CrowdSec), geolocated and drawn toward your infrastructure nodes. It reads a JSON file you produce, with a sample included ([format](./docs/threat-feed.md)).
 - **CV and cover letter generator.** Config-driven styles exported as vector-text PDFs with `@react-pdf/renderer`. A letter can be paired with a CV style and downloaded as one file.
 - **Blog.** MDX posts with reading progress, related posts, tags, RSS and optional view counts from a self-hosted Umami.
 - **Gated contact details.** Cloudflare Turnstile is verified on the server. A passed check sets a signed 24-hour cookie, and `/cv`, the email and the phone number are only served to visitors who hold that cookie.
@@ -28,11 +28,11 @@ Requires Node.js 24.
 
 ```bash
 npm install
-mkdir -p src/config && cp -r config.example/. src/config/
-mkdir -p content && cp -r content.example/. content/
-cp .env.example .env
+npm run setup
 npm run dev
 ```
+
+`npm run setup` copies the example config, blog posts, `.env` and a sample threat feed into place. It never overwrites an existing file.
 
 Open [http://localhost:3000](http://localhost:3000).
 
@@ -40,7 +40,7 @@ Open [http://localhost:3000](http://localhost:3000).
 
 Personal content lives in `src/config/*.config.ts`, which is gitignored. `config.example/` is the public template with placeholder values. Secrets and contact details go in `.env`, never in config, because config is compiled into the build.
 
-The field-by-field guide and the environment variable table are in [`config.example/README.md`](./config.example/README.md). Analytics setup is in [`docs/analytics.md`](./docs/analytics.md).
+The field-by-field guide and the environment variable table are in [`config.example/README.md`](./config.example/README.md). Analytics setup is in [`docs/analytics.md`](./docs/analytics.md), and the threat globe's data file is described in [`docs/threat-feed.md`](./docs/threat-feed.md).
 
 ## Scripts
 
@@ -51,6 +51,7 @@ The field-by-field guide and the environment variable table are in [`config.exam
 | `npm run lint` | ESLint |
 | `npm run typecheck` | TypeScript, no emit |
 | `npm test` | Unit tests (Node test runner) |
+| `npm run setup` | Copy the examples into place on a fresh clone |
 | `npm run icons` | Rebuild the icon font after adding an icon name |
 | `npm run check:og` | Check that every page has a loading social image |
 | `npm run changelog` | Regenerate `CHANGELOG.md` from `src/lib/changelog.ts` |
