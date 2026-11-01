@@ -65,6 +65,6 @@ test('the sample threat feed matches the shape the globe reads', () => {
     assert.equal(typeof ban.country, 'string');
     assert.equal(typeof ban.lat, 'number');
     assert.equal(typeof ban.lng, 'number');
-    assert.match(ban.ip, /\.xxx$/);
+    assert.match(ban.ip, /^\d{1,3}(\.\d{1,3}){3}$/);
   }
 });

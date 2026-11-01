@@ -3,7 +3,7 @@
   "total_banned": 12,
   "recent_bans": [
     {
-      "ip": "198.51.100.xxx",
+      "ip": "198.51.100.23",
       "source": "public",
       "country": "DE",
       "city": "Frankfurt",
@@ -11,7 +11,7 @@
       "lng": 8.68
     },
     {
-      "ip": "203.0.113.xxx",
+      "ip": "203.0.113.41",
       "source": "public",
       "country": "SG",
       "city": "Singapore",
@@ -19,7 +19,7 @@
       "lng": 103.82
     },
     {
-      "ip": "192.0.2.xxx",
+      "ip": "192.0.2.7",
       "source": "public",
       "country": "BR",
       "city": "Sao Paulo",
@@ -27,7 +27,7 @@
       "lng": -46.63
     },
     {
-      "ip": "198.51.101.xxx",
+      "ip": "198.51.101.88",
       "source": "public",
       "country": "US",
       "city": "Ashburn",
@@ -35,7 +35,7 @@
       "lng": -77.49
     },
     {
-      "ip": "203.0.114.xxx",
+      "ip": "203.0.114.152",
       "source": "public",
       "country": "NL",
       "city": "Amsterdam",
@@ -43,7 +43,7 @@
       "lng": 4.9
     },
     {
-      "ip": "192.0.3.xxx",
+      "ip": "192.0.3.15",
       "source": "public",
       "country": "IN",
       "city": "Mumbai",
@@ -51,7 +51,7 @@
       "lng": 72.88
     },
     {
-      "ip": "198.51.102.xxx",
+      "ip": "198.51.102.64",
       "source": "local",
       "country": "JP",
       "city": "Tokyo",
@@ -59,7 +59,7 @@
       "lng": 139.69
     },
     {
-      "ip": "203.0.115.xxx",
+      "ip": "203.0.115.201",
       "source": "local",
       "country": "AU",
       "city": "Sydney",
@@ -67,7 +67,7 @@
       "lng": 151.21
     },
     {
-      "ip": "192.0.4.xxx",
+      "ip": "192.0.4.9",
       "source": "local",
       "country": "NG",
       "city": "Lagos",
@@ -75,7 +75,7 @@
       "lng": 3.38
     },
     {
-      "ip": "198.51.103.xxx",
+      "ip": "198.51.103.130",
       "source": "local",
       "country": "CA",
       "city": "Toronto",
@@ -83,7 +83,7 @@
       "lng": -79.38
     },
     {
-      "ip": "203.0.116.xxx",
+      "ip": "203.0.116.77",
       "source": "public",
       "country": "ZA",
       "city": "Johannesburg",
@@ -91,7 +91,7 @@
       "lng": 28.05
     },
     {
-      "ip": "192.0.5.xxx",
+      "ip": "192.0.5.46",
       "source": "public",
       "country": "KR",
       "city": "Seoul",
