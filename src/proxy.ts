@@ -18,7 +18,8 @@ const redirectHosts = new Set([
 // 'strict-dynamic' lets those trusted scripts load others (the Turnstile widget); browsers that honour it ignore the host list,
 // which stays only as a fallback for the rest.
 // connect-src allows data: because yoga-layout (inside @react-pdf, used for the CV PDFs) fetches its inlined WASM from a data: URL.
-function buildCsp(nonce: string) {
+// upgrade-insecure-requests is left out on localhost: Safari would rewrite every asset to https://localhost, which nothing serves.
+function buildCsp(nonce: string, local: boolean) {
   return `
     default-src 'self';
     script-src 'self' 'nonce-${nonce}' 'strict-dynamic' 'wasm-unsafe-eval' ${security.scripts.join(' ')};
@@ -32,7 +33,7 @@ function buildCsp(nonce: string) {
     frame-src 'self' ${security.frames.join(' ')};
     connect-src 'self' data: ${security.connects.join(' ')};
     worker-src 'self' blob:;
-    upgrade-insecure-requests;
+    ${local ? '' : 'upgrade-insecure-requests;'}
     report-uri ${CSP_REPORT_PATH};
     report-to csp-endpoint;
   `.replace(/\n/g, '').replace(/\s{2,}/g, ' ').trim();
@@ -53,7 +54,7 @@ export function proxy(request: NextRequest) {
   if (isDev) return NextResponse.next();
 
   const nonce = btoa(crypto.randomUUID());
-  const csp = buildCsp(nonce);
+  const csp = buildCsp(nonce, /^(localhost|127\.0\.0\.1|\[::1\])(:\d+)?$/.test(hostname));
 
   // Next reads the nonce from the request's CSP header and stamps it on its own scripts; the layout reads x-nonce for the inline ones.
   const requestHeaders = new Headers(request.headers);
