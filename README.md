@@ -7,12 +7,14 @@
 
 A terminal-themed personal portfolio built with Next.js 16, TypeScript and Tailwind CSS 4. All content comes from typed config files and MDX posts, so the same code serves any person's site.
 
+**Live demo: [iamxorum.ro](https://iamxorum.ro)**, the author's own site running this code.
+
 ## Features
 
 - **Live threat globe.** A 3D globe of IPs banned by your firewalls (Fail2Ban and CrowdSec), geolocated and drawn toward your infrastructure nodes. Data comes from a JSON file you generate on your own firewall host.
 - **CV and cover letter generator.** Config-driven styles exported as vector-text PDFs with `@react-pdf/renderer`. A letter can be paired with a CV style and downloaded as one file.
 - **Blog.** MDX posts with reading progress, related posts, tags, RSS and optional view counts from a self-hosted Umami.
-- **Gated contact details.** Cloudflare Turnstile is verified on the server. A passed check sets a signed 24-hour cookie, and `/cv`, the email and the phone number are only served to visitors who hold it.
+- **Gated contact details.** Cloudflare Turnstile is verified on the server. A passed check sets a signed 24-hour cookie, and `/cv`, the email and the phone number are only served to visitors who hold that cookie.
 - **Strict CSP.** A per-request nonce policy built from an allowlist in the site config.
 - **Optional integrations.** Strava, Steam, GitHub contribution stats, a music player and analytics, each behind a feature flag.
 
