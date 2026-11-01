@@ -11,6 +11,14 @@ services:
     environment:
       - NODE_ENV=production
     restart: unless-stopped
+    read_only: true
+    cap_drop:
+      - ALL
+    security_opt:
+      - no-new-privileges:true
+    tmpfs:
+      - /tmp
+      - /app/.next/cache:uid=1001,gid=1001
     volumes:
       - ./public:/app/public:ro
       - ./private:/app/private:ro

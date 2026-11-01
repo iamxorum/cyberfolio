@@ -1,3 +1,9 @@
+# Personal files: mounted at runtime (docker-compose.yml), never baked into an image layer.
+# `content` stays in the context on purpose: the build reads it to prerender the blog.
+private
+public/assets
+public/data
+
 # Dependencies
 node_modules
 npm-debug.log*

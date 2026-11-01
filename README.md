@@ -59,6 +59,8 @@ npm start
 
 Docker: multi-stage `Dockerfile` → `output: standalone`, single `docker-compose.yml` service, runs as a non-root user in the final image.
 
+A demo image built from `config.example/` (placeholder content, not a real site) is published to `ghcr.io/iamxorum/cyberfolio:demo` on every release tag. Your own config is compiled into the build, so build your own image rather than reusing it.
+
 ## Contributing
 
 Issues and PRs are welcome — bug fixes, new config fields, a cleaner take on a component, whatever. Since `src/config/` is gitignored, `npm run lint`/`npm run build` in CI run against `config.example/`, so make sure new features degrade gracefully with placeholder content, not just your own.
