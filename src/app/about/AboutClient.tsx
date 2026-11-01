@@ -35,7 +35,7 @@ export default function AboutClient() {
               <LanguagesSection />
               <HobbiesSection kind="professional" compact />
             </div>
-            {/* Right Column - Experience, Education, Certifications (professional signal first) */}
+            {/* Right column: experience, education, certifications. Professional signal first. */}
             <div className="uw-contents w-full lg:w-2/3 flex flex-col gap-4 sm:gap-6">
               <div className="uw-panel uw-panel-wide"><ExperienceTimeline /></div>
               <div className="uw-panel uw-panel-side flex flex-col gap-4 sm:gap-6">

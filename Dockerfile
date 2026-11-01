@@ -1,3 +1,4 @@
+# Dependencies in their own stage: cached until package.json or the lockfile changes.
 FROM node:24-alpine AS deps
 WORKDIR /app
 
@@ -5,6 +6,7 @@ COPY package.json package-lock.json ./
 
 RUN npm ci
 
+# Build. src/config is compiled in, so it must be in the build context.
 FROM node:24-alpine AS builder
 WORKDIR /app
 
@@ -14,6 +16,7 @@ COPY . .
 
 RUN npm run build
 
+# Runtime: only the standalone server and static files, as a non-root user.
 FROM node:24-alpine AS runner
 WORKDIR /app
 

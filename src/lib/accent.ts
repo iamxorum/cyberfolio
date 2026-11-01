@@ -1,6 +1,6 @@
 import { ACCENT_COOKIE, writePreference } from '@/lib/preferences';
 
-// Accent presets: set as data-accent on <html>, colours in colors.css. The layout renders the saved one (from its cookie) into the first HTML.
+// Accent presets: set as data-accent on <html>, colours in colors.css. The layout renders the saved one from its cookie.
 export const ACCENTS = ['default', 'cyan', 'teal', 'green', 'blue', 'violet', 'magenta', 'red', 'orange', 'mono'] as const;
 
 /** `matrix` is the Konami preset and is not in the picker. */

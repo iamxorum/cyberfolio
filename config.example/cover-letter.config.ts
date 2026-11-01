@@ -1,8 +1,11 @@
 export interface CoverLetterStyle {
+  /** Unique. A CV style with the same id is paired with this letter (see `cvStyleId`). */
   id: string;
   name: string;
   description: string;
+  /** Field name shown on the style card and in the PDF metadata (e.g. "DevOps"). */
   domain: string;
+  /** Material Symbols icon name. */
   icon: string;
   /**
    * The CV style this letter goes with. Defaults to this letter's own `id`.

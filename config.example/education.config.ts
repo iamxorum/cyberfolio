@@ -9,6 +9,7 @@ export interface Education {
   description?: string;
   grade?: string;
   location?: string;
+  /** Material Symbols icon name. */
   icon?: string;
   /** Public link to the thesis, also printed on the CV. */
   thesisUrl?: string;

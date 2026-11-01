@@ -11,6 +11,7 @@ export interface Certification {
   credentialId?: string;
   credentialUrl?: string;
   description?: string;
+  /** Material Symbols icon name. */
   icon?: string;
 }
 

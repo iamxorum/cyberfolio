@@ -2,8 +2,8 @@ import { useEffect, useMemo, useState } from 'react';
 import { prefersReducedMotion } from '@/lib/motion';
 import { revealedKey, type BannedIP } from '@/lib/threat-globe';
 
-// Dots load in gradually (batches, not all 400+ at once) - both for a nicer reveal
-// and to spread the three.js mesh-creation cost across frames instead of one spike.
+// Dots load in gradually (batches, not all 400+ at once): a nicer reveal, and the three.js mesh-creation
+// cost is spread across frames instead of one spike.
 export function useBanReveal(isGlobeReady: boolean, banPoints: BannedIP[]) {
   const [revealedBanCount, setRevealedBanCount] = useState(0);
 

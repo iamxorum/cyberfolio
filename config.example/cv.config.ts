@@ -1,9 +1,11 @@
 export interface CVStyle {
+  /** Unique. A cover letter with the same id is paired with this style. */
   id: string;
   name: string;
   description: string;
   /** Groups styles by role; see `getCVStylesByDomain`. */
   domain: string;
+  /** Material Symbols icon name. */
   icon: string;
   /** Replaces `CVConfig.summary` for this style. */
   summary?: string;

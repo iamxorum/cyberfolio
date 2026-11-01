@@ -233,7 +233,7 @@ export const getCVCertifications = (certifications: Certification[]): Certificat
   return merged;
 };
 
-/** Beginner-level skills move out of their categories into one "Familiar with" list, so the main lines only claim what is used day to day. */
+/** Beginner skills move into one "Familiar with" list, so the main lines only claim what is used day to day. */
 export const splitFamiliarSkills = (skills: Record<string, Skill[]>): { main: Record<string, Skill[]>; familiar: Skill[] } => {
   const main: Record<string, Skill[]> = {};
   const familiar: Skill[] = [];

@@ -11,6 +11,7 @@ services:
     environment:
       - NODE_ENV=production
     restart: unless-stopped
+    # Hardening. With a read-only root, Next's cache (and Strava's snapshot) and /tmp live in tmpfs.
     read_only: true
     cap_drop:
       - ALL

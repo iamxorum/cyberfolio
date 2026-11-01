@@ -14,6 +14,7 @@ export interface Experience {
   type?: 'full-time' | 'part-time' | 'contract' | 'freelance' | 'internship';
   /** Second label next to `type` (e.g. "Employment"). */
   type2?: string;
+  /** Material Symbols icon name. */
   icon?: string;
   /** Square logo path under /public (e.g. "/assets/logos/acme.png"), shown next to the company name (24px). */
   logo?: string;

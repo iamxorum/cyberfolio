@@ -1,9 +1,13 @@
-/** beginner (used it), working (comfortable day to day), proficient (go-to tool), advanced (could teach it). Rate honestly: proficient and advanced are there to grow into. */
+/**
+ * beginner (used it), working (comfortable day to day), proficient (go-to tool), advanced (could teach it).
+ * Rate honestly: proficient and advanced are there to grow into.
+ */
 export type SkillLevel = 'beginner' | 'working' | 'proficient' | 'advanced';
 
 export interface Skill {
   name: string;
   level: SkillLevel;
+  /** Groups the skill on the About page and the CV. */
   category: string;
 }
 

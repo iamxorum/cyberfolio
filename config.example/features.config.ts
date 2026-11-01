@@ -10,7 +10,10 @@ export interface FeaturesConfig {
   cv: boolean;
   /** Cover letter tab on /cv. */
   coverLetter: boolean;
-  /** Password-gated signature on the cover letter and CV + letter PDFs. Needs SIGNATURE_PASSWORD in .env and private/signature.png. Off = /api/signature 404. */
+  /**
+   * Password-gated signature on the cover letter and CV + letter PDFs.
+   * Needs SIGNATURE_PASSWORD in .env and private/signature.png. Off = /api/signature 404.
+   */
   signature: boolean;
 
   // Home

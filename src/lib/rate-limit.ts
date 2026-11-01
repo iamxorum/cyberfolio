@@ -39,10 +39,10 @@ const asIp = (value: string | null | undefined): string | null => {
 /**
  * Identifies the caller for rate limiting. Proxy headers are only as trustworthy as the network in front of
  * the app, so how much to believe them is set with RATE_LIMIT_PROXY:
- *   cloudflare  - the app is reachable only through Cloudflare: use cf-connecting-ip and nothing else.
- *   forwarded   - use the entry the last trusted proxy appended to x-forwarded-for (RATE_LIMIT_PROXY_HOPS
+ *   cloudflare: the app is reachable only through Cloudflare, so use cf-connecting-ip and nothing else.
+ *   forwarded: use the entry the last trusted proxy appended to x-forwarded-for (RATE_LIMIT_PROXY_HOPS
  *                 proxies deep, default 1); anything a client prepended is ignored.
- *   (unset)     - legacy behaviour: first header found wins. Spoofable if the app is reachable directly.
+ *   (unset): legacy behaviour, first header found wins. Spoofable if the app is reachable directly.
  * Every value must be a real IP address, so arbitrary strings can't be used as keys.
  */
 export function getClientKey(request: Request): string {

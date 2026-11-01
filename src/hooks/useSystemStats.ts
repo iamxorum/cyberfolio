@@ -24,6 +24,7 @@ export function useSystemStats(enabled = true) {
       })
       .catch(() => {
         if (controller.signal.aborted) return;
+        // API unreachable: show the time since this tab's first visit instead.
         const sessionStart = sessionStorage.getItem('session_start_time');
         if (sessionStart) {
           const diff = Date.now() - parseInt(sessionStart);
@@ -36,7 +37,7 @@ export function useSystemStats(enabled = true) {
         }
       });
 
-    // Fetch response time
+    // Round-trip time of an empty request, timed in the browser.
     const startTime = performance.now();
     fetch('/api/response-time', { cache: 'no-store', signal: controller.signal })
       .then(() => {
@@ -46,7 +47,6 @@ export function useSystemStats(enabled = true) {
         if (!controller.signal.aborted) setResponseTime('--');
       });
 
-    // Update viewport
     const updateViewport = () => {
       const width = window.innerWidth;
       const height = window.innerHeight;

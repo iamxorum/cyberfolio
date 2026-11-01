@@ -20,8 +20,9 @@ export interface SiteConfig {
   title: string;
   /** Default meta description. */
   description: string;
+  /** Path under `public/`, e.g. /assets/favicon.png. */
   favicon?: string;
-  /** Optional app icons, paths under `public/`: iOS home screen (180x180) and the web app manifest (192 and 512). Leave out what you don't have. */
+  /** Optional app icons, paths under `public/`: iOS home screen (180x180) and the web app manifest (192, 512). */
   appIcons?: {
     apple?: string;
     pwa192?: string;
@@ -37,6 +38,7 @@ export interface SiteConfig {
   role: string;
   /** Availability line in the hero and on the profile card. */
   status: string;
+  /** Path under `public/`, e.g. /assets/profile.jpg. */
   profileImage: string;
   social: {
     professional?: SocialLink[];

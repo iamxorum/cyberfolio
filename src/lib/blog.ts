@@ -124,8 +124,8 @@ export function getAllPostSlugs(): string[] {
   return listMdxFiles().map((file) => file.replace(/\.mdx?$/, ''));
 }
 
-// Slugs come straight from the URL, so they must never be able to name a file outside the content folder
-// (`../../README` used to resolve to ../../README.md). Only plain file-name characters are accepted.
+// Slugs come straight from the URL, so they must never name a file outside the content folder
+// (`../../README` would resolve to ../../README.md). Only plain file-name characters are accepted.
 const SLUG_PATTERN = /^[A-Za-z0-9][A-Za-z0-9_-]*$/;
 
 export function getPostBySlug(slug: string): Post | null {
