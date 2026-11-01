@@ -14,6 +14,18 @@ export interface Release {
 // Newest first. Add a release here when the version is bumped.
 export const releases: Release[] = [
   {
+    version: '1.7.4',
+    date: '2026-11-01',
+    changes: [
+      'App icons (home screen and web app) are now set in site.config.ts instead of fixed files',
+      'Personal files live under public/assets, so the repository ships no personal content',
+      'The container runs with a read-only filesystem and no extra capabilities',
+      'Fixed local previews in Safari loading unstyled because the CSP upgraded localhost requests to https',
+      'Each version tag now publishes a GitHub Release and a demo image',
+      'Rewrote the README and restored the analytics guide. Added a contributing guide and a security policy',
+    ],
+  },
+  {
     version: '1.7.3',
     date: '2026-10-31',
     changes: [
