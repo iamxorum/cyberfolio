@@ -44,15 +44,11 @@ next-env.d.ts
 /src/config
 /public/assets
 /public/data
-/public/blog
-/public/logos
 /content
 
 # private
 /private
 
-# ops scripts (hardcode internal host/port/paths)
-scripts
 
 # JetBrains
 .idea

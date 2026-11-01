@@ -48,7 +48,7 @@ All personal content lives in `src/config/*.config.ts` and is gitignored by desi
 - `src/components/` — one component per site section
 - `src/config/` — your real content (gitignored) / `config.example/` — the public template
 - `src/lib/` — server and shared logic (access cookie, SEO helpers, Strava, Umami); `docs/` — setup guides
-- `public/` — static assets
+- `public/` — static files. `textures/` and `og-fonts/` ship with the repo. Everything of yours goes in `public/assets/` (gitignored): `assets/icons/`, `assets/logos/`, `assets/blog/<post-slug>/` for post images. `public/data/` is written by the server
 
 ## Build & deploy
 

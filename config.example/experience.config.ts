@@ -15,7 +15,7 @@ export interface Experience {
   /** Second label next to `type` (e.g. "Employment"). */
   type2?: string;
   icon?: string;
-  /** Square logo path under /public (e.g. "/logos/acme.png"), shown next to the company name (24px). */
+  /** Square logo path under /public (e.g. "/assets/logos/acme.png"), shown next to the company name (24px). */
   logo?: string;
   skills?: string[];
   /** Shorter stack for the CV (about 10 items). Falls back to `skills`. */

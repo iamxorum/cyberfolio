@@ -71,7 +71,7 @@ export const metadata: Metadata = {
   ...(siteConfig.favicon && {
     icons: {
       icon: siteConfig.favicon,
-      apple: '/apple-touch-icon.png',
+      apple: siteConfig.appIcons?.apple,
     },
   }),
 };

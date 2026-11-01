@@ -21,6 +21,12 @@ export interface SiteConfig {
   /** Default meta description. */
   description: string;
   favicon?: string;
+  /** Optional app icons, paths under `public/`: iOS home screen (180x180) and the web app manifest (192 and 512). Leave out what you don't have. */
+  appIcons?: {
+    apple?: string;
+    pwa192?: string;
+    pwa512?: string;
+  };
   /** Shown as a live age on /about. `month` is 1-12. */
   birthDate: {
     day: number;
@@ -97,6 +103,11 @@ export const siteConfig: SiteConfig = {
   systemVersion: 'v1.7.3',
 
   favicon: 'path/to/favicon.ico',
+  appIcons: {
+    apple: '/assets/icons/apple-touch-icon.png',
+    pwa192: '/assets/icons/icon-192.png',
+    pwa512: '/assets/icons/icon-512.png',
+  },
 
   security: {
     scripts: [

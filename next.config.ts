@@ -41,11 +41,12 @@ const nextConfig: NextConfig = {
           { key: 'Cross-Origin-Resource-Policy', value: 'same-origin' },
         ],
       },
-      // Everything in these paths is committed config content, immutable at a given URL —
-      // unlike public/data/banned_ips.json, which is live threat data and deliberately not cached here.
+      // /assets holds your own files (blog images, logos, icons) that get edited under the same name,
+      // so they are cached for a day and revalidated, not immutable. Fonts below never change.
+      // public/data/banned_ips.json is live threat data and deliberately not cached here.
       {
         source: '/assets/:path*',
-        headers: [{ key: 'Cache-Control', value: 'public, max-age=31536000, immutable' }],
+        headers: [{ key: 'Cache-Control', value: 'public, max-age=86400, stale-while-revalidate=604800' }],
       },
       {
         source: '/og-fonts/:path*',

@@ -68,7 +68,7 @@ function Blockquote({ children, ...props }: ComponentProps<'blockquote'>) {
   return <blockquote data-reveal className="scroll-reveal border-l-2 border-primary pl-4 italic text-[var(--terminal-text-dim)] my-4" {...props}>{children}</blockquote>;
 }
 
-// A post may point at an image relative to its .mdx file (../../public/blog/...), which editors can preview;
+// A post may point at an image relative to its .mdx file (../../public/assets/blog/...), which editors can preview;
 // the site serves public/ from the root, so that prefix is dropped.
 const publicUrl = (src: string) => src.replace(/^(\.\.\/)+public\//, '/');
 
