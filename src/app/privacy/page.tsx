@@ -20,7 +20,7 @@ const hostname = (origin: string) => origin.replace(/^https?:\/\//, '').replace(
 
 /** Hosts the page may load content from, minus the ones explained on their own (Cloudflare Turnstile). */
 const thirdPartyHosts = (origins: string[]) =>
-  [...new Set(origins.filter((origin) => !origin.includes('challenges.cloudflare.com')).map(hostname))].sort();
+  [...new Set(origins.map(hostname).filter((host) => host !== 'challenges.cloudflare.com'))].sort();
 
 function Section({ title, children }: { title: string; children: ReactNode }) {
   return (

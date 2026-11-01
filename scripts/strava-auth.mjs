@@ -21,17 +21,23 @@ authUrl.search = new URLSearchParams({
   scope: SCOPE,
 }).toString();
 
+const reply = (res, text) => {
+  res.writeHead(200, { 'Content-Type': 'text/plain; charset=utf-8', 'X-Content-Type-Options': 'nosniff' });
+  res.end(text);
+};
+
 const server = createServer(async (req, res) => {
   const params = new URL(req.url, `http://localhost:${PORT}`).searchParams;
   const code = params.get('code');
   if (!code) {
-    res.end('No code in callback. ' + (params.get('error') ?? ''));
+    console.error(`No code in callback. Strava error: ${params.get('error') ?? 'none'}`);
+    reply(res, 'No code in callback, see the terminal.');
     return;
   }
 
   const granted = params.get('scope') ?? '';
   if (!granted.includes('activity:read')) {
-    res.end('activity:read was not granted. Re-run the script and keep the activities checkbox ticked.');
+    reply(res, 'activity:read was not granted. Re-run the script and keep the activities checkbox ticked.');
     console.error(`Granted scope: "${granted}" - missing activity:read`);
     server.close();
     process.exitCode = 1;
@@ -44,7 +50,7 @@ const server = createServer(async (req, res) => {
   });
   const data = await tokenRes.json();
   if (!tokenRes.ok || !data.refresh_token) {
-    res.end('Token exchange failed, see terminal.');
+    reply(res, 'Token exchange failed, see terminal.');
     console.error(data);
     server.close();
     process.exitCode = 1;
@@ -57,7 +63,7 @@ const server = createServer(async (req, res) => {
     ? env.replace(/^STRAVA_REFRESH_TOKEN=.*$/m, line)
     : `${env.trimEnd()}\n${line}\n`);
 
-  res.end('Done. You can close this tab.');
+  reply(res, 'Done. You can close this tab.');
   console.log(`OK: scope "${granted}", athlete ${data.athlete?.id}. STRAVA_REFRESH_TOKEN updated in .env - restart the dev server.`);
   server.close();
 });

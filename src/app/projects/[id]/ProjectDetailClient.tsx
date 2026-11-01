@@ -16,7 +16,14 @@ interface ProjectDetailClientProps {
   contributionStats?: ContributionStats | null;
 }
 
-const isGithubUrl = (url?: string) => !!url && url.includes('github.com');
+const isGithubUrl = (url?: string) => {
+  try {
+    const { hostname } = new URL(url ?? '');
+    return hostname === 'github.com' || hostname.endsWith('.github.com');
+  } catch {
+    return false;
+  }
+};
 
 function StatusBadges({ statuses, statusColors }: { statuses: string[]; statusColors: string[] }) {
   return (
