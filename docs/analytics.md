@@ -1,0 +1,111 @@
+# Analytics (Umami)
+
+Self-hosted, cookie-free page stats. Runs from the main `docker-compose.yml` under the `analytics` profile.
+
+```
+browser ─▶ example.com/stats/script.js
+        ─▶ example.com/stats/api/send ─▶ portfolio ─▶ umami (internal)
+
+you (VPN) ─▶ dashboard at UMAMI_BIND:UMAMI_PORT
+```
+
+Visitors only talk to your domain. The dashboard is never public.
+
+## Turn it on
+
+1. Create the secrets:
+   ```bash
+   cp .env.analytics.example .env.analytics
+   # set POSTGRES_PASSWORD, the same password inside DATABASE_URL, and APP_SECRET
+   ```
+2. In `.env`:
+   ```
+   COMPOSE_PROFILES=analytics
+   ANALYTICS_UPSTREAM=http://umami:3000
+   UMAMI_BIND=10.0.0.5        # your internal IP
+   UMAMI_PORT=3020
+   ```
+3. Start it: `docker compose up -d --build`
+4. Open the dashboard and log in with `admin` / `umami`. Change the password right away.
+5. Add your website and copy its ID.
+6. In `src/config/analytics.config.ts`, set `websiteId`.
+7. In `src/config/features.config.ts`, set `analytics: true`.
+8. Rebuild: `docker compose up -d --build`
+9. Visit the site and check Realtime in the dashboard.
+
+## Where the data lives
+
+Umami keeps everything in its Postgres database. By default that is the Docker volume `analytics_umami-db`.
+To keep it in a host folder instead (simple to back up or snapshot), set an absolute path in `.env`:
+
+```
+UMAMI_DATA=/srv/umami-db
+```
+
+The folder is created if missing and must be writable by the Postgres user (uid 70 in the alpine image):
+`sudo mkdir -p /srv/umami-db && sudo chown 70:70 /srv/umami-db`.
+
+A new folder starts with an empty database. To keep existing stats, copy the volume across first:
+
+```bash
+docker compose stop umami umami-db
+docker run --rm -v analytics_umami-db:/from -v /srv/umami-db:/to alpine cp -a /from/. /to/
+# set UMAMI_DATA in .env, then
+docker compose up -d
+```
+
+Remove `UMAMI_DATA` to go back to the Docker volume.
+
+## Show view counts on the blog
+
+Blog posts and the blog list can show how many times each post was read. In the dashboard, create a
+view-only user (Settings > Users), then add to `.env`:
+
+```
+UMAMI_API_USER=blog-readonly
+UMAMI_API_PASSWORD=...
+```
+
+Rebuild. Counts refresh at most every 10 minutes, and a post only shows its count from 10 views up
+(`MIN_VIEWS_SHOWN` in `src/lib/umami.ts`). Without the login, or if Umami is down, no counts are shown.
+
+## Turn it off
+
+- Keep the site, drop Umami: remove `COMPOSE_PROFILES` from `.env`, then `docker compose up -d --remove-orphans`.
+- Drop the tracker: set `analytics: false`.
+
+Data stays in the `analytics_umami-db` volume until you delete it.
+
+## What is tracked
+
+- Page views, including in-app navigation.
+- Skipped: Do Not Track, and any host other than `domain` and `alternateDomains` in `site.config.ts`.
+- No cookies. Umami stores a hash, not the raw IP.
+
+## Client IPs
+
+Umami uses the IP the portfolio forwards. Set `RATE_LIMIT_PROXY` in `.env` to match what is in front of the site (for example `cloudflare`).
+
+## Problems
+
+| Symptom | Cause |
+|---|---|
+| `/stats/script.js` 404 | `analytics` is false, or `ANALYTICS_UPSTREAM` is missing. Check `docker logs cyberfolio` for `[ANALYTICS]` |
+| `/stats/script.js` 502 | The portfolio can't reach Umami. Is the `analytics` profile on? |
+| Still failing after editing `.env` | `docker compose restart` ignores `.env`. Use `docker compose up -d --force-recreate` |
+| Script loads, no visits | Wrong `websiteId`, Do Not Track, or an ad blocker |
+| Event 403 | The origin isn't your domain |
+| Event 429 | More than 120 events a minute from one IP |
+| Cloudflare keeps an old error | Purge `/stats/script.js` |
+
+Check Umami from the portfolio container:
+
+```bash
+docker exec cyberfolio wget -qO- http://umami:3000/script.js | head -c 100
+```
+
+## Safety
+
+- The database has no published port and sits on a network the portfolio can't reach.
+- Pin the Umami image version once it works.
+- Back up the `analytics_umami-db` volume if the numbers matter.

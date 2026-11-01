@@ -1,38 +1,34 @@
 # Cyberfolio
 
+[![CI](https://github.com/iamxorum/cyberfolio/actions/workflows/ci.yml/badge.svg)](https://github.com/iamxorum/cyberfolio/actions/workflows/ci.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](#license)
 [![Next.js 16](https://img.shields.io/badge/Next.js-16-black?logo=next.js)](https://nextjs.org)
 [![TypeScript](https://img.shields.io/badge/TypeScript-strict-blue?logo=typescript)](https://www.typescriptlang.org)
-[![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](#contributing)
 
-Terminal/hacker-themed personal portfolio (Next.js 16, TypeScript, Tailwind CSS 4). Most sections aren't static filler — they're backed by real, live systems, not stock content pretending to be dynamic.
+A terminal-themed personal portfolio built with Next.js 16, TypeScript and Tailwind CSS 4. All content comes from typed config files and MDX posts, so the same code serves any person's site.
 
-## What makes this different
+## Features
 
-- **ThreatGlobe** — a live 3D globe plotting IPs banned by the author's actual home-lab firewalls: local Fail2Ban bans (red) and CrowdSec community blocklist hits (blue), geolocated via GeoLite2 and arced toward the real infrastructure nodes. Not a demo widget — it's a dashboard of real firewall activity, refreshed from the actual edge.
-- **CV / résumé generator** — config-driven, multi-style, ATS-compliant. Exports a real vector-text PDF via `@react-pdf/renderer` (not a print/screenshot hack), with content-driven pagination and proper document metadata.
-- **Cover letter generator** — same PDF pipeline. A letter can be paired with a CV style, and paired styles get a one-click **CV + letter** download as a single PDF.
-- **Interactive terminal** — a real command interpreter (`help`, `ls`, `cat <project>`, `whoami`, `contact`, `certs`, ...) reading from the same config as the rest of the site, with input sanitization since it's free-text echoed back to the DOM.
-- Skills radar, project showcase, music discography, and a private-route document viewer (streams large PDFs with range-request support instead of buffering the whole file).
-- Cloudflare Turnstile bot protection enforced on the server: a passed check sets a signed 24-hour cookie, and `/cv`, the email and the phone number are only served to visitors who hold it. Contact details live in `.env`, so they are in no page source or script.
-- A blog with MDX posts, reading progress, related posts, RSS and optional view counts from a self-hosted Umami (see `docs/analytics.md`).
-- Dynamic CSP, built per-deploy from an allowlist config rather than hardcoded.
-- One security easter egg somewhere in the shipped JS. Not documenting what or where — that's rather the point. If you find it, you *really* shouldn't have been looking there.
-
-## Disclaimer
-
-For those who want to criticize the application because of being AI slopped, yes, I used AI for help me improving in coding. Toxicity is not welcomed here.
+- **Live threat globe.** A 3D globe of IPs banned by your firewalls (Fail2Ban and CrowdSec), geolocated and drawn toward your infrastructure nodes. Data comes from a JSON file you generate on your own firewall host.
+- **CV and cover letter generator.** Config-driven styles exported as vector-text PDFs with `@react-pdf/renderer`. A letter can be paired with a CV style and downloaded as one file.
+- **Blog.** MDX posts with reading progress, related posts, tags, RSS and optional view counts from a self-hosted Umami.
+- **Gated contact details.** Cloudflare Turnstile is verified on the server. A passed check sets a signed 24-hour cookie, and `/cv`, the email and the phone number are only served to visitors who hold it.
+- **Strict CSP.** A per-request nonce policy built from an allowlist in the site config.
+- **Optional integrations.** Strava, Steam, GitHub contribution stats, a music player and analytics, each behind a feature flag.
 
 ## Stack
 
-Next.js 16 (App Router, `output: standalone`) · React 19 · TypeScript · Tailwind CSS 4 · `react-globe.gl` / `three.js` · `@react-pdf/renderer` · Cloudflare Turnstile
+Next.js 16 (App Router, `output: standalone`), React 19, TypeScript, Tailwind CSS 4, `react-globe.gl` and `three`, `@react-pdf/renderer`, Cloudflare Turnstile.
 
 ## Getting started
 
+Requires Node.js 24.
+
 ```bash
 npm install
-mkdir -p src/config && cp -r config.example/. src/config/   # your own content — see config.example/README.md
-cp .env.example .env                                         # contact details and secrets
+mkdir -p src/config && cp -r config.example/. src/config/
+mkdir -p content && cp -r content.example/. content/
+cp .env.example .env
 npm run dev
 ```
 
@@ -40,37 +36,66 @@ Open [http://localhost:3000](http://localhost:3000).
 
 ## Configuration
 
-All personal content lives in `src/config/*.config.ts` and is gitignored by design — `config.example/` is the public template that mirrors every real config file with placeholders, so this repo stays reusable without leaking anyone's real data. Secrets and contact details (`CONTACT_EMAIL`, `CONTACT_PHONE`, `TURNSTILE_SECRET_KEY`, …) go in `.env`, not in config. Full field-by-field guide and environment table: [`config.example/README.md`](./config.example/README.md).
+Personal content lives in `src/config/*.config.ts`, which is gitignored. `config.example/` is the public template with placeholder values. Secrets and contact details go in `.env`, never in config, because config is compiled into the build.
+
+The field-by-field guide and the environment variable table are in [`config.example/README.md`](./config.example/README.md). Analytics setup is in [`docs/analytics.md`](./docs/analytics.md).
+
+## Scripts
+
+| Command | What it does |
+|---|---|
+| `npm run dev` | Development server |
+| `npm run build` / `npm start` | Production build and server |
+| `npm run lint` | ESLint |
+| `npm run typecheck` | TypeScript, no emit |
+| `npm test` | Unit tests (Node test runner) |
+| `npm run icons` | Rebuild the icon font after adding an icon name |
+| `npm run check:og` | Check that every page has a loading social image |
 
 ## Project structure
 
-- `src/app/` — Next.js App Router pages and API routes
-- `src/components/` — one component per site section
-- `src/config/` — your real content (gitignored) / `config.example/` — the public template
-- `src/lib/` — server and shared logic (access cookie, SEO helpers, Strava, Umami); `docs/` — setup guides
-- `public/` — static files. `textures/` and `og-fonts/` ship with the repo. Everything of yours goes in `public/assets/` (gitignored): `assets/icons/`, `assets/logos/`, `assets/blog/<post-slug>/` for post images. `public/data/` is written by the server
-
-## Build & deploy
-
-```bash
-npm run build
-npm start
+```
+src/app/         App Router pages and API routes
+src/components/  UI, grouped by feature
+src/lib/         Server and shared logic
+src/hooks/       React hooks
+src/config/      Your content (gitignored); template in config.example/
+content/blog/    MDX posts (gitignored); examples in content.example/
+private/         Files served only through gated routes (gitignored)
+public/          textures/ and og-fonts/ ship with the repo; assets/ is yours
+scripts/         Development helpers
+tests/           Unit tests
+docs/            Setup guides
 ```
 
-Docker: multi-stage `Dockerfile` → `output: standalone`, single `docker-compose.yml` service, runs as a non-root user in the final image.
+Everything that belongs to you goes in `public/assets/` (gitignored): `icons/`, `logos/` and `blog/<post-slug>/` for post images. `public/data/` is written by your server.
 
-A demo image built from `config.example/` (placeholder content, not a real site) is published to `ghcr.io/iamxorum/cyberfolio:demo` on every release tag. Your own config is compiled into the build, so build your own image rather than reusing it.
+## Deployment
+
+```bash
+docker compose up -d --build
+```
+
+The multi-stage `Dockerfile` builds a standalone Next.js server that runs as a non-root user. `docker-compose.yml` mounts `public/`, `private/` and `content/` read-only, so posts and images change without a rebuild. Config changes need a rebuild.
+
+A demo image built from `config.example/` (placeholder content) is published to `ghcr.io/iamxorum/cyberfolio:demo` on each release. Your own config is compiled into the build, so build your own image for a real site.
 
 ## Contributing
 
-Issues and PRs are welcome — bug fixes, new config fields, a cleaner take on a component, whatever. Since `src/config/` is gitignored, `npm run lint`/`npm run build` in CI run against `config.example/`, so make sure new features degrade gracefully with placeholder content, not just your own.
+Issues and pull requests are welcome. See [CONTRIBUTING.md](./CONTRIBUTING.md).
+
+## Security
+
+Report vulnerabilities privately, as described in [SECURITY.md](./SECURITY.md).
+
+## AI assistance
+
+Parts of this project were written with AI assistance and reviewed by the author.
 
 ## Support
-
-If this saved you the weekend it took to build, a coffee's appreciated but never expected:
 
 <a href="https://buymeacoffee.com/iamxorum"><img src="https://cdn.buymeacoffee.com/buttons/v2/default-yellow.png" alt="Buy Me A Coffee" height="41" width="174"></a>
 
 ## License
 
-MIT - use and modify freely. If you build on this for your own portfolio, a mention/link back is appreciated.
+MIT. A mention or link back is appreciated if you build on this for your own portfolio.

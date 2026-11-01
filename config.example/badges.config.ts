@@ -8,7 +8,7 @@ export interface BadgeConfig {
   pill?: { label: string; value: string };
   /** Material Symbols icon name shown next to the badge label. */
   icon?: string;
-  /** Accent hex (no '#') this badge's identity is built around — drives the card's hover glow. */
+  /** Accent hex (no '#') this badge's identity is built around. Drives the card's hover glow. */
   accent?: string;
   /** Image width / height (e.g. 4 for a 400x100 SVG). Reserves the slot so the card doesn't jump when the image loads. */
   aspect?: number;
