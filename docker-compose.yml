@@ -5,7 +5,7 @@ services:
       dockerfile: Dockerfile
     container_name: cyberfolio
     ports:
-      - "3001:3000"
+      - "${PORTFOLIO_BIND:-127.0.0.1}:3001:3000"
     env_file:
       - .env
     environment:
