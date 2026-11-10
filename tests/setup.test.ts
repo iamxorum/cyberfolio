@@ -6,7 +6,7 @@ import { join, resolve } from 'node:path';
 import { test } from 'node:test';
 
 const SCRIPT = resolve('scripts/setup.mjs');
-const SAMPLES = ['config.example', 'content.example', '.env.example', 'public/data/banned_ips.example.json'];
+const SAMPLES = ['config.example', 'content.example', 'assets.example', '.env.example', 'public/data/banned_ips.example.json'];
 
 function project() {
   const dir = mkdtempSync(join(tmpdir(), 'setup-'));
@@ -27,6 +27,7 @@ test('copies every example into place', () => {
     assert.equal(result.status, 0, result.stderr);
     assert.ok(existsSync(join(dir, 'src/config/site.config.ts')));
     assert.ok(existsSync(join(dir, 'content/blog')));
+    assert.ok(existsSync(join(dir, 'public/assets/profile.jpg')));
     assert.ok(existsSync(join(dir, '.env')));
     assert.ok(existsSync(join(dir, 'public/data/banned_ips.json')));
   } finally {

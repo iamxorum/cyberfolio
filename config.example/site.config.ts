@@ -104,7 +104,7 @@ export const siteConfig: SiteConfig = {
 
   systemVersion: 'v1.7.4',
 
-  favicon: 'path/to/favicon.ico',
+  favicon: '/assets/favicon.png',
   appIcons: {
     apple: '/assets/icons/apple-touch-icon.png',
     pwa192: '/assets/icons/icon-192.png',
