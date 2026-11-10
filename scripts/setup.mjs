@@ -1,4 +1,4 @@
-// First-run setup: copies the example config, blog content, env file and threat feed into place.
+// First-run setup: copies the example config, blog content, placeholder images, env file and threat feed into place.
 // `npm run setup`. Never overwrites a file or folder that already exists.
 import { cpSync, existsSync, mkdirSync } from 'node:fs';
 import { dirname } from 'node:path';
@@ -6,6 +6,7 @@ import { dirname } from 'node:path';
 const STEPS = [
   { from: 'config.example', to: 'src/config', label: 'site config' },
   { from: 'content.example', to: 'content', label: 'example blog posts' },
+  { from: 'assets.example', to: 'public/assets', label: 'placeholder images' },
   { from: '.env.example', to: '.env', label: 'environment file' },
   { from: 'public/data/banned_ips.example.json', to: 'public/data/banned_ips.json', label: 'sample threat feed' },
 ];

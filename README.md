@@ -35,7 +35,7 @@ npm run setup
 npm run dev
 ```
 
-`npm run setup` copies the example config, blog posts, `.env` and a sample threat feed into place. It never overwrites an existing file.
+`npm run setup` copies the example config, blog posts, placeholder images, `.env` and a sample threat feed into place. It never overwrites an existing file.
 
 Open [http://localhost:3000](http://localhost:3000).
 
@@ -67,15 +67,16 @@ src/components/  UI, grouped by feature
 src/lib/         Server and shared logic
 src/hooks/       React hooks
 src/config/      Your content (gitignored); template in config.example/
+assets.example/  Placeholder avatar, icons and logo, copied to public/assets/ by setup
 content/blog/    MDX posts (gitignored); examples in content.example/
 private/         Files served only through gated routes (gitignored)
-public/          textures/ and og-fonts/ ship with the repo; assets/ is yours
+public/          textures/ and og-fonts/ ship with the repo; assets/ is yours (placeholders in assets.example/)
 scripts/         Development helpers
 tests/           Unit tests
 docs/            Setup guides
 ```
 
-Everything that belongs to you goes in `public/assets/` (gitignored): `icons/`, `logos/` and `blog/<post-slug>/` for post images. `public/data/` is written by your server.
+Everything that belongs to you goes in `public/assets/` (gitignored): `profile.jpg`, `favicon.png`, `icons/`, `logos/` and `blog/<post-slug>/` for post images. Setup fills it with placeholders; replace them with your own files under the same names. `public/data/` is written by your server.
 
 ## Deployment
 

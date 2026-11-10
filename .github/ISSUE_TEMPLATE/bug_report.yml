@@ -1,0 +1,28 @@
+name: Bug report
+description: Something doesn't work the way the docs say it should
+labels: [bug]
+body:
+  - type: textarea
+    id: what
+    attributes:
+      label: What happened
+      description: What you did, what you expected, what you got. Screenshots help.
+    validations:
+      required: true
+  - type: textarea
+    id: repro
+    attributes:
+      label: Steps to reproduce
+      description: Does it also happen with the unmodified `config.example/`?
+    validations:
+      required: true
+  - type: input
+    id: version
+    attributes:
+      label: Version
+      description: From `package.json` or the footer, e.g. 1.7.4
+  - type: input
+    id: env
+    attributes:
+      label: Environment
+      description: Node version, OS, browser, and whether you run `npm run dev` or Docker
