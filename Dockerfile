@@ -2,6 +2,9 @@
 FROM node:24-alpine AS deps
 WORKDIR /app
 
+# Silence the "new npm version" notice in build logs.
+ENV NPM_CONFIG_UPDATE_NOTIFIER=false
+
 COPY package.json package-lock.json ./
 
 RUN npm ci
